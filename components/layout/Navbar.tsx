@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -31,6 +30,7 @@ import { signOut } from "@/lib/supabase/auth";
 import { toast } from "sonner";
 import Image from "next/image";
 import { CartDrawer } from "@/components/modules/cart/CartDrawer";
+import { getFavoritesCount } from "@/lib/supabase/favorites";
 
 const LINKS = [
   { href: "/", label: "Inicio" },
@@ -54,6 +54,22 @@ export function Navbar() {
   const { user, loading } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [favoritesCount, setFavoritesCount] = useState(0);
+
+  useEffect(() => {
+    if (user) {
+      loadFavoritesCount();
+    }
+  }, [user]);
+
+  const loadFavoritesCount = async () => {
+    try {
+      const count = await getFavoritesCount();
+      setFavoritesCount(count);
+    } catch (error) {
+      console.error('Error loading favorites count:', error);
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -133,9 +149,11 @@ export function Navbar() {
                   onClick={() => router.push('/profile/favorites')}
                 >
                   <Heart className="h-5 w-5 text-gray-600" />
-                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center">
-                    0
-                  </span>
+                  {favoritesCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center">
+                      {favoritesCount}
+                    </span>
+                  )}
                 </Button>
               )}
 
