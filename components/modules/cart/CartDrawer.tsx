@@ -18,7 +18,7 @@ export function CartDrawer() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
@@ -28,6 +28,8 @@ export function CartDrawer() {
   }, [isOpen, user]);
 
   const loadCartItems = async () => {
+    if (!user) return;
+    
     try {
       setIsLoading(true);
       const items = await getCartItems();
@@ -46,6 +48,7 @@ export function CartDrawer() {
       setCartItems(cartItems.map(item => 
         item.id === itemId ? { ...item, cantidad: newQuantity } : item
       ));
+      toast.success('Cantidad actualizada');
     } catch (error) {
       console.error('Error updating quantity:', error);
       toast.error('Error al actualizar la cantidad');
@@ -72,10 +75,11 @@ export function CartDrawer() {
       setShowAuthModal(true);
       return;
     }
-
     setIsOpen(false);
     router.push('/checkout');
   };
+
+  const cartCount = cartItems.reduce((sum, item) => sum + item.cantidad, 0);
 
   return (
     <>
@@ -83,9 +87,9 @@ export function CartDrawer() {
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="relative">
             <ShoppingCart className="h-5 w-5 text-gray-600" />
-            {cartItems.length > 0 && (
+            {cartCount > 0 && (
               <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center">
-                {cartItems.reduce((sum, item) => sum + item.cantidad, 0)}
+                {cartCount}
               </span>
             )}
           </Button>
@@ -109,10 +113,23 @@ export function CartDrawer() {
             <div className="flex-1 flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
             </div>
-          ) : cartItems.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center">
+          ) : !user ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
               <ShoppingCart className="h-12 w-12 text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Inicia sesión para ver tu carrito
+              </h3>
+              <p className="text-gray-500 mb-6">
+                Accede a tu cuenta para ver los productos en tu carrito
+              </p>
+              <Button onClick={() => setShowAuthModal(true)}>
+                Iniciar Sesión
+              </Button>
+            </div>
+          ) : cartItems.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
+              <ShoppingCart className="h-12 w-12 text-gray-300 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
                 Tu carrito está vacío
               </h3>
               <p className="text-gray-500 mb-6">
@@ -230,7 +247,8 @@ export function CartDrawer() {
 
       <AuthModal 
         isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
+        onClose={() => setShowAuthModal(false)}
+        redirectUrl="/checkout"
       />
     </>
   );

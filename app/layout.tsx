@@ -1,23 +1,23 @@
-import './globals.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import { Navbar } from '@/components/layout/Navbar'
-import { Footer } from '@/components/layout/Footer'
-import { Toaster } from 'sonner'
-import { ThemeProvider } from '@/components/providers/ThemeProvider'
-import { Suspense } from 'react'
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
+import { Toaster } from 'sonner';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { Suspense } from 'react';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'A un clic la - E-commerce',
   description: 'E-commerce platform',
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
@@ -41,8 +41,8 @@ export default function RootLayout({
               <Footer />
             </div>
           </Suspense>
-          <Toaster
-            position="top-right"
+          <Toaster 
+            position="bottom-right"
             expand={false}
             richColors
             closeButton
@@ -51,14 +51,16 @@ export default function RootLayout({
               style: {
                 background: 'white',
                 border: '1px solid #e5e7eb',
-                borderRadius: '0.5rem',
+                borderRadius: '0.75rem',
                 padding: '1rem',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
               },
-              className: 'bg-white border border-gray-100 shadow-lg',
+              className: 'font-medium',
+              duration: 3000,
             }}
           />
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
