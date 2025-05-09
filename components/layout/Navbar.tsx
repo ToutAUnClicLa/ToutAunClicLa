@@ -1,8 +1,9 @@
+```typescript
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { 
   Menu, 
@@ -28,7 +29,6 @@ import AuthModal from "@/components/auth/AuthModal";
 import { useAuth } from "@/hooks/useAuth";
 import { signOut } from "@/lib/supabase/auth";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CartDrawer } from "@/components/modules/cart/CartDrawer";
 
@@ -66,11 +66,17 @@ export function Navbar() {
     }
   };
 
+  const handleProfileNavigation = (href: string) => {
+    setIsMobileMenuOpen(false);
+    router.push(href);
+  };
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 bg-white border-b z-50">
         <nav className="container mx-auto">
           <div className="flex items-center justify-between h-16">
+            {/* Logo */}
             <Link href="/" className="flex items-center">
               <motion.img 
                 src="/logoaunclic.svg" 
@@ -85,6 +91,7 @@ export function Navbar() {
               </div>
             </Link>
 
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
               {LINKS.map((link) => {
                 const isActive = pathname === link.href;
@@ -116,6 +123,7 @@ export function Navbar() {
               })}
             </div>
 
+            {/* Actions */}
             <div className="flex items-center space-x-4">
               {!loading && user && (
                 <Button
@@ -165,7 +173,7 @@ export function Navbar() {
                           <DropdownMenuItem 
                             key={item.href}
                             className="px-4 py-2.5 cursor-pointer"
-                            onClick={() => router.push(item.href)}
+                            onClick={() => handleProfileNavigation(item.href)}
                           >
                             <item.icon className="mr-3 h-4 w-4 text-gray-500" />
                             <span>{item.label}</span>
@@ -194,6 +202,7 @@ export function Navbar() {
                 )
               )}
 
+              {/* Mobile Menu */}
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="md:hidden">
@@ -271,15 +280,15 @@ export function Navbar() {
                             Mi Cuenta
                           </div>
                           {PROFILE_MENU_ITEMS.map((item) => (
-                            <Link
+                            <Button
                               key={item.href}
-                              href={item.href}
-                              className="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg"
-                              onClick={() => setIsMobileMenuOpen(false)}
+                              variant="ghost"
+                              className="w-full justify-start px-3 py-2.5 text-gray-700 hover:bg-gray-50"
+                              onClick={() => handleProfileNavigation(item.href)}
                             >
                               <item.icon className="h-5 w-5 mr-3 text-gray-500" />
                               {item.label}
-                            </Link>
+                            </Button>
                           ))}
                         </div>
                       )}
@@ -327,3 +336,4 @@ export function Navbar() {
     </>
   );
 }
+```
