@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import AuthModal from '@/components/auth/AuthModal';
 import { Button } from '@/components/ui/button';
 import { addToFavorites, removeFromFavorites, isFavorite } from '@/lib/services/favorites';
+import { addToCart } from '@/lib/services/cart';
 
 interface Product {
   id: string;
@@ -59,6 +60,7 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
 
     try {
       setIsLoading(true);
+      await addToCart(product.id);
       toast.success('Producto agregado al carrito');
     } catch (error) {
       console.error('Error adding to cart:', error);

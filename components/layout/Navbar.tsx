@@ -70,7 +70,6 @@ export function Navbar() {
       <header className="fixed top-0 left-0 right-0 bg-white border-b z-50">
         <nav className="container mx-auto">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
             <Link href="/" className="flex items-center">
               <motion.img 
                 src="/logoaunclic.svg" 
@@ -85,7 +84,6 @@ export function Navbar() {
               </div>
             </Link>
 
-            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
               {LINKS.map((link) => {
                 const isActive = pathname === link.href;
@@ -117,7 +115,6 @@ export function Navbar() {
               })}
             </div>
 
-            {/* Actions */}
             <div className="flex items-center space-x-4">
               {!loading && user && (
                 <Button
@@ -133,16 +130,7 @@ export function Navbar() {
                 </Button>
               )}
 
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative"
-              >
-                <ShoppingCart className="h-5 w-5 text-gray-600" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center">
-                  0
-                </span>
-              </Button>
+              <CartDrawer />
 
               {!loading && (
                 user ? (
@@ -205,7 +193,6 @@ export function Navbar() {
                 )
               )}
 
-              {/* Mobile Menu Button */}
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="md:hidden">
