@@ -1,0 +1,533 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { ArrowRight, ChevronDown, Package, Utensils, Store, Shirt, Watch, Gift } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+
+// Types
+interface CategoryCardProps {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  gradient: string;
+}
+
+interface MobileCategoryCardProps {
+  icon: React.ElementType;
+  title: string;
+  gradient: string;
+}
+
+interface SectionProps {
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  color: string;
+  iconColor: string;
+  children: React.ReactNode;
+}
+
+// Components
+const CategoryCard = ({ icon: Icon, title, description, gradient }: CategoryCardProps) => {
+  return (
+    <motion.div
+      className={`group relative bg-gradient-to-br ${gradient} p-4 sm:p-5 md:p-6 rounded-2xl flex items-center h-20 sm:h-24 md:h-28 border border-white/10 shadow-lg backdrop-blur-sm hover:backdrop-blur-md transition-all duration-300 overflow-hidden`}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <div className={`absolute inset-0 bg-gradient-to-br ${gradient.replace("/20", "/0")} group-hover:${gradient.replace("/20", "/10")} transition-all duration-300`} />
+      <div className="relative z-10 flex items-center w-full">
+        <div className="flex-shrink-0 mr-3">
+          <Icon className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-white group-hover:scale-110 transition-transform duration-300" />
+        </div>
+        <div className="flex-grow">
+          <h3 className="text-white font-semibold text-base sm:text-lg md:text-xl mb-0.5 drop-shadow-lg"
+            style={{ textShadow: "0 2px 4px rgba(0, 0, 0, 0.4)" }}>
+            {title}
+          </h3>
+          <p className="text-white/90 text-xs sm:text-sm md:text-base drop-shadow-md line-clamp-2"
+            style={{ textShadow: "0 1px 3px rgba(0, 0, 0, 0.4)" }}>
+            {description}
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const MobileCategoryCard = ({ icon: Icon, title, gradient }: MobileCategoryCardProps) => {
+  return (
+    <motion.div
+      className={`group relative bg-gradient-to-br ${gradient} p-3 sm:p-4 rounded-xl flex flex-col items-center justify-center h-20 sm:h-24 border border-white/10 backdrop-blur-sm hover:backdrop-blur-md transition-all duration-300 overflow-hidden`}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+    >
+      <div className={`absolute inset-0 bg-gradient-to-br ${gradient.replace("/20", "/0")} group-hover:${gradient.replace("/20", "/10")} transition-all duration-300`} />
+      <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-white mb-2 group-hover:scale-110 transition-transform duration-300" />
+      <span className="text-white font-medium text-xs sm:text-sm text-center drop-shadow-lg relative z-10 px-1"
+        style={{ textShadow: "0 1px 2px rgba(0, 0, 0, 0.4)" }}>
+        {title}
+      </span>
+    </motion.div>
+  );
+};
+
+const Section = ({ title, description, icon: Icon, color, iconColor, children }: SectionProps) => {
+  return (
+    <section className={`py-12 sm:py-16 md:py-20 bg-gradient-to-br ${color}`}>
+      <div className="container">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-12 sm:mb-16"
+        >
+          <div className="inline-flex items-center justify-center mb-4 sm:mb-6">
+            <Icon className={`h-6 w-6 sm:h-8 sm:w-8 ${iconColor} mr-2 sm:mr-3`} />
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">{title}</h2>
+          </div>
+          <p className="mt-3 sm:mt-4 text-lg sm:text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            {description}
+          </p>
+        </motion.div>
+        {children}
+      </div>
+    </section>
+  );
+};
+
+// Sample data
+const categories = [
+  {
+    icon: Package,
+    title: "Productos",
+    description: "Productos únicos de América Latina, desde artesanías hasta innovaciones modernas.",
+    gradient: "from-indigo-600/20 to-blue-600/20"
+  },
+  {
+    icon: Utensils,
+    title: "Comidas",
+    description: "Gastronomía latinoamericana con recetas auténticas y sabores tradicionales.",
+    gradient: "from-amber-500/20 to-orange-500/20"
+  },
+  {
+    icon: Store,
+    title: "Boutique",
+    description: "Souvenirs y regalos únicos que capturan la esencia de cada país.",
+    gradient: "from-purple-500/20 to-pink-500/20"
+  }
+];
+
+const productCategories = [
+  {
+    id: "harina-masa",
+    name: "Harina y masa",
+    icon: <Utensils className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-yellow-500" />,
+    description: "Descubre nuestras harinas de maíz, trigo y especialidades para preparar arepas, tortillas y más",
+    image: "/harinasMasas.png",
+    color: "from-yellow-600 to-yellow-400",
+    viewText: "Ver productos",
+    subcategoria_id: "1"
+  },
+  {
+    id: "salsas-aderezos",
+    name: "Salsas y aderezos",
+    icon: <Package className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-red-500" />,
+    description: "Explora nuestra variedad de salsas picantes, moles, chimichurri y condimentos auténticos",
+    image: "/salsasAderezos.png",
+    color: "from-red-600 to-red-400",
+    viewText: "Ver productos",
+    subcategoria_id: "2"
+  },
+  {
+    id: "paquetes-snacks",
+    name: "Paquetes y snacks",
+    icon: <Store className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-green-500" />,
+    description: "Disfruta de nuestros chips de tortilla, bocadillos, galletas y dulces tradicionales",
+    image: "/paquetesSnacks.png",
+    color: "from-green-600 to-green-400",
+    viewText: "Ver productos",
+    subcategoria_id: "3"
+  }
+];
+
+const foodRegions = [
+  {
+    id: "northAmerica",
+    name: "Norte América",
+    description: "Descubre los sabores de Estados Unidos, Canadá y México, desde hamburguesas y pizza hasta tacos y poutine",
+    image: "/norteAmerica.png",
+    color: "from-blue-600 to-blue-400",
+    viewText: "Ver gastronomía",
+    subcategoria_id: "4"
+  },
+  {
+    id: "centralAmerica",
+    name: "Centro América",
+    description: "Explora la gastronomía colorida de Guatemala, Costa Rica, Panamá, Honduras y más países centroamericanos",
+    image: "/centroAmerica.png",
+    color: "from-emerald-600 to-emerald-400",
+    viewText: "Ver gastronomía",
+    subcategoria_id: "5"
+  },
+  {
+    id: "southAmerica",
+    name: "Sur América",
+    description: "Savourez les plats typiques d'Argentine, du Brésil, du Pérou, de Colombie et d'autres pays d'Amérique du Sud",
+    image: "/surAmerica.png",
+    color: "from-amber-600 to-amber-400",
+    viewText: "Ver gastronomía",
+    subcategoria_id: "6"
+  }
+];
+
+const boutiqueCategories = [
+  {
+    id: "clothing",
+    name: "Ropa",
+    icon: <Shirt className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-purple-500" />,
+    description: "Camisetas de la selección, jeans para cola y más prendas exclusivas",
+    image: "/ropaBoutique.png",
+    color: "from-purple-600 to-purple-400",
+    viewText: "Ver más",
+    subcategoria_id: "7"
+  },
+  {
+    id: "accessories",
+    name: "Accesorios",
+    icon: <Watch className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-pink-500" />,
+    description: "Accesorios únicos y artesanales de todas las regiones",
+    image: "/accesoriosBoutique.png",
+    color: "from-pink-600 to-pink-400",
+    viewText: "Ver más",
+    subcategoria_id: "8"
+  },
+  {
+    id: "souvenirs",
+    name: "Souvenirs",
+    icon: <Gift className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-amber-500" />,
+    description: "Recuerdos y artesanías tradicionales de las Américas",
+    image: "/souvenirBoutique.png",
+    color: "from-amber-600 to-amber-400",
+    viewText: "Ver más",
+    subcategoria_id: "9"
+  }
+];
+
+// Main component
+export default function Home() {
+  return (
+    <div className="min-h-screen">
+      {/* Hero section */}
+      <div className="relative w-full h-screen min-h-[500px] sm:min-h-[600px] md:min-h-[700px] lg:min-h-[800px] max-h-[900px] overflow-hidden">
+        <div className="relative h-full">
+          <div
+            className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-purple-50"
+            style={{ width: "100%", height: "100%", minHeight: "inherit" }}
+          >
+            <picture className="block w-full h-full">
+              <source media="(min-width: 768px)" srcSet="/fondoEscritorio.png" />
+              <source media="(max-width: 767px)" srcSet="/fondoMobile.png" />
+              <Image
+                src="/fondoEscritorio.png"
+                alt="Hero background"
+                fill
+                className="object-cover filter blur-[0.5px] transition-opacity duration-300 opacity-100"
+                priority
+              />
+            </picture>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+          </div>
+          <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-6 lg:px-8">
+            <div className="container">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <motion.div
+                  className="text-left"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                >
+                  <motion.div className="mb-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.2 }}>
+                    <motion.div className="relative" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}>
+                      <div className="flex flex-col items-start">
+                        <h1 className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white leading-none tracking-tight mb-2"
+                          style={{ fontFamily: "'Playfair Display', serif", textShadow: "0 4px 20px rgba(0, 0, 0, 0.5)", background: "linear-gradient(to right, #ffffff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                          A un
+                        </h1>
+                        <h1 className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white leading-none tracking-tight relative"
+                          style={{ fontFamily: "'Playfair Display', serif", textShadow: "0 4px 20px rgba(0, 0, 0, 0.5)", background: "linear-gradient(to right, #ffffff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                          Clic la
+                          <motion.div
+                            className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full"
+                            initial={{ width: 0 }}
+                            animate={{ width: "100%" }}
+                            transition={{ duration: 0.8, delay: 0.9 }}
+                          />
+                        </h1>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                  <motion.p
+                    className="text-sm xs:text-base sm:text-lg md:text-xl text-white/90 mb-6 sm:mb-8 md:mb-10 max-w-xl leading-relaxed mt-8 sm:mt-10 md:mt-12"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
+                    style={{ textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)", fontFamily: "'Inter', sans-serif" }}
+                  >
+                    Nuestra tienda exclusiva estará disponible muy pronto, trayendo los productos más auténticos de todas las Américas.
+                  </motion.p>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.6 }} className="mb-4 sm:mb-6 md:mb-0">
+                    <motion.button
+                      className="group relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 rounded-xl text-base sm:text-lg md:text-xl font-medium transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-indigo-500/30 flex items-center space-x-3 overflow-hidden"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <span className="relative z-10">Registrate para acceso anticipado</span>
+                      <motion.div className="relative z-10" animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                        <ChevronDown className="h-5 w-5 transform rotate-90" />
+                      </motion.div>
+                      <motion.div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" initial={false} />
+                    </motion.button>
+                  </motion.div>
+                </motion.div>
+
+                {/* Desktop Categories */}
+                <motion.div className="hidden md:block" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
+                  <div className="grid grid-cols-1 gap-4 sm:gap-5 max-w-md mx-auto">
+                    {categories.map((cat, i) => (
+                      <CategoryCard key={i} icon={cat.icon} title={cat.title} description={cat.description} gradient={cat.gradient} />
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Mobile Categories */}
+                <motion.div className="md:hidden w-full mt-6 sm:mt-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                    {categories.map((cat, i) => (
+                      <MobileCategoryCard key={i} icon={cat.icon} title={cat.title} gradient={cat.gradient} />
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Products Section */}
+      <Section
+        title="Productos"
+        description="Explora nuestra selección cuidadosamente elegida de productos auténticos de todas las Américas. Cada artículo cuenta una historia de tradición y artesanía."
+        icon={Package}
+        color="from-indigo-50 to-blue-50"
+        iconColor="text-indigo-600"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {productCategories.map(category => (
+            <Link key={category.id} href={`/products/${category.id}`}>
+              <motion.div
+                className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer group h-52 sm:h-56 md:h-80"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="absolute inset-0 w-full h-full overflow-hidden">
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110 filter blur-[0.8px]"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-r ${category.color} opacity-10 transition-opacity duration-300 group-hover:opacity-20`} />
+                  <div className="absolute inset-0 flex flex-col justify-center p-6 sm:p-8">
+                    <div className="flex items-center mb-3 sm:mb-4">
+                      {category.icon}
+                      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white ml-3 sm:ml-4 drop-shadow-lg" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
+                        {category.name}
+                      </h3>
+                    </div>
+                    <p className="text-sm sm:text-base text-white mb-4 sm:mb-6 max-w-2xl drop-shadow-lg" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
+                      {category.description}
+                    </p>
+                    <div className="flex items-center text-white mt-auto bg-black/15 px-3 py-2 rounded-lg inline-flex">
+                      <span className="text-sm sm:text-base font-medium drop-shadow-md" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>
+                        {category.viewText}
+                      </span>
+                      <motion.div
+                        className="ml-2"
+                        initial={{ x: 0 }}
+                        whileHover={{ x: 5 }}
+                      >
+                        <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+                      </motion.div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+        <motion.div
+          className="mt-10 sm:mt-16 text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+        >
+          <Link href="/products">
+            <motion.button
+              className="inline-flex items-center bg-indigo-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/30"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Ver catálogo completo
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </motion.button>
+          </Link>
+        </motion.div>
+      </Section>
+
+      {/* Food Section */}
+      <Section
+        title="Comidas Tradicionales"
+        description="Explora nuestra colección de platos auténticos y sabores tradicionales de las diversas regiones de América."
+        icon={Utensils}
+        color="from-amber-50 to-orange-50"
+        iconColor="text-amber-600"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {foodRegions.map(region => (
+            <Link key={region.id} href={`/food/${region.id}`}>
+              <motion.div
+                className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer group h-52 sm:h-56 md:h-80"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="absolute inset-0 w-full h-full overflow-hidden">
+                  <Image
+                    src={region.image}
+                    alt={region.name}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110 filter blur-[0.8px]"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-r ${region.color} opacity-10 transition-opacity duration-300 group-hover:opacity-20`} />
+                  <div className="absolute inset-0 flex flex-col justify-center p-6 sm:p-8">
+                    <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 sm:mb-4 drop-shadow-lg" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
+                      {region.name}
+                    </h3>
+                    <p className="text-sm sm:text-base text-white mb-4 sm:mb-6 max-w-2xl drop-shadow-lg" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
+                      {region.description}
+                    </p>
+                    <div className="flex items-center text-white mt-auto bg-black/15 px-3 py-2 rounded-lg inline-flex">
+                      <span className="text-sm sm:text-base font-medium drop-shadow-md" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>
+                        {region.viewText}
+                      </span>
+                      <motion.div
+                        className="ml-2"
+                        initial={{ x: 0 }}
+                        whileHover={{ x: 5 }}
+                      >
+                        <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+                      </motion.div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+        <motion.div
+          className="mt-10 sm:mt-16 text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+        >
+          <Link href="/food">
+            <motion.button
+              className="inline-flex items-center bg-amber-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-amber-700 transition-colors shadow-lg shadow-amber-500/30"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Ver catálogo completo
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </motion.button>
+          </Link>
+        </motion.div>
+      </Section>
+
+      {/* Boutique Section */}
+      <Section
+        title="Colección Boutique"
+        description="Descubre nuestra colección exclusiva de artículos artesanales de las Américas"
+        icon={Store}
+        color="from-purple-50 to-pink-50"
+        iconColor="text-purple-600"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {boutiqueCategories.map(category => (
+            <Link key={category.id} href={`/boutique/${category.id}`}>
+              <motion.div
+                className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer group h-52 sm:h-56 md:h-80"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="absolute inset-0 w-full h-full overflow-hidden">
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110 filter blur-[0.8px]"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-r ${category.color} opacity-10 transition-opacity duration-300 group-hover:opacity-20`} />
+                  <div className="absolute inset-0 flex flex-col justify-center p-6 sm:p-8">
+                    <div className="flex items-center mb-3 sm:mb-4">
+                      {category.icon}
+                      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white ml-3 sm:ml-4 drop-shadow-lg" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
+                        {category.name}
+                      </h3>
+                    </div>
+                    <p className="text-sm sm:text-base text-white mb-4 sm:mb-6 max-w-2xl drop-shadow-lg" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
+                      {category.description}
+                    </p>
+                    <div className="flex items-center text-white mt-auto bg-black/15 px-3 py-2 rounded-lg inline-flex">
+                      <span className="text-sm sm:text-base font-medium drop-shadow-md" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>
+                        {category.viewText}
+                      </span>
+                      <motion.div
+                        className="ml-2"
+                        initial={{ x: 0 }}
+                        whileHover={{ x: 5 }}
+                      >
+                        <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+                      </motion.div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+        <motion.div
+          className="mt-10 sm:mt-16 text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+        >
+          <Link href="/boutique">
+            <motion.button
+              className="inline-flex items-center bg-purple-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-purple-700 transition-colors shadow-lg shadow-purple-500/30"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Ver catálogo completo
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </motion.button>
+          </Link>
+        </motion.div>
+      </Section>
+    </div>
+  );
+}
