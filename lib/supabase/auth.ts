@@ -21,6 +21,29 @@ export async function signInWithEmail({ email, password }: SignInWithEmailParams
   });
 
   if (error) throw error;
+
+  // After successful sign in, get the user profile
+  const { data: profile, error: profileError } = await supabase
+    .from('usuarios')
+    .select('*')
+    .eq('email', email)
+    .single();
+
+  if (profileError) {
+    // If profile doesn't exist, create it
+    const { error: insertError } = await supabase
+      .from('usuarios')
+      .insert([
+        {
+          email,
+          nombre: email.split('@')[0], // Use email username as default name
+          fecha_creacion: new Date().toISOString(),
+        },
+      ]);
+
+    if (insertError) throw insertError;
+  }
+
   return data;
 }
 

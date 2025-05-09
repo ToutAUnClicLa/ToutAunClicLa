@@ -9,14 +9,17 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { signInWithEmail, signUpWithEmail, supabase } from '@/lib/supabase/auth';
+import { useRouter } from 'next/navigation';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode?: 'login' | 'register' | 'forgotPassword';
+  redirectUrl?: string;
 }
 
-export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) {
+export default function AuthModal({ isOpen, onClose, initialMode = 'login', redirectUrl }: AuthModalProps) {
+  const router = useRouter();
   const [mode, setMode] = useState(initialMode);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,6 +87,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         });
         toast.success('¡Bienvenido de vuelta!');
         onClose();
+        if (redirectUrl) {
+          router.push(redirectUrl);
+        }
       } else if (mode === 'register') {
         await signUpWithEmail({
           email: formData.email,
@@ -92,13 +98,16 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         });
         toast.success('Cuenta creada exitosamente');
         onClose();
+        if (redirectUrl) {
+          router.push(redirectUrl);
+        }
       } else if (mode === 'forgotPassword') {
         const { error } = await supabase.auth.resetPasswordForEmail(formData.email);
         if (error) throw error;
         toast.success('Se ha enviado un enlace a tu correo para restablecer tu contraseña');
         setMode('login');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Auth error:', err);
       setError(err.message || 'Ha ocurrido un error');
     } finally {
@@ -115,7 +124,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         }
       });
       if (error) throw error;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Google auth error:', err);
       setError('Error al iniciar sesión con Google');
     }
@@ -132,6 +141,15 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="relative p-6 text-center border-b">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-4 top-4 rounded-full"
+              onClick={onClose}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+
             <div className="flex justify-center">
               <motion.img 
                 src="/logoaunclic.svg" 
