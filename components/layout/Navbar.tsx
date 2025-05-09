@@ -30,6 +30,7 @@ import { signOut } from "@/lib/supabase/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { CartDrawer } from "@/components/modules/cart/CartDrawer";
 
 const LINKS = [
   { href: "/", label: "Inicio" },
