@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Star, Heart } from 'lucide-react';
@@ -20,7 +18,9 @@ interface Product {
   imagen_principal: string;
   stock: number;
   rating: number;
-  categoria: string;
+  subcategorias: {
+    nombre: string;
+  };
 }
 
 interface ProductCardProps {
@@ -52,7 +52,7 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!user) {
       setIsAuthModalOpen(true);
       return;
@@ -102,7 +102,6 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
           className="bg-white rounded-xl shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-300 h-full flex flex-col"
           whileHover={{ y: -4 }}
         >
-          {/* Image Container */}
           <div className="relative aspect-square w-full">
             <Image
               src={product.imagen_principal}
@@ -125,7 +124,6 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
             </div>
           </div>
 
-          {/* Content */}
           <div className="flex flex-col flex-grow p-4">
             <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-2 min-h-[2.5rem]">
               {product.nombre}
@@ -162,6 +160,7 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
+        redirectUrl={`/${categoryName}/${product.id}`}
       />
     </>
   );
