@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -41,18 +41,7 @@ export default function AddressesPage() {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/');
-      return;
-    }
-
-    if (user) {
-      loadAddresses();
-    }
-  }, [user, loading]);
-
-  async function loadAddresses() {
+  const loadAddresses = useCallback(async () => {
     try {
       const { data: userData } = await supabase
         .from('usuarios')
@@ -76,7 +65,18 @@ export default function AddressesPage() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [user]);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/');
+      return;
+    }
+
+    if (user) {
+      loadAddresses();
+    }
+  }, [user, loading, router, loadAddresses]);
 
   async function handleDeleteAddress(addressId: number) {
     try {

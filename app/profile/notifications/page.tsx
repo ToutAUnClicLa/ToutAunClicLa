@@ -56,7 +56,7 @@ export default function NotificationsPage() {
       setSettings(defaults);
       localStorage.setItem('notification_settings', JSON.stringify(defaults));
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   const handleToggle = (settingId: string) => {
     const newSettings = {

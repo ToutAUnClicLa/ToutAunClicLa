@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, X, Trash2, Plus, Minus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -21,13 +21,7 @@ export function CartDrawer() {
   const [isLoading, setIsLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  useEffect(() => {
-    if (isOpen && user) {
-      loadCartItems();
-    }
-  }, [isOpen, user]);
-
-  const loadCartItems = async () => {
+  const loadCartItems = useCallback(async () => {
     if (!user) return;
     
     try {
@@ -40,7 +34,13 @@ export function CartDrawer() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (isOpen && user) {
+      loadCartItems();
+    }
+  }, [isOpen, user, loadCartItems]);
 
   const handleQuantityChange = async (itemId: string, newQuantity: number) => {
     try {

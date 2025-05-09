@@ -58,7 +58,7 @@ export default function FavoritesPage() {
     if (user) {
       loadFavorites();
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   async function loadFavorites() {
     try {

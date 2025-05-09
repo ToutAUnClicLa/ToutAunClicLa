@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Star, Heart } from 'lucide-react';
 import { toast } from 'sonner';
@@ -36,20 +36,20 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      checkFavoriteStatus();
-    }
-  }, [user, product.id]);
-
-  const checkFavoriteStatus = async () => {
+  const checkFavoriteStatus = useCallback(async () => {
     try {
       const status = await isFavorite(product.id);
       setIsFavorited(status);
     } catch (error) {
       console.error('Error checking favorite status:', error);
     }
-  };
+  }, [product.id]);
+
+  useEffect(() => {
+    if (user) {
+      checkFavoriteStatus();
+    }
+  }, [user, checkFavoriteStatus]);
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();

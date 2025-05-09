@@ -35,7 +35,7 @@ export default function SettingsPage() {
       setDarkMode(settings.darkMode);
       setLanguage(settings.language);
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   const saveSettings = (updates: any) => {
     const newSettings = {

@@ -74,7 +74,7 @@ const LoadingState = () => (
   </div>
 );
 
-function ProductDetail({ product, colors }: { product: any; colors: any }) {
+function ProductDetail({ product, colors, params }: { product: any; colors: any; params: any }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -399,7 +399,7 @@ export default function ProductDetailPage() {
           <span className="text-gray-900 font-medium truncate">{product.nombre}</span>
         </div>
 
-        <ProductDetail product={product} colors={colors} />
+        <ProductDetail product={product} colors={colors} params={params} />
       </div>
     </div>
   );

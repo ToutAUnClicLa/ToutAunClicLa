@@ -25,7 +25,7 @@ export default function CheckoutPage() {
       }
       loadCartItems();
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   const loadCartItems = async () => {
     try {

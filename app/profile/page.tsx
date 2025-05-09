@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -65,24 +65,15 @@ export default function ProfilePage() {
     orders: 0,
   });
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/');
-      return;
-    }
-
-    if (user) {
-      loadUserData();
-    }
-  }, [user, loading]);
-
-  async function loadUserData() {
+  const loadUserData = useCallback(async () => {
+    if (!user) return;
+    
     try {
       // Load user profile
       const { data: profileData, error: profileError } = await supabase
         .from('usuarios')
         .select('*')
-        .eq('email', user!.email)
+        .eq('email', user.email)
         .single();
 
       if (profileError) throw profileError;
@@ -109,7 +100,18 @@ export default function ProfilePage() {
       console.error('Error loading user data:', error);
       toast.error('Error al cargar los datos del usuario');
     }
-  }
+  }, [user]);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/');
+      return;
+    }
+
+    if (user) {
+      loadUserData();
+    }
+  }, [user, loading, router, loadUserData]);
 
   if (loading || !profile) {
     return (
