@@ -30,7 +30,7 @@ import { signOut } from "@/lib/supabase/auth";
 import { toast } from "sonner";
 import Image from "next/image";
 import { CartDrawer } from "@/components/modules/cart/CartDrawer";
-import { getFavoritesCount } from "@/lib/supabase/favorites";
+import { getFavoritesCount } from "@/lib/services/favorites";
 
 const LINKS = [
   { href: "/", label: "Inicio" },
