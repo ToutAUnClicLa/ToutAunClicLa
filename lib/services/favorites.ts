@@ -79,6 +79,27 @@ export async function getFavorites() {
   return data;
 }
 
+export async function getFavoritesCount(): Promise<number> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return 0;
+
+  const { data: userData } = await supabase
+    .from('usuarios')
+    .select('id')
+    .eq('email', user.email)
+    .single();
+
+  if (!userData) return 0;
+
+  const { count, error } = await supabase
+    .from('favoritos')
+    .select('*', { count: 'exact', head: true })
+    .eq('usuario_id', userData.id);
+
+  if (error) return 0;
+  return count || 0;
+}
+
 export async function isFavorite(productId: string): Promise<boolean> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return false;
