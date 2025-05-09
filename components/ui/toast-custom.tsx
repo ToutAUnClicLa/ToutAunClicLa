@@ -1,4 +1,3 @@
-```tsx
 import { toast as sonnerToast } from 'sonner';
 import { Check, X, AlertCircle, Info } from 'lucide-react';
 
@@ -106,4 +105,3 @@ export const toast = {
     });
   }
 };
-```
