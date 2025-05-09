@@ -6,9 +6,7 @@ import { ProductCard } from './ProductCard';
 import { 
   getProductsByCategory, 
   getSubcategories,
-  formatProduct, 
-  type Product,
-  type ProductFilters 
+  type ProductFilters
 } from '@/lib/services/products';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -33,6 +31,8 @@ const item = {
   show: { opacity: 1, y: 0 }
 };
 
+type CategoryName = 'productos' | 'comidas' | 'boutique';
+
 const categoryColors = {
   productos: {
     bg: 'from-indigo-50 to-blue-50',
@@ -49,17 +49,52 @@ const categoryColors = {
     text: 'text-purple-600',
     border: 'border-purple-100'
   }
-};
+} as const;
 
 const categoryIcons = {
   productos: Package,
   comidas: Utensils,
   boutique: Store
-};
+} as const;
+
+interface Product {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  imagen_principal: string;
+  stock: number;
+  categoria_id: number;
+  subcategoria_id: number;
+  rating: number;
+  reviewCount: number;
+  subcategorias: {
+    nombre: string;
+  };
+  categorias: {
+    nombre: string;
+  };
+  reviews: Array<{
+    id: string;
+    rating: number;
+    comentario: string;
+  }>;
+}
+
+interface FormattedProduct extends Product {
+  categoryName: string;
+  formattedPrice: string;
+}
+
+const formatProduct = (product: Product, categoryName: string): FormattedProduct => ({
+  ...product,
+  categoryName,
+  formattedPrice: `$${product.precio.toFixed(2)}`
+});
 
 interface ProductListProps {
-  categoryId: string;
-  categoryName: 'productos' | 'comidas' | 'boutique';
+  categoryId: string | number;
+  categoryName: CategoryName;
   title: string;
 }
 
@@ -83,12 +118,35 @@ export function ProductList({ categoryId, categoryName, title }: ProductListProp
     const loadData = async () => {
       try {
         setLoading(true);
+        const categoryIdNumber = typeof categoryId === 'string' ? parseInt(categoryId) : categoryId;
         const [productsData, subcategoriesData] = await Promise.all([
-          getProductsByCategory(categoryId, filters),
-          getSubcategories(categoryId)
+          getProductsByCategory(categoryIdNumber, filters),
+          getSubcategories(categoryIdNumber)
         ]);
-        setProducts(Array.isArray(productsData) ? productsData : (productsData?.data || []));
-        setSubcategories(Array.isArray(subcategoriesData) ? subcategoriesData : (subcategoriesData?.data || []));
+
+        // Formatear los productos para que coincidan con la interfaz Product
+        const formattedProducts = productsData.map((product: any) => ({
+          id: String(product.id),
+          nombre: product.nombre,
+          descripcion: product.descripcion,
+          precio: Number(product.precio),
+          imagen_principal: product.imagen_principal,
+          stock: Number(product.stock),
+          categoria_id: Number(product.categoria_id),
+          subcategoria_id: Number(product.subcategoria_id),
+          rating: Number(product.rating || 0),
+          reviewCount: product.reviews?.length || 0,
+          subcategorias: {
+            nombre: product.subcategorias?.[0]?.nombre || ''
+          },
+          categorias: {
+            nombre: product.categorias?.[0]?.nombre || ''
+          },
+          reviews: product.reviews || []
+        }));
+
+        setProducts(formattedProducts);
+        setSubcategories(subcategoriesData);
       } catch (error) {
         console.error('Error loading data:', error);
         toast.error('Error al cargar los productos. Por favor, intente nuevamente.');

@@ -131,7 +131,7 @@ export default function ProfilePage() {
           <CardContent className="pt-6">
             <div className="flex flex-col items-center text-center">
               <div className="relative w-24 h-24 rounded-full overflow-hidden mb-4 border-4 border-white shadow-lg">
-                {user.user_metadata?.avatar_url ? (
+                {user?.user_metadata?.avatar_url ? (
                   <Image
                     src={user.user_metadata.avatar_url}
                     alt={profile.nombre}

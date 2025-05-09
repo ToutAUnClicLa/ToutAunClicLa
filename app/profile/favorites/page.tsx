@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -13,6 +13,7 @@ import Image from 'next/image';
 
 interface FavoriteProduct {
   id: string;
+  fecha_agregado: string;
   productos: {
     id: string;
     nombre: string;
@@ -25,7 +26,6 @@ interface FavoriteProduct {
       nombre: string;
     };
   };
-  fecha_agregado: string;
 }
 
 const container = {
@@ -63,7 +63,24 @@ export default function FavoritesPage() {
   async function loadFavorites() {
     try {
       const data = await getFavorites();
-      setFavorites(data || []);
+      const formattedData = data?.map((item: any) => ({
+        id: item.id,
+        fecha_agregado: item.fecha_agregado,
+        productos: {
+          id: item.productos.id,
+          nombre: item.productos.nombre,
+          descripcion: item.productos.descripcion,
+          precio: Number(item.productos.precio),
+          imagen_principal: item.productos.imagen_principal,
+          stock: Number(item.productos.stock),
+          rating: Number(item.productos.rating),
+          subcategorias: {
+            nombre: item.productos.subcategorias.nombre
+          }
+        }
+      })) || [];
+      
+      setFavorites(formattedData);
     } catch (error) {
       console.error('Error loading favorites:', error);
       toast.error('Error al cargar los favoritos');

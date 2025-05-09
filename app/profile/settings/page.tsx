@@ -98,14 +98,17 @@ export default function SettingsPage() {
                   <h3 className="font-medium">Modo oscuro</h3>
                   <p className="text-sm text-gray-500">Cambiar entre tema claro y oscuro</p>
                 </div>
-                <Switch
-                  checked={darkMode}
-                  onCheckedChange={handleDarkModeToggle}
-                  icons={{
-                    checked: <Moon className="h-4 w-4" />,
-                    unchecked: <Sun className="h-4 w-4" />
-                  }}
-                />
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={darkMode}
+                    onCheckedChange={handleDarkModeToggle}
+                  />
+                  {darkMode ? (
+                    <Moon className="h-4 w-4 text-gray-500" />
+                  ) : (
+                    <Sun className="h-4 w-4 text-gray-500" />
+                  )}
+                </div>
               </div>
 
               <div className="flex items-center justify-between">

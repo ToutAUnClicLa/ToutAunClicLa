@@ -110,7 +110,10 @@ export function AnimatedSections({ sampleProducts, subcategories }: AnimatedSect
           >
             {sampleProducts.map((product) => (
               <motion.div key={product.id} variants={itemVariants}>
-                <ProductCard product={product} />
+                <ProductCard 
+                  product={product} 
+                  categoryName={product.categoria?.nombre || 'productos'} 
+                />
               </motion.div>
             ))}
           </motion.div>
