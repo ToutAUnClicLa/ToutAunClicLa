@@ -1,12 +1,12 @@
 import { supabase } from '@/lib/supabase/client';
 
 export interface CartItem {
-  id: string;
-  usuario_id: string;
-  producto_id: string;
+  id: number;
+  usuario_id: number;
+  producto_id: number;
   cantidad: number;
   producto: {
-    id: string;
+    id: number;
     nombre: string;
     descripcion: string;
     precio: number;
@@ -15,7 +15,23 @@ export interface CartItem {
   };
 }
 
-export async function addToCart(productId: string, quantity: number = 1) {
+// Interfaz para los datos devueltos por Supabase
+interface CartItemResponse {
+  id: string | number;
+  usuario_id: string | number;
+  producto_id: string | number;
+  cantidad: number;
+  productos: {
+    id: string | number;
+    nombre: string;
+    descripcion: string;
+    precio: string | number;
+    imagen_principal: string;
+    stock: string | number;
+  }[];
+}
+
+export async function addToCart(productId: number, quantity: number = 1) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('User not authenticated');
 
@@ -57,7 +73,7 @@ export async function addToCart(productId: string, quantity: number = 1) {
   }
 }
 
-export async function removeFromCart(cartItemId: string) {
+export async function removeFromCart(cartItemId: number) {
   const { error } = await supabase
     .from('carrito')
     .delete()
@@ -66,7 +82,7 @@ export async function removeFromCart(cartItemId: string) {
   if (error) throw error;
 }
 
-export async function updateCartItemQuantity(cartItemId: string, quantity: number) {
+export async function updateCartItemQuantity(cartItemId: number, quantity: number) {
   const { error } = await supabase
     .from('carrito')
     .update({ cantidad: quantity })
@@ -106,7 +122,27 @@ export async function getCartItems(): Promise<CartItem[]> {
     .eq('usuario_id', userData.id);
 
   if (error) throw error;
-  return data as CartItem[];
+  
+  // Convertir los datos de Supabase al formato CartItem
+  return (data as CartItemResponse[]).map(item => {
+    // Obtener el primer producto del array
+    const productoData = item.productos[0];
+    
+    return {
+      id: Number(item.id),
+      usuario_id: Number(item.usuario_id),
+      producto_id: Number(item.producto_id),
+      cantidad: item.cantidad,
+      producto: {
+        id: Number(productoData.id),
+        nombre: productoData.nombre,
+        descripcion: productoData.descripcion,
+        precio: Number(productoData.precio),
+        imagen_principal: productoData.imagen_principal,
+        stock: Number(productoData.stock)
+      }
+    };
+  });
 }
 
 export async function clearCart() {

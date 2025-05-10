@@ -13,7 +13,7 @@ import { addToFavorites, removeFromFavorites, isFavorite } from '@/lib/services/
 import { addToCart } from '@/lib/services/cart';
 
 interface Product {
-  id: string;
+  id: number;
   nombre: string;
   descripcion: string;
   precio: number;

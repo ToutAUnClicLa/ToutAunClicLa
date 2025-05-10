@@ -42,7 +42,7 @@ export function CartDrawer() {
     }
   }, [isOpen, user, loadCartItems]);
 
-  const handleQuantityChange = async (itemId: string, newQuantity: number) => {
+  const handleQuantityChange = async (itemId: number, newQuantity: number) => {
     try {
       await updateCartItemQuantity(itemId, newQuantity);
       setCartItems(cartItems.map(item => 
@@ -55,7 +55,7 @@ export function CartDrawer() {
     }
   };
 
-  const handleRemoveItem = async (itemId: string) => {
+  const handleRemoveItem = async (itemId: number) => {
     try {
       await removeFromCart(itemId);
       setCartItems(cartItems.filter(item => item.id !== itemId));

@@ -23,8 +23,15 @@ export interface Product {
       nombre: string;
     };
   }>;
-  rating?: number;
-  reviewCount?: number;
+  rating: number;
+  reviewCount: number;
+}
+
+// Agregar una nueva interfaz para el producto formateado
+export interface FormattedProduct extends Omit<Product, 'id'> {
+  id: number;
+  categoryName: string;
+  formattedPrice: string;
 }
 
 export interface ProductFilters {
@@ -143,9 +150,10 @@ export async function getSubcategories(categoryId: number) {
   }
 }
 
-export function formatProduct(product: Product, categoryName: string) {
+export function formatProduct(product: Product, categoryName: string): FormattedProduct {
   return {
     ...product,
+    id: Number(product.id), // Asegurarse de que id sea number
     categoryName,
     formattedPrice: new Intl.NumberFormat('es-MX', {
       style: 'currency',
@@ -154,7 +162,7 @@ export function formatProduct(product: Product, categoryName: string) {
   };
 }
 
-export async function getProductDetail(productId: string) {
+export async function getProductDetail(productId: number) {
   const { data, error } = await supabase
     .from('productos')
     .select(`

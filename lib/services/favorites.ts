@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase/client';
 
-export async function addToFavorites(productId: string) {
+export async function addToFavorites(productId: number) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('User not authenticated');
 
@@ -22,7 +22,7 @@ export async function addToFavorites(productId: string) {
   if (error) throw error;
 }
 
-export async function removeFromFavorites(productId: string) {
+export async function removeFromFavorites(productId: number) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('User not authenticated');
 
@@ -100,7 +100,7 @@ export async function getFavoritesCount(): Promise<number> {
   return count || 0;
 }
 
-export async function isFavorite(productId: string): Promise<boolean> {
+export async function isFavorite(productId: number): Promise<boolean> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return false;
 

@@ -12,10 +12,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import Image from 'next/image';
 
 interface FavoriteProduct {
-  id: string;
+  id: number;
   fecha_agregado: string;
   productos: {
-    id: string;
+    id: number;
     nombre: string;
     descripcion: string;
     precio: number;
@@ -64,10 +64,10 @@ export default function FavoritesPage() {
     try {
       const data = await getFavorites();
       const formattedData = data?.map((item: any) => ({
-        id: item.id,
+        id: Number(item.id),
         fecha_agregado: item.fecha_agregado,
         productos: {
-          id: item.productos.id,
+          id: Number(item.productos.id),
           nombre: item.productos.nombre,
           descripcion: item.productos.descripcion,
           precio: Number(item.productos.precio),
@@ -89,10 +89,10 @@ export default function FavoritesPage() {
     }
   }
 
-  async function handleRemoveFavorite(productId: string) {
+  async function handleRemoveFavorite(productId: number) {
     try {
       await removeFromFavorites(productId);
-      setFavorites(favorites.filter(fav => fav.productos.id !== productId));
+      setFavorites(favorites.filter(fav => fav.productos.id === productId));
       toast.success('Producto eliminado de favoritos');
     } catch (error) {
       console.error('Error removing favorite:', error);
@@ -210,7 +210,7 @@ export default function FavoritesPage() {
                       <Button
                         variant="destructive"
                         size="icon"
-                        onClick={() => handleRemoveFavorite(favorite.productos.id)}
+                        onClick={() => handleRemoveFavorite(Number(favorite.productos.id))}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

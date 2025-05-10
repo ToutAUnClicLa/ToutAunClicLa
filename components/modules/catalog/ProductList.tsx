@@ -6,7 +6,10 @@ import { ProductCard } from './ProductCard';
 import { 
   getProductsByCategory, 
   getSubcategories,
-  type ProductFilters
+  type ProductFilters,
+  Product,
+  FormattedProduct,
+  formatProduct
 } from '@/lib/services/products';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -16,7 +19,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
-const container = {
+const container = {  
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -57,41 +60,6 @@ const categoryIcons = {
   boutique: Store
 } as const;
 
-interface Product {
-  id: string;
-  nombre: string;
-  descripcion: string;
-  precio: number;
-  imagen_principal: string;
-  stock: number;
-  categoria_id: number;
-  subcategoria_id: number;
-  rating: number;
-  reviewCount: number;
-  subcategorias: {
-    nombre: string;
-  };
-  categorias: {
-    nombre: string;
-  };
-  reviews: Array<{
-    id: string;
-    rating: number;
-    comentario: string;
-  }>;
-}
-
-interface FormattedProduct extends Product {
-  categoryName: string;
-  formattedPrice: string;
-}
-
-const formatProduct = (product: Product, categoryName: string): FormattedProduct => ({
-  ...product,
-  categoryName,
-  formattedPrice: `$${product.precio.toFixed(2)}`
-});
-
 interface ProductListProps {
   categoryId: string | number;
   categoryName: CategoryName;
@@ -126,7 +94,7 @@ export function ProductList({ categoryId, categoryName, title }: ProductListProp
 
         // Formatear los productos para que coincidan con la interfaz Product
         const formattedProducts = productsData.map((product: any) => ({
-          id: String(product.id),
+          id: Number(product.id),
           nombre: product.nombre,
           descripcion: product.descripcion,
           precio: Number(product.precio),
@@ -345,7 +313,10 @@ export function ProductList({ categoryId, categoryName, title }: ProductListProp
                   {products.map((product) => (
                     <motion.div key={product.id} variants={item}>
                       <ProductCard
-                        product={formatProduct(product, categoryName)}
+                        product={{
+                          ...formatProduct(product, categoryName),
+                          rating: formatProduct(product, categoryName).rating ?? 0
+                        }}
                         categoryName={categoryName}
                       />
                     </motion.div>

@@ -359,7 +359,7 @@ export default function ProductDetailPage() {
   useEffect(() => {
     async function loadProduct() {
       try {
-        const data = await getProductDetail(params.productId as string);
+        const data = await getProductDetail(Number(params.productId));
         setProduct(data);
       } catch (error) {
         console.error('Error loading product:', error);

@@ -75,27 +75,23 @@ export const toast = {
   },
   promise: async <T,>(
     promise: Promise<T>,
-    {
+    messages: {
+      loading?: string;
+      success?: string;
+      error?: string;
+    } = {}
+  ) => {
+    const {
       loading = 'Cargando...',
       success = 'Operación completada',
       error = 'Ha ocurrido un error'
-    } = {}
-  ) => {
+    } = messages;
+
     return sonnerToast.promise(promise, {
-      loading: {
-        title: loading,
-        className: 'bg-white border border-gray-100 shadow-lg',
-      },
-      success: {
-        title: success,
-        className: 'bg-white border border-gray-100 shadow-lg',
-        icon: defaultIcons.success,
-      },
-      error: {
-        title: error,
-        className: 'bg-white border border-gray-100 shadow-lg',
-        icon: defaultIcons.error,
-      },
+      loading,
+      success,
+      error,
+      className: 'bg-white border border-gray-100 shadow-lg',
       style: {
         backgroundColor: 'white',
         border: '1px solid #e5e7eb',
