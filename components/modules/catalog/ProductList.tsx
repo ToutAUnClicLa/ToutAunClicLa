@@ -313,10 +313,7 @@ export function ProductList({ categoryId, categoryName, title }: ProductListProp
                   {products.map((product) => (
                     <motion.div key={product.id} variants={item}>
                       <ProductCard
-                        product={{
-                          ...formatProduct(product, categoryName),
-                          rating: formatProduct(product, categoryName).rating ?? 0
-                        }}
+                        product={formatProduct(product, categoryName)}
                         categoryName={categoryName}
                       />
                     </motion.div>
