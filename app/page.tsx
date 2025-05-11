@@ -104,19 +104,22 @@ const categories = [
     icon: Package,
     title: "Productos",
     description: "Productos únicos de América Latina, desde artesanías hasta innovaciones modernas.",
-    gradient: "from-indigo-600/20 to-blue-600/20"
+    gradient: "from-indigo-600/20 to-blue-600/20",
+    href: "/productos"
   },
   {
     icon: Utensils,
     title: "Comidas",
     description: "Gastronomía latinoamericana con recetas auténticas y sabores tradicionales.",
-    gradient: "from-amber-500/20 to-orange-500/20"
+    gradient: "from-amber-500/20 to-orange-500/20",
+    href: "/comidas"
   },
   {
     icon: Store,
     title: "Boutique",
     description: "Souvenirs y regalos únicos que capturan la esencia de cada país.",
-    gradient: "from-purple-500/20 to-pink-500/20"
+    gradient: "from-purple-500/20 to-pink-500/20",
+    href: "/boutique"
   }
 ];
 
@@ -254,15 +257,15 @@ export default function Home() {
                       <div className="flex flex-col items-start">
                         <h1 className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white leading-none tracking-tight mb-2"
                           style={{ fontFamily: "'Playfair Display', serif", textShadow: "0 4px 20px rgba(0, 0, 0, 0.5)", background: "linear-gradient(to right, #ffffff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                          A un
+                          Tout À un
                         </h1>
                         <h1 className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white leading-none tracking-tight relative"
                           style={{ fontFamily: "'Playfair Display', serif", textShadow: "0 4px 20px rgba(0, 0, 0, 0.5)", background: "linear-gradient(to right, #ffffff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                          Clic la
+                          Clic Là
                           <motion.div
                             className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full"
                             initial={{ width: 0 }}
-                            animate={{ width: "100%" }}
+                            animate={{ width: "140%" }}
                             transition={{ duration: 0.8, delay: 0.9 }}
                           />
                         </h1>
@@ -297,7 +300,9 @@ export default function Home() {
                 <motion.div className="hidden md:block" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
                   <div className="grid grid-cols-1 gap-4 sm:gap-5 max-w-md mx-auto">
                     {categories.map((cat, i) => (
-                      <CategoryCard key={i} icon={cat.icon} title={cat.title} description={cat.description} gradient={cat.gradient} />
+                      <Link key={i} href={cat.href}>
+                        <CategoryCard key={i} icon={cat.icon} title={cat.title} description={cat.description} gradient={cat.gradient} />
+                      </Link>
                     ))}
                   </div>
                 </motion.div>
@@ -306,7 +311,9 @@ export default function Home() {
                 <motion.div className="md:hidden w-full mt-6 sm:mt-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
                   <div className="grid grid-cols-3 gap-2 sm:gap-3">
                     {categories.map((cat, i) => (
-                      <MobileCategoryCard key={i} icon={cat.icon} title={cat.title} gradient={cat.gradient} />
+                      <Link key={i} href={cat.href}>
+                        <MobileCategoryCard key={i} icon={cat.icon} title={cat.title} gradient={cat.gradient} />
+                      </Link>
                     ))}
                   </div>
                 </motion.div>
@@ -326,7 +333,7 @@ export default function Home() {
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {productCategories.map(category => (
-            <Link key={category.id} href={`/products/${category.id}`}>
+            <Link key={category.id} href={`/productos?subcategoria=${category.subcategoria_id}`}>
               <motion.div
                 className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer group h-52 sm:h-56 md:h-80"
                 whileHover={{ scale: 1.02 }}
@@ -375,7 +382,7 @@ export default function Home() {
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <Link href="/products">
+          <Link href="/productos">
             <motion.button
               className="inline-flex items-center bg-indigo-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/30"
               whileHover={{ scale: 1.05 }}
@@ -398,7 +405,7 @@ export default function Home() {
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {foodRegions.map(region => (
-            <Link key={region.id} href={`/food/${region.id}`}>
+            <Link key={region.id} href={`/comidas?subcategoria=${region.subcategoria_id}`}>
               <motion.div
                 className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer group h-52 sm:h-56 md:h-80"
                 whileHover={{ scale: 1.02 }}
@@ -444,7 +451,7 @@ export default function Home() {
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <Link href="/food">
+          <Link href="/comidas">
             <motion.button
               className="inline-flex items-center bg-amber-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-amber-700 transition-colors shadow-lg shadow-amber-500/30"
               whileHover={{ scale: 1.05 }}
@@ -467,7 +474,7 @@ export default function Home() {
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {boutiqueCategories.map(category => (
-            <Link key={category.id} href={`/boutique/${category.id}`}>
+            <Link key={category.id} href={`/boutique?subcategoria=${category.subcategoria_id}`}>
               <motion.div
                 className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer group h-52 sm:h-56 md:h-80"
                 whileHover={{ scale: 1.02 }}

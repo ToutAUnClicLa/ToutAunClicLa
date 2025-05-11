@@ -64,16 +64,17 @@ interface ProductListProps {
   categoryId: string | number;
   categoryName: CategoryName;
   title: string;
+  initialSubcategory?: number | null;
 }
 
-export function ProductList({ categoryId, categoryName, title }: ProductListProps) {
+export function ProductList({ categoryId, categoryName, title, initialSubcategory = null }: ProductListProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [subcategories, setSubcategories] = useState<any[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState<ProductFilters>({
     search: '',
-    subcategory: null,
+    subcategory: initialSubcategory,
     minPrice: 0,
     maxPrice: 1000,
     sortBy: 'nameAsc'
@@ -125,6 +126,15 @@ export function ProductList({ categoryId, categoryName, title }: ProductListProp
 
     loadData();
   }, [categoryId, filters]);
+
+  useEffect(() => {
+    if (initialSubcategory !== null) {
+      setFilters(prev => ({
+        ...prev,
+        subcategory: initialSubcategory
+      }));
+    }
+  }, [initialSubcategory]);
 
   const FilterContent = () => (
     <div className="space-y-6">

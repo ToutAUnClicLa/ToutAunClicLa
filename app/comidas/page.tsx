@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ProductList } from '@/components/modules/catalog/ProductList';
 
 const LoadingFallback = () => (
@@ -23,12 +24,16 @@ const LoadingFallback = () => (
 );
 
 export default function ComidasPage() {
+  const searchParams = useSearchParams();
+  const subcategoriaId = searchParams.get('subcategoria');
+
   return (
     <Suspense fallback={<LoadingFallback />}>
       <ProductList 
         categoryId={2} 
         categoryName="comidas" 
         title="Comidas Tradicionales" 
+        initialSubcategory={subcategoriaId ? parseInt(subcategoriaId) : null}
       />
     </Suspense>
   );

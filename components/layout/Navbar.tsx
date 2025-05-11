@@ -102,8 +102,8 @@ export function Navbar() {
                 height="88"
               />
               <div className="flex flex-col -ml-4">
-                <span className="text-sm font-medium leading-none">A un</span>
-                <span className="text-xl font-bold leading-none text-indigo-600">Clic la</span>
+                <span className="text-sm font-medium leading-none">Tout À Un</span>
+                <span className="text-xl font-bold leading-none text-indigo-600">Clic là</span>
               </div>
             </Link>
 
