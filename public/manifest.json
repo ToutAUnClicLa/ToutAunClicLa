@@ -1,0 +1,22 @@
+{
+  "name": "A un clic la - E-commerce",
+  "short_name": "A un clic la",
+  "icons": [
+    {
+      "src": "/logoaunclic.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/favicon.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#4f46e5",
+  "background_color": "#ffffff",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait"
+} 

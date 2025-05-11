@@ -1,5 +1,5 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -11,9 +11,32 @@ import { Analytics } from "@vercel/analytics/next"
 
 const inter = Inter({ subsets: ['latin'] });
 
+export const viewport: Viewport = {
+  themeColor: '#4f46e5',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
   title: 'A un clic la - E-commerce',
   description: 'E-commerce platform',
+  icons: {
+    icon: [
+      {
+        url: '/logoaunclic.svg',
+        type: 'image/svg+xml',
+      },
+      {
+        url: '/icons/favicon.svg',
+        type: 'image/svg+xml',
+        sizes: '32x32'
+      }
+    ],
+    shortcut: '/logoaunclic.svg',
+    apple: '/logoaunclic.svg',
+  },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
@@ -23,6 +46,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/logoaunclic.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/logoaunclic.svg" />
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
