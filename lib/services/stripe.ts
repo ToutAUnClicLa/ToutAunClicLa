@@ -14,7 +14,7 @@ export async function createCheckoutSession(productId: ProductId) {
     throw new Error('User not authenticated');
   }
 
-  const response = await fetch(`${process.env.NEXT_SUPABASE_URL}/functions/v1/stripe-checkout`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/stripe-checkout`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
