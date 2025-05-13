@@ -24,24 +24,21 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import AuthModal from "@/components/auth/AuthModal";
-import { useAuth } from "@/hooks/useAuth";
-import { signOut } from "@/lib/supabase/auth";
+import { 
+  SignedIn, 
+  SignedOut, 
+  SignInButton, 
+  SignUpButton, 
+  UserButton,
+  useUser,
+  SignOutButton
+} from '@clerk/nextjs';
 import { toast } from "sonner";
 import Image from "next/image";
 import { CartDrawer } from "@/components/modules/cart/CartDrawer";
 import { getFavoritesCount } from "@/lib/services/favorites";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs'
 
 const LINKS = [
   { href: "/", label: "Inicio", icon: Home },
@@ -62,16 +59,15 @@ const PROFILE_MENU_ITEMS = [
 export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, loading } = useAuth();
+  const { isLoaded, isSignedIn, user } = useUser();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [favoritesCount, setFavoritesCount] = useState(0);
 
   useEffect(() => {
-    if (user) {
+    if (isSignedIn) {
       loadFavoritesCount();
     }
-  }, [user]);
+  }, [isSignedIn]);
 
   const loadFavoritesCount = async () => {
     try {
@@ -79,17 +75,6 @@ export function Navbar() {
       setFavoritesCount(count);
     } catch (error) {
       console.error('Error loading favorites count:', error);
-    }
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast.success('Sesión cerrada exitosamente');
-      router.push('/');
-    } catch (error) {
-      console.error('Error signing out:', error);
-      toast.error('Error al cerrar sesión');
     }
   };
 
@@ -152,7 +137,7 @@ export function Navbar() {
 
             {/* Actions */}
             <div className="flex items-center space-x-4">
-              {!loading && user && (
+              <SignedIn>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -166,70 +151,33 @@ export function Navbar() {
                     </span>
                   )}
                 </Button>
-              )}
+              </SignedIn>
 
               <CartDrawer />
 
-              {!loading && (
-                user ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="hidden md:flex h-10 w-10 rounded-full p-0 overflow-hidden border-2 border-gray-200 hover:border-indigo-500 transition-colors"
-                      >
-                        {user.user_metadata?.avatar_url ? (
-                          <Image
-                            src={user.user_metadata.avatar_url}
-                            alt={user.email || ''}
-                            width={40}
-                            height={40}
-                            className="rounded-full object-cover"
-                          />
-                        ) : (
-                          <User className="h-6 w-6 text-gray-600" />
-                        )}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-72">
-                      <div className="px-4 py-3 border-b">
-                        <p className="text-sm font-medium text-gray-900">{user.user_metadata?.nombre || user.email}</p>
-                        <p className="text-xs text-gray-500 mt-1">{user.email}</p>
-                      </div>
-                      <div className="py-2">
-                        {PROFILE_MENU_ITEMS.map((item) => (
-                          <DropdownMenuItem 
-                            key={item.href}
-                            className="px-4 py-2.5 cursor-pointer"
-                            onClick={() => handleProfileNavigation(item.href)}
-                          >
-                            <item.icon className="mr-3 h-4 w-4 text-gray-500" />
-                            <span>{item.label}</span>
-                          </DropdownMenuItem>
-                        ))}
-                      </div>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem 
-                        className="px-4 py-2.5 cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
-                        onClick={handleSignOut}
-                      >
-                        <LogOut className="mr-3 h-4 w-4" />
-                        <span>Cerrar Sesión</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={() => setShowAuthModal(true)}
-                    className="hidden md:flex"
-                  >
-                    Iniciar Sesión
-                  </Button>
-                )
-              )}
+              {/* Autenticación con Clerk */}
+              <div className="hidden md:flex">
+                <SignedIn>
+                  <UserButton 
+                    appearance={{
+                      elements: {
+                        userButtonAvatarBox: "h-10 w-10 rounded-full border-2 border-gray-200 hover:border-indigo-500 transition-colors"
+                      }
+                    }}
+                  />
+                </SignedIn>
+                <SignedOut>
+                  <div className="flex items-center">
+                    <Button 
+                      variant="default" 
+                      size="sm"
+                      onClick={() => router.push('/sign-in')}
+                    >
+                      Iniciar Sesión
+                    </Button>
+                  </div>
+                </SignedOut>
+              </div>
 
               {/* Mobile Menu */}
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -272,52 +220,86 @@ export function Navbar() {
                   <div className="flex flex-col h-[calc(100%-64px)]">
                     {/* Parte superior - Autenticación */}
                     <div className="p-4 border-b">
-                      {!loading && (
-                        user ? (
-                          <div className="flex items-center space-x-3">
-                            <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-gray-200">
-                              {user.user_metadata?.avatar_url ? (
-                                <Image
-                                  src={user.user_metadata.avatar_url}
-                                  alt={user.email || ''}
-                                  width={40}
-                                  height={40}
-                                  className="rounded-full object-cover"
+                      <SignedIn>
+                        {isLoaded && user && (
+                          <div className="flex flex-col space-y-3">
+                            <div className="flex items-center space-x-3">
+                              <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-gray-200">
+                                <UserButton 
+                                  appearance={{
+                                    elements: {
+                                      userButtonBox: "h-full w-full",
+                                      userButtonAvatarBox: "h-full w-full border-0"
+                                    }
+                                  }}
                                 />
-                              ) : (
-                                <div className="h-full w-full flex items-center justify-center bg-gray-100">
-                                  <User className="h-5 w-5 text-gray-600" />
-                                </div>
-                              )}
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-medium text-sm text-gray-900 truncate">
+                                  {user.fullName || user.username || 'Usuario'}
+                                </p>
+                                <p className="text-xs text-gray-500 truncate">{user.primaryEmailAddress?.emailAddress}</p>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 rounded-full hover:bg-gray-100"
+                                onClick={() => router.push('/profile')}
+                              >
+                                <ChevronRight className="h-4 w-4 text-gray-400" />
+                              </Button>
                             </div>
-                            <div className="flex-1">
-                              <p className="font-medium text-sm text-gray-900 truncate">
-                                {user.user_metadata?.nombre || 'Usuario'}
-                              </p>
-                              <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                            
+                            <div className="grid grid-cols-2 gap-2 mt-1">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full justify-center text-gray-700 border-gray-300"
+                                onClick={() => router.push('/profile')}
+                              >
+                                <User className="h-3.5 w-3.5 mr-1.5" />
+                                Mi Perfil
+                              </Button>
+                              
+                              <SignOutButton>
+                                <Button 
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full justify-center text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                  <LogOut className="h-3.5 w-3.5 mr-1.5" />
+                                  Salir
+                                </Button>
+                              </SignOutButton>
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 rounded-full hover:bg-gray-100"
-                              onClick={() => router.push('/profile')}
-                            >
-                              <ChevronRight className="h-4 w-4 text-gray-400" />
-                            </Button>
                           </div>
-                        ) : (
+                        )}
+                      </SignedIn>
+                      <SignedOut>
+                        <div className="flex items-center flex-col space-y-2 w-full">
                           <Button 
                             className="w-full"
                             onClick={() => {
                               setIsMobileMenuOpen(false);
-                              setShowAuthModal(true);
+                              router.push('/sign-in');
                             }}
                           >
                             <User className="h-4 w-4 mr-2" />
                             Iniciar Sesión
                           </Button>
-                        )
-                      )}
+                          <Button 
+                            variant="outline" 
+                            className="w-full"
+                            onClick={() => {
+                              setIsMobileMenuOpen(false);
+                              router.push('/sign-up');
+                            }}
+                          >
+                            Crear Cuenta
+                          </Button>
+                        </div>
+                      </SignedOut>
                     </div>
 
                     {/* Menú de navegación */}
@@ -353,7 +335,7 @@ export function Navbar() {
                         </div>
 
                         {/* Enlaces de perfil (solo para usuarios autenticados) */}
-                        {!loading && user && (
+                        <SignedIn>
                           <div className="mb-4">
                             <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                               Mi Cuenta
@@ -372,26 +354,9 @@ export function Navbar() {
                               ))}
                             </div>
                           </div>
-                        )}
+                        </SignedIn>
                       </div>
                     </div>
-
-                    {/* Pie del menú móvil */}
-                    {!loading && user && (
-                      <div className="p-4 border-t bg-gray-50">
-                        <Button 
-                          variant="destructive"
-                          className="w-full"
-                          onClick={() => {
-                            setIsMobileMenuOpen(false);
-                            handleSignOut();
-                          }}
-                        >
-                          <LogOut className="h-4 w-4 mr-2" />
-                          Cerrar Sesión
-                        </Button>
-                      </div>
-                    )}
                   </div>
                 </SheetContent>
               </Sheet>
@@ -399,11 +364,6 @@ export function Navbar() {
           </div>
         </nav>
       </header>
-
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
-      />
     </>
   );
 }

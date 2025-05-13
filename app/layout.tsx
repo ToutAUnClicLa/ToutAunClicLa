@@ -46,7 +46,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        layout: {
+          socialButtonsVariant: 'iconButton'
+        },
+        variables: {
+          colorPrimary: '#4f46e5',
+          borderRadius: '0.75rem'
+        },
+        elements: {
+          card: 'shadow-xl border border-gray-100',
+          formButtonPrimary: 'bg-indigo-600 hover:bg-indigo-700 text-sm font-medium',
+          formFieldInput: 'text-sm',
+          modalContent: 'w-full sm:max-w-md'
+        }
+      }}
+    >
     <html lang="es" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/logoaunclic.svg" type="image/svg+xml" />
