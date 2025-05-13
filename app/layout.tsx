@@ -41,15 +41,19 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
 };
 
+if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+  throw new Error('Missing NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY');
+}
+
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  throw new Error('Missing Supabase environment variables');
+}
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
-    throw new Error('Missing NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY');
-  }
-
   return (
     <ClerkProvider 
       localization={esES}
