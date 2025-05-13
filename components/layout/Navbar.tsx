@@ -164,9 +164,11 @@ export function Navbar() {
                       size="icon" 
                       className="hidden md:flex h-10 w-10 rounded-full p-0 overflow-hidden border-2 border-gray-200 hover:border-indigo-500 transition-colors"
                     >
-                      <img
+                      <Image
                         src={user.imageUrl}
                         alt={user.fullName || ''}
+                        width={40}
+                        height={40}
                         className="h-full w-full object-cover"
                       />
                     </Button>
@@ -222,9 +224,11 @@ export function Navbar() {
                   {isLoaded && user ? (
                     <div className="flex items-center space-x-4">
                       <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-gray-200">
-                        <img
+                        <Image
                           src={user.imageUrl}
                           alt={user.fullName || ''}
+                          width={48}
+                          height={48}
                           className="h-full w-full object-cover"
                         />
                       </div>
