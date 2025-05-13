@@ -67,13 +67,14 @@ export default function RootLayout({
             defaultTheme="light"
             enableSystem={false}
             disableTransitionOnChange
+            forcedTheme="light"
           >
             <Suspense fallback={
               <div className="flex min-h-screen items-center justify-center">
                 <div className="animate-pulse text-lg">Loading...</div>
               </div>
             }>
-              <div className="flex min-h-screen flex-col">
+              <div className="flex min-h-screen flex-col bg-white">
                 <Navbar />
                 <main className="flex-1 w-full pt-16">
                   {children}
