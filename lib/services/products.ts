@@ -19,9 +19,6 @@ export interface Product {
     estrellas: number;
     comentario: string;
     fecha_creacion: string;
-    usuarios: {
-      nombre: string;
-    };
   }>;
   rating: number;
   reviewCount: number;
@@ -71,8 +68,7 @@ export async function getProductsByCategory(
           id,
           estrellas,
           comentario,
-          fecha_creacion,
-          usuarios (nombre)
+          fecha_creacion
         )
       `)
       .eq('categoria_id', categoriaId);
@@ -119,9 +115,9 @@ export async function getProductsByCategory(
     // Transform the data to include ratings and public URLs for images
     const transformedData = data?.map(product => ({
       ...product,
-      imagen_principal: product.imagen_principal.startsWith('http') 
+      imagen_principal: product.imagen_principal?.startsWith('http') 
         ? product.imagen_principal 
-        : supabase.storage.from('productos').getPublicUrl(product.imagen_principal).data.publicUrl,
+        : supabase.storage.from('productos').getPublicUrl(product.imagen_principal || '').data.publicUrl,
       rating: product.reviews?.reduce((acc: number, review: any) => acc + review.estrellas, 0) / 
               (product.reviews?.length || 1),
       reviewCount: product.reviews?.length || 0
@@ -173,8 +169,7 @@ export async function getProductDetail(productId: number) {
         id,
         estrellas,
         comentario,
-        fecha_creacion,
-        usuarios (nombre)
+        fecha_creacion
       )
     `)
     .eq('id', productId)
@@ -184,9 +179,9 @@ export async function getProductDetail(productId: number) {
 
   return {
     ...data,
-    imagen_principal: data.imagen_principal.startsWith('http')
+    imagen_principal: data.imagen_principal?.startsWith('http')
       ? data.imagen_principal
-      : supabase.storage.from('productos').getPublicUrl(data.imagen_principal).data.publicUrl,
+      : supabase.storage.from('productos').getPublicUrl(data.imagen_principal || '').data.publicUrl,
     rating: data.reviews?.reduce((acc: number, review: any) => acc + review.estrellas, 0) / 
             (data.reviews?.length || 1),
     reviewCount: data.reviews?.length || 0
