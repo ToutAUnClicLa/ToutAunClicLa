@@ -37,10 +37,8 @@ const nextConfig = {
     return config;
   },
   // Disable static page generation
-  staticPageGenerationTimeout: 0,
-  // Configure pages that should not be statically generated
+  output: 'server',
   experimental: {
-    missingSuspenseWithCSRError: false,
     serverActions: {
       bodySizeLimit: '2mb'
     }
