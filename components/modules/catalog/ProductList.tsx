@@ -76,7 +76,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
     search: '',
     subcategory: initialSubcategory,
     minPrice: 0,
-    maxPrice: 1000,
+    maxPrice: 100,
     sortBy: 'nameAsc'
   });
 
@@ -191,7 +191,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
             search: '',
             subcategory: null,
             minPrice: 0,
-            maxPrice: 1000,
+            maxPrice: 100,
             sortBy: 'nameAsc'
           });
           setIsFilterOpen(false);

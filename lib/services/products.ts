@@ -45,7 +45,7 @@ export async function getProductsByCategory(
     search: '',
     subcategory: null,
     minPrice: 0,
-    maxPrice: 1000,
+    maxPrice: 100,
     sortBy: 'nameAsc'
   }
 ) {
@@ -86,7 +86,7 @@ export async function getProductsByCategory(
       query = query.gte('precio', filters.minPrice);
     }
     
-    if (filters.maxPrice < 1000) {
+    if (filters.maxPrice < 100) {
       query = query.lte('precio', filters.maxPrice);
     }
     
