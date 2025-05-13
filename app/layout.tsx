@@ -46,8 +46,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    throw new Error('Missing NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY');
+  }
+
   return (
-    <ClerkProvider localization={esES}>
+    <ClerkProvider 
+      localization={esES}
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+    >
       <html lang="es" suppressHydrationWarning>
         <head>
           <link rel="icon" href="/logoaunclic.svg" type="image/svg+xml" />
