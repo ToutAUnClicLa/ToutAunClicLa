@@ -1,8 +1,10 @@
+"use server";
+
 import { auth, clerkClient } from "@clerk/nextjs";
 import { supabase } from "@/lib/supabase/client";
 
 export async function createOrUpdateUser() {
-  const { userId } = auth();
+  const { userId } = await auth();
   
   if (!userId) {
     throw new Error("Not authenticated");
