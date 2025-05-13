@@ -36,8 +36,6 @@ const nextConfig = {
     config.cache = false;
     return config;
   },
-  // Disable static page generation
-  output: 'server',
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb'
