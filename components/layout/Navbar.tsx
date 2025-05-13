@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -27,6 +27,8 @@ import { cn } from "@/lib/utils";
 import { CartDrawer } from "@/components/modules/cart/CartDrawer";
 import { getFavoritesCount } from "@/lib/services/favorites";
 import { useClerk, useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
+import Image from "next/image";
 
 const LINKS = [
   { href: "/", label: "Inicio" },
