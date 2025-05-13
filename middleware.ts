@@ -7,9 +7,11 @@ export default authMiddleware({
     "/productos/(.*)",
     "/comidas",
     "/comidas/(.*)",
-    "/boutique",
+    "/boutique", 
     "/boutique/(.*)",
-    "/api/webhooks(.*)"
+    "/api/webhooks(.*)",
+    "/sign-in(.*)",
+    "/sign-up(.*)"
   ],
   ignoredRoutes: [
     "/api/webhooks(.*)"
@@ -17,5 +19,9 @@ export default authMiddleware({
 });
  
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    "/((?!.+\\.[\\w]+$|_next).*)",
+    "/",
+    "/(api|trpc)(.*)"
+  ]
 };

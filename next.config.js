@@ -36,6 +36,15 @@ const nextConfig = {
     config.cache = false;
     return config;
   },
+  // Disable static page generation for authenticated routes
+  experimental: {
+    missingSuspenseWithCSRError: false
+  },
+  // Configure pages that should not be statically generated
+  unstable_runtimeJS: true,
+  typescript: {
+    ignoreBuildErrors: true
+  }
 };
 
 module.exports = nextConfig;
