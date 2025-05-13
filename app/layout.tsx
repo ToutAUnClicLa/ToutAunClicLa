@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { Suspense } from 'react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
+import { ClerkProvider } from '@clerk/nextjs'
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -45,6 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+    <ClerkProvider>
     <html lang="es" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/logoaunclic.svg" type="image/svg+xml" />
@@ -94,5 +96,6 @@ export default function RootLayout({
         <Analytics />
       </body>
     </html>
+    </ClerkProvider>
   );
 }

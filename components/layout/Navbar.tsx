@@ -34,6 +34,14 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { CartDrawer } from "@/components/modules/cart/CartDrawer";
 import { getFavoritesCount } from "@/lib/services/favorites";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
 
 const LINKS = [
   { href: "/", label: "Inicio", icon: Home },
