@@ -1,8 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
 
-// Cache para productos por categoría
-const productCache = new Map();
-
 export interface Product {
   id: number;
   nombre: string;
@@ -24,7 +21,6 @@ export interface Product {
   reviewCount: number;
 }
 
-// Agregar una nueva interfaz para el producto formateado
 export interface FormattedProduct extends Omit<Product, 'id'> {
   id: number;
   categoryName: string;
@@ -50,18 +46,10 @@ export async function getProductsByCategory(
   }
 ) {
   try {
-    // Iniciar la consulta
     let query = supabase
       .from('productos')
       .select(`
-        id,
-        nombre,
-        descripcion,
-        precio,
-        stock,
-        imagen_principal,
-        categoria_id,
-        subcategoria_id,
+        *,
         subcategorias (nombre),
         categorias (nombre),
         reviews (
@@ -73,7 +61,6 @@ export async function getProductsByCategory(
       `)
       .eq('categoria_id', categoriaId);
     
-    // Aplicar filtros
     if (filters.search) {
       query = query.ilike('nombre', `%${filters.search}%`);
     }
@@ -90,7 +77,6 @@ export async function getProductsByCategory(
       query = query.lte('precio', filters.maxPrice);
     }
     
-    // Aplicar ordenamiento
     switch (filters.sortBy) {
       case 'nameAsc':
         query = query.order('nombre', { ascending: true });
@@ -112,12 +98,18 @@ export async function getProductsByCategory(
 
     if (error) throw error;
 
-    // Transform the data to include ratings and public URLs for images
     const transformedData = data?.map(product => ({
       ...product,
+      id: Number(product.id),
+      categoria_id: Number(product.categoria_id),
+      subcategoria_id: Number(product.subcategoria_id),
+      precio: Number(product.precio),
+      stock: Number(product.stock),
       imagen_principal: product.imagen_principal?.startsWith('http') 
         ? product.imagen_principal 
-        : supabase.storage.from('productos').getPublicUrl(product.imagen_principal || '').data.publicUrl,
+        : product.imagen_principal 
+          ? supabase.storage.from('productos').getPublicUrl(product.imagen_principal).data.publicUrl
+          : '/placeholder.png',
       rating: product.reviews?.reduce((acc: number, review: any) => acc + review.estrellas, 0) / 
               (product.reviews?.length || 1),
       reviewCount: product.reviews?.length || 0
@@ -149,7 +141,7 @@ export async function getSubcategories(categoryId: number) {
 export function formatProduct(product: Product, categoryName: string): FormattedProduct {
   return {
     ...product,
-    id: Number(product.id), // Asegurarse de que id sea number
+    id: Number(product.id),
     categoryName,
     formattedPrice: new Intl.NumberFormat('es-MX', {
       style: 'currency',
@@ -179,9 +171,16 @@ export async function getProductDetail(productId: number) {
 
   return {
     ...data,
+    id: Number(data.id),
+    categoria_id: Number(data.categoria_id),
+    subcategoria_id: Number(data.subcategoria_id),
+    precio: Number(data.precio),
+    stock: Number(data.stock),
     imagen_principal: data.imagen_principal?.startsWith('http')
       ? data.imagen_principal
-      : supabase.storage.from('productos').getPublicUrl(data.imagen_principal || '').data.publicUrl,
+      : data.imagen_principal
+        ? supabase.storage.from('productos').getPublicUrl(data.imagen_principal).data.publicUrl
+        : '/placeholder.png',
     rating: data.reviews?.reduce((acc: number, review: any) => acc + review.estrellas, 0) / 
             (data.reviews?.length || 1),
     reviewCount: data.reviews?.length || 0
