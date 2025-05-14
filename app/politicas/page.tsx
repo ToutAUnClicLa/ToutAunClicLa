@@ -149,7 +149,7 @@ export default function PoliticasPage() {
             <li><strong>Derecho a impugnar el cumplimiento:</strong> Cuestionar nuestro cumplimiento de los principios de la PIPEDA.</li>
           </ul>
           <p className="mt-3">
-            Para ejercer cualquiera de estos derechos, contáctenos utilizando la información proporcionada en la sección "Contacto".
+            Para ejercer cualquiera de estos derechos, contáctenos utilizando la información proporcionada en la sección &ldquo;Contacto&rdquo;.
           </p>
         </section>
 

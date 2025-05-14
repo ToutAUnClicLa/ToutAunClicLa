@@ -15,9 +15,9 @@ export default function TerminosPage() {
         <section className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
           <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">1. Introducción</h2>
           <p className="mb-3">
-            Bienvenido a Tout à un clic là. El presente documento constituye un acuerdo legalmente vinculante ("Acuerdo") 
+            Bienvenido a Tout à un clic là. El presente documento constituye un acuerdo legalmente vinculante (&ldquo;Acuerdo&rdquo;) 
             entre usted y Tout à un clic là, regido por las leyes de Canadá. Estos Términos de Servicio regulan su acceso 
-            y uso de nuestra plataforma de comercio electrónico ("la Plataforma"), incluyendo cualquier aplicación móvil asociada, 
+            y uso de nuestra plataforma de comercio electrónico (&ldquo;la Plataforma&rdquo;), incluyendo cualquier aplicación móvil asociada, 
             contenido, funcionalidades y servicios ofrecidos.
           </p>
           <p className="mb-3">
