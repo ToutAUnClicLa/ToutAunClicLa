@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Menu, 
   X, 
@@ -20,7 +20,10 @@ import {
   MapPin,
   Home,
   ChevronRight,
-  Store
+  Store,
+  ArrowRight,
+  Grid,
+  Layers
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +37,8 @@ import { useAuth } from "@/hooks/useAuth";
 import AuthModal from "@/components/auth/AuthModal";
 import { signOut } from "@/lib/supabase/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 const LINKS = [
   { href: "/", label: "Inicio", icon: Home },
@@ -113,6 +118,19 @@ export function Navbar() {
   const isUserVerified = () => {
     return userData?.verificado || false;
   };
+
+  // Nuevo código: Agrupar los enlaces para el menú móvil
+  const MENU_GROUPS = [
+    {
+      title: "Explorar",
+      items: LINKS
+    },
+    {
+      title: "Mi Cuenta",
+      items: PROFILE_MENU_ITEMS,
+      showWhen: "authenticated"
+    }
+  ];
 
   return (
     <>
@@ -250,198 +268,267 @@ export function Navbar() {
                 )}
               </div>
 
-              {/* Mobile Menu */}
-              <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="md:hidden">
-                    <Menu className="h-6 w-6 text-gray-600" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-full max-w-[320px] p-0 [&>button]:hidden overflow-hidden">
-                  {/* Header del menú móvil */}
-                  <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
-                  <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 border-b border-indigo-500">
-                    <div className="flex items-center justify-between p-5">
-                      <div className="flex items-center space-x-3">
-                        <div className="h-12 w-12 rounded-full overflow-hidden bg-white flex items-center justify-center shadow-md">
-                          <motion.img 
-                            src="/logoaunclic.svg" 
-                            alt="Logo pequeño" 
-                            width={34}
-                            height={34}
-                            className="h-9 w-9"
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                          />
-                        </div>
-                        <div className="font-bold text-lg text-white">Tout À Un Clic là</div>
-                      </div>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="rounded-full h-10 w-10 hover:bg-indigo-500 text-white"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        <X className="h-6 w-6" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {/* Cuerpo del menú móvil */}
-                  <div className="flex flex-col h-[calc(100%-64px)]">
-                    {/* Parte superior - Autenticación */}
-                    <div className="p-4 border-b">
-                      {isAuthenticated && userData ? (
-                        <div className="flex flex-col space-y-3">
-                          <div className="flex items-center space-x-3">
-                            <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-gray-200 relative">
-                              <Avatar className="h-full w-full">
-                                <AvatarImage src={userData?.url_avatar || ''} alt="Avatar" />
-                                <AvatarFallback className="bg-indigo-100 text-indigo-600">
-                                  {getUserInitials()}
-                                </AvatarFallback>
-                              </Avatar>
-                              {!isUserVerified() && (
-                                <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-amber-500 border-2 border-white"></span>
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-medium text-sm text-gray-900 truncate">
-                                {userData.nombre}
-                              </p>
-                              <p className="text-xs text-gray-500 truncate">
-                                {userData.correo_electronico}
-                              </p>
-                              {!isUserVerified() && (
-                                <p className="text-xs text-amber-600 mt-0.5 font-medium">
-                                  Cuenta sin verificar
-                                </p>
-                              )}
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 rounded-full hover:bg-gray-100"
-                              onClick={() => router.push('/profile')}
-                            >
-                              <ChevronRight className="h-4 w-4 text-gray-400" />
-                            </Button>
-                          </div>
-                          
-                          <div className="grid grid-cols-2 gap-2 mt-1">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-full justify-center text-gray-700 border-gray-300"
-                              onClick={() => router.push('/profile')}
-                            >
-                              <User className="h-3.5 w-3.5 mr-1.5" />
-                              Mi Perfil
-                            </Button>
-                            
-                            <Button 
-                              variant="outline"
-                              size="sm"
-                              className="w-full justify-center text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
-                              onClick={() => {
-                                setIsMobileMenuOpen(false);
-                                handleSignOut();
-                              }}
-                            >
-                              <LogOut className="h-3.5 w-3.5 mr-1.5" />
-                              Salir
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-center flex-col space-y-2 w-full">
-                          <Button 
-                            className="w-full"
-                            onClick={() => {
-                              setIsMobileMenuOpen(false);
-                              openAuthModal('login');
-                            }}
-                          >
-                            <User className="h-4 w-4 mr-2" />
-                            Iniciar Sesión
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            className="w-full"
-                            onClick={() => {
-                              setIsMobileMenuOpen(false);
-                              openAuthModal('register');
-                            }}
-                          >
-                            Crear Cuenta
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Menú de navegación */}
-                    <div className="flex-1 overflow-y-auto py-2">
-                      <div className="px-2">
-                        {/* Enlaces principales */}
-                        <div className="mb-4">
-                          <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            Navegar
-                          </div>
-                          <div className="space-y-1">
-                            {LINKS.map((link) => {
-                              const isActive = pathname === link.href;
-                              const LinkIcon = link.icon;
-                              return (
-                                <Link
-                                  key={link.href}
-                                  href={link.href}
-                                  className={cn(
-                                    "flex items-center py-2.5 px-3 rounded-lg text-sm font-medium transition-colors",
-                                    isActive 
-                                      ? "bg-indigo-50 text-indigo-700" 
-                                      : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
-                                  )}
-                                  onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                  <LinkIcon className={cn("h-5 w-5 mr-3", isActive ? "text-indigo-600" : "text-gray-500")} />
-                                  {link.label}
-                                </Link>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Enlaces de perfil (solo para usuarios autenticados) */}
-                        {isAuthenticated && (
-                          <div className="mb-4">
-                            <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                              Mi Cuenta
-                            </div>
-                            <div className="space-y-1">
-                              {PROFILE_MENU_ITEMS.map((item) => (
-                                <Button
-                                  key={item.href}
-                                  variant="ghost"
-                                  className="w-full justify-start px-3 py-2.5 h-auto text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
-                                  onClick={() => handleProfileNavigation(item.href)}
-                                >
-                                  <item.icon className="h-5 w-5 mr-3 text-gray-500" />
-                                  {item.label}
-                                </Button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </SheetContent>
-              </Sheet>
+              {/* Mobile Menu Button */}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="md:hidden"
+                onClick={() => setIsMobileMenuOpen(true)}
+              >
+                <Menu className="h-6 w-6 text-gray-600" />
+              </Button>
             </div>
           </div>
         </nav>
       </header>
 
+      {/* Nuevo Menú Móvil */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            className="fixed inset-0 bg-white z-50 md:hidden flex flex-col"
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          >
+            {/* Encabezado del menú móvil */}
+            <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 px-4 py-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 bg-white rounded-full shadow-md flex items-center justify-center overflow-hidden">
+                    <motion.img 
+                      src="/logoaunclic.svg" 
+                      alt="Logo" 
+                      className="w-8 h-8"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    />
+                  </div>
+                  <div className="text-white">
+                    <div className="text-xs font-medium">Tout À Un</div>
+                    <div className="text-lg font-bold">Clic là</div>
+                  </div>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-white hover:bg-indigo-500/20 rounded-full"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <X className="h-6 w-6" />
+                </Button>
+              </div>
+            </div>
+            
+            {/* Contenido del menú móvil */}
+            <div className="flex-1 overflow-y-auto pb-safe">
+              {/* Información del usuario */}
+              <div className="px-4 py-5">
+                {isAuthenticated ? (
+                  <div className="flex items-start gap-4">
+                    <Avatar className="h-14 w-14 rounded-full border-2 border-indigo-100 shadow-sm relative">
+                      <AvatarImage src={userData?.url_avatar || ''} />
+                      <AvatarFallback className="bg-gradient-to-br from-indigo-100 to-indigo-200 text-indigo-600 text-lg">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                      {!isUserVerified() && (
+                        <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-amber-500 border-2 border-white flex items-center justify-center">
+                          <span className="sr-only">Cuenta sin verificar</span>
+                        </span>
+                      )}
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-lg font-semibold text-gray-900 truncate">
+                        {userData?.nombre || 'Usuario'}
+                      </h2>
+                      <p className="text-sm text-gray-500 truncate">{userData?.correo_electronico}</p>
+                      {!isUserVerified() && (
+                        <Badge variant="outline" className="mt-1 bg-amber-50 text-amber-600 border-amber-200 gap-1">
+                          <span className="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                          Pendiente de verificación
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col space-y-3">
+                    <div className="text-center mb-2">
+                      <h2 className="text-xl font-semibold text-gray-900">¡Bienvenido!</h2>
+                      <p className="text-sm text-gray-500">Accede a tu cuenta para comenzar</p>
+                    </div>
+                    <Button 
+                      size="lg"
+                      className="w-full"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        openAuthModal('login');
+                      }}
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      Iniciar Sesión
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      className="w-full"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        openAuthModal('register');
+                      }}
+                    >
+                      Crear Cuenta
+                    </Button>
+                  </div>
+                )}
+              </div>
+              
+              <Separator className="my-2" />
+              
+              {/* Accesos rápidos */}
+              {isAuthenticated && (
+                <div className="px-4 py-3">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                    Accesos Rápidos
+                  </h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button 
+                      variant="outline" 
+                      className="h-auto flex flex-col items-center py-3 px-1 gap-2"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        router.push('/profile/favorites');
+                      }}
+                    >
+                      <Heart className="h-5 w-5 text-red-500" />
+                      <span className="text-xs">Favoritos</span>
+                      {favoritesCount > 0 && (
+                        <Badge className="absolute -top-1 -right-1 h-5 min-w-5 p-0 flex items-center justify-center" variant="destructive">
+                          {favoritesCount}
+                        </Badge>
+                      )}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="h-auto flex flex-col items-center py-3 px-1 gap-2"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        router.push('/profile/orders');
+                      }}
+                    >
+                      <ShoppingBag className="h-5 w-5 text-amber-500" />
+                      <span className="text-xs">Pedidos</span>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="h-auto flex flex-col items-center py-3 px-1 gap-2"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        router.push('/profile/addresses');
+                      }}
+                    >
+                      <MapPin className="h-5 w-5 text-indigo-500" />
+                      <span className="text-xs">Direcciones</span>
+                    </Button>
+                  </div>
+                </div>
+              )}
+              
+              {/* Menú principal */}
+              <div className="px-4 py-3">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                  Menú Principal
+                </h3>
+                <div className="space-y-1">
+                  {LINKS.map((link) => {
+                    const isActive = pathname === link.href;
+                    const LinkIcon = link.icon;
+                    
+                    return (
+                      <Button
+                        key={link.href}
+                        variant={isActive ? "secondary" : "ghost"}
+                        className={cn(
+                          "w-full justify-start text-base h-12",
+                          isActive ? "bg-indigo-50 text-indigo-700" : "text-gray-700"
+                        )}
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          router.push(link.href);
+                        }}
+                      >
+                        <div className="flex items-center">
+                          <div className={cn(
+                            "mr-3 p-1.5 rounded-md", 
+                            isActive ? "bg-indigo-100" : "bg-gray-100"
+                          )}>
+                            <LinkIcon className={cn(
+                              "h-5 w-5", 
+                              isActive ? "text-indigo-600" : "text-gray-500"
+                            )} />
+                          </div>
+                          {link.label}
+                        </div>
+                        <ChevronRight className="ml-auto h-4 w-4 text-gray-400" />
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {/* Perfil y Configuración (Solo para usuarios autenticados) */}
+              {isAuthenticated && (
+                <>
+                  <Separator className="my-2" />
+                  
+                  <div className="px-4 py-3">
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                      Mi Cuenta
+                    </h3>
+                    <div className="space-y-1">
+                      {PROFILE_MENU_ITEMS.filter(item => item.label !== 'Favoritos' && 
+                                                       item.label !== 'Mis Pedidos' && 
+                                                       item.label !== 'Direcciones').map((item) => (
+                        <Button
+                          key={item.href}
+                          variant="ghost"
+                          className="w-full justify-start text-base h-11"
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            router.push(item.href);
+                          }}
+                        >
+                          <item.icon className="h-5 w-5 mr-3 text-gray-500" />
+                          {item.label}
+                          <ChevronRight className="ml-auto h-4 w-4 text-gray-400" />
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            
+            {/* Pie del menú móvil */}
+            {isAuthenticated && (
+              <div className="px-4 py-4 border-t border-gray-200">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start text-red-600 border-red-100 hover:bg-red-50 hover:border-red-200"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleSignOut();
+                  }}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Cerrar sesión
+                </Button>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       <AuthModal 
         isOpen={isAuthModalOpen} 
         onClose={closeAuthModal} 
