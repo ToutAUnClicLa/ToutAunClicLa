@@ -13,19 +13,23 @@ import Image from 'next/image';
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { 
+    user, 
+    userData,
+    isLoading, 
+    isAuthenticated 
+  } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!loading) {
+    if (!isLoading) {
       if (!user) {
         router.push('/');
         return;
       }
       loadCartItems();
     }
-  }, [user, loading, router]);
+  }, [user, isLoading, router]);
 
   const loadCartItems = async () => {
     try {
@@ -34,8 +38,6 @@ export default function CheckoutPage() {
     } catch (error) {
       console.error('Error loading cart items:', error);
       toast.error('Error al cargar el carrito');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -43,7 +45,7 @@ export default function CheckoutPage() {
     sum + (item.producto.precio * item.cantidad), 0
   );
 
-  if (loading || isLoading) {
+  if (isLoading) {
     return (
       <div className="container py-8">
         <div className="flex items-center justify-center min-h-[400px]">

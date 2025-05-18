@@ -18,14 +18,17 @@ const LANGUAGES = [
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { 
+    user, 
+    userData,
+    isLoading 
+  } = useAuth();
   const [darkMode, setDarkMode] = useState(false);
   const [language, setLanguage] = useState('es');
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isLoading && !user) {
       router.push('/');
-      return;
     }
 
     // Load saved settings
@@ -35,7 +38,7 @@ export default function SettingsPage() {
       setDarkMode(settings.darkMode);
       setLanguage(settings.language);
     }
-  }, [user, loading, router]);
+  }, [user, isLoading, router]);
 
   const saveSettings = (updates: any) => {
     const newSettings = {
@@ -56,9 +59,9 @@ export default function SettingsPage() {
     saveSettings({ language: value });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="container max-w-4xl py-8">
+      <div className="container max-w-6xl py-8">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
         </div>

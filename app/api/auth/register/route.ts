@@ -43,9 +43,13 @@ export async function POST(req: NextRequest) {
       options: {
         data: {
           nombre,
-          telefono,
+          telefono: telefono || undefined,
+          full_name: nombre,
         },
-        emailRedirectTo: undefined, // Desactivamos el email de Supabase
+        // IMPORTANTE: Deshabilitar COMPLETAMENTE el envío de emails por Supabase
+        emailRedirectTo: undefined,
+        // Configurar para NO enviar correos de verificación automáticos
+        // No incluimos emailConfirmationRedirectTo para evitar redirecciones automáticas
       },
     });
     

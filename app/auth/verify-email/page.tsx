@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { MailCheck, AlertCircle, RefreshCw, CheckCircle } from 'lucide-react';
+import { MailCheck, AlertCircle, RefreshCw, CheckCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function VerifyEmailPage() {
@@ -32,6 +32,17 @@ export default function VerifyEmailPage() {
         if (response.ok && data.success) {
           setIsSuccess(true);
           toast.success('Tu correo ha sido verificado correctamente');
+          
+          // Pequeña espera para mostrar el mensaje de éxito
+          setTimeout(() => {
+            if (data.redirectUrl) {
+              // Redirigir a la página de login automático si existe la URL
+              router.push(data.redirectUrl);
+            } else {
+              // Alternativa en caso de que no se proporcione URL de redirección
+              router.push('/');
+            }
+          }, 1500);
         } else {
           setError(data.error || 'El token no es válido o ha expirado');
         }
@@ -44,7 +55,7 @@ export default function VerifyEmailPage() {
     }
     
     verifyToken();
-  }, [searchParams]);
+  }, [searchParams, router]);
   
   // Función para reenviar el correo de verificación
   const handleResendVerification = async () => {
@@ -95,8 +106,8 @@ export default function VerifyEmailPage() {
         
         {isProcessing ? (
           <div className="flex flex-col items-center space-y-4 py-6">
-            <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-gray-600">Verificando tu email...</p>
+            <Loader2 className="h-12 w-12 text-indigo-500 animate-spin" />
+            <p className="text-gray-600">Verificando tu correo electrónico...</p>
           </div>
         ) : isSuccess ? (
           <div className="text-center space-y-4 py-4">
@@ -106,25 +117,11 @@ export default function VerifyEmailPage() {
               </div>
             </div>
             <div>
-              <h2 className="text-xl font-medium text-gray-900">¡Email verificado!</h2>
+              <h2 className="text-xl font-medium text-gray-900">¡Correo verificado!</h2>
               <p className="text-gray-600 mt-1">
                 Tu cuenta ha sido verificada correctamente.
+                Serás redirigido automáticamente...
               </p>
-            </div>
-            <div className="flex flex-col space-y-2 mt-4">
-              <Button 
-                className="w-full"
-                onClick={() => router.push('/')}
-              >
-                Ir a la página principal
-              </Button>
-              <Button 
-                variant="outline"
-                className="w-full"
-                onClick={() => router.push('/profile')}
-              >
-                Ir a mi perfil
-              </Button>
             </div>
           </div>
         ) : (
@@ -137,43 +134,16 @@ export default function VerifyEmailPage() {
             <div>
               <h2 className="text-xl font-medium text-gray-900">Error de verificación</h2>
               <p className="text-red-600 mt-1">
-                {error || 'No se pudo verificar tu email'}
+                {error || 'No se pudo verificar tu correo electrónico'}
               </p>
             </div>
-            <div className="mt-4 space-y-4">
-              <div className="border rounded-md p-4 bg-gray-50">
-                <h3 className="font-medium text-gray-900">¿No has recibido el email?</h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  Introduce tu email y te enviaremos un nuevo enlace de verificación.
-                </p>
-                <div className="mt-3 space-y-3">
-                  <input
-                    type="email"
-                    value={email || ''}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="tu@email.com"
-                    className="w-full px-3 py-2 border rounded-md text-sm"
-                  />
-                  <Button 
-                    className="w-full flex items-center justify-center"
-                    onClick={handleResendVerification}
-                    disabled={isProcessing || !email}
-                  >
-                    {isProcessing ? (
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    ) : (
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                    )}
-                    Reenviar correo de verificación
-                  </Button>
-                </div>
-              </div>
-              <Link href="/" className="block">
+            <div className="flex flex-col space-y-2 mt-4">
+              <Link href="/auth/login" passHref>
                 <Button 
                   variant="outline"
                   className="w-full"
                 >
-                  Volver a la página principal
+                  Volver a iniciar sesión
                 </Button>
               </Link>
             </div>

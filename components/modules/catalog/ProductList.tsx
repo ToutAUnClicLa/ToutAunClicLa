@@ -69,7 +69,7 @@ interface ProductListProps {
 
 export function ProductList({ categoryId, categoryName, title, initialSubcategory = null }: ProductListProps) {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [subcategories, setSubcategories] = useState<any[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState<ProductFilters>({
@@ -86,7 +86,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
   useEffect(() => {
     const loadData = async () => {
       try {
-        setLoading(true);
+        setIsLoading(true);
         const categoryIdNumber = typeof categoryId === 'string' ? parseInt(categoryId) : categoryId;
         const [productsData, subcategoriesData] = await Promise.all([
           getProductsByCategory(categoryIdNumber, filters),
@@ -120,7 +120,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
         console.error('Error loading data:', error);
         toast.error('Error al cargar los productos. Por favor, intente nuevamente.');
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -300,7 +300,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
               </Select>
             </div>
 
-            {loading ? (
+            {isLoading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6">
                 {[...Array(8)].map((_, i) => (
                   <div key={i} className="animate-pulse">
@@ -332,7 +332,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
               </AnimatePresence>
             )}
 
-            {products.length === 0 && !loading && (
+            {products.length === 0 && !isLoading && (
               <div className="text-center py-12">
                 <p className="text-gray-500">No se encontraron productos</p>
               </div>

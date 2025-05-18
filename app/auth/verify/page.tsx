@@ -29,7 +29,7 @@ export default function VerifyEmailPage() {
         try {
           // Intenta obtener el email del token
           const { data, error } = await supabase.auth.getUser();
-          if (!error && data.user) {
+          if (!error && data.user && data.user.email) {
             emailValue = data.user.email;
           }
         } catch (e) {
@@ -70,38 +70,30 @@ export default function VerifyEmailPage() {
         }
       }
 
-      try {
-        // Intentamos verificar con el token directamente de Supabase
-        const { error: confirmError } = await supabase.auth.verifyOtp({
-          token,
-          type: 'email',
-        });
-        
-        if (confirmError) {
-          console.error('Error al verificar OTP:', confirmError);
-          throw confirmError;
+      // IMPORTANTE: En lugar de intentar verificar el token con Supabase,
+      // redirigimos a nuestro sistema personalizado de verificación
+      if (token) {
+        // Si es un token generado por Supabase, redirigimos al usuario a
+        // nuestra página de información que explica que debe usar el email
+        // enviado por nuestro sistema
+        if (type === 'signup' || type === 'recovery') {
+          setError('Detectamos que estás usando un enlace de verificación generado por el sistema. Por favor, utiliza el enlace enviado a tu correo electrónico desde nuestro sistema.');
+          setIsProcessing(false);
+          
+          // Si tenemos el email, ofrecemos reenviar el correo con nuestro sistema
+          if (emailValue) {
+            // No redirigimos automáticamente, pero mostramos un error con instrucciones
+          }
+          return;
         }
         
-        // Si llegamos aquí, la verificación fue exitosa
-        // Ahora obtenemos el usuario y actualizamos nuestros registros
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-        
-        if (userError || !userData.user) {
-          throw new Error('No se pudo obtener la información del usuario');
-        }
-        
-        // Actualizar estado de verificación en nuestra tabla
-        await verifyEmail(userData.user.id);
-        
-        setIsSuccess(true);
-        toast.success('Email verificado correctamente');
-        
-      } catch (error: any) {
-        console.error('Error al verificar email:', error);
-        setError(error.message || 'Error al verificar email');
-      } finally {
-        setIsProcessing(false);
+        // Si parece ser uno de nuestros tokens, redirigimos a nuestra página de verificación
+        router.push(`/auth/verify-email?token=${token}`);
+        return;
       }
+      
+      setError('No se encontró un token de verificación válido');
+      setIsProcessing(false);
     }
 
     verifyUserEmail();
@@ -116,17 +108,23 @@ export default function VerifyEmailPage() {
     
     try {
       setIsProcessing(true);
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/verify`,
-        }
+      
+      // Usar nuestra API personalizada en lugar del método de Supabase
+      const response = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
       });
       
-      if (error) throw error;
+      const data = await response.json();
       
-      toast.success('Se ha enviado un nuevo correo de verificación');
+      if (response.ok && data.success) {
+        toast.success('Se ha enviado un nuevo correo de verificación');
+      } else {
+        toast.error(data.error || 'Error al reenviar correo de verificación');
+      }
     } catch (error: any) {
       console.error('Error al reenviar correo:', error);
       toast.error(error.message || 'Error al reenviar correo de verificación');

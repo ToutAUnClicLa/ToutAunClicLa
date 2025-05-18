@@ -37,9 +37,13 @@ const item = {
 
 export default function AddressesPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { 
+    user, 
+    userData, 
+    isLoading,
+    isAuthenticated
+  } = useAuth();
   const [addresses, setAddresses] = useState<Address[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   const loadAddresses = useCallback(async () => {
     try {
@@ -62,21 +66,20 @@ export default function AddressesPage() {
     } catch (error) {
       console.error('Error loading addresses:', error);
       toast.error('Error al cargar las direcciones');
-    } finally {
-      setIsLoading(false);
     }
   }, [user]);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isLoading && !user) {
       router.push('/');
-      return;
     }
+  }, [user, isLoading, router]);
 
+  useEffect(() => {
     if (user) {
       loadAddresses();
     }
-  }, [user, loading, router, loadAddresses]);
+  }, [user, loadAddresses]);
 
   async function handleDeleteAddress(addressId: number) {
     try {
@@ -95,7 +98,7 @@ export default function AddressesPage() {
     }
   }
 
-  if (loading || isLoading) {
+  if (isLoading || !user) {
     return (
       <div className="container max-w-6xl py-8">
         <div className="flex items-center justify-center min-h-[400px]">

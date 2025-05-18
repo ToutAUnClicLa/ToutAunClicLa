@@ -3,8 +3,7 @@ import { Database } from '@/types/supabase';
 import { toast } from 'sonner';
 import crypto from 'crypto';
 import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail } from '@/lib/email/resend';
-
-export const supabase = createClientComponentClient<Database>();
+import { supabase, authOptions } from '@/lib/supabase/client';
 
 export type SignInParams = {
   email: string;
@@ -33,27 +32,85 @@ export type UsuarioData = {
  * Iniciar sesión con email y contraseña
  */
 export async function signInWithEmail({ email, password }: SignInParams) {
-  // 1. Iniciar sesión en Supabase Auth
-  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  try {
+    // 1. Verificar si el usuario está en nuestra tabla personalizada
+    const { data: dbUser, error: dbError } = await supabase
+      .from('usuarios')
+      .select('*')
+      .eq('correo_electronico', email)
+      .single();
+      
+    if (dbError && dbError.code !== 'PGRST116') { // PGRST116 = No se encontró el registro
+      console.error('Error al buscar usuario en tabla personalizada:', dbError);
+    }
+    
+    // 2. Iniciar sesión en Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  if (authError) throw authError;
+    // 3. Si hay error porque el email no está confirmado pero en nuestra tabla ya está verificado
+    if (authError && authError.message?.includes('Email not confirmed') && dbUser?.verificado) {
+      console.log('Inconsistencia detectada: Email verificado en DB pero no en Auth');
+      
+      // 3.1. Intentar confirmar el email en Auth (requiere service_role)
+      try {
+        // Este enfoque requiere la API URL adecuada para confirmar el email
+        // Llamamos a nuestra API interna para sincronizar este estado
+        const syncResponse = await fetch('/api/auth/sync-verification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        });
+        
+        if (syncResponse.ok) {
+          // 3.2. Ahora intentamos iniciar sesión nuevamente
+          const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          
+          if (retryError) {
+            throw retryError;
+          }
+          
+          return { auth: retryData, usuario: dbUser };
+        } else {
+          throw new Error('No se pudo sincronizar el estado de verificación');
+        }
+      } catch (syncError) {
+        console.error('Error al sincronizar estado de verificación:', syncError);
+        throw new Error('Tu cuenta está verificada en nuestros registros pero hay un problema técnico. Por favor, contacta a soporte.');
+      }
+    }
 
-  // 2. Obtener datos del usuario desde nuestra tabla personalizada
-  const { data: usuario, error: userError } = await supabase
-    .from('usuarios')
-    .select('*')
-    .eq('correo_electronico', email)
-    .single();
+    // 4. Propagar cualquier otro error de autenticación
+    if (authError) throw authError;
 
-  if (userError) {
-    console.error('Error al obtener datos del usuario:', userError);
-    // No lanzamos error aquí porque el usuario ya se autenticó correctamente
+    // 5. Obtener datos del usuario desde nuestra tabla personalizada si no lo hicimos antes
+    if (!dbUser) {
+      const { data: usuario, error: userError } = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('correo_electronico', email)
+        .single();
+
+      if (userError) {
+        console.error('Error al obtener datos del usuario:', userError);
+        // Continuamos con la autenticación aunque falte información del perfil
+      }
+      
+      return { auth: authData, usuario };
+    }
+
+    return { auth: authData, usuario: dbUser };
+  } catch (error) {
+    console.error('Error en signInWithEmail:', error);
+    throw error;
   }
-
-  return { auth: authData, usuario };
 }
 
 /**
@@ -132,15 +189,10 @@ export async function signUpWithEmail({ email, password, nombre, telefono }: Sig
  * Iniciar sesión con Google
  */
 export async function signInWithGoogle() {
+  // Usar authOptions para mantener coherencia en la configuración
   return await supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
-      queryParams: {
-        access_type: 'offline',
-        prompt: 'consent',
-      },
-    },
+    options: authOptions,
   });
 }
 
@@ -227,8 +279,82 @@ export async function getCurrentUser(): Promise<{ auth: any, usuario: UsuarioDat
     console.error('Error al obtener datos del usuario:', userError);
     return { auth: user, usuario: null };
   }
+  
+  // Verificar si hay discrepancias entre Auth y nuestra tabla
+  const needsSync = syncUserDataIfNeeded(user, usuario);
 
   return { auth: user, usuario: usuario as UsuarioData };
+}
+
+/**
+ * Función auxiliar para sincronizar datos del usuario si hay discrepancias
+ */
+async function syncUserDataIfNeeded(authUser: any, dbUser: any): Promise<boolean> {
+  if (!authUser || !dbUser) return false;
+  
+  let needsUpdate = false;
+  
+  // Verificar si hay discrepancias en el estado de verificación
+  const authUserVerified = !!authUser.email_confirmed_at;
+  
+  if (authUserVerified !== dbUser.verificado) {
+    // Hay una discrepancia, sincronizar
+    needsUpdate = true;
+    
+    try {
+      if (authUserVerified && !dbUser.verificado) {
+        // Auth dice que está verificado pero nuestra tabla no
+        await supabase
+          .from('usuarios')
+          .update({ 
+            verificado: true,
+            fecha_actualizacion: new Date().toISOString()
+          })
+          .eq('id', dbUser.id);
+      } else if (!authUserVerified && dbUser.verificado) {
+        // Nuestra tabla dice que está verificado pero Auth no
+        // Esto es más complicado porque requiere acceso admin
+        // En este caso, preferimos confiar en nuestra tabla
+        try {
+          // No podemos usar updateUser directamente para confirmar email
+          // En lugar de eso, registramos el evento y confiamos en nuestra tabla
+          console.log('Se detectó discrepancia: usuario verificado en DB pero no en Auth');
+          
+          // La confirmación real requeriría admin API, que no está disponible en cliente
+          // await supabase.auth.admin.updateUserById(authUser.id, {
+          //   email_confirm: true
+          // });
+        } catch (e) {
+          console.error('Error al registrar discrepancia:', e);
+        }
+      }
+    } catch (e) {
+      console.error('Error al sincronizar estado de verificación:', e);
+    }
+  }
+  
+  // Sincronizar metadatos si es necesario
+  const userMetadata = authUser.user_metadata || {};
+  const shouldUpdateMetadata = 
+    (dbUser.nombre && dbUser.nombre !== userMetadata.nombre) ||
+    (dbUser.telefono && dbUser.telefono !== userMetadata.telefono);
+    
+  if (shouldUpdateMetadata) {
+    try {
+      await supabase.auth.updateUser({
+        data: {
+          nombre: dbUser.nombre,
+          telefono: dbUser.telefono || undefined,
+          full_name: dbUser.nombre,
+        }
+      });
+      needsUpdate = true;
+    } catch (e) {
+      console.error('Error al sincronizar metadatos con Auth:', e);
+    }
+  }
+  
+  return needsUpdate;
 }
 
 /**
@@ -339,6 +465,7 @@ export async function updatePassword(newPassword: string) {
  * Verificar correo electrónico
  */
 export async function verifyEmail(userId: string) {
+  // 1. Actualizar nuestra tabla personalizada
   const { error } = await supabase
     .from('usuarios')
     .update({ 
@@ -348,6 +475,37 @@ export async function verifyEmail(userId: string) {
     .eq('id', userId);
 
   if (error) throw error;
+  
+  // 2. Obtener datos del usuario para sincronización
+  const { data: userData, error: userError } = await supabase
+    .from('usuarios')
+    .select('*')
+    .eq('id', userId)
+    .single();
+    
+  if (userError || !userData) {
+    console.error('Error al obtener datos del usuario para sincronización:', userError);
+    return { success: true }; // Continuamos a pesar del error
+  }
+  
+  try {
+    // 3. Obtener el usuario de Auth para sincronizar
+    const { data: authData } = await supabase.auth.getUser();
+    
+    if (authData.user) {
+      // 4. Actualizar metadatos en Auth
+      await supabase.auth.updateUser({
+        data: {
+          nombre: userData.nombre,
+          telefono: userData.telefono || undefined,
+          full_name: userData.nombre,
+        }
+      });
+    }
+  } catch (syncError) {
+    console.error('Error al sincronizar metadatos con Auth:', syncError);
+    // No bloqueamos el proceso por errores de sincronización
+  }
 
   return { success: true };
 }
@@ -363,46 +521,132 @@ export async function signOut() {
 
 /**
  * Manejar el callback de autenticación social
- * Esta función debe ser llamada en la página de callback después de la autenticación social
+ * Esta función debe ser llamada después de la autenticación social exitosa
+ * para sincronizar el perfil del usuario.
  */
 export async function handleAuthCallback() {
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  if (!session) {
-    return { success: false, error: 'No se encontró sesión' };
-  }
-
-  const user = session.user;
-
-  // Verificar si el usuario ya existe en nuestra tabla personalizada
-  const { data: existingUser } = await supabase
-    .from('usuarios')
-    .select('id')
-    .eq('correo_electronico', user.email)
-    .single();
-
-  // Si no existe, crear un nuevo perfil
-  if (!existingUser) {
-    const { error } = await supabase
-      .from('usuarios')
-      .insert([
-        {
-          correo_electronico: user.email,
-          contrasena_hash: 'autenticacion_social',
-          nombre: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0],
-          url_avatar: user.user_metadata?.avatar_url,
-          verificado: true, // Con social auth consideramos que está verificado
-          autenticacion_social: true,
-          fecha_creacion: new Date().toISOString(),
-          fecha_actualizacion: new Date().toISOString(),
-        },
-      ]);
-
-    if (error) {
-      console.error('Error al crear perfil después de autenticación social:', error);
-      return { success: false, error: error.message };
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      return { success: false, error: 'No se encontró sesión' };
     }
-  }
 
-  return { success: true, user };
+    const user = session.user;
+
+    // Verificar si el usuario ya existe en nuestra tabla personalizada
+    const { data: existingUser, error: dbError } = await supabase
+      .from('usuarios')
+      .select('id, nombre, telefono, url_avatar, verificado')
+      .eq('correo_electronico', user.email)
+      .single();
+
+    // Si no existe, crear un nuevo perfil (no debería ocurrir aquí,
+    // ya que ahora lo manejamos en la ruta de callback)
+    if (!existingUser) {
+      console.warn('Usuario no encontrado en tabla personalizada tras autenticación social. Creando perfil...');
+      
+      // Extraer nombre del user_metadata
+      const fullName = user.user_metadata?.full_name || 
+                      user.user_metadata?.name || 
+                      user.email?.split('@')[0] || 'Usuario';
+                      
+      // Extraer avatar de user_metadata
+      const avatarUrl = user.user_metadata?.avatar_url;
+      
+      // Extraer teléfono si está disponible
+      const phone = user.user_metadata?.phone || user.phone;
+
+      // Crear perfil en nuestra tabla personalizada
+      const { data: newUser, error } = await supabase
+        .from('usuarios')
+        .insert([
+          {
+            correo_electronico: user.email,
+            contrasena_hash: 'autenticacion_social',
+            nombre: fullName,
+            telefono: phone || null,
+            url_avatar: avatarUrl,
+            verificado: true, // Con social auth consideramos que está verificado
+            autenticacion_social: true,
+            fecha_creacion: new Date().toISOString(),
+            fecha_actualizacion: new Date().toISOString(),
+          },
+        ])
+        .select('id, nombre, telefono, url_avatar')
+        .single();
+
+      if (error) {
+        console.error('Error al crear perfil después de autenticación social:', error);
+        return { success: false, error: error.message };
+      }
+      
+      // Sincronizar metadatos de vuelta a Supabase Auth para mantener consistencia
+      try {
+        await supabase.auth.updateUser({
+          data: {
+            nombre: fullName,
+            telefono: phone || undefined,
+            full_name: fullName,
+          }
+        });
+      } catch (updateError) {
+        console.error('Error al sincronizar metadatos en Auth:', updateError);
+        // No bloqueamos el proceso por error de sincronización
+      }
+      
+      return { success: true, user, userData: newUser };
+    } else {
+      // El usuario ya existe, actualizamos su información si es necesario
+      const userMetadata = user.user_metadata || {};
+      
+      // Comparar datos para ver si necesitamos actualizar
+      const needsUpdate = 
+        (userMetadata.avatar_url && userMetadata.avatar_url !== existingUser.url_avatar) ||
+        (userMetadata.full_name && userMetadata.full_name !== existingUser.nombre) ||
+        (userMetadata.phone && userMetadata.phone !== existingUser.telefono);
+        
+      if (needsUpdate) {
+        // Actualizamos los datos con la información más reciente del proveedor social
+        const updateData: any = {};
+        
+        if (userMetadata.avatar_url && userMetadata.avatar_url !== existingUser.url_avatar) {
+          updateData.url_avatar = userMetadata.avatar_url;
+        }
+        
+        if (userMetadata.full_name && userMetadata.full_name !== existingUser.nombre) {
+          updateData.nombre = userMetadata.full_name;
+        }
+        
+        if (userMetadata.phone && userMetadata.phone !== existingUser.telefono) {
+          updateData.telefono = userMetadata.phone;
+        }
+        
+        if (Object.keys(updateData).length > 0) {
+          updateData.fecha_actualizacion = new Date().toISOString();
+          
+          await supabase
+            .from('usuarios')
+            .update(updateData)
+            .eq('id', existingUser.id);
+        }
+      }
+      
+      // Asegurar que el estado de verificación esté sincronizado
+      if (!existingUser.verificado) {
+        await supabase
+          .from('usuarios')
+          .update({ 
+            verificado: true,
+            fecha_actualizacion: new Date().toISOString() 
+          })
+          .eq('id', existingUser.id);
+      }
+      
+      return { success: true, user, userData: existingUser };
+    }
+  } catch (error: any) {
+    console.error('Error en handleAuthCallback:', error);
+    return { success: false, error: error.message || 'Error en el proceso de autenticación' };
+  }
 }

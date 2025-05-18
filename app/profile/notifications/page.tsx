@@ -34,13 +34,16 @@ const NOTIFICATION_SETTINGS = [
 
 export default function NotificationsPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { 
+    user,
+    userData,
+    isLoading 
+  } = useAuth();
   const [settings, setSettings] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isLoading && !user) {
       router.push('/');
-      return;
     }
 
     // Load saved notification settings
@@ -56,7 +59,7 @@ export default function NotificationsPage() {
       setSettings(defaults);
       localStorage.setItem('notification_settings', JSON.stringify(defaults));
     }
-  }, [user, loading, router]);
+  }, [user, isLoading, router]);
 
   const handleToggle = (settingId: string) => {
     const newSettings = {
@@ -67,9 +70,9 @@ export default function NotificationsPage() {
     localStorage.setItem('notification_settings', JSON.stringify(newSettings));
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="container max-w-4xl py-8">
+      <div className="container max-w-6xl py-8">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
         </div>

@@ -352,7 +352,7 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
 export default function ProductDetailPage() {
   const params = useParams();
   const [product, setProduct] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const colors = categoryColors[params.category as keyof typeof categoryColors];
 
@@ -365,14 +365,14 @@ export default function ProductDetailPage() {
         console.error('Error loading product:', error);
         toast.error('Error al cargar el producto');
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
 
     loadProduct();
   }, [params.productId]);
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingState />;
   }
 

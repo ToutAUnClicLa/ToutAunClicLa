@@ -224,21 +224,79 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
   };
 
   const handleLogin = async () => {
-    const result = await signInWithEmail({
-      email: formData.email,
-      password: formData.password
-    });
-    
-    if (!result.usuario) {
-      throw new Error('No se pudo obtener la información del usuario');
-    }
-    
-    toast.success('¡Bienvenido de vuelta!');
-    onClose();
-    if (redirectUrl) {
-      router.push(redirectUrl);
-    } else {
-      router.refresh();
+    try {
+      const result = await signInWithEmail({
+        email: formData.email,
+        password: formData.password
+      });
+      
+      if (!result.usuario) {
+        throw new Error('No se pudo obtener la información del usuario');
+      }
+      
+      toast.success('¡Bienvenido de vuelta!');
+      onClose();
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      } else {
+        router.refresh();
+      }
+    } catch (err: any) {
+      // Si el error es por email no confirmado pero tenemos verificación en DB,
+      // mostrar un error específico y ofrecer opciones de solución
+      if (err.message && err.message.includes('Email not confirmed')) {
+        // Intentar sincronizar verificación
+        try {
+          const response = await fetch('/api/auth/sync-verification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: formData.email }),
+          });
+          
+          if (response.ok) {
+            // Si la sincronización fue exitosa, intentar iniciar sesión nuevamente
+            toast.success('Sincronizando verificación...');
+            setTimeout(async () => {
+              try {
+                const result = await signInWithEmail({
+                  email: formData.email,
+                  password: formData.password
+                });
+                
+                if (result.usuario) {
+                  toast.success('¡Bienvenido de vuelta!');
+                  onClose();
+                  if (redirectUrl) {
+                    router.push(redirectUrl);
+                  } else {
+                    router.refresh();
+                  }
+                  return;
+                }
+              } catch (retryErr) {
+                console.error('Error al reintentar inicio de sesión:', retryErr);
+              }
+              setError('Tu cuenta necesita verificación. Revisa tu email para verificar tu cuenta o solicita un nuevo enlace de verificación.');
+            }, 1500);
+            return;
+          } else {
+            const errorData = await response.json();
+            console.error('Error de sincronización:', errorData);
+            setError('Tu cuenta necesita verificación. Revisa tu email para verificar tu cuenta o solicita un nuevo enlace de verificación.');
+          }
+        } catch (syncErr) {
+          console.error('Error al sincronizar verificación:', syncErr);
+          setError('Tu cuenta necesita verificación. Revisa tu email para verificar tu cuenta o solicita un nuevo enlace de verificación.');
+        }
+      } else {
+        // Otros errores de autenticación
+        console.error('Auth error:', err);
+        if (err.message.includes('Invalid login credentials')) {
+          setError('Credenciales inválidas. Verifica tu email y contraseña.');
+        } else {
+          setError(err.message || 'Ha ocurrido un error al iniciar sesión');
+        }
+      }
     }
   };
 

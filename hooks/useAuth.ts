@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase/client';
 import { UsuarioData, getCurrentUser } from '@/lib/supabase/auth';
+import { toast } from 'sonner';
 
 interface AuthState {
   isLoading: boolean;
@@ -22,10 +23,47 @@ export function useAuth() {
     error: null,
   });
 
+  // Función para sincronizar verificación cuando se detectan inconsistencias
+  const syncVerification = useCallback(async (email: string) => {
+    try {
+      console.log('Intentando sincronizar estado de verificación para:', email);
+      const response = await fetch('/api/auth/sync-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      
+      if (response.ok) {
+        console.log('Estado de verificación sincronizado correctamente');
+        return true;
+      } else {
+        console.error('Error al sincronizar verificación:', await response.text());
+        return false;
+      }
+    } catch (error) {
+      console.error('Error al sincronizar verificación:', error);
+      return false;
+    }
+  }, []);
+
   // Cargar datos del usuario
   const loadUserData = useCallback(async (user: User) => {
     try {
       const { auth, usuario } = await getCurrentUser();
+      
+      // Detectar inconsistencias en el estado de verificación
+      if (auth && usuario) {
+        const authConfirmed = !!auth.email_confirmed_at;
+        const dbConfirmed = usuario.verificado;
+        
+        // Si hay inconsistencia en verificación 
+        if (dbConfirmed && !authConfirmed) {
+          console.log('Detectada inconsistencia en verificación. DB confirma, Auth no');
+          // Intentar sincronizar (solo si el usuario está verificado en DB)
+          await syncVerification(usuario.correo_electronico);
+        }
+      }
+      
       setState(prev => ({
         ...prev,
         isLoading: false,
@@ -41,7 +79,7 @@ export function useAuth() {
         error: error as Error,
       }));
     }
-  }, []);
+  }, [syncVerification]);
 
   useEffect(() => {
     // Obtener sesión inicial
@@ -132,5 +170,6 @@ export function useAuth() {
     userData: state.userData,
     error: state.error,
     refreshAuth,
+    syncVerification,
   };
 }

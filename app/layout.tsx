@@ -24,11 +24,11 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/logoaunclic.svg',
+        url: '/icons/favicon.ico',
         type: 'image/svg+xml',
       },
       {
-        url: '/icons/favicon.svg',
+        url: '/icons/favicon.ico',
         type: 'image/svg+xml',
         sizes: '32x32'
       }

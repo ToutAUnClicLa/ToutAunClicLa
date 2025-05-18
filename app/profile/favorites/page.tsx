@@ -45,12 +45,16 @@ const item = {
 
 export default function FavoritesPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { 
+    user,
+    userData,
+    isLoading,
+    isAuthenticated 
+  } = useAuth();
   const [favorites, setFavorites] = useState<FavoriteProduct[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isLoading && !user) {
       router.push('/');
       return;
     }
@@ -58,7 +62,7 @@ export default function FavoritesPage() {
     if (user) {
       loadFavorites();
     }
-  }, [user, loading, router]);
+  }, [user, isLoading, router]);
 
   async function loadFavorites() {
     try {
@@ -84,8 +88,6 @@ export default function FavoritesPage() {
     } catch (error) {
       console.error('Error loading favorites:', error);
       toast.error('Error al cargar los favoritos');
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -100,7 +102,7 @@ export default function FavoritesPage() {
     }
   }
 
-  if (loading || isLoading) {
+  if (isLoading) {
     return (
       <div className="container max-w-6xl py-8">
         <div className="flex items-center justify-center min-h-[400px]">

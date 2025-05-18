@@ -57,7 +57,14 @@ const PROFILE_SECTIONS = [
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { 
+    user, 
+    userData, 
+    isLoading,
+    isAuthenticated,
+    error,
+    refreshAuth
+  } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [stats, setStats] = useState<Stats>({
     addresses: 0,
@@ -103,7 +110,7 @@ export default function ProfilePage() {
   }, [user]);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isLoading && !user) {
       router.push('/');
       return;
     }
@@ -111,9 +118,9 @@ export default function ProfilePage() {
     if (user) {
       loadUserData();
     }
-  }, [user, loading, router, loadUserData]);
+  }, [user, isLoading, router, loadUserData]);
 
-  if (loading || !profile) {
+  if (isLoading || !profile) {
     return (
       <div className="container max-w-6xl py-8">
         <div className="flex items-center justify-center min-h-[400px]">
