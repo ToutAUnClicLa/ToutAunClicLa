@@ -26,19 +26,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { 
-  SignedIn, 
-  SignedOut, 
-  SignInButton, 
-  SignUpButton, 
-  UserButton,
-  useUser,
-  SignOutButton
-} from '@clerk/nextjs';
 import { toast } from "sonner";
 import Image from "next/image";
 import { CartDrawer } from "@/components/modules/cart/CartDrawer";
 import { getFavoritesCount } from "@/lib/services/favorites";
+import { useAuth } from "@/hooks/useAuth";
+import AuthModal from "@/components/auth/AuthModal";
+import { signOut } from "@/lib/supabase/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const LINKS = [
   { href: "/", label: "Inicio", icon: Home },
@@ -59,15 +54,17 @@ const PROFILE_MENU_ITEMS = [
 export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { isAuthenticated, user, userData, isLoading } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [favoritesCount, setFavoritesCount] = useState(0);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgotPassword'>('login');
 
   useEffect(() => {
-    if (isSignedIn) {
+    if (isAuthenticated && userData) {
       loadFavoritesCount();
     }
-  }, [isSignedIn]);
+  }, [isAuthenticated, userData]);
 
   const loadFavoritesCount = async () => {
     try {
@@ -81,6 +78,40 @@ export function Navbar() {
   const handleProfileNavigation = (href: string) => {
     setIsMobileMenuOpen(false);
     router.push(href);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success('Sesión cerrada correctamente');
+      if (pathname.startsWith('/profile')) {
+        router.push('/');
+      }
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      toast.error('Error al cerrar sesión');
+    }
+  };
+
+  const openAuthModal = (mode: 'login' | 'register' | 'forgotPassword' = 'login') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
+
+  // Obtener las iniciales del usuario para el avatar fallback
+  const getUserInitials = () => {
+    if (!userData || !userData.nombre) return 'U';
+    const nombre = userData.nombre;
+    return nombre.split(' ').map((n: string) => n[0]).join('').toUpperCase().substring(0, 2);
+  };
+
+  // Obtener el estado de verificación del usuario
+  const isUserVerified = () => {
+    return userData?.verificado || false;
   };
 
   return (
@@ -137,7 +168,7 @@ export function Navbar() {
 
             {/* Actions */}
             <div className="flex items-center space-x-4">
-              <SignedIn>
+              {isAuthenticated && (
                 <Button
                   variant="ghost"
                   size="icon"
@@ -151,32 +182,72 @@ export function Navbar() {
                     </span>
                   )}
                 </Button>
-              </SignedIn>
+              )}
 
               <CartDrawer />
 
-              {/* Autenticación con Clerk */}
+              {/* Autenticación */}
               <div className="hidden md:flex">
-                <SignedIn>
-                  <UserButton 
-                    appearance={{
-                      elements: {
-                        userButtonAvatarBox: "h-10 w-10 rounded-full border-2 border-gray-200 hover:border-indigo-500 transition-colors"
-                      }
-                    }}
-                  />
-                </SignedIn>
-                <SignedOut>
+                {isAuthenticated ? (
+                  <div className="relative group">
+                    <Avatar className="h-10 w-10 border-2 border-gray-200 hover:border-indigo-500 transition-colors cursor-pointer">
+                      <AvatarImage src={userData?.url_avatar || ''} />
+                      <AvatarFallback className="bg-indigo-100 text-indigo-600">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    {!isUserVerified() && (
+                      <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-amber-500 border-2 border-white" 
+                        title="Tu cuenta necesita verificación">
+                      </span>
+                    )}
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                      {userData && (
+                        <div className="px-4 py-2 border-b border-gray-100">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {userData.nombre}
+                          </p>
+                          <p className="text-xs text-gray-500 truncate">
+                            {userData.correo_electronico}
+                          </p>
+                          {!isUserVerified() && (
+                            <p className="text-xs text-amber-600 mt-1 font-medium">
+                              Cuenta sin verificar
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      {PROFILE_MENU_ITEMS.map((item) => (
+                        <button
+                          key={item.href}
+                          onClick={() => router.push(item.href)}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 flex items-center"
+                        >
+                          <item.icon className="h-4 w-4 mr-2 text-gray-500" />
+                          {item.label}
+                        </button>
+                      ))}
+                      <div className="border-t border-gray-100 my-1"></div>
+                      <button
+                        onClick={handleSignOut}
+                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Cerrar sesión
+                      </button>
+                    </div>
+                  </div>
+                ) : (
                   <div className="flex items-center">
                     <Button 
                       variant="default" 
                       size="sm"
-                      onClick={() => router.push('/sign-in')}
+                      onClick={() => openAuthModal('login')}
                     >
                       Iniciar Sesión
                     </Button>
                   </div>
-                </SignedOut>
+                )}
               </div>
 
               {/* Mobile Menu */}
@@ -220,69 +291,75 @@ export function Navbar() {
                   <div className="flex flex-col h-[calc(100%-64px)]">
                     {/* Parte superior - Autenticación */}
                     <div className="p-4 border-b">
-                      <SignedIn>
-                        {isLoaded && user && (
-                          <div className="flex flex-col space-y-3">
-                            <div className="flex items-center space-x-3">
-                              <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-gray-200">
-                                <UserButton 
-                                  appearance={{
-                                    elements: {
-                                      userButtonBox: "h-full w-full",
-                                      userButtonAvatarBox: "h-full w-full border-0"
-                                    }
-                                  }}
-                                />
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-medium text-sm text-gray-900 truncate">
-                                  {user.fullName || user.username || 'Usuario'}
+                      {isAuthenticated && userData ? (
+                        <div className="flex flex-col space-y-3">
+                          <div className="flex items-center space-x-3">
+                            <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-gray-200 relative">
+                              <Avatar className="h-full w-full">
+                                <AvatarImage src={userData?.url_avatar || ''} alt="Avatar" />
+                                <AvatarFallback className="bg-indigo-100 text-indigo-600">
+                                  {getUserInitials()}
+                                </AvatarFallback>
+                              </Avatar>
+                              {!isUserVerified() && (
+                                <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-amber-500 border-2 border-white"></span>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium text-sm text-gray-900 truncate">
+                                {userData.nombre}
+                              </p>
+                              <p className="text-xs text-gray-500 truncate">
+                                {userData.correo_electronico}
+                              </p>
+                              {!isUserVerified() && (
+                                <p className="text-xs text-amber-600 mt-0.5 font-medium">
+                                  Cuenta sin verificar
                                 </p>
-                                <p className="text-xs text-gray-500 truncate">{user.primaryEmailAddress?.emailAddress}</p>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 rounded-full hover:bg-gray-100"
-                                onClick={() => router.push('/profile')}
-                              >
-                                <ChevronRight className="h-4 w-4 text-gray-400" />
-                              </Button>
+                              )}
                             </div>
-                            
-                            <div className="grid grid-cols-2 gap-2 mt-1">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="w-full justify-center text-gray-700 border-gray-300"
-                                onClick={() => router.push('/profile')}
-                              >
-                                <User className="h-3.5 w-3.5 mr-1.5" />
-                                Mi Perfil
-                              </Button>
-                              
-                              <SignOutButton>
-                                <Button 
-                                  variant="outline"
-                                  size="sm"
-                                  className="w-full justify-center text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
-                                  onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                  <LogOut className="h-3.5 w-3.5 mr-1.5" />
-                                  Salir
-                                </Button>
-                              </SignOutButton>
-                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 rounded-full hover:bg-gray-100"
+                              onClick={() => router.push('/profile')}
+                            >
+                              <ChevronRight className="h-4 w-4 text-gray-400" />
+                            </Button>
                           </div>
-                        )}
-                      </SignedIn>
-                      <SignedOut>
+                          
+                          <div className="grid grid-cols-2 gap-2 mt-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-full justify-center text-gray-700 border-gray-300"
+                              onClick={() => router.push('/profile')}
+                            >
+                              <User className="h-3.5 w-3.5 mr-1.5" />
+                              Mi Perfil
+                            </Button>
+                            
+                            <Button 
+                              variant="outline"
+                              size="sm"
+                              className="w-full justify-center text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                              onClick={() => {
+                                setIsMobileMenuOpen(false);
+                                handleSignOut();
+                              }}
+                            >
+                              <LogOut className="h-3.5 w-3.5 mr-1.5" />
+                              Salir
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
                         <div className="flex items-center flex-col space-y-2 w-full">
                           <Button 
                             className="w-full"
                             onClick={() => {
                               setIsMobileMenuOpen(false);
-                              router.push('/sign-in');
+                              openAuthModal('login');
                             }}
                           >
                             <User className="h-4 w-4 mr-2" />
@@ -293,13 +370,13 @@ export function Navbar() {
                             className="w-full"
                             onClick={() => {
                               setIsMobileMenuOpen(false);
-                              router.push('/sign-up');
+                              openAuthModal('register');
                             }}
                           >
                             Crear Cuenta
                           </Button>
                         </div>
-                      </SignedOut>
+                      )}
                     </div>
 
                     {/* Menú de navegación */}
@@ -335,7 +412,7 @@ export function Navbar() {
                         </div>
 
                         {/* Enlaces de perfil (solo para usuarios autenticados) */}
-                        <SignedIn>
+                        {isAuthenticated && (
                           <div className="mb-4">
                             <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                               Mi Cuenta
@@ -354,7 +431,7 @@ export function Navbar() {
                               ))}
                             </div>
                           </div>
-                        </SignedIn>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -364,6 +441,12 @@ export function Navbar() {
           </div>
         </nav>
       </header>
+
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={closeAuthModal} 
+        initialMode={authModalMode}
+      />
     </>
   );
 }

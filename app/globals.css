@@ -61,3 +61,8 @@
 .button-secondary {
   @apply bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
 }
+
+/* Ocultar el botón de cierre por defecto de los diálogos de Radix UI */
+[data-radix-popper-content-wrapper] [data-radix-dialog-close] {
+  display: none !important;
+}
