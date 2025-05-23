@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { Star, ShoppingCart, Heart, Share2, ChevronRight, Package, Shield, Truck, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,6 +14,10 @@ import { getProductDetail } from '@/lib/services/products';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import dynamic from 'next/dynamic';
+import { isFavorite, addToFavorites, removeFromFavorites } from '@/lib/services/favorites';
+import { addToCart } from '@/lib/services/cart';
+import { useAuth } from '@/hooks/useAuth';
+import AuthModal from '@/components/auth/AuthModal';
 
 // Dynamically import heavy components
 const MotionImage = motion(Image);
@@ -76,16 +80,71 @@ const LoadingState = () => (
 
 function ProductDetail({ product, colors, params }: { product: any; colors: any; params: any }) {
   const [selectedImage, setSelectedImage] = useState(0);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { user } = useAuth();
 
   const images = [
     product.imagen_principal,
     ...(product.imagenes_adicionales || [])
   ];
 
-  const handleAddToCart = () => {
-    toast.success(`${quantity} ${quantity === 1 ? 'unidad' : 'unidades'} de ${product.nombre} ${quantity === 1 ? 'agregada' : 'agregadas'} al carrito`);
+  // Verificar si el producto está en favoritos al cargar el componente
+  const checkFavoriteStatus = useCallback(async () => {
+    try {
+      if (user) {
+        const favoriteStatus = await isFavorite(product.id);
+        setIsFavorited(favoriteStatus);
+      }
+    } catch (error) {
+      console.error('Error al verificar estado de favorito:', error);
+    }
+  }, [product.id, user]);
+
+  useEffect(() => {
+    checkFavoriteStatus();
+  }, [checkFavoriteStatus]);
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await addToCart(product.id, quantity);
+      toast.success(`${quantity} ${quantity === 1 ? 'unidad' : 'unidades'} de ${product.nombre} ${quantity === 1 ? 'agregada' : 'agregadas'} al carrito`);
+    } catch (error) {
+      console.error('Error al agregar al carrito:', error);
+      toast.error('Error al agregar al carrito');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    try {
+      setIsFavorited(!isFavorited);
+      if (isFavorited) {
+        await removeFromFavorites(product.id);
+        toast.success('Eliminado de favoritos');
+      } else {
+        await addToFavorites(product.id);
+        toast.success('Agregado a favoritos');
+      }
+    } catch (error) {
+      console.error('Error al actualizar favoritos:', error);
+      toast.error('Error al actualizar favoritos');
+      setIsFavorited(!isFavorited); // Revertir cambio en UI si falla
+    }
   };
 
   return (
@@ -260,20 +319,29 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
             <Button 
               className={cn("flex-1 h-10", colors.button)}
               onClick={handleAddToCart}
-              disabled={product.stock === 0}
+              disabled={product.stock === 0 || isLoading}
             >
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              {product.stock === 0 ? 'Sin stock' : 'Agregar'}
+              {isLoading ? (
+                <span className="flex items-center">
+                  <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Agregando...
+                </span>
+              ) : (
+                <>
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  {product.stock === 0 ? 'Sin stock' : 'Agregar'}
+                </>
+              )}
             </Button>
             <Button
               variant="outline"
               size="icon"
               className="h-10 w-10"
-              onClick={() => setIsFavorite(!isFavorite)}
+              onClick={handleToggleFavorite}
             >
               <Heart
                 className={`h-4 w-4 ${
-                  isFavorite ? 'fill-red-500 text-red-500' : ''
+                  isFavorited ? 'fill-red-500 text-red-500' : ''
                 }`}
               />
             </Button>
@@ -345,6 +413,12 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
           </div>
         </div>
       )}
+
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+        initialMode="login" 
+      />
     </>
   );
 }

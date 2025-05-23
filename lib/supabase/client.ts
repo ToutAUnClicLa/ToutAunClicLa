@@ -20,7 +20,11 @@ export const supabase = createClient<Database>(
       autoRefreshToken: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      // No configuramos URL de redirección aquí, sino en las funciones específicas
+    },
+    global: {
+      headers: {
+        'X-Client-Info': 'custom-auth-flow',
+      },
     },
   }
 );

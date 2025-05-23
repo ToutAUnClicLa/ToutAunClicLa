@@ -38,16 +38,20 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
 
   const checkFavoriteStatus = useCallback(async () => {
     try {
-      const status = await isFavorite(product.id);
-      setIsFavorited(status);
+      if (user) {
+        const status = await isFavorite(product.id);
+        setIsFavorited(status);
+      }
     } catch (error) {
       console.error('Error checking favorite status:', error);
     }
-  }, [product.id]);
+  }, [product.id, user]);
 
   useEffect(() => {
     if (user) {
       checkFavoriteStatus();
+    } else {
+      setIsFavorited(false);
     }
   }, [user, checkFavoriteStatus]);
 
@@ -83,6 +87,7 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
 
     try {
       setIsFavorited(!isFavorited);
+      
       if (isFavorited) {
         await removeFromFavorites(product.id);
         toast.success('Eliminado de favoritos');

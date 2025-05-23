@@ -242,60 +242,100 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
         router.refresh();
       }
     } catch (err: any) {
-      // Si el error es por email no confirmado pero tenemos verificación en DB,
-      // mostrar un error específico y ofrecer opciones de solución
-      if (err.message && err.message.includes('Email not confirmed')) {
-        // Intentar sincronizar verificación
+      console.error('Auth error:', err);
+      
+      // Manejo más eficiente de los errores
+      if (err.message && (
+          err.message.toLowerCase().includes('verificación') || 
+          err.message.toLowerCase().includes('verifica')
+      )) {
+        // Error relacionado con verificación de cuenta
+        setError(err.message);
+        
+        // Intentar sincronizar la verificación automáticamente primero
         try {
-          const response = await fetch('/api/auth/sync-verification', {
+          setIsLoading(true);
+          const syncResponse = await fetch('/api/auth/sync-verification', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: formData.email }),
           });
           
-          if (response.ok) {
-            // Si la sincronización fue exitosa, intentar iniciar sesión nuevamente
-            toast.success('Sincronizando verificación...');
-            setTimeout(async () => {
-              try {
-                const result = await signInWithEmail({
-                  email: formData.email,
-                  password: formData.password
-                });
-                
-                if (result.usuario) {
-                  toast.success('¡Bienvenido de vuelta!');
-                  onClose();
-                  if (redirectUrl) {
-                    router.push(redirectUrl);
-                  } else {
-                    router.refresh();
-                  }
-                  return;
+          if (syncResponse.ok) {
+            // Si se sincronizó correctamente, intentar iniciar sesión de nuevo
+            toast.success('Estado de verificación actualizado. Intentando iniciar sesión...');
+            
+            try {
+              const retryResult = await signInWithEmail({
+                email: formData.email,
+                password: formData.password
+              });
+              
+              if (retryResult.usuario) {
+                toast.success('¡Bienvenido de vuelta!');
+                onClose();
+                if (redirectUrl) {
+                  router.push(redirectUrl);
+                } else {
+                  router.refresh();
                 }
-              } catch (retryErr) {
-                console.error('Error al reintentar inicio de sesión:', retryErr);
+                return;
               }
-              setError('Tu cuenta necesita verificación. Revisa tu email para verificar tu cuenta o solicita un nuevo enlace de verificación.');
-            }, 1500);
-            return;
-          } else {
-            const errorData = await response.json();
-            console.error('Error de sincronización:', errorData);
-            setError('Tu cuenta necesita verificación. Revisa tu email para verificar tu cuenta o solicita un nuevo enlace de verificación.');
+            } catch (retryError) {
+              console.error('Error al reintentar inicio de sesión:', retryError);
+              // Continuamos con el flujo normal si el reintento falla
+            }
           }
-        } catch (syncErr) {
-          console.error('Error al sincronizar verificación:', syncErr);
-          setError('Tu cuenta necesita verificación. Revisa tu email para verificar tu cuenta o solicita un nuevo enlace de verificación.');
+          
+          // Si la sincronización falló o el reintento falló, preguntar por reenvío
+          const shouldResend = window.confirm(
+            "¿Deseas que enviemos un nuevo correo de verificación?"
+          );
+          
+          if (shouldResend) {
+            const response = await fetch('/api/auth/resend-verification', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: formData.email }),
+            });
+            
+            if (response.ok) {
+              toast.success('Nuevo correo de verificación enviado. Por favor, revisa tu bandeja de entrada.');
+            } else {
+              const errorData = await response.json();
+              toast.error(errorData.error || 'Error al enviar el correo de verificación');
+            }
+          }
+        } catch (syncError) {
+          console.error('Error al sincronizar verificación:', syncError);
+          toast.error('Hubo un problema al verificar tu cuenta. Por favor, intenta nuevamente.');
+        } finally {
+          setIsLoading(false);
+        }
+      } else if (err.message && err.message.includes('Invalid login credentials')) {
+        // Credenciales inválidas
+        setError('Credenciales inválidas. Verifica tu email y contraseña.');
+      } else if (err.message && err.message.includes('Email not confirmed')) {
+        // Email no confirmado (aunque no debería llegar aquí debido a las mejoras en auth.ts)
+        setError('Tu cuenta necesita verificación. Por favor, revisa tu correo electrónico para completar el proceso de verificación.');
+        
+        // Ofrecer reenvío automáticamente
+        try {
+          setIsLoading(true);
+          await fetch('/api/auth/resend-verification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: formData.email }),
+          });
+          toast.success('Hemos enviado un nuevo correo de verificación a tu email.');
+        } catch (resendError) {
+          console.error('Error al reenviar verificación:', resendError);
+        } finally {
+          setIsLoading(false);
         }
       } else {
-        // Otros errores de autenticación
-        console.error('Auth error:', err);
-        if (err.message.includes('Invalid login credentials')) {
-          setError('Credenciales inválidas. Verifica tu email y contraseña.');
-        } else {
-          setError(err.message || 'Ha ocurrido un error al iniciar sesión');
-        }
+        // Otros errores
+        setError(err.message || 'Ha ocurrido un error al iniciar sesión');
       }
     }
   };

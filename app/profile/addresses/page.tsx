@@ -50,7 +50,7 @@ export default function AddressesPage() {
       const { data: userData } = await supabase
         .from('usuarios')
         .select('id')
-        .eq('email', user!.email)
+        .eq('correo_electronico', user!.email)
         .single();
 
       if (!userData) throw new Error('Usuario no encontrado');

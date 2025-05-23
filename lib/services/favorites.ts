@@ -1,123 +1,204 @@
 import { supabase } from '@/lib/supabase/client';
 
 export async function addToFavorites(productId: number) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('User not authenticated');
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
 
-  const { data: userData } = await supabase
-    .from('usuarios')
-    .select('id')
-    .eq('email', user.email)
-    .single();
+    const { data: userData, error: userError } = await supabase
+      .from('usuarios')
+      .select('id')
+      .eq('correo_electronico', user.email)
+      .single();
 
-  if (!userData) throw new Error('User profile not found');
+    if (userError || !userData) {
+      console.error('Error al obtener el usuario:', userError);
+      throw new Error('User profile not found');
+    }
 
-  const { error } = await supabase
-    .from('favoritos')
-    .insert({
-      usuario_id: userData.id,
-      producto_id: productId
-    });
+    // Verificar si ya existe en favoritos para evitar duplicados
+    const { data: existingFavorite, error: checkError } = await supabase
+      .from('favoritos')
+      .select('id')
+      .eq('usuario_id', userData.id)
+      .eq('producto_id', productId)
+      .single();
+      
+    if (checkError && checkError.code !== 'PGRST116') {
+      console.error('Error al verificar favorito existente:', checkError);
+    }
+    
+    if (existingFavorite) {
+      // Ya existe, no necesitamos agregarlo nuevamente
+      return;
+    }
 
-  if (error) throw error;
+    const { error } = await supabase
+      .from('favoritos')
+      .insert({
+        usuario_id: userData.id,
+        producto_id: productId
+      });
+
+    if (error) {
+      console.error('Error al añadir a favoritos:', error);
+      throw error;
+    }
+  } catch (err) {
+    console.error('Error en addToFavorites:', err);
+    throw err;
+  }
 }
 
 export async function removeFromFavorites(productId: number) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('User not authenticated');
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
 
-  const { data: userData } = await supabase
-    .from('usuarios')
-    .select('id')
-    .eq('email', user.email)
-    .single();
+    const { data: userData, error: userError } = await supabase
+      .from('usuarios')
+      .select('id')
+      .eq('correo_electronico', user.email)
+      .single();
 
-  if (!userData) throw new Error('User profile not found');
+    if (userError || !userData) {
+      console.error('Error al obtener el usuario:', userError);
+      throw new Error('User profile not found');
+    }
 
-  const { error } = await supabase
-    .from('favoritos')
-    .delete()
-    .match({ usuario_id: userData.id, producto_id: productId });
+    const { error } = await supabase
+      .from('favoritos')
+      .delete()
+      .eq('usuario_id', userData.id)
+      .eq('producto_id', productId);
 
-  if (error) throw error;
+    if (error) {
+      console.error('Error al eliminar de favoritos:', error);
+      throw error;
+    }
+  } catch (err) {
+    console.error('Error en removeFromFavorites:', err);
+    throw err;
+  }
 }
 
 export async function getFavorites() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('User not authenticated');
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
 
-  const { data: userData } = await supabase
-    .from('usuarios')
-    .select('id')
-    .eq('email', user.email)
-    .single();
+    const { data: userData, error: userError } = await supabase
+      .from('usuarios')
+      .select('id')
+      .eq('correo_electronico', user.email)
+      .single();
 
-  if (!userData) throw new Error('User profile not found');
+    if (userError || !userData) {
+      console.error('Error al obtener el usuario:', userError);
+      throw new Error('User profile not found');
+    }
 
-  const { data, error } = await supabase
-    .from('favoritos')
-    .select(`
-      id,
-      fecha_agregado,
-      productos (
+    const { data, error } = await supabase
+      .from('favoritos')
+      .select(`
         id,
-        nombre,
-        descripcion,
-        precio,
-        imagen_principal,
-        stock,
-        rating,
-        subcategorias (
-          nombre
+        fecha_agregado,
+        productos (
+          id,
+          nombre,
+          descripcion,
+          precio,
+          imagen_principal,
+          stock,
+          rating,
+          subcategorias (
+            nombre
+          )
         )
-      )
-    `)
-    .eq('usuario_id', userData.id)
-    .order('fecha_agregado', { ascending: false });
+      `)
+      .eq('usuario_id', userData.id)
+      .order('fecha_agregado', { ascending: false });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      console.error('Error al obtener favoritos:', error);
+      throw error;
+    }
+    return data;
+  } catch (err) {
+    console.error('Error en getFavorites:', err);
+    throw err;
+  }
 }
 
 export async function getFavoritesCount(): Promise<number> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return 0;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return 0;
 
-  const { data: userData } = await supabase
-    .from('usuarios')
-    .select('id')
-    .eq('email', user.email)
-    .single();
+    // Obtener primero el usuario_id de la tabla usuarios
+    const { data: userData, error: userError } = await supabase
+      .from('usuarios')
+      .select('id')
+      .eq('correo_electronico', user.email)
+      .single();
 
-  if (!userData) return 0;
+    if (userError || !userData) {
+      console.error('Error al obtener el usuario:', userError);
+      return 0;
+    }
 
-  const { count, error } = await supabase
-    .from('favoritos')
-    .select('*', { count: 'exact', head: true })
-    .eq('usuario_id', userData.id);
+    // Utilizar el id obtenido para consultar los favoritos
+    const { count, error } = await supabase
+      .from('favoritos')
+      .select('id', { count: 'exact', head: true })
+      .eq('usuario_id', userData.id);
 
-  if (error) return 0;
-  return count || 0;
+    if (error) {
+      console.error('Error al obtener favoritos:', error);
+      return 0;
+    }
+    
+    return count || 0;
+  } catch (err) {
+    console.error('Error en getFavoritesCount:', err);
+    return 0;
+  }
 }
 
 export async function isFavorite(productId: number): Promise<boolean> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return false;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
 
-  const { data: userData } = await supabase
-    .from('usuarios')
-    .select('id')
-    .eq('email', user.email)
-    .single();
+    const { data: userData, error: userError } = await supabase
+      .from('usuarios')
+      .select('id')
+      .eq('correo_electronico', user.email)
+      .single();
 
-  if (!userData) return false;
+    if (userError || !userData) {
+      console.error('Error al obtener el usuario:', userError);
+      return false;
+    }
 
-  const { data, error } = await supabase
-    .from('favoritos')
-    .select('id')
-    .match({ usuario_id: userData.id, producto_id: productId })
-    .single();
+    const { data, error } = await supabase
+      .from('favoritos')
+      .select('id')
+      .eq('usuario_id', userData.id)
+      .eq('producto_id', productId)
+      .single();
 
-  if (error) return false;
-  return !!data;
+    if (error) {
+      // Ignoramos el error PGRST116 (registro no encontrado)
+      if (error.code === 'PGRST116') {
+        return false;
+      }
+      console.error('Error al verificar favorito:', error);
+      return false;
+    }
+    return !!data;
+  } catch (err) {
+    console.error('Error en isFavorite:', err);
+    return false;
+  }
 }

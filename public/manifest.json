@@ -1,22 +1,80 @@
 {
-  "name": "A un clic la - E-commerce",
-  "short_name": "A un clic la",
+  "name": "Tout à un Clic LA - Productos Latinoamericanos en Montreal",
+  "short_name": "Tout à un Clic LA",
+  "description": "Descubre productos auténticos de América Latina en Montreal. Alimentos, artesanías, ropa y más con entrega a domicilio en Quebec y todo Canadá.",
+  "categories": ["shopping", "food", "lifestyle", "culture"],
+  "lang": "es",
+  "dir": "ltr",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#4f46e5",
+  "background_color": "#ffffff",
   "icons": [
     {
-      "src": "/logoaunclic.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/icons/FaviconFinal-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/favicon.svg",
-      "sizes": "32x32",
-      "type": "image/svg+xml"
+      "src": "/icons/FaviconFinal-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "theme_color": "#4f46e5",
-  "background_color": "#ffffff",
-  "start_url": "/",
-  "display": "standalone",
-  "orientation": "portrait"
+  "screenshots": [
+    {
+      "src": "/screenshots/home-screen.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "platform": "wide",
+      "label": "Tienda online de productos latinoamericanos"
+    },
+    {
+      "src": "/screenshots/products-screen.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "platform": "wide",
+      "label": "Catálogo de productos latinoamericanos"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Productos",
+      "url": "/productos",
+      "description": "Explora nuestro catálogo de productos latinoamericanos"
+    },
+    {
+      "name": "Comidas",
+      "url": "/comidas",
+      "description": "Descubre la gastronomía latinoamericana"
+    },
+    {
+      "name": "Boutique",
+      "url": "/boutique",
+      "description": "Visita nuestra boutique de productos artesanales"
+    }
+  ],
+  "scope": "/",
+  "iarc_rating_id": "",
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "handling": {
+    "manifest": "omit",
+    "shell": "prefer-native"
+  },
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  }
 } 

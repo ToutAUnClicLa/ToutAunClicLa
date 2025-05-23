@@ -80,7 +80,7 @@ export default function ProfilePage() {
       const { data: profileData, error: profileError } = await supabase
         .from('usuarios')
         .select('*')
-        .eq('email', user.email)
+        .eq('correo_electronico', user.email)
         .single();
 
       if (profileError) throw profileError;

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sendVerificationEmailServer } from '@/lib/email/resend-server';
 import { supabase } from '@/lib/supabase/client';
 import crypto from 'crypto';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,21 +38,27 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // 2. Registrar usuario en Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+    // 2. Configurar el cliente Supabase
+    // IMPORTANTE: Usamos la key anónima para esto, ya que no tenemos acceso a service_role en el cliente
+    const supabaseServer = createRouteHandlerClient({ cookies });
+    
+    // 3. Registrar usuario en Supabase Auth con configuración específica para evitar emails automáticos
+    // NOTA: La configuración más importante es "email_confirm: false" para evitar que el estado
+    // cambie automáticamente cuando el usuario haga clic en un enlace de Supabase
+    const { data: authData, error: authError } = await supabaseServer.auth.signUp({
       email,
       password,
       options: {
+        // Explícitamente establecer redirectTo a undefined para evitar emails automáticos
+        emailRedirectTo: undefined,
         data: {
           nombre,
           telefono: telefono || undefined,
           full_name: nombre,
-        },
-        // IMPORTANTE: Deshabilitar COMPLETAMENTE el envío de emails por Supabase
-        emailRedirectTo: undefined,
-        // Configurar para NO enviar correos de verificación automáticos
-        // No incluimos emailConfirmationRedirectTo para evitar redirecciones automáticas
-      },
+          // Indicar explícitamente que queremos manejar la verificación nosotros
+          email_verification_handled_externally: true
+        }
+      }
     });
     
     if (authError || !authData.user) {
@@ -61,12 +69,12 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // 3. Generar token de verificación
+    // 4. Generar token de verificación
     const token = crypto.randomBytes(32).toString('hex');
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24); // Token válido por 24 horas
     
-    // 4. Crear registro en nuestra tabla de usuarios
+    // 5. Crear registro en nuestra tabla de usuarios
     const { data: usuario, error: userError } = await supabase
       .from('usuarios')
       .insert([
@@ -87,14 +95,28 @@ export async function POST(req: NextRequest) {
     if (userError || !usuario) {
       console.error('Error al crear perfil de usuario:', userError);
       // Intentar limpiar el usuario creado en Auth
-      await supabase.auth.admin.deleteUser(authData.user.id);
+      try {
+        if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+          const supabaseAdmin = createRouteHandlerClient({ cookies }, {
+            supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+            supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+          });
+          await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+          console.log('Usuario eliminado de Auth tras error en DB:', authData.user.id);
+        } else {
+          console.error('No se pudo limpiar el usuario Auth tras error en DB (sin clave de servicio)');
+        }
+      } catch (cleanupError) {
+        console.error('Error adicional al intentar limpiar:', cleanupError);
+      }
+      
       return NextResponse.json(
         { error: userError?.message || 'Error al crear el perfil' },
         { status: 500 }
       );
     }
     
-    // 5. Guardar token en la tabla de verificación
+    // 6. Guardar token en la tabla de verificación
     const { error: tokenError } = await supabase
       .from('tokens_verificacion_email')
       .insert([
@@ -113,7 +135,7 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // 6. Enviar email de verificación
+    // 7. Enviar email de verificación con nuestro propio sistema
     try {
       await sendVerificationEmailServer({
         email,

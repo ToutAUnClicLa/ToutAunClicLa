@@ -94,7 +94,7 @@ export default function FavoritesPage() {
   async function handleRemoveFavorite(productId: number) {
     try {
       await removeFromFavorites(productId);
-      setFavorites(favorites.filter(fav => fav.productos.id === productId));
+      setFavorites(favorites.filter(fav => fav.productos.id !== productId));
       toast.success('Producto eliminado de favoritos');
     } catch (error) {
       console.error('Error removing favorite:', error);

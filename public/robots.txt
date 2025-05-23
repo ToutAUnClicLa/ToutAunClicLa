@@ -1,0 +1,65 @@
+# Tout à un Clic LA - Robots.txt optimizado para SEO
+User-agent: *
+Allow: /
+Allow: /sitemap.xml
+Allow: /productos
+Allow: /comidas
+Allow: /boutique
+Allow: /blog
+Allow: /sobre-nosotros
+Allow: /contacto
+Allow: /terminos
+Allow: /politicas
+Allow: /faq
+Allow: /es
+Allow: /fr
+Allow: /en
+
+# Directorios y archivos a no indexar
+Disallow: /api/
+Disallow: /_next/
+Disallow: /*?query=
+Disallow: /admin
+Disallow: /checkout/success
+Disallow: /checkout/error
+Disallow: /auth/
+
+# Directorios específicos permitidos con mayor prioridad
+User-agent: Googlebot
+Allow: /
+Allow: /productos/
+Allow: /comidas/
+Allow: /boutique/
+Allow: /blog/
+Disallow: /api/
+Disallow: /_next/
+
+# Instrucciones para Bingbot
+User-agent: Bingbot
+Allow: /
+Allow: /productos/
+Allow: /comidas/
+Allow: /boutique/
+Allow: /blog/
+Disallow: /api/
+Disallow: /_next/
+
+# Instrucciones para DuckDuckBot
+User-agent: DuckDuckBot
+Allow: /
+Allow: /productos/
+Allow: /comidas/
+Allow: /boutique/
+Allow: /blog/
+Disallow: /api/
+Disallow: /_next/
+
+# Ajustes para rastreadores específicos
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+# Sitemap
+Sitemap: https://toutaunclicla.com/sitemap.xml 
