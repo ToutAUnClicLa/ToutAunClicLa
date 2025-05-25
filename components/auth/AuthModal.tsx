@@ -110,7 +110,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
 
   const checkEmail = async () => {
     if (!formData.email || !validateEmail(formData.email)) {
-      setError('Email inválido');
+      setError(t('auth.emailInvalid') as string);
       return false;
     }
 
@@ -122,20 +122,20 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
 
       // En modo registro, el email no debería existir
       if (mode === 'register' && exists) {
-        setError('Este email ya está registrado. Intenta iniciar sesión.');
+        setError(t('auth.emailAlreadyExists') as string);
         return false;
       }
 
       // En modo login y forgotPassword, el email debería existir
       if ((mode === 'login' || mode === 'forgotPassword') && !exists) {
-        setError('Este email no está registrado. Intenta crear una cuenta.');
+        setError(t('auth.emailNotRegistered') as string);
         return false;
       }
 
       return true;
     } catch (error) {
       console.error('Error al verificar email:', error);
-      setError('Error al verificar email');
+      setError(t('auth.errorCheckingEmail') as string);
       return false;
     } finally {
       setIsLoading(false);
@@ -145,12 +145,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
   const validateForm = async (): Promise<boolean> => {
     // Validación común para todos los modos
     if (!formData.email) {
-      setError('El email es requerido');
+      setError(t('auth.emailRequired') as string);
       return false;
     }
 
     if (!validateEmail(formData.email)) {
-      setError('Email inválido');
+      setError(t('auth.emailInvalid') as string);
       return false;
     }
 
@@ -163,22 +163,22 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
     // Validaciones específicas por modo
     if (mode === 'register') {
       if (!formData.nombre) {
-        setError('El nombre es requerido');
+        setError(t('auth.nameRequired') as string);
         return false;
       }
 
       if (!formData.password) {
-        setError('La contraseña es requerida');
+        setError(t('auth.passwordRequired') as string);
         return false;
       }
 
       if (!validatePassword(formData.password)) {
-        setError('La contraseña debe tener al menos 6 caracteres, una letra y un número');
+        setError(t('auth.passwordInvalid') as string);
         return false;
       }
 
       if (formData.password !== formData.confirmPassword) {
-        setError('Las contraseñas no coinciden');
+        setError(t('auth.passwordsMismatch') as string);
         return false;
       }                      // Validar que se hayan aceptado los términos y condiciones
                       if (!acceptTerms) {
@@ -188,7 +188,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
     }
 
     if (mode === 'login' && !formData.password) {
-      setError('La contraseña es requerida');
+      setError(t('auth.passwordRequired') as string);
       return false;
     }
 
@@ -214,13 +214,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
         await handleRegister();
       } else if (mode === 'forgotPassword') {
         await handleForgotPassword();
+      }      } catch (err: any) {
+        console.error('Auth error:', err);
+        setError(err.message || t('auth.generalError'));
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err: any) {
-      console.error('Auth error:', err);
-      setError(err.message || 'Ha ocurrido un error');
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const handleLogin = async () => {
@@ -234,7 +233,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
         throw new Error('No se pudo obtener la información del usuario');
       }
       
-      toast.success('¡Bienvenido de vuelta!');
+      toast.success(t('auth.welcomeBack'));
       onClose();
       if (redirectUrl) {
         router.push(redirectUrl);
@@ -289,7 +288,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
           
           // Si la sincronización falló o el reintento falló, preguntar por reenvío
           const shouldResend = window.confirm(
-            "¿Deseas que enviemos un nuevo correo de verificación?"
+            t('auth.resendVerification')
           );
           
           if (shouldResend) {
@@ -300,10 +299,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
             });
             
             if (response.ok) {
-              toast.success('Nuevo correo de verificación enviado. Por favor, revisa tu bandeja de entrada.');
+              toast.success(t('auth.verificationSent'));
             } else {
               const errorData = await response.json();
-              toast.error(errorData.error || 'Error al enviar el correo de verificación');
+              toast.error(errorData.error || t('auth.verificationError'));
             }
           }
         } catch (syncError) {
@@ -314,10 +313,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
         }
       } else if (err.message && err.message.includes('Invalid login credentials')) {
         // Credenciales inválidas
-        setError('Credenciales inválidas. Verifica tu email y contraseña.');
+        setError(t('auth.invalidCredentials'));
       } else if (err.message && err.message.includes('Email not confirmed')) {
         // Email no confirmado (aunque no debería llegar aquí debido a las mejoras en auth.ts)
-        setError('Tu cuenta necesita verificación. Por favor, revisa tu correo electrónico para completar el proceso de verificación.');
+        setError(t('auth.verificationRequired'));
         
         // Ofrecer reenvío automáticamente
         try {
@@ -327,7 +326,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: formData.email }),
           });
-          toast.success('Hemos enviado un nuevo correo de verificación a tu email.');
+          toast.success(t('auth.verificationSent'));
         } catch (resendError) {
           console.error('Error al reenviar verificación:', resendError);
         } finally {
@@ -335,7 +334,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
         }
       } else {
         // Otros errores
-        setError(err.message || 'Ha ocurrido un error al iniciar sesión');
+        setError(err.message || t('auth.generalError'));
       }
     }
   };
@@ -348,7 +347,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
       telefono: formData.telefono || undefined
     });
     
-    toast.success('Cuenta creada exitosamente. Por favor, verifica tu email.');
+    toast.success(t('auth.accountCreated'));
     onClose();
     if (redirectUrl) {
       router.push(redirectUrl);
@@ -359,7 +358,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
 
   const handleForgotPassword = async () => {
     await resetPassword(formData.email);
-    toast.success('Se ha enviado un enlace a tu correo para restablecer tu contraseña');
+    toast.success(t('auth.passwordResetSent'));
     setMode('login');
   };
 
@@ -368,27 +367,27 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
       setIsLoading(true);
       const { error } = await signInWithGoogle();
       if (error) throw error;
-      toast.success('Redirigiendo...');
+      toast.success(t('auth.redirecting'));
     } catch (err: any) {
       console.error('Google auth error:', err);
-      setError('Error al iniciar sesión con Google');
+      setError(t('auth.googleAuthError'));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const dialogTitle = mode === 'login' ? 'Iniciar Sesión' : 
-                     mode === 'register' ? 'Crear Cuenta' : 
-                     'Recuperar Contraseña';
+  const dialogTitle = mode === 'login' ? t('auth.loginTitle') : 
+                     mode === 'register' ? t('auth.registerTitle') : 
+                     t('auth.forgotPasswordTitle');
 
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent 
-          className="w-[95vw] max-w-none sm:max-w-[420px] md:max-w-[440px] p-0 m-0 
+          className="w-[95vw] max-w-none sm:max-w-[440px] md:max-w-[480px] lg:max-w-[500px] p-0 m-0 
                      fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
                      h-auto max-h-[95vh] min-h-[500px] overflow-hidden 
-                     bg-white rounded-lg shadow-2xl border-0
+                     bg-white rounded-xl shadow-2xl border-0
                      [&>button:last-child]:hidden"
         >
           <DialogTitle className="sr-only">{dialogTitle}</DialogTitle>
@@ -404,7 +403,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                 className="absolute right-2 top-2 sm:right-3 sm:top-3 rounded-full h-8 w-8 
                           flex items-center justify-center hover:bg-gray-100 transition-colors"
                 onClick={onClose}
-                aria-label="Cerrar"
+                aria-label={t('auth.closeModal')}
               >
                 <X className="h-4 w-4 text-gray-600" />
               </Button>
@@ -423,15 +422,15 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
               {/* Título y descripción */}
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900">{dialogTitle}</h2>
               <p className="mt-1 text-xs sm:text-sm text-gray-500 max-w-xs mx-auto leading-tight">
-                {mode === 'login' ? 'Bienvenido de vuelta a A un clic la' : 
-                 mode === 'register' ? 'Únete a nuestra comunidad' :
-                 'Te enviaremos un enlace para restablecer tu contraseña'}
+                {mode === 'login' ? t('auth.loginDescription') : 
+                 mode === 'register' ? t('auth.registerDescription') :
+                 t('auth.forgotPasswordDescription')}
               </p>
             </div>
 
             {/* Body con scroll */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">{/* ...existing code... */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">{/* ...existing code... */}
                 {error && (
                   <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm flex items-start gap-2 border border-red-200">
                     <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
@@ -443,9 +442,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                 {mode !== 'forgotPassword' && (
                   <>
                     {mode === 'register' && (
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <Label htmlFor="nombre" className="text-sm font-medium text-gray-700">
-                          Nombre completo
+                          {t('auth.fullName')}
                         </Label>
                         <div className="relative">
                           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
@@ -456,16 +455,16 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                             name="nombre"
                             value={formData.nombre}
                             onChange={handleInputChange}
-                            className="pl-10 h-11 sm:h-12 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                            placeholder="Tu nombre completo"
+                            className="pl-10 h-12 sm:h-13 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                            placeholder={t('auth.fullNamePlaceholder')}
                           />
                         </div>
                       </div>
                     )}
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                        Correo electrónico
+                        {t('auth.email')}
                       </Label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
@@ -477,16 +476,16 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                           type="email"
                           value={formData.email}
                           onChange={handleInputChange}
-                          className="pl-10 h-11 sm:h-12 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                          placeholder="tu@ejemplo.com"
+                          className="pl-10 h-12 sm:h-13 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                          placeholder={t('auth.emailPlaceholder')}
                         />
                       </div>
                     </div>
 
                     {mode === 'register' && (
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <Label htmlFor="telefono" className="text-sm font-medium text-gray-700">
-                          Teléfono (opcional)
+                          {t('auth.phone')}
                         </Label>
                         <div className="relative">
                           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
@@ -497,16 +496,16 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                             name="telefono"
                             value={formData.telefono}
                             onChange={handleInputChange}
-                            className="pl-10 h-11 sm:h-12 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                            placeholder="Tu número de teléfono"
+                            className="pl-10 h-12 sm:h-13 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                            placeholder={t('auth.phonePlaceholder')}
                           />
                         </div>
                       </div>
                     )}
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                        Contraseña
+                        {t('auth.password')}
                       </Label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
@@ -518,8 +517,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                           type={showPassword ? "text" : "password"}
                           value={formData.password}
                           onChange={handleInputChange}
-                          className="pl-10 pr-12 h-11 sm:h-12 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                          placeholder={mode === 'register' ? "Mínimo 6 caracteres" : "Tu contraseña"}
+                          className="pl-10 pr-12 h-12 sm:h-13 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                          placeholder={mode === 'register' ? t('auth.passwordRegisterPlaceholder') : t('auth.passwordPlaceholder')}
                         />
                         <Button
                           type="button"
@@ -527,7 +526,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                           size="icon"
                           className="absolute inset-y-0 right-0 flex items-center pr-3 hover:bg-transparent"
                           onClick={() => setShowPassword(!showPassword)}
-                          aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                          aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                         >
                           {showPassword ? (
                             <EyeOff className="h-4 w-4 text-gray-500" />
@@ -539,9 +538,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                     </div>
 
                     {mode === 'register' && (
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-                          Confirmar contraseña
+                          {t('auth.confirmPassword')}
                         </Label>
                         <div className="relative">
                           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
@@ -553,8 +552,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                             type={showConfirmPassword ? "text" : "password"}
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
-                            className="pl-10 pr-12 h-11 sm:h-12 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                            placeholder="Repite tu contraseña"
+                            className="pl-10 pr-12 h-12 sm:h-13 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                            placeholder={t('auth.confirmPasswordPlaceholder')}
                           />
                           <Button
                             type="button"
@@ -562,7 +561,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                             size="icon"
                             className="absolute inset-y-0 right-0 flex items-center pr-3 hover:bg-transparent"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            aria-label={showConfirmPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                           >
                             {showConfirmPassword ? (
                               <EyeOff className="h-4 w-4 text-gray-500" />
@@ -576,7 +575,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
 
                     {/* Checkbox de términos y condiciones (solo en registro) */}
                     {mode === 'register' && (
-                      <div className="flex items-start space-x-3 pt-2">
+                      <div className="flex items-start space-x-3 pt-3 sm:pt-4">
                         <input
                           id="acceptTerms"
                           type="checkbox"
@@ -584,7 +583,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                           onChange={(e) => setAcceptTerms(e.target.checked)}
                           className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                         />
-                        <label htmlFor="acceptTerms" className="text-sm text-gray-600 leading-5">
+                        <label htmlFor="acceptTerms" className="text-sm text-gray-600 leading-relaxed">
                           {t('auth.acceptTerms') as string}{' '}
                           <a 
                             href="/terminos" 
@@ -627,7 +626,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                           onClick={() => setMode('forgotPassword')}
                           className="text-sm font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus-visible:underline"
                         >
-                          ¿Olvidaste tu contraseña?
+                          {t('auth.forgotPassword')}
                         </button>
                       </div>
                     )}
@@ -638,7 +637,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                 {mode === 'forgotPassword' && (
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                      Correo electrónico
+                      {t('auth.email')}
                     </Label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
@@ -651,7 +650,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                         value={formData.email}
                         onChange={handleInputChange}
                         className="pl-10 h-11 sm:h-12 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        placeholder="tu@ejemplo.com"
+                        placeholder={t('auth.emailPlaceholder')}
                       />
                     </div>
                   </div>
@@ -670,15 +669,15 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      {mode === 'login' ? 'Iniciando sesión...' : 
-                       mode === 'register' ? 'Creando cuenta...' : 
-                       'Enviando enlace...'}
+                      {mode === 'login' ? t('auth.loggingIn') : 
+                       mode === 'register' ? t('auth.creatingAccount') : 
+                       t('auth.sendingLink')}
                     </span>
                   ) : (
                     <span>
-                      {mode === 'login' ? 'Iniciar sesión' : 
-                       mode === 'register' ? 'Crear cuenta' : 
-                       'Enviar enlace'}
+                      {mode === 'login' ? t('auth.loginButton') : 
+                       mode === 'register' ? t('auth.registerButton') : 
+                       t('auth.forgotPasswordButton')}
                     </span>
                   )}
                 </Button>
@@ -690,7 +689,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                       <div className="w-full border-t border-gray-200"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-3 bg-white text-gray-500 font-medium">O continúa con</span>
+                      <span className="px-3 bg-white text-gray-500 font-medium">{t('auth.orContinueWith')}</span>
                     </div>
                   </div>
                 )}
@@ -712,7 +711,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                       <path d="M3.96409 10.71C3.78409 10.17 3.68182 9.59318 3.68182 9C3.68182 8.40682 3.78409 7.83 3.96409 7.29V4.95818H0.957273C0.347727 6.17318 0 7.54773 0 9C0 10.4523 0.347727 11.8268 0.957273 13.0418L3.96409 10.71Z" fill="#FBBC05" />
                       <path d="M9 3.57955C10.3214 3.57955 11.5077 4.03364 12.4405 4.92545L15.0218 2.34409C13.4632 0.891818 11.4259 0 9 0C5.48182 0 2.43818 2.01682 0.957275 4.95818L3.96409 7.29C4.67182 5.16273 6.65591 3.57955 9 3.57955Z" fill="#EA4335" />
                     </svg>
-                    <span>Continuar con Google</span>
+                    <span>{t('auth.continueWithGoogle')}</span>
                   </Button>
                 )}
               </form>
@@ -721,24 +720,24 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
               <div className="mt-6 text-center text-sm">
                 {mode === 'login' ? (
                   <p>
-                    ¿No tienes una cuenta?{' '}
+                    {t('auth.noAccount')}{' '}
                     <button
                       type="button"
                       onClick={() => setMode('register')}
                       className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus-visible:underline"
                     >
-                      Regístrate
+                      {t('auth.signUp')}
                     </button>
                   </p>
                 ) : mode === 'register' ? (
                   <p>
-                    ¿Ya tienes una cuenta?{' '}
+                    {t('auth.alreadyHaveAccount')}{' '}
                     <button
                       type="button"
                       onClick={() => setMode('login')}
                       className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus-visible:underline"
                     >
-                      Inicia sesión
+                      {t('auth.signIn')}
                     </button>
                   </p>
                 ) : (
@@ -748,7 +747,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                       onClick={() => setMode('login')}
                       className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus-visible:underline"
                     >
-                      Volver a inicio de sesión
+                      {t('auth.backToLogin')}
                     </button>
                   </p>
                 )}

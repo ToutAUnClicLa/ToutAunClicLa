@@ -193,11 +193,117 @@ export default {
       }
     ]
   },  auth: {
+    // Modal titles
+    loginTitle: "Sign In",
+    registerTitle: "Create Account",
+    forgotPasswordTitle: "Reset Password",
+    
+    // Descriptions
+    loginDescription: "Welcome back to Tout À un clic là",
+    registerDescription: "Join our community",
+    forgotPasswordDescription: "We'll send you a link to reset your password",
+    
+    // Field labels
+    fullName: "Full name",
+    email: "Email address",
+    phone: "Phone (optional)",
+    password: "Password",
+    confirmPassword: "Confirm password",
+    
+    // Placeholders
+    fullNamePlaceholder: "Your full name",
+    emailPlaceholder: "you@example.com",
+    phonePlaceholder: "Your phone number",
+    passwordPlaceholder: "Your password",
+    passwordRegisterPlaceholder: "Minimum 6 characters",
+    confirmPasswordPlaceholder: "Repeat your password",
+    
+    // Buttons
+    loginButton: "Sign in",
+    registerButton: "Create account",
+    forgotPasswordButton: "Send link",
+    continueWithGoogle: "Continue with Google",
+    
+    // Loading states
+    loggingIn: "Signing in...",
+    creatingAccount: "Creating account...",
+    sendingLink: "Sending link...",
+    
+    // Separator
+    orContinueWith: "Or continue with",
+    
+    // Checkbox and terms
     acceptTerms: "I accept the",
     termsAndConditions: "Terms and Conditions",
     and: "and the",
     privacyPolicy: "Privacy Policy",
     acceptTermsRequired: "You must accept the terms and conditions to continue",
-    rememberMe: "Remember me"
+    rememberMe: "Remember me",
+    forgotPassword: "Forgot your password?",
+    
+    // Footer links
+    noAccount: "Don't have an account?",
+    alreadyHaveAccount: "Already have an account?",
+    signUp: "Sign up",
+    signIn: "Sign in",
+    backToLogin: "Back to sign in",
+    
+    // Common error messages
+    emailRequired: "Email is required",
+    emailInvalid: "Invalid email",
+    passwordRequired: "Password is required",
+    passwordInvalid: "Password must have at least 6 characters, one letter and one number",
+    passwordsMismatch: "Passwords don't match",
+    nameRequired: "Name is required",
+    emailAlreadyExists: "This email is already registered. Try signing in.",
+    emailNotRegistered: "This email is not registered. Try creating an account.",
+    errorCheckingEmail: "Error verifying email",
+    generalError: "An error occurred",
+    
+    // Success messages
+    welcomeBack: "Welcome back!",
+    accountCreated: "Account created successfully. Please verify your email.",
+    passwordResetSent: "A link has been sent to your email to reset your password",
+    redirecting: "Redirecting...",
+    googleAuthError: "Error signing in with Google",
+    
+    // Verification
+    verificationRequired: "Your account requires verification. Please check your email to complete the process or request a new verification email.",
+    invalidCredentials: "Invalid credentials. Check your email and password.",
+    resendVerification: "Would you like us to send a new verification email?",
+    verificationSent: "New verification email sent. Please check your inbox.",
+    verificationError: "Error sending verification email",
+    
+    // Aria labels
+    closeModal: "Close",
+    showPassword: "Show password",
+    hidePassword: "Hide password"
+  },
+    // New translations for mobile navbar
+  navbar: {
+    welcome: "Welcome!",
+    accessYourAccount: "Access your account to get started",
+    loginButton: "Sign In",
+    createAccountButton: "Create Account",
+    logoutButton: "Sign out",
+    
+    // Verification states
+    pendingVerification: "Pending verification",
+    unverifiedAccount: "Unverified account",
+    accountNeedsVerification: "Your account needs verification",
+    
+    // Menu sections
+    mainMenu: "Main Menu",
+    myAccount: "My Account",
+    quickAccess: "Quick Access",
+    
+    // Quick links
+    favorites: "Favorites",
+    orders: "Orders",
+    addresses: "Addresses",
+      // System messages
+    logoutSuccess: "Successfully signed out",
+    logoutError: "Error signing out",
+    languageChanged: "Language changed to"
   }
 };

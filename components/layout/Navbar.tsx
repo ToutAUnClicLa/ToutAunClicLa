@@ -96,17 +96,16 @@ export function Navbar() {
     setIsMobileMenuOpen(false);
     router.push(href);
   };
-
   const handleSignOut = async () => {
     try {
       await signOut();
-      toast.success('Sesión cerrada correctamente');
+      toast.success(t('navbar.logoutSuccess'));
       if (pathname.startsWith('/profile')) {
         router.push('/');
       }
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
-      toast.error('Error al cerrar sesión');
+      toast.error(t('navbar.logoutError'));
     }
   };
 
@@ -142,11 +141,10 @@ export function Navbar() {
       items: PROFILE_MENU_ITEMS,
       showWhen: "authenticated"
     }
-  ];
-  const handleLanguageChange = (langCode: string) => {
+  ];  const handleLanguageChange = (langCode: string) => {
     const newLang = availableLanguages.find(lang => lang.code === langCode) || availableLanguages[0];
     setLanguage(newLang.code);
-    toast.success(`Idioma cambiado a ${newLang.name}`);
+    toast.success(`${t('navbar.languageChanged')} ${newLang.name}`);
   };
 
   return (
@@ -290,9 +288,8 @@ export function Navbar() {
                         {getUserInitials()}
                       </AvatarFallback>
                     </Avatar>
-                    {!isUserVerified() && (
-                      <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-amber-500 border-2 border-white" 
-                        title="Tu cuenta necesita verificación">
+                    {!isUserVerified() && (                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-amber-500 border-2 border-white" 
+                        title={t('navbar.accountNeedsVerification')}>
                       </span>
                     )}
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
@@ -306,7 +303,7 @@ export function Navbar() {
                           </p>
                           {!isUserVerified() && (
                             <p className="text-xs text-amber-600 mt-1 font-medium">
-                              Cuenta sin verificar
+                            {t('navbar.unverifiedAccount')}
                             </p>
                           )}
                         </div>
@@ -327,7 +324,7 @@ export function Navbar() {
                         className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
                       >
                         <LogOut className="h-4 w-4 mr-2" />
-                        Cerrar sesión
+                        {t('navbar.logoutButton')}
                       </button>
                     </div>
                   </div>
@@ -406,10 +403,9 @@ export function Navbar() {
                       <AvatarFallback className="bg-gradient-to-br from-indigo-100 to-indigo-200 text-indigo-600 text-lg">
                         {getUserInitials()}
                       </AvatarFallback>
-                      {!isUserVerified() && (
-                        <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-amber-500 border-2 border-white flex items-center justify-center">
-                          <span className="sr-only">Cuenta sin verificar</span>
-                        </span>
+                      {!isUserVerified() && (                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-amber-500 border-2 border-white flex items-center justify-center">
+                        <span className="sr-only">{t('navbar.unverifiedAccount')}</span>
+                      </span>
                       )}
                     </Avatar>
                     <div className="flex-1 min-w-0">
@@ -417,19 +413,17 @@ export function Navbar() {
                         {userData?.nombre || 'Usuario'}
                       </h2>
                       <p className="text-sm text-gray-500 truncate">{userData?.correo_electronico}</p>
-                      {!isUserVerified() && (
-                        <Badge variant="outline" className="mt-1 bg-amber-50 text-amber-600 border-amber-200 gap-1">
+                      {!isUserVerified() && (                        <Badge variant="outline" className="mt-1 bg-amber-50 text-amber-600 border-amber-200 gap-1">
                           <span className="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
-                          Pendiente de verificación
+                          {t('navbar.pendingVerification')}
                         </Badge>
                       )}
                     </div>
                   </div>
                 ) : (
                   <div className="flex flex-col space-y-3">
-                    <div className="text-center mb-2">
-                      <h2 className="text-xl font-semibold text-gray-900">¡Bienvenido!</h2>
-                      <p className="text-sm text-gray-500">Accede a tu cuenta para comenzar</p>
+                    <div className="text-center mb-2">                      <h2 className="text-xl font-semibold text-gray-900">{t('navbar.welcome')}</h2>
+                      <p className="text-sm text-gray-500">{t('navbar.accessYourAccount')}</p>
                     </div>
                     <Button 
                       size="lg"
@@ -438,9 +432,8 @@ export function Navbar() {
                         setIsMobileMenuOpen(false);
                         openAuthModal('login');
                       }}
-                    >
-                      <User className="h-4 w-4 mr-2" />
-                      Iniciar Sesión
+                    >                      <User className="h-4 w-4 mr-2" />
+                      {t('navbar.loginButton')}
                     </Button>
                     <Button 
                       variant="outline" 
@@ -451,7 +444,7 @@ export function Navbar() {
                         openAuthModal('register');
                       }}
                     >
-                      Crear Cuenta
+                      {t('navbar.createAccountButton')}
                     </Button>
                   </div>
                 )}
@@ -461,9 +454,8 @@ export function Navbar() {
               
               {/* Accesos rápidos */}
               {isAuthenticated && (
-                <div className="px-4 py-3">
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                    Accesos Rápidos
+                <div className="px-4 py-3">                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                    {t('navbar.quickAccess')}
                   </h3>
                   <div className="grid grid-cols-3 gap-2">
                     <Button 
@@ -473,9 +465,8 @@ export function Navbar() {
                         setIsMobileMenuOpen(false);
                         router.push('/profile/favorites');
                       }}
-                    >
-                      <Heart className="h-5 w-5 text-red-500" />
-                      <span className="text-xs">Favoritos</span>
+                    >                      <Heart className="h-5 w-5 text-red-500" />
+                      <span className="text-xs">{t('navbar.favorites')}</span>
                       {favoritesCount > 0 && (
                         <Badge className="absolute -top-1 -right-1 h-5 min-w-5 p-0 flex items-center justify-center" variant="destructive">
                           {favoritesCount}
@@ -489,9 +480,8 @@ export function Navbar() {
                         setIsMobileMenuOpen(false);
                         router.push('/profile/orders');
                       }}
-                    >
-                      <ShoppingBag className="h-5 w-5 text-amber-500" />
-                      <span className="text-xs">Pedidos</span>
+                    >                      <ShoppingBag className="h-5 w-5 text-amber-500" />
+                      <span className="text-xs">{t('navbar.orders')}</span>
                     </Button>
                     <Button 
                       variant="outline" 
@@ -500,18 +490,16 @@ export function Navbar() {
                         setIsMobileMenuOpen(false);
                         router.push('/profile/addresses');
                       }}
-                    >
-                      <MapPin className="h-5 w-5 text-indigo-500" />
-                      <span className="text-xs">Direcciones</span>
+                    >                      <MapPin className="h-5 w-5 text-indigo-500" />
+                      <span className="text-xs">{t('navbar.addresses')}</span>
                     </Button>
                   </div>
                 </div>
               )}
               
               {/* Menú principal */}
-              <div className="px-4 py-3">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                  Menú Principal
+              <div className="px-4 py-3">                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                  {t('navbar.mainMenu')}
                 </h3>
                 <div className="space-y-1">
                   {LINKS.map((link) => {
@@ -555,9 +543,8 @@ export function Navbar() {
                 <>
                   <Separator className="my-2" />
                   
-                  <div className="px-4 py-3">
-                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                      Mi Cuenta
+                  <div className="px-4 py-3">                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                      {t('navbar.myAccount')}
                     </h3>
                     <div className="space-y-1">
                       {PROFILE_MENU_ITEMS.filter(item => item.label !== 'Favoritos' && 
@@ -593,9 +580,8 @@ export function Navbar() {
                     setIsMobileMenuOpen(false);
                     handleSignOut();
                   }}
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Cerrar sesión
+                >                  <LogOut className="h-4 w-4 mr-2" />
+                  {t('navbar.logoutButton')}
                 </Button>
               </div>
             )}

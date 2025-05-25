@@ -191,13 +191,118 @@ export default {
         viewText: "Ver souvenirs",
         subcategoria_id: "souvenirs"
       }
-    ]  },
-  auth: {
+    ]  },  auth: {
+    // Títulos de modales
+    loginTitle: "Iniciar Sesión",
+    registerTitle: "Crear Cuenta",
+    forgotPasswordTitle: "Recuperar Contraseña",
+    
+    // Descripciones
+    loginDescription: "Bienvenido de vuelta a Tout À un clic là",
+    registerDescription: "Únete a nuestra comunidad",
+    forgotPasswordDescription: "Te enviaremos un enlace para restablecer tu contraseña",
+    
+    // Labels de campos
+    fullName: "Nombre completo",
+    email: "Correo electrónico",
+    phone: "Teléfono (opcional)",
+    password: "Contraseña",
+    confirmPassword: "Confirmar contraseña",
+    
+    // Placeholders
+    fullNamePlaceholder: "Tu nombre completo",
+    emailPlaceholder: "tu@ejemplo.com",
+    phonePlaceholder: "Tu número de teléfono",
+    passwordPlaceholder: "Tu contraseña",
+    passwordRegisterPlaceholder: "Mínimo 6 caracteres",
+    confirmPasswordPlaceholder: "Repite tu contraseña",
+    
+    // Botones
+    loginButton: "Iniciar sesión",
+    registerButton: "Crear cuenta",
+    forgotPasswordButton: "Enviar enlace",
+    continueWithGoogle: "Continuar con Google",
+    
+    // Estados de carga
+    loggingIn: "Iniciando sesión...",
+    creatingAccount: "Creando cuenta...",
+    sendingLink: "Enviando enlace...",
+    
+    // Separador
+    orContinueWith: "O continúa con",
+    
+    // Checkbox y términos
     acceptTerms: "Acepto los",
     termsAndConditions: "Términos y Condiciones",
     and: "y la",
     privacyPolicy: "Política de Privacidad",
     acceptTermsRequired: "Debes aceptar los términos y condiciones para continuar",
-    rememberMe: "Recuérdame"
+    rememberMe: "Recuérdame",
+    forgotPassword: "¿Olvidaste tu contraseña?",
+    
+    // Enlaces del footer
+    noAccount: "¿No tienes una cuenta?",
+    alreadyHaveAccount: "¿Ya tienes una cuenta?",
+    signUp: "Regístrate",
+    signIn: "Inicia sesión",
+    backToLogin: "Volver a inicio de sesión",
+    
+    // Mensajes de error comunes
+    emailRequired: "El email es requerido",
+    emailInvalid: "Email inválido",
+    passwordRequired: "La contraseña es requerida",
+    passwordInvalid: "La contraseña debe tener al menos 6 caracteres, una letra y un número",
+    passwordsMismatch: "Las contraseñas no coinciden",
+    nameRequired: "El nombre es requerido",
+    emailAlreadyExists: "Este email ya está registrado. Intenta iniciar sesión.",
+    emailNotRegistered: "Este email no está registrado. Intenta crear una cuenta.",
+    errorCheckingEmail: "Error al verificar email",
+    generalError: "Ha ocurrido un error",
+    
+    // Mensajes de éxito
+    welcomeBack: "¡Bienvenido de vuelta!",
+    accountCreated: "Cuenta creada exitosamente. Por favor, verifica tu email.",
+    passwordResetSent: "Se ha enviado un enlace a tu correo para restablecer tu contraseña",
+    redirecting: "Redirigiendo...",
+    googleAuthError: "Error al iniciar sesión con Google",
+    
+    // Verificación
+    verificationRequired: "Tu cuenta requiere verificación. Por favor, revisa tu correo electrónico para completar el proceso o solicita un nuevo correo de verificación.",
+    invalidCredentials: "Credenciales inválidas. Verifica tu email y contraseña.",
+    resendVerification: "¿Deseas que enviemos un nuevo correo de verificación?",
+    verificationSent: "Nuevo correo de verificación enviado. Por favor, revisa tu bandeja de entrada.",
+    verificationError: "Error al enviar el correo de verificación",
+    
+    // Aria labels
+    closeModal: "Cerrar",
+    showPassword: "Mostrar contraseña",
+    hidePassword: "Ocultar contraseña"
+  },
+    // Nuevas traducciones para el navbar móvil
+  navbar: {
+    welcome: "¡Bienvenido!",
+    accessYourAccount: "Accede a tu cuenta para comenzar",
+    loginButton: "Iniciar Sesión",
+    createAccountButton: "Crear Cuenta",
+    logoutButton: "Cerrar sesión",
+    
+    // Estados de verificación
+    pendingVerification: "Pendiente de verificación",
+    unverifiedAccount: "Cuenta sin verificar",
+    accountNeedsVerification: "Tu cuenta necesita verificación",
+    
+    // Secciones del menú
+    mainMenu: "Menú Principal",
+    myAccount: "Mi Cuenta",
+    quickAccess: "Accesos Rápidos",
+    
+    // Enlaces rápidos
+    favorites: "Favoritos",
+    orders: "Pedidos",
+    addresses: "Direcciones",
+      // Mensajes de sistema
+    logoutSuccess: "Sesión cerrada correctamente",
+    logoutError: "Error al cerrar sesión",
+    languageChanged: "Idioma cambiado a"
   }
 };

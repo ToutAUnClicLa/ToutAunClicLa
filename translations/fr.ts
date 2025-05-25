@@ -193,11 +193,117 @@ export default {
       }
     ]
   },  auth: {
+    // Titres des modales
+    loginTitle: "Se Connecter",
+    registerTitle: "Créer un Compte",
+    forgotPasswordTitle: "Réinitialiser le Mot de Passe",
+    
+    // Descriptions
+    loginDescription: "Bon retour sur Tout À un clic là",
+    registerDescription: "Rejoignez notre communauté",
+    forgotPasswordDescription: "Nous vous enverrons un lien pour réinitialiser votre mot de passe",
+    
+    // Labels des champs
+    fullName: "Nom complet",
+    email: "Adresse e-mail",
+    phone: "Téléphone (optionnel)",
+    password: "Mot de passe",
+    confirmPassword: "Confirmer le mot de passe",
+    
+    // Placeholders
+    fullNamePlaceholder: "Votre nom complet",
+    emailPlaceholder: "vous@exemple.com",
+    phonePlaceholder: "Votre numéro de téléphone",
+    passwordPlaceholder: "Votre mot de passe",
+    passwordRegisterPlaceholder: "Minimum 6 caractères",
+    confirmPasswordPlaceholder: "Répétez votre mot de passe",
+    
+    // Boutons
+    loginButton: "Se connecter",
+    registerButton: "Créer un compte",
+    forgotPasswordButton: "Envoyer le lien",
+    continueWithGoogle: "Continuer avec Google",
+    
+    // États de chargement
+    loggingIn: "Connexion en cours...",
+    creatingAccount: "Création du compte...",
+    sendingLink: "Envoi du lien...",
+    
+    // Séparateur
+    orContinueWith: "Ou continuer avec",
+    
+    // Checkbox et conditions
     acceptTerms: "J'accepte les",
     termsAndConditions: "Conditions d'Utilisation",
     and: "et la",
     privacyPolicy: "Politique de Confidentialité",
     acceptTermsRequired: "Vous devez accepter les conditions d'utilisation pour continuer",
-    rememberMe: "Se souvenir de moi"
+    rememberMe: "Se souvenir de moi",
+    forgotPassword: "Mot de passe oublié ?",
+    
+    // Liens du footer
+    noAccount: "Vous n'avez pas de compte ?",
+    alreadyHaveAccount: "Vous avez déjà un compte ?",
+    signUp: "S'inscrire",
+    signIn: "Se connecter",
+    backToLogin: "Retour à la connexion",
+    
+    // Messages d'erreur communs
+    emailRequired: "L'e-mail est requis",
+    emailInvalid: "E-mail invalide",
+    passwordRequired: "Le mot de passe est requis",
+    passwordInvalid: "Le mot de passe doit contenir au moins 6 caractères, une lettre et un chiffre",
+    passwordsMismatch: "Les mots de passe ne correspondent pas",
+    nameRequired: "Le nom est requis",
+    emailAlreadyExists: "Cet e-mail est déjà enregistré. Essayez de vous connecter.",
+    emailNotRegistered: "Cet e-mail n'est pas enregistré. Essayez de créer un compte.",
+    errorCheckingEmail: "Erreur lors de la vérification de l'e-mail",
+    generalError: "Une erreur s'est produite",
+    
+    // Messages de succès
+    welcomeBack: "Bon retour !",
+    accountCreated: "Compte créé avec succès. Veuillez vérifier votre e-mail.",
+    passwordResetSent: "Un lien a été envoyé à votre e-mail pour réinitialiser votre mot de passe",
+    redirecting: "Redirection...",
+    googleAuthError: "Erreur lors de la connexion avec Google",
+    
+    // Vérification
+    verificationRequired: "Votre compte nécessite une vérification. Veuillez vérifier votre e-mail pour terminer le processus ou demander un nouvel e-mail de vérification.",
+    invalidCredentials: "Identifiants invalides. Vérifiez votre e-mail et mot de passe.",
+    resendVerification: "Souhaitez-vous que nous envoyions un nouvel e-mail de vérification ?",
+    verificationSent: "Nouvel e-mail de vérification envoyé. Veuillez vérifier votre boîte de réception.",
+    verificationError: "Erreur lors de l'envoi de l'e-mail de vérification",
+    
+    // Labels Aria
+    closeModal: "Fermer",
+    showPassword: "Afficher le mot de passe",
+    hidePassword: "Masquer le mot de passe"
+  },
+    // Nouvelles traductions pour la navbar mobile
+  navbar: {
+    welcome: "Bienvenue !",
+    accessYourAccount: "Accédez à votre compte pour commencer",
+    loginButton: "Se Connecter",
+    createAccountButton: "Créer un Compte",
+    logoutButton: "Se déconnecter",
+    
+    // États de vérification
+    pendingVerification: "Vérification en attente",
+    unverifiedAccount: "Compte non vérifié",
+    accountNeedsVerification: "Votre compte nécessite une vérification",
+    
+    // Sections du menu
+    mainMenu: "Menu Principal",
+    myAccount: "Mon Compte",
+    quickAccess: "Accès Rapide",
+    
+    // Liens rapides
+    favorites: "Favoris",
+    orders: "Commandes",
+    addresses: "Adresses",
+      // Messages système
+    logoutSuccess: "Déconnexion réussie",
+    logoutError: "Erreur lors de la déconnexion",
+    languageChanged: "Langue changée en"
   }
 };
