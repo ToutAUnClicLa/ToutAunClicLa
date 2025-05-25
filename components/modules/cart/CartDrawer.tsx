@@ -93,20 +93,9 @@ export function CartDrawer() {
               </span>
             )}
           </Button>
-        </SheetTrigger>
-        <SheetContent className="w-full sm:max-w-lg flex flex-col">
+        </SheetTrigger>        <SheetContent className="w-full sm:max-w-lg flex flex-col">
           <SheetHeader className="space-y-2.5">
-            <div className="flex items-center justify-between">
-              <SheetTitle className="text-xl">Carrito de Compras</SheetTitle>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full"
-                onClick={() => setIsOpen(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+            <SheetTitle className="text-xl">Carrito de Compras</SheetTitle>
           </SheetHeader>
 
           {isLoading ? (

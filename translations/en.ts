@@ -192,5 +192,12 @@ export default {
         subcategoria_id: "souvenirs"
       }
     ]
+  },  auth: {
+    acceptTerms: "I accept the",
+    termsAndConditions: "Terms and Conditions",
+    and: "and the",
+    privacyPolicy: "Privacy Policy",
+    acceptTermsRequired: "You must accept the terms and conditions to continue",
+    rememberMe: "Remember me"
   }
 };

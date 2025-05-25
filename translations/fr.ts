@@ -192,5 +192,12 @@ export default {
         subcategoria_id: "souvenirs"
       }
     ]
+  },  auth: {
+    acceptTerms: "J'accepte les",
+    termsAndConditions: "Conditions d'Utilisation",
+    and: "et la",
+    privacyPolicy: "Politique de Confidentialité",
+    acceptTermsRequired: "Vous devez accepter les conditions d'utilisation pour continuer",
+    rememberMe: "Se souvenir de moi"
   }
 };

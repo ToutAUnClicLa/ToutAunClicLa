@@ -191,6 +191,13 @@ export default {
         viewText: "Ver souvenirs",
         subcategoria_id: "souvenirs"
       }
-    ]
+    ]  },
+  auth: {
+    acceptTerms: "Acepto los",
+    termsAndConditions: "Términos y Condiciones",
+    and: "y la",
+    privacyPolicy: "Política de Privacidad",
+    acceptTermsRequired: "Debes aceptar los términos y condiciones para continuar",
+    rememberMe: "Recuérdame"
   }
 };

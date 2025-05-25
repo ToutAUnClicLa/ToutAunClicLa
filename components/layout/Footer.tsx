@@ -118,11 +118,6 @@ export function Footer() {
             </h3>
             <nav>
               <ul className="space-y-2">
-                <li>
-                  <Link href="/" className="text-gray-400 hover:text-white">
-                    {t('footer.explore.home')}
-                  </Link>
-                </li>
                 {mainCategories.map((link, index) => (
                   <li key={index}>
                     <Link 
@@ -172,22 +167,6 @@ export function Footer() {
                     </Link>
                   </li>
                 ))}
-                <li>
-                  <Link 
-                    href="/blog/recetas" 
-                    className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center"
-                  >
-                    <span className="mr-1">›</span> {t('footer.gastronomy.authenticRecipes')}
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    href="/productos/alimentos" 
-                    className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center"
-                  >
-                    <span className="mr-1">›</span> {t('footer.gastronomy.specialIngredients')}
-                  </Link>
-                </li>
               </ul>
             </nav>
           </div>
