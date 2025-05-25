@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown, Package, Utensils, Store, Shirt, Watch, Gift } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslation } from '@/hooks/useTranslation';
 
 // Types
 interface CategoryCardProps {
@@ -98,129 +99,95 @@ const Section = ({ title, description, icon: Icon, color, iconColor, children }:
   );
 };
 
-// Sample data
-const categories = [
-  {
-    icon: Package,
-    title: "Productos",
-    description: "Productos únicos de América Latina, desde artesanías hasta innovaciones modernas.",
-    gradient: "from-indigo-600/20 to-blue-600/20",
-    href: "/productos"
-  },
-  {
-    icon: Utensils,
-    title: "Comidas",
-    description: "Gastronomía latinoamericana con recetas auténticas y sabores tradicionales.",
-    gradient: "from-amber-500/20 to-orange-500/20",
-    href: "/comidas"
-  },
-  {
-    icon: Store,
-    title: "Boutique",
-    description: "Souvenirs y regalos únicos que capturan la esencia de cada país.",
-    gradient: "from-purple-500/20 to-pink-500/20",
-    href: "/boutique"
-  }
-];
-
-const productCategories = [
-  {
-    id: "harina-masa",
-    name: "Harina y masa",
-    icon: <Utensils className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-yellow-500" />,
-    description: "Descubre nuestras harinas de maíz, trigo y especialidades para preparar arepas, tortillas y más",
-    image: "/harinasMasas.png",
-    color: "from-yellow-600 to-yellow-400",
-    viewText: "Ver productos",
-    subcategoria_id: "1"
-  },
-  {
-    id: "salsas-aderezos",
-    name: "Salsas y aderezos",
-    icon: <Package className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-red-500" />,
-    description: "Explora nuestra variedad de salsas picantes, moles, chimichurri y condimentos auténticos",
-    image: "/salsasAderezos.png",
-    color: "from-red-600 to-red-400",
-    viewText: "Ver productos",
-    subcategoria_id: "2"
-  },
-  {
-    id: "paquetes-snacks",
-    name: "Paquetes y snacks",
-    icon: <Store className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-green-500" />,
-    description: "Disfruta de nuestros chips de tortilla, bocadillos, galletas y dulces tradicionales",
-    image: "/paquetesSnacks.png",
-    color: "from-green-600 to-green-400",
-    viewText: "Ver productos",
-    subcategoria_id: "3"
-  }
-];
-
-const foodRegions = [
-  {
-    id: "northAmerica",
-    name: "Norte América",
-    description: "Descubre los sabores de Estados Unidos, Canadá y México, desde hamburguesas y pizza hasta tacos y poutine",
-    image: "/norteAmerica.png",
-    color: "from-blue-600 to-blue-400",
-    viewText: "Ver gastronomía",
-    subcategoria_id: "4"
-  },
-  {
-    id: "centralAmerica",
-    name: "Centro América",
-    description: "Explora la gastronomía colorida de Guatemala, Costa Rica, Panamá, Honduras y más países centroamericanos",
-    image: "/centroAmerica.png",
-    color: "from-emerald-600 to-emerald-400",
-    viewText: "Ver gastronomía",
-    subcategoria_id: "5"
-  },
-  {
-    id: "southAmerica",
-    name: "Sur América",
-    description: "Savourez les plats typiques d'Argentine, du Brésil, du Pérou, de Colombie et d'autres pays d'Amérique du Sud",
-    image: "/surAmerica.png",
-    color: "from-amber-600 to-amber-400",
-    viewText: "Ver gastronomía",
-    subcategoria_id: "6"
-  }
-];
-
-const boutiqueCategories = [
-  {
-    id: "clothing",
-    name: "Ropa",
-    icon: <Shirt className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-purple-500" />,
-    description: "Camisetas de la selección, jeans para cola y más prendas exclusivas",
-    image: "/ropaBoutique.png",
-    color: "from-purple-600 to-purple-400",
-    viewText: "Ver más",
-    subcategoria_id: "7"
-  },
-  {
-    id: "accessories",
-    name: "Accesorios",
-    icon: <Watch className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-pink-500" />,
-    description: "Accesorios únicos y artesanales de todas las regiones",
-    image: "/accesoriosBoutique.png",
-    color: "from-pink-600 to-pink-400",
-    viewText: "Ver más",
-    subcategoria_id: "8"
-  },
-  {
-    id: "souvenirs",
-    name: "Souvenirs",
-    icon: <Gift className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-amber-500" />,
-    description: "Recuerdos y artesanías tradicionales de las Américas",
-    image: "/souvenirBoutique.png",
-    color: "from-amber-600 to-amber-400",
-    viewText: "Ver más",
-    subcategoria_id: "9"
-  }
-];
-
 // Main component
 export default function Home() {
+  const { t } = useTranslation();
+
+  const categories = [
+    {
+      icon: Package,
+      title: t('landing.categories.products.title'),
+      description: t('landing.categories.products.description'),
+      gradient: "from-indigo-600/20 to-blue-600/20",
+      href: "/productos"
+    },
+    {
+      icon: Utensils,
+      title: t('landing.categories.foods.title'),
+      description: t('landing.categories.foods.description'),
+      gradient: "from-amber-500/20 to-orange-500/20",
+      href: "/comidas"
+    },
+    {
+      icon: Store,
+      title: t('landing.categories.boutique.title'),
+      description: t('landing.categories.boutique.description'),
+      gradient: "from-purple-500/20 to-pink-500/20",
+      href: "/boutique"
+    }
+  ];
+
+  // Definir interfaces para nuestras categorías
+  interface ProductCategory {
+    id: number;
+    name: string;
+    description: string;
+    image: string;
+    color: string;
+    viewText: string;
+    subcategoria_id: string;
+    icon?: React.ReactNode;
+  }
+
+  interface FoodRegion {
+    id: number;
+    name: string;
+    description: string;
+    image: string;
+    color: string;
+    viewText: string;
+    subcategoria_id: string;
+  }
+
+  interface BoutiqueCategory {
+    id: number;
+    name: string;
+    description: string;
+    image: string;
+    color: string;
+    viewText: string;
+    subcategoria_id: string;
+    icon?: React.ReactNode;
+  }
+
+  // Obtener categorías de productos de las traducciones
+  const productCategories = t<ProductCategory[]>('landing.productCategories').map(category => ({
+    ...category,
+    icon: <Package className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
+  }));
+
+  // Obtener regiones de comida de las traducciones
+  const foodRegions = t<FoodRegion[]>('landing.foodRegions');
+
+  // Obtener categorías de boutique de las traducciones
+  const boutiqueCategories = t<BoutiqueCategory[]>('landing.boutiqueCategories').map(category => {
+    let icon;
+    switch (category.subcategoria_id) {
+      case 'ropa-accesorios':
+        icon = <Shirt className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />;
+        break;
+      case 'accesorios-decorativos':
+        icon = <Store className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />;
+        break;
+      case 'souvenirs':
+        icon = <Gift className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />;
+        break;
+      default:
+        icon = <Store className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />;
+    }
+    return { ...category, icon };
+  });
+
   return (
     <div className="min-h-screen">
       {/* Hero section */}
@@ -279,7 +246,7 @@ export default function Home() {
                     transition={{ duration: 0.8, delay: 0.4 }}
                     style={{ textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)", fontFamily: "'Inter', sans-serif" }}
                   >
-                    Nuestra tienda exclusiva estará disponible muy pronto, trayendo los productos más auténticos de todas las Américas.
+                    {t('landing.hero.description')}
                   </motion.p>
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.6 }} className="mb-4 sm:mb-6 md:mb-0">
                     <motion.button
@@ -287,7 +254,7 @@ export default function Home() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <span className="relative z-10">Registrate para acceso anticipado</span>
+                      <span className="relative z-10">{t('landing.hero.cta') as string}</span>
                       <motion.div className="relative z-10" animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
                         <ChevronDown className="h-5 w-5 transform rotate-90" />
                       </motion.div>
@@ -325,8 +292,8 @@ export default function Home() {
 
       {/* Products Section */}
       <Section
-        title="Productos"
-        description="Explora nuestra selección cuidadosamente elegida de productos auténticos de todas las Américas. Cada artículo cuenta una historia de tradición y artesanía."
+        title={t('landing.sections.products.title')}
+        description={t('landing.sections.products.description')}
         icon={Package}
         color="from-indigo-50 to-blue-50"
         iconColor="text-indigo-600"
@@ -357,7 +324,7 @@ export default function Home() {
                     <p className="text-sm sm:text-base text-white mb-4 sm:mb-6 max-w-2xl drop-shadow-lg" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
                       {category.description}
                     </p>
-                    <div className="flex items-center text-white mt-auto bg-black/15 px-3 py-2 rounded-lg inline-flex">
+                    <div className="inline-flex items-center text-white mt-auto bg-black/15 px-3 py-2 rounded-lg">
                       <span className="text-sm sm:text-base font-medium drop-shadow-md" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>
                         {category.viewText}
                       </span>
@@ -388,7 +355,7 @@ export default function Home() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Ver catálogo completo
+              {t('landing.sections.products.viewAll') as string}
               <ArrowRight className="ml-2 h-5 w-5" />
             </motion.button>
           </Link>
@@ -397,8 +364,8 @@ export default function Home() {
 
       {/* Food Section */}
       <Section
-        title="Comidas Tradicionales"
-        description="Explora nuestra colección de platos auténticos y sabores tradicionales de las diversas regiones de América."
+        title={t('landing.sections.foods.title')}
+        description={t('landing.sections.foods.description')}
         icon={Utensils}
         color="from-amber-50 to-orange-50"
         iconColor="text-amber-600"
@@ -426,7 +393,7 @@ export default function Home() {
                     <p className="text-sm sm:text-base text-white mb-4 sm:mb-6 max-w-2xl drop-shadow-lg" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
                       {region.description}
                     </p>
-                    <div className="flex items-center text-white mt-auto bg-black/15 px-3 py-2 rounded-lg inline-flex">
+                    <div className="inline-flex items-center text-white mt-auto bg-black/15 px-3 py-2 rounded-lg">
                       <span className="text-sm sm:text-base font-medium drop-shadow-md" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>
                         {region.viewText}
                       </span>
@@ -457,7 +424,7 @@ export default function Home() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Ver catálogo completo
+              {t('landing.sections.foods.viewAll') as string}
               <ArrowRight className="ml-2 h-5 w-5" />
             </motion.button>
           </Link>
@@ -466,8 +433,8 @@ export default function Home() {
 
       {/* Boutique Section */}
       <Section
-        title="Colección Boutique"
-        description="Descubre nuestra colección exclusiva de artículos artesanales de las Américas"
+        title={t('landing.sections.boutique.title')}
+        description={t('landing.sections.boutique.description')}
         icon={Store}
         color="from-purple-50 to-pink-50"
         iconColor="text-purple-600"
@@ -498,7 +465,7 @@ export default function Home() {
                     <p className="text-sm sm:text-base text-white mb-4 sm:mb-6 max-w-2xl drop-shadow-lg" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
                       {category.description}
                     </p>
-                    <div className="flex items-center text-white mt-auto bg-black/15 px-3 py-2 rounded-lg inline-flex">
+                    <div className="inline-flex items-center text-white mt-auto bg-black/15 px-3 py-2 rounded-lg">
                       <span className="text-sm sm:text-base font-medium drop-shadow-md" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>
                         {category.viewText}
                       </span>
@@ -529,7 +496,7 @@ export default function Home() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Ver catálogo completo
+              {t('landing.sections.boutique.viewAll') as string}
               <ArrowRight className="ml-2 h-5 w-5" />
             </motion.button>
           </Link>

@@ -23,7 +23,9 @@ import {
   Store,
   ArrowRight,
   Grid,
-  Layers
+  Layers,
+  Globe,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,31 +41,41 @@ import { signOut } from "@/lib/supabase/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useTranslation } from '@/hooks/useTranslation';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const LINKS = [
-  { href: "/", label: "Inicio", icon: Home },
-  { href: "/productos", label: "Productos", icon: Package },
-  { href: "/comidas", label: "Comidas", icon: ShoppingBag },
-  { href: "/boutique", label: "Boutique", icon: Store }
+  { href: "/", label: "nav.home", icon: Home },
+  { href: "/productos", label: "nav.products", icon: Package },
+  { href: "/comidas", label: "nav.foods", icon: ShoppingBag },
+  { href: "/boutique", label: "nav.boutique", icon: Store }
 ];
 
 const PROFILE_MENU_ITEMS = [
-  { icon: User, label: "Mi Perfil", href: "/profile" },
-  { icon: ShoppingBag, label: "Mis Pedidos", href: "/profile/orders" },
-  { icon: Heart, label: "Favoritos", href: "/profile/favorites" },
-  { icon: MapPin, label: "Direcciones", href: "/profile/addresses" },
-  { icon: Bell, label: "Notificaciones", href: "/profile/notifications" },
-  { icon: Settings, label: "Configuración", href: "/profile/settings" }
+  { icon: User, label: "nav.profile.myProfile", href: "/profile" },
+  { icon: ShoppingBag, label: "nav.profile.myOrders", href: "/profile/orders" },
+  { icon: Heart, label: "nav.profile.favorites", href: "/profile/favorites" },
+  { icon: MapPin, label: "nav.profile.addresses", href: "/profile/addresses" },
+  { icon: Bell, label: "nav.profile.notifications", href: "/profile/notifications" },
+  { icon: Settings, label: "nav.profile.settings", href: "/profile/settings" }
 ];
 
 export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated, user, userData, isLoading } = useAuth();
+  const { currentLanguage, setLanguage, availableLanguages } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgotPassword'>('login');
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (isAuthenticated && userData) {
@@ -131,6 +143,11 @@ export function Navbar() {
       showWhen: "authenticated"
     }
   ];
+  const handleLanguageChange = (langCode: string) => {
+    const newLang = availableLanguages.find(lang => lang.code === langCode) || availableLanguages[0];
+    setLanguage(newLang.code);
+    toast.success(`Idioma cambiado a ${newLang.name}`);
+  };
 
   return (
     <>
@@ -165,7 +182,7 @@ export function Navbar() {
                       isActive ? "text-indigo-600" : "text-gray-600 hover:text-indigo-600"
                     )}
                   >
-                    {link.label}
+                    {t(link.label)}
                     {isActive && (
                       <motion.div
                         className="absolute bottom-0 left-0 h-0.5 w-full bg-indigo-600"
@@ -182,10 +199,39 @@ export function Navbar() {
                   </Link>
                 );
               })}
-            </div>
+            </div>            {/* Actions */}
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              {/* Language Selector - Desktop */}
+              <div className="hidden md:flex">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-9 px-2 gap-1 text-gray-600 hover:text-indigo-600"
+                    >                      <Globe className="h-4 w-4" />
+                      <span className="text-sm font-medium">{availableLanguages.find(lang => lang.code === currentLanguage)?.flag}</span>
+                      <ChevronDown className="h-3 w-3 opacity-50" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-[150px]">
+                    {availableLanguages.map((lang) => (
+                      <DropdownMenuItem
+                        key={lang.code}
+                        onClick={() => handleLanguageChange(lang.code)}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <span className="text-base">{lang.flag}</span>
+                        <span className="flex-1">{lang.name}</span>
+                        {currentLanguage === lang.code && (
+                          <div className="h-2 w-2 rounded-full bg-indigo-600" />
+                        )}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
 
-            {/* Actions */}
-            <div className="flex items-center space-x-4">
               {isAuthenticated && (
                 <Button
                   variant="ghost"
@@ -203,6 +249,36 @@ export function Navbar() {
               )}
 
               <CartDrawer />
+
+              {/* Language Selector - Mobile (visible only on mobile) */}
+              <div className="md:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-9 w-9 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors duration-200"
+                    >
+                      <span className="text-lg">{availableLanguages.find(lang => lang.code === currentLanguage)?.flag}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-[140px]">
+                    {availableLanguages.map((lang) => (
+                      <DropdownMenuItem
+                        key={lang.code}
+                        onClick={() => handleLanguageChange(lang.code)}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <span className="text-base">{lang.flag}</span>
+                        <span className="flex-1">{lang.name}</span>
+                        {currentLanguage === lang.code && (
+                          <div className="h-2 w-2 rounded-full bg-indigo-600" />
+                        )}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
 
               {/* Autenticación */}
               <div className="hidden md:flex">
@@ -242,7 +318,7 @@ export function Navbar() {
                           className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 flex items-center"
                         >
                           <item.icon className="h-4 w-4 mr-2 text-gray-500" />
-                          {item.label}
+                          {t(item.label)}
                         </button>
                       ))}
                       <div className="border-t border-gray-100 my-1"></div>
@@ -262,20 +338,18 @@ export function Navbar() {
                       size="sm"
                       onClick={() => openAuthModal('login')}
                     >
-                      Iniciar Sesión
+                      {t('nav.login')}
                     </Button>
                   </div>
                 )}
-              </div>
-
-              {/* Mobile Menu Button */}
+              </div>              {/* Mobile Menu Button */}
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="md:hidden"
+                className="md:hidden h-9 w-9 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors duration-200"
                 onClick={() => setIsMobileMenuOpen(true)}
               >
-                <Menu className="h-6 w-6 text-gray-600" />
+                <Menu className="h-5 w-5" />
               </Button>
             </div>
           </div>
@@ -467,7 +541,7 @@ export function Navbar() {
                               isActive ? "text-indigo-600" : "text-gray-500"
                             )} />
                           </div>
-                          {link.label}
+                          {t(link.label)}
                         </div>
                         <ChevronRight className="ml-auto h-4 w-4 text-gray-400" />
                       </Button>
@@ -499,14 +573,14 @@ export function Navbar() {
                           }}
                         >
                           <item.icon className="h-5 w-5 mr-3 text-gray-500" />
-                          {item.label}
+                          {t(item.label)}
                           <ChevronRight className="ml-auto h-4 w-4 text-gray-400" />
                         </Button>
                       ))}
                     </div>
                   </div>
-                </>
-              )}
+                </>              )}
+
             </div>
             
             {/* Pie del menú móvil */}

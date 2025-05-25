@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  i18n: {
+    locales: ['es', 'fr', 'en'],
+    defaultLocale: 'es',
+    localeDetection: false,
+  },
   output: 'standalone',
   images: {
     remotePatterns: [
@@ -23,6 +28,7 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    domains: ['toutaunclicla.com'], // Ajusta según tus necesidades
   },
   webpack: (config, { isServer }) => {
     config.cache = false;
