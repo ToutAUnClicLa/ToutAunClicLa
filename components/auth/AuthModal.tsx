@@ -384,57 +384,61 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent 
-          className="w-[95vw] max-w-none sm:max-w-[440px] md:max-w-[480px] lg:max-w-[500px] p-0 m-0 
+          className="w-[95vw] max-w-[95vw] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[460px] p-0 m-0 
                      fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                     h-auto max-h-[95vh] min-h-[500px] overflow-hidden 
-                     bg-white rounded-xl shadow-2xl border-0
+                     h-auto max-h-[90vh] sm:max-h-[85vh] overflow-hidden 
+                     bg-white rounded-xl sm:rounded-2xl shadow-2xl border-0
                      [&>button:last-child]:hidden"
         >
           <DialogTitle className="sr-only">{dialogTitle}</DialogTitle>
           
           {/* Container con scroll */}
-          <div className="flex flex-col h-full max-h-[95vh] overflow-hidden">
+          <div className="flex flex-col h-full max-h-[90vh] sm:max-h-[85vh] overflow-hidden">
             {/* Header fijo */}
-            <div className="relative flex-shrink-0 py-4 px-4 sm:py-5 sm:px-6 text-center border-b bg-white">
+            <div className="relative flex-shrink-0 py-3 px-4 sm:py-4 sm:px-5 md:py-5 md:px-6 border-b bg-white">
               {/* Botón de cerrar */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-2 top-2 sm:right-3 sm:top-3 rounded-full h-8 w-8 
-                          flex items-center justify-center hover:bg-gray-100 transition-colors"
+                className="absolute right-3 top-3 sm:right-4 sm:top-4 rounded-full h-8 w-8 sm:h-9 sm:w-9
+                          flex items-center justify-center hover:bg-gray-100 transition-colors z-10
+                          border border-gray-200 hover:border-gray-300 shadow-sm"
                 onClick={onClose}
                 aria-label={t('auth.closeModal')}
               >
-                <X className="h-4 w-4 text-gray-600" />
+                <X className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
               </Button>
 
-              {/* Logo */}
-              <div className="flex justify-center mb-3">
+              {/* Logo y Título */}
+              <div className="flex flex-col items-center text-center space-y-2 sm:space-y-3">
                 <motion.img 
                   src="/logoaunclic.svg" 
                   alt="Logo A un clic" 
-                  className="h-12 w-12 sm:h-14 sm:w-14 filter drop-shadow-md" 
-                  width="56"
-                  height="56"
+                  className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 filter drop-shadow-lg flex-shrink-0" 
+                  width="64"
+                  height="64"
                 />
+                <div className="space-y-1">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 leading-tight">
+                    {dialogTitle}
+                  </h2>
+                  {/* Descripción */}
+                  <p className="text-sm sm:text-base text-gray-600 max-w-xs mx-auto leading-snug">
+                    {mode === 'login' ? t('auth.loginDescription') : 
+                     mode === 'register' ? t('auth.registerDescription') :
+                     t('auth.forgotPasswordDescription')}
+                  </p>
+                </div>
               </div>
-
-              {/* Título y descripción */}
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">{dialogTitle}</h2>
-              <p className="mt-1 text-xs sm:text-sm text-gray-500 max-w-xs mx-auto leading-tight">
-                {mode === 'login' ? t('auth.loginDescription') : 
-                 mode === 'register' ? t('auth.registerDescription') :
-                 t('auth.forgotPasswordDescription')}
-              </p>
             </div>
 
             {/* Body con scroll */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
-              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">{/* ...existing code... */}
+            <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">{/* ...existing code... */}
                 {error && (
-                  <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm flex items-start gap-2 border border-red-200">
-                    <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                    <span className="leading-tight">{error}</span>
+                  <div className="bg-red-50 text-red-700 p-3 rounded-xl text-sm flex items-start gap-3 border border-red-200">
+                    <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                    <span className="leading-relaxed font-medium">{error}</span>
                   </div>
                 )}
 
@@ -442,12 +446,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                 {mode !== 'forgotPassword' && (
                   <>
                     {mode === 'register' && (
-                      <div className="space-y-3">
-                        <Label htmlFor="nombre" className="text-sm font-medium text-gray-700">
+                      <div className="space-y-2">
+                        <Label htmlFor="nombre" className="text-sm font-semibold text-gray-800 block">
                           {t('auth.fullName')}
                         </Label>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
                             <User className="h-4 w-4" />
                           </div>
                           <Input
@@ -455,19 +459,20 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                             name="nombre"
                             value={formData.nombre}
                             onChange={handleInputChange}
-                            className="pl-10 h-12 sm:h-13 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                            className="pl-10 pr-4 h-10 sm:h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
+                                     bg-gray-50 focus:bg-white transition-all duration-200"
                             placeholder={t('auth.fullNamePlaceholder')}
                           />
                         </div>
                       </div>
                     )}
 
-                    <div className="space-y-3">
-                      <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-semibold text-gray-800 block">
                         {t('auth.email')}
                       </Label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
                           <Mail className="h-4 w-4" />
                         </div>
                         <Input
@@ -476,19 +481,20 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                           type="email"
                           value={formData.email}
                           onChange={handleInputChange}
-                          className="pl-10 h-12 sm:h-13 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                          className="pl-10 pr-4 h-10 sm:h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
+                                   bg-gray-50 focus:bg-white transition-all duration-200"
                           placeholder={t('auth.emailPlaceholder')}
                         />
                       </div>
                     </div>
 
                     {mode === 'register' && (
-                      <div className="space-y-3">
-                        <Label htmlFor="telefono" className="text-sm font-medium text-gray-700">
+                      <div className="space-y-2">
+                        <Label htmlFor="telefono" className="text-sm font-semibold text-gray-800 block">
                           {t('auth.phone')}
                         </Label>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
                             <Phone className="h-4 w-4" />
                           </div>
                           <Input
@@ -496,19 +502,20 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                             name="telefono"
                             value={formData.telefono}
                             onChange={handleInputChange}
-                            className="pl-10 h-12 sm:h-13 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                            className="pl-10 pr-4 h-10 sm:h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
+                                     bg-gray-50 focus:bg-white transition-all duration-200"
                             placeholder={t('auth.phonePlaceholder')}
                           />
                         </div>
                       </div>
                     )}
 
-                    <div className="space-y-3">
-                      <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-sm font-semibold text-gray-800 block">
                         {t('auth.password')}
                       </Label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
                           <Lock className="h-4 w-4" />
                         </div>
                         <Input
@@ -517,14 +524,15 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                           type={showPassword ? "text" : "password"}
                           value={formData.password}
                           onChange={handleInputChange}
-                          className="pl-10 pr-12 h-12 sm:h-13 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                          className="pl-10 pr-12 h-10 sm:h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
+                                   bg-gray-50 focus:bg-white transition-all duration-200"
                           placeholder={mode === 'register' ? t('auth.passwordRegisterPlaceholder') : t('auth.passwordPlaceholder')}
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="absolute inset-y-0 right-0 flex items-center pr-3 hover:bg-transparent"
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 hover:bg-transparent h-full w-10"
                           onClick={() => setShowPassword(!showPassword)}
                           aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                         >
@@ -538,12 +546,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                     </div>
 
                     {mode === 'register' && (
-                      <div className="space-y-3">
-                        <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-800 block">
                           {t('auth.confirmPassword')}
                         </Label>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
                             <Lock className="h-4 w-4" />
                           </div>
                           <Input
@@ -552,14 +560,15 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                             type={showConfirmPassword ? "text" : "password"}
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
-                            className="pl-10 pr-12 h-12 sm:h-13 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                            className="pl-10 pr-12 h-10 sm:h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
+                                     bg-gray-50 focus:bg-white transition-all duration-200"
                             placeholder={t('auth.confirmPasswordPlaceholder')}
                           />
                           <Button
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="absolute inset-y-0 right-0 flex items-center pr-3 hover:bg-transparent"
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 hover:bg-transparent h-full w-10"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                             aria-label={showConfirmPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                           >
@@ -575,21 +584,21 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
 
                     {/* Checkbox de términos y condiciones (solo en registro) */}
                     {mode === 'register' && (
-                      <div className="flex items-start space-x-3 pt-3 sm:pt-4">
+                      <div className="flex items-start space-x-3 pt-2">
                         <input
                           id="acceptTerms"
                           type="checkbox"
                           checked={acceptTerms}
                           onChange={(e) => setAcceptTerms(e.target.checked)}
-                          className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                          className="mt-1 h-4 w-4 text-blue-600 border border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
                         />
-                        <label htmlFor="acceptTerms" className="text-sm text-gray-600 leading-relaxed">
+                        <label htmlFor="acceptTerms" className="text-sm text-gray-700 leading-relaxed cursor-pointer">
                           {t('auth.acceptTerms') as string}{' '}
                           <a 
                             href="/terminos" 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-500 underline font-medium"
+                            className="text-blue-600 hover:text-blue-500 underline font-medium transition-colors"
                           >
                             {t('auth.termsAndConditions') as string}
                           </a>
@@ -598,7 +607,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                             href="/politicas" 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-500 underline font-medium"
+                            className="text-blue-600 hover:text-blue-500 underline font-medium transition-colors"
                           >
                             {t('auth.privacyPolicy') as string}
                           </a>
@@ -608,23 +617,25 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
 
                     {/* Área de "Recuérdame" y "Olvidé mi contraseña" (solo en login) */}
                     {mode === 'login' && (
-                      <div className="flex items-center justify-between pt-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
                         <div className="flex items-center space-x-2">
                           <input
                             id="rememberMe"
                             type="checkbox"
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
-                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                            className="h-4 w-4 text-blue-600 border border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer
+                                     bg-gray-50 checked:bg-blue-600 transition-all duration-200"
                           />
-                          <label htmlFor="rememberMe" className="text-sm text-gray-600">
+                          <label htmlFor="rememberMe" className="text-sm text-gray-700 cursor-pointer">
                             {t('auth.rememberMe') as string}
                           </label>
                         </div>
                         <button
                           type="button"
                           onClick={() => setMode('forgotPassword')}
-                          className="text-sm font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus-visible:underline"
+                          className="text-sm font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus-visible:underline transition-colors
+                                   self-start sm:self-auto"
                         >
                           {t('auth.forgotPassword')}
                         </button>
@@ -636,11 +647,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                 {/* Campo para recuperar contraseña */}
                 {mode === 'forgotPassword' && (
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                    <Label htmlFor="email" className="text-sm font-semibold text-gray-800 block">
                       {t('auth.email')}
                     </Label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
                         <Mail className="h-4 w-4" />
                       </div>
                       <Input
@@ -649,7 +660,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                         type="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="pl-10 h-11 sm:h-12 text-base sm:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        className="pl-10 pr-4 h-10 sm:h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
+                                 bg-gray-50 focus:bg-white transition-all duration-200"
                         placeholder={t('auth.emailPlaceholder')}
                       />
                     </div>
@@ -659,22 +671,25 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                 {/* Botón de envío */}
                 <Button 
                   type="submit" 
-                  className="w-full h-12 sm:h-13 bg-blue-600 hover:bg-blue-700 text-white font-medium text-base sm:text-sm
-                           rounded-lg transition-colors duration-200 focus:ring-4 focus:ring-blue-200"
+                  className="w-full h-11 sm:h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm sm:text-base
+                           rounded-lg transition-all duration-300 focus:ring-4 focus:ring-blue-200 shadow-md hover:shadow-lg
+                           transform hover:scale-[1.02] active:scale-[0.98] border-0"
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <span className="flex items-center justify-center gap-2">
+                    <span className="flex items-center justify-center gap-3">
                       <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      {mode === 'login' ? t('auth.loggingIn') : 
-                       mode === 'register' ? t('auth.creatingAccount') : 
-                       t('auth.sendingLink')}
+                      <span className="text-sm sm:text-base">
+                        {mode === 'login' ? t('auth.loggingIn') : 
+                         mode === 'register' ? t('auth.creatingAccount') : 
+                         t('auth.sendingLink')}
+                      </span>
                     </span>
                   ) : (
-                    <span>
+                    <span className="text-sm sm:text-base font-semibold">
                       {mode === 'login' ? t('auth.loginButton') : 
                        mode === 'register' ? t('auth.registerButton') : 
                        t('auth.forgotPasswordButton')}
@@ -684,11 +699,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
 
                 {/* Separador */}
                 {mode !== 'forgotPassword' && (
-                  <div className="relative my-5 sm:my-6">
+                  <div className="relative my-4 sm:my-5">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200"></div>
+                      <div className="w-full border-t border-gray-300"></div>
                     </div>
-                    <div className="relative flex justify-center text-sm">
+                    <div className="relative flex justify-center text-xs sm:text-sm">
                       <span className="px-3 bg-white text-gray-500 font-medium">{t('auth.orContinueWith')}</span>
                     </div>
                   </div>
@@ -699,13 +714,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full h-12 sm:h-13 border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 
-                               flex items-center justify-center gap-3 font-medium text-base sm:text-sm
-                               rounded-lg transition-all duration-200 focus:ring-4 focus:ring-gray-200"
+                    className="w-full h-10 sm:h-11 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 
+                               flex items-center justify-center gap-2 font-medium text-sm text-gray-700
+                               rounded-lg transition-all duration-200 focus:ring-4 focus:ring-gray-200 shadow-sm hover:shadow-md
+                               transform hover:scale-[1.02] active:scale-[0.98]"
                     onClick={handleGoogleAuth}
                     disabled={isLoading}
                   >
-                    <svg width="20" height="20" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
                       <path d="M17.64 9.20455C17.64 8.56637 17.5827 7.95273 17.4764 7.36364H9V10.845H13.8436C13.635 11.97 13.0009 12.9232 12.0477 13.5614V15.8195H14.9564C16.6582 14.2527 17.64 11.9455 17.64 9.20455Z" fill="#4285F4" />
                       <path d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5614C11.2418 14.1014 10.2109 14.4204 9 14.4204C6.65591 14.4204 4.67182 12.8373 3.96409 10.71H0.957275V13.0418C2.43818 15.9832 5.48182 18 9 18Z" fill="#34A853" />
                       <path d="M3.96409 10.71C3.78409 10.17 3.68182 9.59318 3.68182 9C3.68182 8.40682 3.78409 7.83 3.96409 7.29V4.95818H0.957273C0.347727 6.17318 0 7.54773 0 9C0 10.4523 0.347727 11.8268 0.957273 13.0418L3.96409 10.71Z" fill="#FBBC05" />
@@ -717,25 +733,25 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
               </form>
 
               {/* Footer */}
-              <div className="mt-6 text-center text-sm">
+              <div className="mt-4 sm:mt-5 text-center text-xs sm:text-sm">
                 {mode === 'login' ? (
-                  <p>
+                  <p className="text-gray-600">
                     {t('auth.noAccount')}{' '}
                     <button
                       type="button"
                       onClick={() => setMode('register')}
-                      className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus-visible:underline"
+                      className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus-visible:underline transition-colors"
                     >
                       {t('auth.signUp')}
                     </button>
                   </p>
                 ) : mode === 'register' ? (
-                  <p>
+                  <p className="text-gray-600">
                     {t('auth.alreadyHaveAccount')}{' '}
                     <button
                       type="button"
                       onClick={() => setMode('login')}
-                      className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus-visible:underline"
+                      className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus-visible:underline transition-colors"
                     >
                       {t('auth.signIn')}
                     </button>
@@ -745,7 +761,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                     <button
                       type="button"
                       onClick={() => setMode('login')}
-                      className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus-visible:underline"
+                      className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus-visible:underline transition-colors"
                     >
                       {t('auth.backToLogin')}
                     </button>
