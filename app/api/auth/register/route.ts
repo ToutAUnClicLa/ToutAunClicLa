@@ -17,6 +17,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validaciones de seguridad
+    if (password.length < 8) {
+      return NextResponse.json(
+        { error: 'La contraseña debe tener al menos 8 caracteres' },
+        { status: 400 }
+      );
+    }
+
+    // Obtener información de la solicitud para logs
+    const forwardedFor = req.headers.get('x-forwarded-for');
+    const realIp = req.headers.get('x-real-ip');
+    const ipAddress = forwardedFor?.split(',')[0] || realIp || 'unknown';
+    const userAgent = req.headers.get('user-agent') || 'unknown';
+
     // 1. Verificar si el email ya existe
     const { count, error: countError } = await supabase
       .from('usuarios')
@@ -67,14 +81,62 @@ export async function POST(req: NextRequest) {
         { error: authError?.message || 'Error al crear la cuenta' },
         { status: 500 }
       );
+    }    // 4. Crear registro en nuestra tabla de usuarios primero
+    const { data: usuario, error: userError } = await supabase
+      .from('usuarios')
+      .insert([
+        {
+          correo_electronico: email,
+          contrasena_hash: 'gestionado_por_supabase',
+          nombre,
+          telefono: telefono || null,
+          verificado: false,
+          autenticacion_social: false,
+          fecha_creacion: new Date().toISOString(),
+          fecha_actualizacion: new Date().toISOString(),
+        },
+      ])
+      .select('id')
+      .single();
+    
+    if (userError || !usuario) {
+      console.error('Error al crear perfil de usuario:', userError);
+      // Intentar limpiar el usuario creado en Auth
+      try {
+        if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+          const supabaseAdmin = createRouteHandlerClient({ cookies }, {
+            supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+            supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+          });
+          await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+          console.log('Usuario eliminado de Auth tras error en DB:', authData.user.id);
+        }
+      } catch (cleanupError) {
+        console.error('Error adicional al intentar limpiar:', cleanupError);
+      }
+      
+      return NextResponse.json(
+        { error: userError?.message || 'Error al crear el perfil' },
+        { status: 500 }
+      );
     }
-    
-    // 4. Generar token de verificación
-    const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 24); // Token válido por 24 horas
-    
-    // 5. Crear registro en nuestra tabla de usuarios
+
+    // 5. Usar la función de seguridad para generar token de verificación
+    const { data: tokenResult, error: tokenGenError } = await supabase.rpc('generate_verification_token', {
+      user_email: email
+    });
+
+    if (tokenGenError || !tokenResult?.success) {
+      console.error('Error al generar token de verificación:', tokenGenError);
+      return NextResponse.json(
+        { error: 'Error al generar el token de verificación' },
+        { status: 500 }
+      );
+    }
+
+    const token = tokenResult.token;
+
+    // 6. Log del registro exitoso
     const { data: usuario, error: userError } = await supabase
       .from('usuarios')
       .insert([

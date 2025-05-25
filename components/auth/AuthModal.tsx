@@ -229,69 +229,31 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
         password: formData.password
       });
       
-      if (!result.usuario) {
-        throw new Error('No se pudo obtener la información del usuario');
-      }
-      
-      toast.success(t('auth.welcomeBack'));
-      onClose();
-      if (redirectUrl) {
-        router.push(redirectUrl);
-      } else {
-        router.refresh();
+      if (result.success) {
+        toast.success(t('auth.welcomeBack'));
+        onClose();
+        if (redirectUrl) {
+          router.push(redirectUrl);
+        } else {
+          router.refresh();
+        }
       }
     } catch (err: any) {
-      console.error('Auth error:', err);
+      console.error('Error de login:', err);
       
-      // Manejo más eficiente de los errores
-      if (err.message && (
-          err.message.toLowerCase().includes('verificación') || 
-          err.message.toLowerCase().includes('verifica')
-      )) {
-        // Error relacionado con verificación de cuenta
+      // Manejo mejorado de errores con la nueva API de seguridad
+      if (err.message.includes('Cuenta bloqueada')) {
+        setError('Tu cuenta ha sido bloqueada por múltiples intentos fallidos. Contacta al soporte.');
+      } else if (err.message.includes('verificación') || err.message.includes('verifica')) {
         setError(err.message);
         
-        // Intentar sincronizar la verificación automáticamente primero
-        try {
-          setIsLoading(true);
-          const syncResponse = await fetch('/api/auth/sync-verification', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: formData.email }),
-          });
-          
-          if (syncResponse.ok) {
-            // Si se sincronizó correctamente, intentar iniciar sesión de nuevo
-            toast.success('Estado de verificación actualizado. Intentando iniciar sesión...');
-            
-            try {
-              const retryResult = await signInWithEmail({
-                email: formData.email,
-                password: formData.password
-              });
-              
-              if (retryResult.usuario) {
-                toast.success('¡Bienvenido de vuelta!');
-                onClose();
-                if (redirectUrl) {
-                  router.push(redirectUrl);
-                } else {
-                  router.refresh();
-                }
-                return;
-              }
-            } catch (retryError) {
-              console.error('Error al reintentar inicio de sesión:', retryError);
-              // Continuamos con el flujo normal si el reintento falla
-            }
-          }
-          
-          // Si la sincronización falló o el reintento falló, preguntar por reenvío
-          const shouldResend = window.confirm(
-            t('auth.resendVerification')
-          );
-          
-          if (shouldResend) {
+        // Ofrecer reenvío de verificación
+        const shouldResend = window.confirm(
+          '¿Deseas que reenviemos el correo de verificación?'
+        );
+        
+        if (shouldResend) {
+          try {
             const response = await fetch('/api/auth/resend-verification', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -299,67 +261,52 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
             });
             
             if (response.ok) {
-              toast.success(t('auth.verificationSent'));
+              toast.success('Correo de verificación reenviado');
             } else {
               const errorData = await response.json();
-              toast.error(errorData.error || t('auth.verificationError'));
+              toast.error(errorData.error || 'Error al reenviar verificación');
             }
+          } catch (resendError) {
+            console.error('Error al reenviar verificación:', resendError);
+            toast.error('Error al reenviar el correo de verificación');
           }
-        } catch (syncError) {
-          console.error('Error al sincronizar verificación:', syncError);
-          toast.error('Hubo un problema al verificar tu cuenta. Por favor, intenta nuevamente.');
-        } finally {
-          setIsLoading(false);
-        }
-      } else if (err.message && err.message.includes('Invalid login credentials')) {
-        // Credenciales inválidas
-        setError(t('auth.invalidCredentials'));
-      } else if (err.message && err.message.includes('Email not confirmed')) {
-        // Email no confirmado (aunque no debería llegar aquí debido a las mejoras en auth.ts)
-        setError(t('auth.verificationRequired'));
-        
-        // Ofrecer reenvío automáticamente
-        try {
-          setIsLoading(true);
-          await fetch('/api/auth/resend-verification', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: formData.email }),
-          });
-          toast.success(t('auth.verificationSent'));
-        } catch (resendError) {
-          console.error('Error al reenviar verificación:', resendError);
-        } finally {
-          setIsLoading(false);
         }
       } else {
-        // Otros errores
         setError(err.message || t('auth.generalError'));
       }
     }
   };
 
   const handleRegister = async () => {
-    const result = await signUpWithEmail({
-      email: formData.email,
-      password: formData.password,
-      nombre: formData.nombre,
-      telefono: formData.telefono || undefined
-    });
-    
-    toast.success(t('auth.accountCreated'));
-    onClose();
-    if (redirectUrl) {
-      router.push(redirectUrl);
-    } else {
-      router.refresh();
+    try {
+      const result = await signUpWithEmail({
+        email: formData.email,
+        password: formData.password,
+        nombre: formData.nombre,
+        telefono: formData.telefono || undefined
+      });
+      
+      if (result.success) {
+        toast.success('Cuenta creada correctamente. Revisa tu correo para verificar tu cuenta.');
+        onClose();
+        // Opcional: cambiar a modo login después del registro
+        // setMode('login');
+      }
+    } catch (err: any) {
+      console.error('Error de registro:', err);
+      setError(err.message || t('auth.generalError'));
     }
   };
 
   const handleForgotPassword = async () => {
-    await resetPassword(formData.email);
-    toast.success(t('auth.passwordResetSent'));
-    setMode('login');
+    try {
+      await resetPassword(formData.email);
+      toast.success(t('auth.passwordResetSent'));
+      setMode('login');
+    } catch (err: any) {
+      console.error('Error al resetear contraseña:', err);
+      setError(err.message || t('auth.generalError'));
+    }
   };
 
   const handleGoogleAuth = async () => {
@@ -368,6 +315,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
       const { error } = await signInWithGoogle();
       if (error) throw error;
       toast.success(t('auth.redirecting'));
+      onClose();
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      } else {
+        router.refresh();
+      }
     } catch (err: any) {
       console.error('Google auth error:', err);
       setError(t('auth.googleAuthError'));

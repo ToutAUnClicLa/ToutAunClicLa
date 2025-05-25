@@ -33,84 +33,30 @@ export type UsuarioData = {
  */
 export async function signInWithEmail({ email, password }: SignInParams) {
   try {
-    // 1. Verificar si el usuario está en nuestra tabla personalizada y su estado
-    const { data: dbUser, error: dbError } = await supabase
-      .from('usuarios')
-      .select('*')
-      .eq('correo_electronico', email)
-      .single();
-      
-    if (dbError && dbError.code !== 'PGRST116') { // PGRST116 = No se encontró el registro
-      console.error('Error al buscar usuario en tabla personalizada:', dbError);
-    }
-    
-    // 2. Iniciar sesión en Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    // Llamar a nuestra API de login segura
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
     });
 
-    // 3. Si hay error porque el email no está confirmado pero en nuestra tabla ya está verificado
-    if (authError && authError.message?.includes('Email not confirmed') && dbUser?.verificado) {
-      console.log('Inconsistencia detectada: Email verificado en DB pero no en Auth');
-      
-      // 3.1. Ya que el email está verificado en nuestra tabla, intentamos iniciar sesión
-      // sin verificación de email, solo como una medida de seguridad adicional
-      try {
-        // Llamar a nuestra API interna para sincronizar este estado
-        // Pero no nos bloqueamos por el resultado
-        await fetch('/api/auth/sync-verification', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email }),
-        });
-        
-        // Independientemente del resultado, consideramos al usuario verificado
-        // si está marcado como tal en nuestra tabla personalizada
-        return { auth: authData, usuario: dbUser };
-      } catch (syncError) {
-        console.error('Error al sincronizar estado de verificación:', syncError);
-        // En caso de error, seguimos confiando en nuestra tabla
-        return { auth: authData, usuario: dbUser };
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (data.blocked) {
+        throw new Error('Cuenta bloqueada por múltiples intentos fallidos. Contacta al soporte.');
       }
-    }
-
-    // 4. Si el error es de verificación pero el usuario no está verificado en nuestra tabla
-    if (authError && authError.message?.includes('Email not confirmed')) {
-      throw new Error(
-        'Tu cuenta requiere verificación. Por favor, revisa tu correo electrónico para completar el proceso o solicita un nuevo correo de verificación.'
-      );
-    }
-
-    // 5. Propagar cualquier otro error de autenticación
-    if (authError) {
-      // Mejorar mensaje de error para casos específicos
-      if (authError.message?.includes('Invalid login credentials')) {
-        throw new Error('Credenciales de inicio de sesión inválidas. Verifica tu email y contraseña.');
+      if (data.needsVerification) {
+        throw new Error('Tu cuenta requiere verificación. Revisa tu correo electrónico.');
       }
-      throw authError;
+      throw new Error(data.error || 'Error al iniciar sesión');
     }
 
-    // 6. Obtener datos del usuario desde nuestra tabla personalizada si no lo hicimos antes
-    if (!dbUser) {
-      const { data: usuario, error: userError } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('correo_electronico', email)
-        .single();
-
-      if (userError) {
-        console.error('Error al obtener datos del usuario:', userError);
-        // Continuamos con la autenticación aunque falte información del perfil
-      }
-      
-      return { auth: authData, usuario };
-    }
-
-    return { auth: authData, usuario: dbUser };
-  } catch (error) {
+    // El login fue exitoso, la sesión ya está establecida por la API
+    return { success: true, user: data.user };
+  } catch (error: any) {
     console.error('Error en signInWithEmail:', error);
     throw error;
   }
@@ -156,8 +102,8 @@ export function generateVerificationToken(): string {
  */
 export async function signUpWithEmail({ email, password, nombre, telefono }: SignUpParams) {
   try {
-    // Llamar a nuestra API de registro personalizada en lugar de Supabase directamente
-    const response = await fetch('/api/auth/register', {
+    // Llamar a nuestra API de registro segura
+    const response = await fetch('/api/auth/register-secure', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -176,8 +122,7 @@ export async function signUpWithEmail({ email, password, nombre, telefono }: Sig
       throw new Error(data.error || 'Error al crear la cuenta');
     }
 
-    // Aunque el usuario ya está creado, no estará verificado todavía
-    // Mostramos el mensaje de éxito con instrucciones para verificar
+    // Mostrar mensaje de éxito
     toast.success('Cuenta creada correctamente. Revisa tu email para verificar tu cuenta.');
 
     // No iniciamos sesión automáticamente para esperar la verificación
