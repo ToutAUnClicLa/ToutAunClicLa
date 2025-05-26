@@ -5,6 +5,27 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
   
+  // Agregar headers de seguridad
+  res.headers.set('X-Frame-Options', 'DENY');
+  res.headers.set('X-Content-Type-Options', 'nosniff');
+  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.headers.set('X-XSS-Protection', '1; mode=block');
+  
+  // Logging básico de requests (solo en desarrollo)
+  if (process.env.NODE_ENV === 'development') {
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const userAgent = req.headers.get('user-agent') || 'unknown';
+    console.log(`🌐 [${new Date().toISOString()}] ${req.method} ${req.nextUrl.pathname} - IP: ${ip}`);
+  }
+  
+  // Rate limiting para rutas sensibles de API
+  const isAuthAPI = req.nextUrl.pathname.startsWith('/api/auth/');
+  if (isAuthAPI) {
+    // El rate limiting se maneja individualmente en cada endpoint
+    // pero aquí podemos agregar headers informativos
+    res.headers.set('X-Auth-Endpoint', 'true');
+  }
+  
   // Verificar si el usuario está autenticado
   const { data: { session } } = await supabase.auth.getSession();
 

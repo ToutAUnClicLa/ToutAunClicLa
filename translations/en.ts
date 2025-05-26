@@ -7,9 +7,9 @@ export default {
     login: "Login",
     profile: {
       myProfile: "My Profile",
-      myOrders: "My Orders",
-      favorites: "Favorites",
       addresses: "Addresses",
+      favorites: "Favorites",
+      myOrders: "Orders", 
       notifications: "Notifications",
       settings: "Settings",
       logout: "Logout"

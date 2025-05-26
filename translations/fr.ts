@@ -7,10 +7,10 @@ export default {
     login: "Se connecter",
     profile: {
       myProfile: "Mon Profil",
-      myOrders: "Mes Commandes",
-      favorites: "Favoris",
       addresses: "Adresses",
-      notifications: "Notifications",
+      favorites: "Favoris",
+      myOrders: "Commandes",
+      notifications: "Notifications", 
       settings: "Paramètres",
       logout: "Déconnexion"
     }

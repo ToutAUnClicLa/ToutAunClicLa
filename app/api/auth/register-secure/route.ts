@@ -1,26 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendVerificationEmailServer } from '@/lib/email/resend-server';
 import { createClient } from '@supabase/supabase-js';
+import crypto from 'crypto';
+import { authRateLimiter, withRateLimit } from '@/lib/security/rate-limiter';
+import { authLogger } from '@/lib/security/auth-logger';
 
 export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const { email, password, nombre, telefono } = body;
-    
-    if (!email || !password || !nombre) {
-      return NextResponse.json(
-        { error: 'Faltan campos obligatorios' },
-        { status: 400 }
-      );
-    }
+  return withRateLimit(authRateLimiter, async () => {
+    try {
+      const body = await req.json();
+      const { email, password, nombre, telefono } = body;
+      
+      // Log registration attempt
+      authLogger.logRegistrationAttempt(email);
+      
+      if (!email || !password || !nombre) {
+        authLogger.logRegistrationFailed(email, 'Missing required fields');
+        return NextResponse.json(
+          { error: 'Faltan campos obligatorios' },
+          { status: 400 }
+        );
+      }
 
-    // Validaciones de seguridad
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: 'La contraseña debe tener al menos 8 caracteres' },
-        { status: 400 }
-      );
-    }
+      // Validaciones de seguridad
+      if (password.length < 8) {
+        authLogger.logRegistrationFailed(email, 'Password too short');
+        return NextResponse.json(
+          { error: 'La contraseña debe tener al menos 8 caracteres' },
+          { status: 400 }
+        );
+      }
 
     // Usar cliente con service role para operaciones administrativas
     const supabaseAdmin = createClient(
@@ -49,6 +58,7 @@ export async function POST(req: NextRequest) {
     }
     
     if (count && count > 0) {
+      authLogger.logRegistrationFailed(email, 'Email already exists');
       return NextResponse.json(
         { error: 'Este correo electrónico ya está registrado' },
         { status: 400 }
@@ -69,13 +79,14 @@ export async function POST(req: NextRequest) {
     
     if (authError || !authData.user) {
       console.error('Error al crear usuario en Auth:', authError);
+      authLogger.logRegistrationFailed(email, authError?.message || 'Error creating user in Auth');
       return NextResponse.json(
         { error: authError?.message || 'Error al crear la cuenta' },
         { status: 500 }
       );
     }
 
-    // 3. Crear registro en nuestra tabla de usuarios
+    // 3. Crear registro en nuestra tabla de usuarios (adaptado a la estructura real)
     const { data: nuevoUsuario, error: dbError } = await supabaseAdmin
       .from('usuarios')
       .insert([
@@ -108,24 +119,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 4. Generar token de verificación usando función de seguridad
-    const { data: token, error: tokenError } = await supabaseAdmin.rpc('generate_verification_token', {
-      user_email: email
-    });
+    // 4. Generar token de verificación
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24);
+    
+    // 5. Guardar token en la tabla de verificación
+    const { error: tokenError } = await supabaseAdmin
+      .from('tokens_verificacion_email')
+      .insert([
+        {
+          usuario_id: nuevoUsuario.id,
+          token,
+          expires_at: expiresAt.toISOString(),
+        },
+      ]);
 
-    if (tokenError || !token) {
-      console.error('Error al generar token de verificación:', tokenError);
+    if (tokenError) {
+      console.error('Error al guardar token de verificación:', tokenError);
       return NextResponse.json(
         { error: 'Error al generar el token de verificación' },
         { status: 500 }
       );
     }
 
-    // 5. Enviar email de verificación
+    // 6. Enviar email de verificación
     try {
       await sendVerificationEmailServer({
         email,
-        token: token,
+        token,
         nombre,
       });
     } catch (emailError: any) {
@@ -139,18 +161,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 6. Log del registro exitoso
-    await supabaseAdmin
-      .from('logs_acceso')
-      .insert([
-        {
-          usuario_id: nuevoUsuario.id,
-          tipo_evento: 'verificacion_email',
-          ip_address: ipAddress,
-          user_agent: userAgent,
-          detalles: { email, nombre, telefono: telefono || null, accion: 'registro_usuario' }
-        }
-      ]);
+    // 7. Log del registro exitoso y limpiar rate limit
+    authLogger.logRegistrationSuccess(nuevoUsuario.id, email);
+    
+    try {
+      await supabaseAdmin
+        .from('logs_acceso')
+        .insert([
+          {
+            usuario_id: nuevoUsuario.id,
+            tipo_evento: 'registro_usuario',
+            ip_address: ipAddress,
+            user_agent: userAgent,
+            detalles: { email, nombre, telefono: telefono || null, accion: 'registro_usuario' }
+          }
+        ]);
+    } catch (logError) {
+      // No bloqueamos el proceso si falla el log
+      console.error('Error al crear log de acceso:', logError);
+    }
 
     return NextResponse.json(
       { 
@@ -162,9 +191,16 @@ export async function POST(req: NextRequest) {
     
   } catch (error: any) {
     console.error('Error en el registro:', error);
+    try {
+      const body = await req.json();
+      authLogger.logRegistrationFailed(body?.email || 'unknown', error.message || 'Unexpected error');
+    } catch {
+      authLogger.logRegistrationFailed('unknown', error.message || 'Unexpected error');
+    }
     return NextResponse.json(
       { error: error.message || 'Error al procesar la solicitud' },
       { status: 500 }
     );
   }
+  }); // End of withRateLimit
 }

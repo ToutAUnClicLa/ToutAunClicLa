@@ -7,13 +7,14 @@ import {
   PasswordResetEmailProps 
 } from './resend';
 
-// Verificar que la API key existe en el servidor
-if (!process.env.RESEND_API_KEY) {
-  throw new Error('La variable de entorno RESEND_API_KEY no está configurada');
+// Función para obtener el cliente de Resend
+function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('⚠️  RESEND_API_KEY no está configurada. Los emails no se enviarán.');
+    return null;
+  }
+  return new Resend(process.env.RESEND_API_KEY);
 }
-
-// Inicializar cliente de Resend solo para uso en servidor
-export const resendServer = new Resend(process.env.RESEND_API_KEY);
 
 // Configuración general de emails
 const EMAIL_FROM = process.env.EMAIL_FROM || 'no-reply@toutaunclicla.com';
@@ -23,10 +24,17 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ;
  * Envía un email de verificación al usuario (servidor)
  */
 export async function sendVerificationEmailServer({ email, token, nombre }: VerificationEmailProps) {
+  const resendClient = getResendClient();
+  
+  if (!resendClient) {
+    console.log('📧 [DEV] Email de verificación simulado para:', email);
+    return { success: true, data: { id: 'dev-mock' } };
+  }
+
   const verificationUrl = `${SITE_URL}/auth/verify-email?token=${token}`;
   
   try {
-    const { data, error } = await resendServer.emails.send({
+    const { data, error } = await resendClient.emails.send({
       from: EMAIL_FROM,
       to: email,
       subject: 'Verifica tu correo electrónico - Tout A Un Clic La',
@@ -68,8 +76,15 @@ export async function sendVerificationEmailServer({ email, token, nombre }: Veri
  * Envía un email de bienvenida al usuario después de verificar su cuenta (servidor)
  */
 export async function sendWelcomeEmailServer({ email, nombre }: WelcomeEmailProps) {
+  const resendClient = getResendClient();
+  
+  if (!resendClient) {
+    console.log('📧 [DEV] Email de bienvenida simulado para:', email);
+    return { success: true, data: { id: 'dev-mock' } };
+  }
+
   try {
-    const { data, error } = await resendServer.emails.send({
+    const { data, error } = await resendClient.emails.send({
       from: EMAIL_FROM,
       to: email,
       subject: '¡Bienvenido a Tout A Un Clic La!',
@@ -108,10 +123,18 @@ export async function sendWelcomeEmailServer({ email, nombre }: WelcomeEmailProp
  * Envía un email para restablecer la contraseña (servidor)
  */
 export async function sendPasswordResetEmailServer({ email, token, nombre }: PasswordResetEmailProps) {
+  const resendClient = getResendClient();
+  
+  if (!resendClient) {
+    console.log('📧 [DEV] Email de restablecimiento simulado para:', email);
+    console.log('📧 [DEV] Token:', token);
+    return { success: true, data: { id: 'dev-mock' } };
+  }
+
   const resetUrl = `${SITE_URL}/reset-password?token=${token}`;
   
   try {
-    const { data, error } = await resendServer.emails.send({
+    const { data, error } = await resendClient.emails.send({
       from: EMAIL_FROM,
       to: email,
       subject: 'Restablecimiento de contraseña - Tout A Un Clic La',

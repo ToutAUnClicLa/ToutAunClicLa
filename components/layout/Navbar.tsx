@@ -59,9 +59,9 @@ const LINKS = [
 
 const PROFILE_MENU_ITEMS = [
   { icon: User, label: "nav.profile.myProfile", href: "/profile" },
-  { icon: ShoppingBag, label: "nav.profile.myOrders", href: "/profile/orders" },
-  { icon: Heart, label: "nav.profile.favorites", href: "/profile/favorites" },
   { icon: MapPin, label: "nav.profile.addresses", href: "/profile/addresses" },
+  { icon: Heart, label: "nav.profile.favorites", href: "/profile/favorites" },
+  { icon: ShoppingBag, label: "nav.profile.myOrders", href: "/profile/orders" },
   { icon: Bell, label: "nav.profile.notifications", href: "/profile/notifications" },
   { icon: Settings, label: "nav.profile.settings", href: "/profile/settings" }
 ];
@@ -70,6 +70,10 @@ export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated, user, userData, isLoading } = useAuth();
+  
+  // Debug logs
+  console.log('🧭 Navbar state:', { isAuthenticated, hasUser: !!user, hasUserData: !!userData, isLoading });
+  
   const { currentLanguage, setLanguage, availableLanguages } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [favoritesCount, setFavoritesCount] = useState(0);

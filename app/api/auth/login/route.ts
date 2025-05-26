@@ -1,18 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { supabase } from '@/lib/supabase/client';
+import { authRateLimiter, withRateLimit } from '@/lib/security/rate-limiter';
+import { authLogger } from '@/lib/security/auth-logger';
 
 export async function POST(req: NextRequest) {
-  try {
-    const { email, password } = await req.json();
-    
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: 'Email y contraseña son obligatorios' },
-        { status: 400 }
-      );
-    }
+  return withRateLimit(authRateLimiter, async () => {
+    try {
+      const { email, password } = await req.json();
+      
+      // Log login attempt
+      authLogger.logLoginAttempt(email);
+      
+      if (!email || !password) {
+        authLogger.logLoginFailed(email || 'unknown', 'Missing email or password');
+        return NextResponse.json(
+          { error: 'Email y contraseña son obligatorios' },
+          { status: 400 }
+        );
+      }
 
     // Obtener información de la solicitud para logs de seguridad
     const forwardedFor = req.headers.get('x-forwarded-for');
@@ -21,7 +29,12 @@ export async function POST(req: NextRequest) {
     const userAgent = req.headers.get('user-agent') || 'unknown';
 
     // 1. Verificar si el usuario existe y si la cuenta está bloqueada
-    const { data: userData, error: userError } = await supabase
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    
+    const { data: userData, error: userError } = await supabaseAdmin
       .from('usuarios')
       .select('id, correo_electronico, verificado, cuenta_bloqueada, intentos_login_fallidos')
       .eq('correo_electronico', email)
@@ -35,13 +48,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2. Si el usuario no existe, usar la función de seguridad para logear el intento
+    // 2. Si el usuario no existe, registrar el intento fallido
     if (!userData) {
-      await supabase.rpc('handle_failed_login_attempt', {
-        user_email: email,
-        ip_addr: ipAddress,
-        user_agent_str: userAgent
-      });
+      authLogger.logLoginFailed(email, 'User does not exist');
+      try {
+        // Intentar registrar en logs_acceso si existe la tabla
+        await supabaseAdmin
+          .from('logs_acceso')
+          .insert([
+            {
+              usuario_id: null,
+              tipo_evento: 'login_fallido',
+              ip_address: ipAddress,
+              user_agent: userAgent,
+              detalles: { email, motivo: 'usuario_no_existe' }
+            }
+          ]);
+      } catch (logError) {
+        console.error('Error al registrar intento fallido:', logError);
+      }
       
       return NextResponse.json(
         { error: 'Credenciales inválidas' },
@@ -78,40 +103,97 @@ export async function POST(req: NextRequest) {
       password,
     });
 
-    // 6. Si el login falla, usar la función de seguridad
+    // 6. Si el login falla, manejar el intento fallido
     if (authError) {
-      const { data: failureResult } = await supabase.rpc('handle_failed_login_attempt', {
-        user_email: email,
-        ip_addr: ipAddress,
-        user_agent_str: userAgent
-      });
+      try {
+        // Incrementar intentos fallidos manualmente
+        const newAttempts = (userData.intentos_login_fallidos || 0) + 1;
+        const shouldBlock = newAttempts >= 5;
+        
+        await supabaseAdmin
+          .from('usuarios')
+          .update({
+            intentos_login_fallidos: newAttempts,
+            cuenta_bloqueada: shouldBlock,
+            fecha_bloqueo: shouldBlock ? new Date().toISOString() : null,
+            razon_bloqueo: shouldBlock ? 'Múltiples intentos fallidos' : null,
+            fecha_actualizacion: new Date().toISOString()
+          })
+          .eq('id', userData.id);
 
-      // Verificar si la cuenta se bloqueó
-      if (failureResult?.blocked) {
+        // Registrar el intento fallido
+        await supabaseAdmin
+          .from('logs_acceso')
+          .insert([
+            {
+              usuario_id: userData.id,
+              tipo_evento: 'login_fallido',
+              ip_address: ipAddress,
+              user_agent: userAgent,
+              detalles: { email, motivo: 'credenciales_invalidas', intentos: newAttempts }
+            }
+          ]);
+
+        // Verificar si la cuenta se bloqueó
+        if (shouldBlock) {
+          return NextResponse.json(
+            { 
+              error: 'Demasiados intentos fallidos. Cuenta bloqueada.',
+              blocked: true
+            },
+            { status: 423 }
+          );
+        }
+
         return NextResponse.json(
           { 
-            error: 'Demasiados intentos fallidos. Cuenta bloqueada.',
-            blocked: true
+            error: 'Credenciales inválidas',
+            attemptsRemaining: Math.max(0, 5 - newAttempts)
           },
-          { status: 423 }
+          { status: 401 }
+        );
+      } catch (updateError) {
+        console.error('Error al actualizar intentos fallidos:', updateError);
+        return NextResponse.json(
+          { error: 'Credenciales inválidas' },
+          { status: 401 }
         );
       }
-
-      return NextResponse.json(
-        { 
-          error: 'Credenciales inválidas',
-          attemptsRemaining: Math.max(0, 5 - (failureResult?.attempts || 0))
-        },
-        { status: 401 }
-      );
     }
 
-    // 7. Login exitoso - resetear contadores usando la función de seguridad
-    await supabase.rpc('reset_failed_login_attempts', {
-      user_email: email,
-      ip_addr: ipAddress,
-      user_agent_str: userAgent
-    });
+    // 7. Login exitoso - resetear contadores
+    authLogger.logLoginSuccess(userData.id, userData.correo_electronico);
+    
+    try {
+      await supabaseAdmin
+        .from('usuarios')
+        .update({
+          intentos_login_fallidos: 0,
+          cuenta_bloqueada: false,
+          fecha_bloqueo: null,
+          razon_bloqueo: null,
+          fecha_ultimo_login: new Date().toISOString(),
+          ip_ultimo_acceso: ipAddress,
+          fecha_actualizacion: new Date().toISOString()
+        })
+        .eq('id', userData.id);
+
+      // Registrar login exitoso
+      await supabaseAdmin
+        .from('logs_acceso')
+        .insert([
+          {
+            usuario_id: userData.id,
+            tipo_evento: 'login_exitoso',
+            ip_address: ipAddress,
+            user_agent: userAgent,
+            detalles: { email }
+          }
+        ]);
+    } catch (logError) {
+      console.error('Error al registrar login exitoso:', logError);
+      // No bloqueamos el login por errores de logging
+    }
 
     return NextResponse.json({
       success: true,
@@ -125,9 +207,16 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('Error en login:', error);
+    try {
+      const body = await req.json();
+      authLogger.logLoginFailed(body?.email || 'unknown', error.message || 'Unexpected error');
+    } catch {
+      authLogger.logLoginFailed('unknown', error.message || 'Unexpected error');
+    }
     return NextResponse.json(
       { error: error.message || 'Error al procesar la solicitud' },
       { status: 500 }
     );
   }
+  }); // End of withRateLimit
 }

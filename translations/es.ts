@@ -7,9 +7,9 @@ export default {
     login: "Iniciar Sesión",
     profile: {
       myProfile: "Mi Perfil",
-      myOrders: "Mis Pedidos",
-      favorites: "Favoritos",
       addresses: "Direcciones",
+      favorites: "Favoritos", 
+      myOrders: "Pedidos",
       notifications: "Notificaciones",
       settings: "Configuración",
       logout: "Cerrar sesión"

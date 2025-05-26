@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,25 +38,12 @@ export default function ResetPasswordPage() {
           return;
         }
         
-        // Validar que el token existe y es válido
-        const { data, error } = await supabase
-          .from('tokens_recuperacion')
-          .select('usuario_id, expires_at')
-          .eq('token', tokenFromUrl)
-          .single();
+        // Validar que el token existe y es válido usando nuestra API
+        const response = await fetch(`/api/auth/verify-token?token=${tokenFromUrl}&type=reset`);
         
-        if (error || !data) {
+        if (!response.ok) {
           setTokenValid(false);
           setTokenError('El token no es válido o ha expirado');
-          setTokenValidating(false);
-          return;
-        }
-        
-        // Comprobar que el token no ha expirado
-        const expiresAt = new Date(data.expires_at);
-        if (expiresAt < new Date()) {
-          setTokenValid(false);
-          setTokenError('El token ha expirado');
           setTokenValidating(false);
           return;
         }
@@ -104,52 +90,23 @@ export default function ResetPasswordPage() {
     try {
       setIsProcessing(true);
       
-      // 1. Obtener el token y el ID de usuario
-      const { data: tokenData, error: tokenError } = await supabase
-        .from('tokens_recuperacion')
-        .select('usuario_id')
-        .eq('token', token)
-        .single();
-      
-      if (tokenError || !tokenData) {
-        throw new Error('Token no válido o expirado');
-      }
-      
-      // 2. Obtener el correo electrónico del usuario
-      const { data: userData, error: userError } = await supabase
-        .from('usuarios')
-        .select('correo_electronico')
-        .eq('id', tokenData.usuario_id)
-        .single();
-      
-      if (userError || !userData) {
-        throw new Error('No se pudo obtener la información del usuario');
-      }
-      
-      // 3. Actualizar la contraseña en Supabase Auth
-      const { error: authError } = await supabase.auth.updateUser({
-        email: userData.correo_electronico,
-        password: password
+      // Usar nuestra API para restablecer la contraseña
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token,
+          newPassword: password
+        }),
       });
-      
-      if (authError) {
-        throw authError;
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al restablecer la contraseña');
       }
-      
-      // 4. Actualizar el campo de contraseña en nuestra tabla personalizada
-      await supabase
-        .from('usuarios')
-        .update({
-          contrasena_hash: 'gestionado_por_supabase',
-          fecha_actualizacion: new Date().toISOString()
-        })
-        .eq('id', tokenData.usuario_id);
-      
-      // 5. Eliminar el token usado
-      await supabase
-        .from('tokens_recuperacion')
-        .delete()
-        .eq('token', token);
       
       setIsSuccess(true);
       toast.success('Contraseña actualizada correctamente');

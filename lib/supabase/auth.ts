@@ -334,67 +334,51 @@ export async function updateUserProfile(userId: string, data: Partial<UsuarioDat
  */
 export async function resetPassword(email: string) {
   try {
-    // 1. Verificar que el usuario existe
-    const { data: userData, error: userError } = await supabase
-      .from('usuarios')
-      .select('id, nombre')
-      .eq('correo_electronico', email)
-      .single();
-    
-    if (userError) {
-      if (userError.code === 'PGRST116') {
-        // Usuario no encontrado, pero no lo informamos por seguridad
-        return { success: true };
-      }
-      throw userError;
+    const response = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Error al solicitar restablecimiento');
     }
-    
-    // 2. Generar token
-    const token = generateVerificationToken();
-    
-    // 3. Calcular fecha de expiración (24 horas)
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 24);
-    
-    // 4. Eliminar tokens de recuperación anteriores
-    await supabase
-      .from('tokens_recuperacion')
-      .delete()
-      .eq('usuario_id', userData.id);
-    
-    // 5. Guardar nuevo token
-    const { error: tokenError } = await supabase
-      .from('tokens_recuperacion')
-      .insert([
-        {
-          usuario_id: userData.id,
-          token,
-          expires_at: expiresAt.toISOString(),
-        }
-      ]);
-    
-    if (tokenError) {
-      console.error('Error al crear token de recuperación:', tokenError);
-      throw new Error('Error al crear token de recuperación');
-    }
-    
-    // 6. Enviar email con el enlace
-    try {
-      await sendPasswordResetEmail({
-        email,
-        token,
-        nombre: userData.nombre,
-      });
-    } catch (emailError) {
-      console.error('Error al enviar email de recuperación:', emailError);
-      throw new Error('Error al enviar email de recuperación');
-    }
-    
+
     return { success: true };
   } catch (error: any) {
     console.error('Error en resetPassword:', error);
     // Por seguridad, no revelamos el motivo del error
     return { success: true };
+  }
+}
+
+/**
+ * Restablecer contraseña con token
+ */
+export async function resetPasswordWithToken(token: string, newPassword: string) {
+  try {
+    const response = await fetch('/api/auth/reset-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token, newPassword }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Error al restablecer contraseña');
+    }
+
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error en resetPasswordWithToken:', error);
+    throw error;
   }
 }
 
