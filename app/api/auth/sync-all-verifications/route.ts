@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/database/client';
 
 // Requiere autenticación, limita a 10 usuarios por llamada para evitar sobrecarga
 const BATCH_SIZE = 10;

@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Settings as SettingsIcon, ChevronLeft, Moon, Sun, Globe, Bell, Shield, CreditCard } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/common/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
+import { Switch } from '@/components/common/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/ui/select';
 
 const LANGUAGES = [
   { value: 'es', label: 'Español' },

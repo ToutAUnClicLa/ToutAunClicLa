@@ -1,10 +1,10 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
+import { Navbar } from '@/components/shared/layout/Navbar';
+import { Footer } from '@/components/shared/layout/Footer';
 import { Toaster } from 'sonner';
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { ThemeProvider } from '@/components/common/providers/ThemeProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { Suspense } from 'react';
 import { SpeedInsights } from "@vercel/speed-insights/next"

@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Bell, ChevronLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/common/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
+import { Switch } from '@/components/common/ui/switch';
 
 const NOTIFICATION_SETTINGS = [
   {

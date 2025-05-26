@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/common/ui/tabs";
 import Link from 'next/link';
 import { User, Heart, MapPin, ShoppingBag, Settings } from 'lucide-react';
 

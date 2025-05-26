@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { ProductList } from '@/components/modules/catalog/ProductList';
+import { ProductList } from '@/components/features/modules/catalog/ProductList';
 
 const LoadingFallback = () => (
   <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 py-6">

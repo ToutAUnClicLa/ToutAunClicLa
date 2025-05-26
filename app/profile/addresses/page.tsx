@@ -6,9 +6,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { MapPin, Plus, ChevronLeft, Home, Building2, Phone } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/lib/supabase/client';
+import { Button } from '@/components/common/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
+import { supabase } from '@/lib/database/client';
 
 interface Address {
   id: number;

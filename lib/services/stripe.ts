@@ -1,5 +1,5 @@
-import { products, type ProductId } from '@/lib/stripe-config';
-import { supabase } from '@/lib/supabase/client';
+import { products, type ProductId } from '@/lib/config/stripe-config';
+import { supabase } from '@/lib/database/client';
 
 export async function createCheckoutSession(productId: ProductId) {
   const product = products[productId];

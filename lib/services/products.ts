@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/database/client';
 
 // Cache para productos por categoría
 const productCache = new Map();

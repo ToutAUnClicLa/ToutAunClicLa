@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
-import { verifyEmailToken, resendVerificationEmail } from '@/lib/supabase/auth';
-import { supabase } from '@/lib/supabase/client';
+import { verifyEmailToken, resendVerificationEmail } from '@/lib/database/auth';
+import { supabase } from '@/lib/database/client'; // antes '@/lib/supabase/client'
 import { sendWelcomeEmailServer } from '@/lib/email/resend-server';
 import { authLogger } from '@/lib/security/auth-logger';
 
@@ -181,4 +181,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

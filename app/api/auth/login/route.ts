@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/database/client'; // antes '@/lib/supabase/client'
 import { authRateLimiter, withRateLimit } from '@/lib/security/rate-limiter';
 import { authLogger } from '@/lib/security/auth-logger';
 

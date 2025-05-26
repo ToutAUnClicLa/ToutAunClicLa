@@ -6,10 +6,10 @@ import { Star, ShoppingCart, Heart, Share2, ChevronRight, Package, Shield, Truck
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ReviewForm } from '@/components/modules/reviews/ReviewForm';
-import { ReviewList } from '@/components/modules/reviews/ReviewList';
+import { Button } from '@/components/common/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ui/tabs';
+import {ReviewForm} from '@/components/features/modules/reviews/ReviewForm';
+import {ReviewList} from '@/components/features/modules/reviews/ReviewList';
 import { getProductDetail } from '@/lib/services/products';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -17,7 +17,7 @@ import dynamic from 'next/dynamic';
 import { isFavorite, addToFavorites, removeFromFavorites } from '@/lib/services/favorites';
 import { addToCart } from '@/lib/services/cart';
 import { useAuth } from '@/hooks/useAuth';
-import AuthModal from '@/components/auth/AuthModal';
+import AuthModal from '@/components/features/auth/AuthModal';
 
 // Dynamically import heavy components
 const MotionImage = motion(Image);

@@ -7,8 +7,8 @@ import { toast } from 'sonner';
 import { Heart, Trash2, ShoppingCart, ChevronLeft } from 'lucide-react';
 import { getFavorites, removeFromFavorites } from '@/lib/services/favorites';
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/common/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/common/ui/card';
 import Image from 'next/image';
 
 interface FavoriteProduct {

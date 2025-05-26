@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/common/ui/button';
 import { AlertCircle, CheckCircle, Mail, Loader2 } from 'lucide-react';
 
 export default function VerifyEmailPage() {

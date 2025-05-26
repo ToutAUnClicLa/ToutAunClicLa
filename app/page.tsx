@@ -5,7 +5,6 @@ import { ArrowRight, ChevronDown, Package, Utensils, Store, Shirt, Watch, Gift }
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from '@/hooks/useTranslation';
-import AuthDebug from '@/components/debug/AuthDebug';
 
 // Types
 interface CategoryCardProps {
@@ -191,7 +190,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      <AuthDebug />
       {/* Hero section */}
       <div className="relative w-full h-screen min-h-[500px] sm:min-h-[600px] md:min-h-[700px] lg:min-h-[800px] max-h-[900px] overflow-hidden">
         <div className="relative h-full">
