@@ -305,5 +305,221 @@ export default {
     logoutSuccess: "Successfully signed out",
     logoutError: "Error signing out",
     languageChanged: "Language changed to"
+  },
+  
+  // Product catalog translations
+  catalog: {
+    // ProductCard
+    productCard: {
+      addToCart: "Add to cart",
+      addingToCart: "Adding...",
+      addToFavorites: "Add to favorites",
+      removeFromFavorites: "Remove from favorites",
+      outOfStock: "Out of stock",
+      rating: "Rating",
+      reviews: "reviews",
+      quickView: "Quick view",
+      seeDetails: "See details",
+      originalPrice: "Original price",
+      discountedPrice: "Discounted price",
+      savings: "You save",
+      freeShipping: "Free shipping",
+      limitedStock: "Limited stock",
+      newProduct: "New",
+      bestseller: "Bestseller",
+      featured: "Featured"
+    },
+    
+    // ProductList
+    productList: {
+      // Page titles
+      productsTitle: "Our Products",
+      productsSubtitle: "Discover the best selection of Latin American products",
+      comidasTitle: "Traditional Foods",
+      comidasSubtitle: "Authentic flavors from all across Latin America - Traditional gastronomy in Montreal",
+      boutiqueTitle: "Boutique",
+      boutiqueSubtitle: "Unique crafts and souvenirs - Latin American handmade products",
+      
+      // Filters
+      filters: "Filters",
+      search: "Search products",
+      searchPlaceholder: "Search by name...",
+      category: "Category",
+      allCategories: "All categories",
+      subcategory: "Subcategory",
+      allSubcategories: "All subcategories",
+      priceRange: "Price range",
+      minPrice: "Minimum price",
+      maxPrice: "Maximum price",
+      sortBy: "Sort by",
+      clearFilters: "Clear filters",
+      applyFilters: "Apply filters",
+      hideFilters: "Hide filters",
+      showFilters: "Show filters",
+      
+      // Sort options
+      sortOptions: {
+        nameAsc: "Name (A-Z)",
+        nameDesc: "Name (Z-A)",
+        priceAsc: "Price (low to high)",
+        priceDesc: "Price (high to low)",
+        ratingDesc: "Highest rated",
+        newest: "Newest",
+        bestselling: "Best selling"
+      },
+      
+      // Loading and empty states
+      loading: "Loading products...",
+      noProducts: "No products found",
+      noProductsMessage: "No products match the selected filters.",
+      tryDifferentFilters: "Try adjusting your filters or searching for something different.",
+      loadMore: "Load more",
+      showingResults: "Showing {count} of {total} products",
+      
+      // Benefits
+      benefits: {
+        fastDelivery: {
+          title: "Fast Delivery",
+          description: "Receive your order in 24-48h"
+        },
+        qualityGuarantee: {
+          title: "Quality Guarantee",
+          description: "100% authentic products"
+        },
+        freeShipping: {
+          title: "Free Shipping",
+          description: "On orders over $200"
+        },
+        securePayment: {
+          title: "Secure Payment",
+          description: "Protected transactions"
+        },
+        customerSupport: {
+          title: "24/7 Support",
+          description: "We're here to help"
+        }
+      },
+      
+      // Success and error messages
+      messages: {
+        addedToCart: "Product added to cart",
+        addedToFavorites: "Added to favorites",
+        removedFromFavorites: "Removed from favorites",
+        errorAddingToCart: "Error adding to cart",
+        errorTogglingFavorite: "Error updating favorites",
+        loginRequired: "You must sign in to continue"
+      }
+    },
+    
+    // ProductDetail
+    productDetail: {
+      // Product information
+      productInfo: "Product information",
+      description: "Description",
+      specifications: "Specifications",
+      reviews: "Reviews",
+      shipping: "Shipping",
+      returns: "Returns",
+      
+      // Actions
+      addToCart: "Add to cart",
+      buyNow: "Buy now",
+      addToFavorites: "Add to favorites",
+      removeFromFavorites: "Remove from favorites",
+      shareProduct: "Share product",
+      
+      // Details
+      price: "Price",
+      originalPrice: "Original price",
+      discount: "Discount",
+      stock: "Available stock",
+      sku: "SKU",
+      category: "Category",
+      brand: "Brand",
+      weight: "Weight",
+      dimensions: "Dimensions",
+      
+      // States
+      inStock: "In stock",
+      outOfStock: "Out of stock",
+      limitedStock: "Limited stock",
+      preOrder: "Pre-order",
+      
+      // Quantity
+      quantity: "Quantity",
+      increase: "Increase quantity",
+      decrease: "Decrease quantity",
+      maxQuantity: "Maximum available quantity: {max}",
+      unitsAvailable: "units available",
+      
+      // Image gallery
+      mainImage: "Main image",
+      additionalImages: "Additional images",
+      zoomImage: "Zoom image",
+      previousImage: "Previous image",
+      nextImage: "Next image",
+      
+      // Related products
+      relatedProducts: "Related products",
+      youMayAlsoLike: "You may also like",
+      similarProducts: "Similar products",
+      seeMore: "See more",
+      loading: "Loading...",
+      
+      // Product-specific benefits
+      authentic: "100% Authentic",
+      originalProduct: "Original product",
+      securePayment: "Secure payment",
+      fastShipping: "Fast shipping",
+      qualityGuaranteed: "Quality guaranteed",
+      
+      // Reviews
+      customerReviews: "Customer reviews",
+      writeReview: "Write review",
+      stars: "stars",
+      helpful: "Helpful",
+      notHelpful: "Not helpful",
+      verifiedPurchase: "Verified purchase",
+      
+      // Shipping
+      shippingInfo: "Shipping information",
+      estimatedDelivery: "Estimated delivery",
+      shippingCost: "Shipping cost",
+      freeShippingOn: "Free shipping on orders of",
+      
+      // Breadcrumbs
+      home: "Home",
+      backToCategory: "Back to {category}",
+      
+      // Messages
+      addedToCart: "Product successfully added to cart",
+      errorAddingToCart: "Error adding product to cart",
+      addedToFavorites: "Product added to favorites",
+      removedFromFavorites: "Product removed from favorites",
+      errorTogglingFavorite: "Error updating favorites",
+      loginToAddToCart: "Sign in to add products to cart",
+      loginToAddToFavorites: "Sign in to add products to favorites",
+      errorLoadingProduct: "Error loading product",
+      productNotFound: "Product not found"
+    }
+  },
+  
+  // SEO and metadata
+  seo: {
+    products: {
+      title: "Authentic Latin American Products | Tout à un Clic LA",
+      description: "Discover the best selection of Latin American products in Montreal. Flours, doughs, sauces, dressings and more. Free shipping on orders +$200. Order now!",
+      keywords: "Latin American products Montreal, traditional flours, authentic sauces, Latino dressings, Latin America products Canada"
+    },
+    comidas: {
+      title: "Traditional Latin American Food | Montreal Delivery | Tout à un Clic LA",
+      description: "Authentic Latin American food in Montreal. Flavors from Mexico, Colombia, Peru, Argentina and more. Fast delivery. Order your favorite Latino food!",
+      keywords: "Latino food Montreal, Latin American food delivery, Latino restaurant Montreal, Mexican food, Colombian food, Peruvian food Quebec"
+    },
+    boutique: {
+      title: "Latin American Artisan Boutique | Souvenirs & Gifts | Montreal",
+      description: "Exclusive boutique with crafts, traditional clothing and souvenirs from Latin America in Montreal. Unique and authentic products. Find the perfect gift!",
+      keywords: "Latino boutique Montreal, Latin American crafts, Latin America souvenirs, traditional clothing, unique gifts, Latino store Quebec"
+    }
   }
 };

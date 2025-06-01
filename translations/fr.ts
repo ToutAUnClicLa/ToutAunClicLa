@@ -305,5 +305,221 @@ export default {
     logoutSuccess: "Déconnexion réussie",
     logoutError: "Erreur lors de la déconnexion",
     languageChanged: "Langue changée en"
+  },
+  
+  // Traductions pour le catalogue de produits
+  catalog: {
+    // ProductCard
+    productCard: {
+      addToCart: "Ajouter au panier",
+      addingToCart: "Ajout en cours...",
+      addToFavorites: "Ajouter aux favoris",
+      removeFromFavorites: "Retirer des favoris",
+      outOfStock: "En rupture de stock",
+      rating: "Note",
+      reviews: "avis",
+      quickView: "Aperçu rapide",
+      seeDetails: "Voir les détails",
+      originalPrice: "Prix original",
+      discountedPrice: "Prix réduit",
+      savings: "Vous économisez",
+      freeShipping: "Livraison gratuite",
+      limitedStock: "Stock limité",
+      newProduct: "Nouveau",
+      bestseller: "Bestseller",
+      featured: "En vedette"
+    },
+    
+    // ProductList
+    productList: {
+      // Titres des pages
+      productsTitle: "Nos Produits",
+      productsSubtitle: "Découvrez la meilleure sélection de produits latino-américains",
+      comidasTitle: "Cuisine Traditionnelle",
+      comidasSubtitle: "Saveurs authentiques de toute l'Amérique Latine - Gastronomie traditionnelle à Montréal",
+      boutiqueTitle: "Boutique",
+      boutiqueSubtitle: "Artisanat et souvenirs uniques - Produits artisanaux latino-américains",
+      
+      // Filtres
+      filters: "Filtres",
+      search: "Rechercher des produits",
+      searchPlaceholder: "Rechercher par nom...",
+      category: "Catégorie",
+      allCategories: "Toutes les catégories",
+      subcategory: "Sous-catégorie",
+      allSubcategories: "Toutes les sous-catégories",
+      priceRange: "Gamme de prix",
+      minPrice: "Prix minimum",
+      maxPrice: "Prix maximum",
+      sortBy: "Trier par",
+      clearFilters: "Effacer les filtres",
+      applyFilters: "Appliquer les filtres",
+      hideFilters: "Masquer les filtres",
+      showFilters: "Afficher les filtres",
+      
+      // Options de tri
+      sortOptions: {
+        nameAsc: "Nom (A-Z)",
+        nameDesc: "Nom (Z-A)",
+        priceAsc: "Prix (croissant)",
+        priceDesc: "Prix (décroissant)",
+        ratingDesc: "Mieux notés",
+        newest: "Plus récents",
+        bestselling: "Meilleures ventes"
+      },
+      
+      // États de chargement et vides
+      loading: "Chargement des produits...",
+      noProducts: "Aucun produit trouvé",
+      noProductsMessage: "Aucun produit ne correspond aux filtres sélectionnés.",
+      tryDifferentFilters: "Essayez d'ajuster vos filtres ou de rechercher autre chose.",
+      loadMore: "Charger plus",
+      showingResults: "Affichage de {count} sur {total} produits",
+      
+      // Avantages
+      benefits: {
+        fastDelivery: {
+          title: "Livraison Rapide",
+          description: "Recevez votre commande en 24-48h"
+        },
+        qualityGuarantee: {
+          title: "Garantie Qualité",
+          description: "100% produits authentiques"
+        },
+        freeShipping: {
+          title: "Livraison Gratuite",
+          description: "Sur les commandes de plus de 200$"
+        },
+        securePayment: {
+          title: "Paiement Sécurisé",
+          description: "Transactions protégées"
+        },
+        customerSupport: {
+          title: "Support 24/7",
+          description: "Nous sommes là pour vous aider"
+        }
+      },
+      
+      // Messages de succès et d'erreur
+      messages: {
+        addedToCart: "Produit ajouté au panier",
+        addedToFavorites: "Ajouté aux favoris",
+        removedFromFavorites: "Retiré des favoris",
+        errorAddingToCart: "Erreur lors de l'ajout au panier",
+        errorTogglingFavorite: "Erreur lors de la mise à jour des favoris",
+        loginRequired: "Vous devez vous connecter pour continuer"
+      }
+    },
+    
+    // ProductDetail
+    productDetail: {
+      // Informations produit
+      productInfo: "Informations produit",
+      description: "Description",
+      specifications: "Spécifications",
+      reviews: "Avis",
+      shipping: "Livraison",
+      returns: "Retours",
+      
+      // Actions
+      addToCart: "Ajouter au panier",
+      buyNow: "Acheter maintenant",
+      addToFavorites: "Ajouter aux favoris",
+      removeFromFavorites: "Retirer des favoris",
+      shareProduct: "Partager le produit",
+      
+      // Détails
+      price: "Prix",
+      originalPrice: "Prix original",
+      discount: "Remise",
+      stock: "Stock disponible",
+      sku: "SKU",
+      category: "Catégorie",
+      brand: "Marque",
+      weight: "Poids",
+      dimensions: "Dimensions",
+      
+      // États
+      inStock: "En stock",
+      outOfStock: "En rupture de stock",
+      limitedStock: "Stock limité",
+      preOrder: "Pré-commande",
+      
+      // Quantité
+      quantity: "Quantité",
+      increase: "Augmenter la quantité",
+      decrease: "Diminuer la quantité",
+      maxQuantity: "Quantité maximale disponible: {max}",
+      unitsAvailable: "unités disponibles",
+      
+      // Galerie d'images
+      mainImage: "Image principale",
+      additionalImages: "Images supplémentaires",
+      zoomImage: "Agrandir l'image",
+      previousImage: "Image précédente",
+      nextImage: "Image suivante",
+      
+      // Produits connexes
+      relatedProducts: "Produits connexes",
+      youMayAlsoLike: "Vous pourriez aussi aimer",
+      similarProducts: "Produits similaires",
+      seeMore: "Voir plus",
+      loading: "Chargement...",
+      
+      // Avantages spécifiques du produit
+      authentic: "100% Authentique",
+      originalProduct: "Produit original",
+      securePayment: "Paiement sécurisé",
+      fastShipping: "Livraison rapide",
+      qualityGuaranteed: "Qualité garantie",
+      
+      // Avis
+      customerReviews: "Avis clients",
+      writeReview: "Rédiger un avis",
+      stars: "étoiles",
+      helpful: "Utile",
+      notHelpful: "Pas utile",
+      verifiedPurchase: "Achat vérifié",
+      
+      // Livraison
+      shippingInfo: "Informations de livraison",
+      estimatedDelivery: "Livraison estimée",
+      shippingCost: "Coût de livraison",
+      freeShippingOn: "Livraison gratuite sur les commandes de",
+      
+      // Fil d'Ariane
+      home: "Accueil",
+      backToCategory: "Retour à {category}",
+      
+      // Messages
+      addedToCart: "Produit ajouté au panier avec succès",
+      errorAddingToCart: "Erreur lors de l'ajout du produit au panier",
+      addedToFavorites: "Produit ajouté aux favoris",
+      removedFromFavorites: "Produit retiré des favoris",
+      errorTogglingFavorite: "Erreur lors de la mise à jour des favoris",
+      loginToAddToCart: "Connectez-vous pour ajouter des produits au panier",
+      loginToAddToFavorites: "Connectez-vous pour ajouter des produits aux favoris",
+      errorLoadingProduct: "Erreur lors du chargement du produit",
+      productNotFound: "Produit non trouvé"
+    }
+  },
+  
+  // SEO et métadonnées
+  seo: {
+    products: {
+      title: "Produits Latino-Américains Authentiques | Tout à un Clic LA",
+      description: "Découvrez la meilleure sélection de produits latino-américains à Montréal. Farines, pâtes, sauces, vinaigrettes et plus. Livraison gratuite +200$. Commandez maintenant!",
+      keywords: "produits latino-américains Montréal, farines traditionnelles, sauces authentiques, vinaigrettes latinos, produits Amérique Latine Canada"
+    },
+    comidas: {
+      title: "Cuisine Traditionnelle Latino-Américaine | Livraison Montréal | Tout à un Clic LA",
+      description: "Cuisine authentique d'Amérique Latine à Montréal. Saveurs du Mexique, Colombie, Pérou, Argentine et plus. Livraison rapide. Commandez votre cuisine latino préférée!",
+      keywords: "cuisine latino Montréal, livraison cuisine latino-américaine, restaurant latino Montréal, cuisine mexicaine, cuisine colombienne, cuisine péruvienne Québec"
+    },
+    boutique: {
+      title: "Boutique Artisanale Latino-Américaine | Souvenirs & Cadeaux | Montréal",
+      description: "Boutique exclusive avec artisanat, vêtements traditionnels et souvenirs d'Amérique Latine à Montréal. Produits uniques et authentiques. Trouvez le cadeau parfait!",
+      keywords: "boutique latino Montréal, artisanat latino-américain, souvenirs Amérique Latine, vêtements traditionnels, cadeaux uniques, magasin latino Québec"
+    }
   }
 };

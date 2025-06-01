@@ -1,8 +1,11 @@
 "use client";
 
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useTranslation } from '@/hooks/useTranslation';
 import { ProductList } from '@/components/features/modules/catalog/ProductList';
+import { StructuredData } from '@/components/seo/StructuredData';
+import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
 
 const LoadingFallback = () => (
   <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 py-6">
@@ -23,18 +26,56 @@ const LoadingFallback = () => (
   </div>
 );
 
-export default function BoutiquePage() {
+function BoutiqueContent() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const subcategoriaId = searchParams.get('subcategoria');
 
+  // Set SEO metadata
+  useEffect(() => {
+    document.title = t('seo.boutique.title');
+    
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', t('seo.boutique.description'));
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'description';
+      meta.content = t('seo.boutique.description');
+      document.head.appendChild(meta);
+    }
+
+    // Update meta keywords
+    const metaKeywords = document.querySelector('meta[name="keywords"]');
+    if (metaKeywords) {
+      metaKeywords.setAttribute('content', t('seo.boutique.keywords'));
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'keywords';
+      meta.content = t('seo.boutique.keywords');
+      document.head.appendChild(meta);
+    }
+  }, [t]);
+
   return (
-    <Suspense fallback={<LoadingFallback />}>
+    <>
+      <SEOMetaTags page="boutique" />
+      <StructuredData type="organization" />
       <ProductList 
         categoryId={3} 
         categoryName="boutique" 
-        title="Boutique" 
+        title={t('catalog.productList.boutiqueTitle')}
         initialSubcategory={subcategoriaId ? parseInt(subcategoriaId) : null}
       />
+    </>
+  );
+}
+
+export default function BoutiquePage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <BoutiqueContent />
     </Suspense>
   );
 }

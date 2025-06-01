@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ui
 import {ReviewForm} from '@/components/features/modules/reviews/ReviewForm';
 import {ReviewList} from '@/components/features/modules/reviews/ReviewList';
 import { getProductDetail } from '@/lib/services/products';
+import { useTranslation } from '@/hooks/useTranslation';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import dynamic from 'next/dynamic';
@@ -18,27 +19,11 @@ import { isFavorite, addToFavorites, removeFromFavorites } from '@/lib/services/
 import { addToCart } from '@/lib/services/cart';
 import { useAuth } from '@/hooks/useAuth';
 import AuthModal from '@/components/features/auth/AuthModal';
+import { StructuredData } from '@/components/seo/StructuredData';
+import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
 
 // Dynamically import heavy components
 const MotionImage = motion(Image);
-
-const benefits = [
-  {
-    icon: Package,
-    title: "Original",
-    description: "100% auténtico"
-  },
-  {
-    icon: Shield,
-    title: "Seguro",
-    description: "Pago protegido"
-  },
-  {
-    icon: Truck,
-    title: "Envío Gratis",
-    description: "+$200"
-  }
-];
 
 const categoryColors = {
   productos: {
@@ -79,12 +64,31 @@ const LoadingState = () => (
 );
 
 function ProductDetail({ product, colors, params }: { product: any; colors: any; params: any }) {
+  const { t } = useTranslation();
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { user } = useAuth();
+
+  const benefits = [
+    {
+      icon: Package,
+      title: t('catalog.productDetail.authentic'),
+      description: t('catalog.productDetail.originalProduct')
+    },
+    {
+      icon: Shield,
+      title: t('catalog.productDetail.securePayment'),
+      description: t('catalog.productDetail.securePayment')
+    },
+    {
+      icon: Truck,
+      title: t('catalog.productDetail.fastShipping'),
+      description: "+$200"
+    }
+  ];
 
   const images = [
     product.imagen_principal,
@@ -116,10 +120,10 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
     try {
       setIsLoading(true);
       await addToCart(product.id, quantity);
-      toast.success(`${quantity} ${quantity === 1 ? 'unidad' : 'unidades'} de ${product.nombre} ${quantity === 1 ? 'agregada' : 'agregadas'} al carrito`);
+      toast.success(t('catalog.productDetail.addedToCart'));
     } catch (error) {
       console.error('Error al agregar al carrito:', error);
-      toast.error('Error al agregar al carrito');
+      toast.error(t('catalog.productDetail.errorAddingToCart'));
     } finally {
       setIsLoading(false);
     }
@@ -135,14 +139,14 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
       setIsFavorited(!isFavorited);
       if (isFavorited) {
         await removeFromFavorites(product.id);
-        toast.success('Eliminado de favoritos');
+        toast.success(t('catalog.productDetail.removedFromFavorites'));
       } else {
         await addToFavorites(product.id);
-        toast.success('Agregado a favoritos');
+        toast.success(t('catalog.productDetail.addedToFavorites'));
       }
     } catch (error) {
       console.error('Error al actualizar favoritos:', error);
-      toast.error('Error al actualizar favoritos');
+      toast.error(t('catalog.productDetail.errorTogglingFavorite'));
       setIsFavorited(!isFavorited); // Revertir cambio en UI si falla
     }
   };
@@ -209,11 +213,11 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
               </span>
               {product.stock > 0 ? (
                 <span className="px-2 py-1 rounded-full text-xs font-medium text-green-600 bg-green-50 border border-green-100">
-                  En stock
+                  {t('catalog.productDetail.inStock')}
                 </span>
               ) : (
                 <span className="px-2 py-1 rounded-full text-xs font-medium text-red-600 bg-red-50 border border-red-100">
-                  Sin stock
+                  {t('catalog.productDetail.outOfStock')}
                 </span>
               )}
             </div>
@@ -310,7 +314,7 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
 
             {product.stock > 0 && (
               <p className="text-xs text-gray-500">
-                {product.stock} unidades disponibles
+                {product.stock} {t('catalog.productDetail.unitsAvailable')}
               </p>
             )}
           </div>
@@ -324,12 +328,12 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
               {isLoading ? (
                 <span className="flex items-center">
                   <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  Agregando...
+                  {t('catalog.productCard.addingToCart')}
                 </span>
               ) : (
                 <>
                   <ShoppingCart className="h-4 w-4 mr-2" />
-                  {product.stock === 0 ? 'Sin stock' : 'Agregar'}
+                  {product.stock === 0 ? t('catalog.productCard.outOfStock') : t('catalog.productCard.addToCart')}
                 </>
               )}
             </Button>
@@ -349,12 +353,12 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
 
           <Tabs defaultValue="description" className="w-full">
             <TabsList className="w-full grid grid-cols-2">
-              <TabsTrigger value="description">Descripción</TabsTrigger>
-              <TabsTrigger value="reviews">Reseñas</TabsTrigger>
+              <TabsTrigger value="description">{t('catalog.productDetail.description')}</TabsTrigger>
+              <TabsTrigger value="reviews">{t('catalog.productDetail.reviews')}</TabsTrigger>
             </TabsList>
             <TabsContent value="description" className="mt-4">
               <div className="prose max-w-none">
-                <h3 className="text-base font-semibold mb-2">Detalles del producto</h3>
+                <h3 className="text-base font-semibold mb-2">{t('catalog.productDetail.productInfo')}</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">{product.descripcion}</p>
                 {product.caracteristicas && (
                   <ul className="mt-4 space-y-2">
@@ -369,7 +373,7 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
               </div>
             </TabsContent>
             <TabsContent value="reviews" className="mt-4">
-              <Suspense fallback={<div>Cargando reseñas...</div>}>
+              <Suspense fallback={<div>{t('catalog.productDetail.loading')}</div>}>
                 <ReviewForm productId={product.id} />
                 <ReviewList reviews={product.reviews} />
               </Suspense>
@@ -382,9 +386,9 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
       {product.productos_relacionados && product.productos_relacionados.length > 0 && (
         <div className="mt-8 sm:mt-12">
           <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <h2 className="text-lg sm:text-xl font-bold">Productos relacionados</h2>
+            <h2 className="text-lg sm:text-xl font-bold">{t('catalog.productDetail.relatedProducts')}</h2>
             <Button variant="ghost" className="hidden sm:flex text-sm">
-              Ver más <ArrowRight className="ml-2 h-4 w-4" />
+              {t('catalog.productDetail.seeMore')} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -427,8 +431,11 @@ export default function ProductDetailPage() {
   const params = useParams();
   const [product, setProduct] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
 
-  const colors = categoryColors[params.category as keyof typeof categoryColors];
+  // Ensure category is a string, not an array
+  const category = Array.isArray(params.category) ? params.category[0] : params.category;
+  const colors = categoryColors[category as keyof typeof categoryColors];
 
   useEffect(() => {
     async function loadProduct() {
@@ -437,7 +444,7 @@ export default function ProductDetailPage() {
         setProduct(data);
       } catch (error) {
         console.error('Error loading product:', error);
-        toast.error('Error al cargar el producto');
+        toast.error(t('catalog.productDetail.errorLoadingProduct'));
       } finally {
         setIsLoading(false);
       }
@@ -454,27 +461,31 @@ export default function ProductDetailPage() {
     return (
       <div className={cn("min-h-screen py-4 sm:py-6", colors?.bg)}>
         <div className="container max-w-5xl">
-          <p className="text-center text-gray-500">Producto no encontrado</p>
+          <p className="text-center text-gray-500">{t('catalog.productDetail.productNotFound')}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={cn("min-h-screen py-4 sm:py-6", colors.bg)}>
-      <div className="container max-w-5xl">
-        <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6 overflow-x-auto whitespace-nowrap">
-          <Link href="/" className="hover:text-gray-900">Inicio</Link>
-          <ChevronRight className="h-4 w-4 mx-1 sm:mx-2 flex-shrink-0" />
-          <Link href={`/${params.category}`} className="hover:text-gray-900 capitalize">
-            {params.category}
-          </Link>
-          <ChevronRight className="h-4 w-4 mx-1 sm:mx-2 flex-shrink-0" />
-          <span className="text-gray-900 font-medium truncate">{product.nombre}</span>
-        </div>
+    <>
+      <SEOMetaTags page="product" product={product} categoryName={category} />
+      <StructuredData type="product" product={product} categoryName={category} />
+      <div className={cn("min-h-screen py-4 sm:py-6", colors.bg)}>
+        <div className="container max-w-5xl">
+          <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6 overflow-x-auto whitespace-nowrap">
+            <Link href="/" className="hover:text-gray-900">{t('catalog.productDetail.home')}</Link>
+            <ChevronRight className="h-4 w-4 mx-1 sm:mx-2 flex-shrink-0" />
+            <Link href={`/${category}`} className="hover:text-gray-900 capitalize">
+              {category}
+            </Link>
+            <ChevronRight className="h-4 w-4 mx-1 sm:mx-2 flex-shrink-0" />
+            <span className="text-gray-900 font-medium truncate">{product.nombre}</span>
+          </div>
 
-        <ProductDetail product={product} colors={colors} params={params} />
+          <ProductDetail product={product} colors={colors} params={params} />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

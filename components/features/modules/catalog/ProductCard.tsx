@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/hooks/useTranslation';
 import AuthModal from '@/components/features/auth/AuthModal';
 import { Button } from '@/components/common/ui/button';
 import { addToFavorites, removeFromFavorites, isFavorite } from '@/lib/services/favorites';
@@ -32,6 +33,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, categoryName }: ProductCardProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
@@ -67,10 +69,10 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
     try {
       setIsLoading(true);
       await addToCart(product.id);
-      toast.success('Producto agregado al carrito');
+      toast.success(t('catalog.productCard.addedToCart'));
     } catch (error) {
       console.error('Error adding to cart:', error);
-      toast.error('Error al agregar al carrito');
+      toast.error(t('catalog.messages.errorAddingToCart'));
     } finally {
       setIsLoading(false);
     }
@@ -90,14 +92,14 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
       
       if (isFavorited) {
         await removeFromFavorites(product.id);
-        toast.success('Eliminado de favoritos');
+        toast.success(t('catalog.messages.removedFromFavorites'));
       } else {
         await addToFavorites(product.id);
-        toast.success('Agregado a favoritos');
+        toast.success(t('catalog.messages.addedToFavorites'));
       }
     } catch (error) {
       console.error('Error toggling favorite:', error);
-      toast.error('Error al actualizar favoritos');
+      toast.error(t('catalog.messages.errorTogglingFavorite'));
       setIsFavorited(!isFavorited);
     }
   };
@@ -146,7 +148,7 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
                 </span>
                 {product.stock === 0 && (
                   <span className="text-xs font-medium text-red-500 bg-red-50 px-2 py-1 rounded-full">
-                    Sin stock
+                    {t('catalog.productCard.outOfStock')}
                   </span>
                 )}
               </div>
@@ -157,7 +159,12 @@ export function ProductCard({ product, categoryName }: ProductCardProps) {
                 disabled={isLoading || product.stock === 0}
               >
                 <ShoppingCart className="h-4 w-4" />
-                {product.stock === 0 ? 'Sin stock' : 'Agregar'}
+                {isLoading 
+                  ? t('catalog.productCard.addingToCart')
+                  : product.stock === 0 
+                    ? t('catalog.productCard.outOfStock')
+                    : t('catalog.productCard.addToCart')
+                }
               </Button>
             </div>
           </div>

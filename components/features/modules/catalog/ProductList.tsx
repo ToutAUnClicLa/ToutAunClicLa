@@ -11,6 +11,7 @@ import {
   FormattedProduct,
   formatProduct
 } from '@/lib/services/products';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Input } from '@/components/common/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/ui/select';
 import { Button } from '@/components/common/ui/button';
@@ -68,6 +69,7 @@ interface ProductListProps {
 }
 
 export function ProductList({ categoryId, categoryName, title, initialSubcategory = null }: ProductListProps) {
+  const { t } = useTranslation();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [subcategories, setSubcategories] = useState<any[]>([]);
@@ -118,7 +120,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
         setSubcategories(subcategoriesData);
       } catch (error) {
         console.error('Error loading data:', error);
-        toast.error('Error al cargar los productos. Por favor, intente nuevamente.');
+        toast.error(t('catalog.productList.noProductsMessage'));
       } finally {
         setIsLoading(false);
       }
@@ -139,7 +141,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
   const FilterContent = () => (
     <div className="space-y-6">
       <div>
-        <label className="text-sm font-medium mb-2 block">Subcategorías</label>
+        <label className="text-sm font-medium mb-2 block">{t('catalog.productList.subcategory')}</label>
         <Select
           value={filters.subcategory?.toString() || "all"}
           onValueChange={(value) => setFilters(prev => ({ 
@@ -148,10 +150,10 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
           }))}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Todas las subcategorías" />
+            <SelectValue placeholder={t('catalog.productList.allSubcategories')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todas</SelectItem>
+            <SelectItem value="all">{t('catalog.productList.allSubcategories')}</SelectItem>
             {subcategories.map((sub) => (
               <SelectItem key={sub.id} value={sub.id.toString()}>
                 {sub.nombre}
@@ -162,12 +164,12 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
       </div>
 
       <div>
-        <label className="text-sm font-medium mb-2 block">Rango de Precios</label>
+        <label className="text-sm font-medium mb-2 block">{t('catalog.productList.priceRange')}</label>
         <div className="flex gap-2 items-center">
           <Input
             type="number"
             min={0}
-            placeholder="Min"
+            placeholder={t('catalog.productList.minPrice')}
             value={filters.minPrice}
             onChange={(e) => setFilters(prev => ({ ...prev, minPrice: parseInt(e.target.value) || 0 }))}
             className="w-24"
@@ -176,7 +178,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
           <Input
             type="number"
             min={0}
-            placeholder="Max"
+            placeholder={t('catalog.productList.maxPrice')}
             value={filters.maxPrice}
             onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: parseInt(e.target.value) || 0 }))}
             className="w-24"
@@ -197,7 +199,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
           setIsFilterOpen(false);
         }}
       >
-        Limpiar filtros
+        {t('catalog.productList.clearFilters')}
       </Button>
     </div>
   );
@@ -205,16 +207,18 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
   const benefits = [
     {
       icon: Clock,
-      title: "Entrega Rápida"
+      title: t('catalog.productList.benefits.fastDelivery.title'),
+      description: t('catalog.productList.benefits.fastDelivery.description')
     },
     {
       icon: Shield,
-      title: "Garantía de Calidad"
+      title: t('catalog.productList.benefits.qualityGuarantee.title'),
+      description: t('catalog.productList.benefits.qualityGuarantee.description')
     },
     {
       icon: Truck,
-      title: "Envío Gratis",
-      description: "En pedidos superiores a $200"
+      title: t('catalog.productList.benefits.freeShipping.title'),
+      description: t('catalog.productList.benefits.freeShipping.description')
     }
   ];
 
@@ -226,7 +230,12 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
           <div>
             <h1 className="text-2xl font-bold">{title}</h1>
             <p className="text-sm text-gray-600">
-              Explora nuestra selección de productos auténticos de todas las Américas
+              {categoryName === 'productos' 
+                ? t('catalog.productList.productsSubtitle')
+                : categoryName === 'comidas'
+                ? t('catalog.productList.comidasSubtitle')
+                : t('catalog.productList.boutiqueSubtitle')
+              }
             </p>
           </div>
         </div>
@@ -234,12 +243,12 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="hidden lg:block w-64 flex-shrink-0 space-y-6">
             <div className={cn("p-4 rounded-lg border", colors.border)}>
-              <h3 className="font-semibold mb-4">Filtros</h3>
+              <h3 className="font-semibold mb-4">{t('catalog.productList.filters')}</h3>
               <FilterContent />
             </div>
 
             <div className={cn("p-4 rounded-lg border", colors.border)}>
-              <h3 className="font-semibold mb-4">Beneficios</h3>
+              <h3 className="font-semibold mb-4">{t('catalog.productList.benefits.fastDelivery.title')}</h3>
               <div className="space-y-4">
                 {benefits.map((benefit, index) => (
                   <div key={index} className="flex items-start gap-3">
@@ -260,7 +269,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   type="search"
-                  placeholder="Buscar productos..."
+                  placeholder={t('catalog.productList.searchPlaceholder')}
                   className="pl-10"
                   value={filters.search}
                   onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
@@ -271,12 +280,12 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
                 <SheetTrigger asChild>
                   <Button variant="outline" className="lg:hidden">
                     <Filter className="h-4 w-4 mr-2" />
-                    Filtros
+                    {t('catalog.productList.filters')}
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="bottom" className="h-[80vh]">
                   <SheetHeader>
-                    <SheetTitle>Filtros</SheetTitle>
+                    <SheetTitle>{t('catalog.productList.filters')}</SheetTitle>
                   </SheetHeader>
                   <div className="mt-4">
                     <FilterContent />
@@ -289,19 +298,19 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
                 onValueChange={(value) => setFilters(prev => ({ ...prev, sortBy: value as ProductFilters['sortBy'] }))}
               >
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Ordenar por" />
+                  <SelectValue placeholder={t('catalog.productList.sortBy')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="nameAsc">Nombre (A-Z)</SelectItem>
-                  <SelectItem value="nameDesc">Nombre (Z-A)</SelectItem>
-                  <SelectItem value="priceAsc">Menor precio</SelectItem>
-                  <SelectItem value="priceDesc">Mayor precio</SelectItem>
+                  <SelectItem value="nameAsc">{t('catalog.productList.sortOptions.nameAsc')}</SelectItem>
+                  <SelectItem value="nameDesc">{t('catalog.productList.sortOptions.nameDesc')}</SelectItem>
+                  <SelectItem value="priceAsc">{t('catalog.productList.sortOptions.priceAsc')}</SelectItem>
+                  <SelectItem value="priceDesc">{t('catalog.productList.sortOptions.priceDesc')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {isLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 sm:gap-6">
                 {[...Array(8)].map((_, i) => (
                   <div key={i} className="animate-pulse">
                     <div className="bg-gray-200 rounded-xl aspect-square"></div>
@@ -318,7 +327,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
                   variants={container}
                   initial="hidden"
                   animate="show"
-                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6"
+                  className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 sm:gap-6"
                 >
                   {products.map((product) => (
                     <motion.div key={product.id} variants={item}>
@@ -334,7 +343,8 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
 
             {products.length === 0 && !isLoading && (
               <div className="text-center py-12">
-                <p className="text-gray-500">No se encontraron productos</p>
+                <p className="text-gray-500">{t('catalog.productList.noProducts')}</p>
+                <p className="text-sm text-gray-400 mt-1">{t('catalog.productList.tryDifferentFilters')}</p>
               </div>
             )}
           </div>
