@@ -198,10 +198,35 @@ export default {
     registerTitle: "Crear Cuenta",
     forgotPasswordTitle: "Recuperar Contraseña",
     
+    // Títulos para formularios en desktop
+    loginFormTitle: "Accede a tu cuenta",
+    registerFormTitle: "Únete a nosotros",
+    forgotPasswordFormTitle: "Restablecer contraseña",
+    
     // Descripciones
     loginDescription: "Bienvenido de vuelta a Tout À un clic là",
     registerDescription: "Únete a nuestra comunidad",
     forgotPasswordDescription: "Te enviaremos un enlace para restablecer tu contraseña",
+    
+    // Descripciones para formularios en desktop
+    loginFormDescription: "Ingresa tus credenciales para acceder",
+    registerFormDescription: "Completa tus datos para comenzar",
+    forgotPasswordFormDescription: "Ingresa tu email para recuperar el acceso",
+    
+    // Descripciones extendidas para columna izquierda en desktop
+    loginDescriptionExtended: "Accede a tu cuenta y disfruta de la mejor experiencia de compra en línea con productos latinos en Montreal.",
+    registerDescriptionExtended: "Únete a nuestra comunidad y descubre la mejor selección de productos latinos en Montreal con entrega rápida.",
+    forgotPasswordDescriptionExtended: "No te preocupes, te ayudamos a recuperar el acceso a tu cuenta de forma segura.",
+    
+    // Títulos para columna izquierda en desktop
+    welcomeBack: "¡Bienvenido de vuelta!",
+    joinOurCommunity: "Únete a nuestra comunidad",
+    resetPasswordTitle: "Recupera tu cuenta",
+    
+    // Características destacadas
+    feature1: "Productos latinos auténticos",
+    feature2: "Entrega rápida en Montreal",
+    feature3: "Precios competitivos",
     
     // Labels de campos
     fullName: "Nombre completo",
@@ -261,7 +286,6 @@ export default {
     generalError: "Ha ocurrido un error",
     
     // Mensajes de éxito
-    welcomeBack: "¡Bienvenido de vuelta!",
     accountCreated: "Cuenta creada exitosamente. Por favor, verifica tu email.",
     passwordResetSent: "Se ha enviado un enlace a tu correo para restablecer tu contraseña",
     redirecting: "Redirigiendo...",

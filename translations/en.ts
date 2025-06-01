@@ -198,10 +198,35 @@ export default {
     registerTitle: "Create Account",
     forgotPasswordTitle: "Reset Password",
     
+    // Desktop form titles
+    loginFormTitle: "Access your account",
+    registerFormTitle: "Join us",
+    forgotPasswordFormTitle: "Reset password",
+    
     // Descriptions
     loginDescription: "Welcome back to Tout À un clic là",
     registerDescription: "Join our community",
     forgotPasswordDescription: "We'll send you a link to reset your password",
+    
+    // Desktop form descriptions
+    loginFormDescription: "Enter your credentials to access",
+    registerFormDescription: "Complete your details to get started",
+    forgotPasswordFormDescription: "Enter your email to recover access",
+    
+    // Extended descriptions for left column on desktop
+    loginDescriptionExtended: "Access your account and enjoy the best online shopping experience with Latino products in Montreal.",
+    registerDescriptionExtended: "Join our community and discover the best selection of Latino products in Montreal with fast delivery.",
+    forgotPasswordDescriptionExtended: "Don't worry, we'll help you recover access to your account securely.",
+    
+    // Titles for left column on desktop
+    welcomeBack: "Welcome back!",
+    joinOurCommunity: "Join our community",
+    resetPasswordTitle: "Recover your account",
+    
+    // Featured characteristics
+    feature1: "Authentic Latino products",
+    feature2: "Fast delivery in Montreal",
+    feature3: "Competitive prices",
     
     // Field labels
     fullName: "Full name",
@@ -261,7 +286,6 @@ export default {
     generalError: "An error occurred",
     
     // Success messages
-    welcomeBack: "Welcome back!",
     accountCreated: "Account created successfully. Please verify your email.",
     passwordResetSent: "A link has been sent to your email to reset your password",
     redirecting: "Redirecting...",

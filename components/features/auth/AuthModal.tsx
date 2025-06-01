@@ -337,60 +337,141 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent 
-          className="w-[95vw] max-w-[95vw] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[460px] p-0 m-0 
+          className="w-[95vw] max-w-[95vw] sm:max-w-[380px] md:max-w-[740px] lg:max-w-[800px] xl:max-w-[860px] p-0 m-0 
                      fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                     h-auto max-h-[90vh] sm:max-h-[85vh] overflow-hidden 
+                     h-auto max-h-[88vh] sm:max-h-[82vh] md:max-h-[85vh] overflow-hidden 
                      bg-white rounded-xl sm:rounded-2xl shadow-2xl border-0
                      [&>button:last-child]:hidden"
         >
           <DialogTitle className="sr-only">{dialogTitle}</DialogTitle>
           
-          {/* Container con scroll */}
-          <div className="flex flex-col h-full max-h-[90vh] sm:max-h-[85vh] overflow-hidden">
-            {/* Header fijo */}
-            <div className="relative flex-shrink-0 py-3 px-4 sm:py-4 sm:px-5 md:py-5 md:px-6 border-b bg-white">
-              {/* Botón de cerrar */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-3 top-3 sm:right-4 sm:top-4 rounded-full h-8 w-8 sm:h-9 sm:w-9
-                          flex items-center justify-center hover:bg-gray-100 transition-colors z-10
-                          border border-gray-200 hover:border-gray-300 shadow-sm"
-                onClick={onClose}
-                aria-label={t('auth.closeModal')}
-              >
-                <X className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
-              </Button>
-
-              {/* Logo y Título */}
-              <div className="flex flex-col items-center text-center space-y-2 sm:space-y-3">
-                <motion.img 
-                  src="/logoaunclic.svg" 
-                  alt="Logo A un clic" 
-                  className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 filter drop-shadow-lg flex-shrink-0" 
-                  width="64"
-                  height="64"
-                />
-                <div className="space-y-1">
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 leading-tight">
-                    {dialogTitle}
-                  </h2>
-                  {/* Descripción */}
-                  <p className="text-sm sm:text-base text-gray-600 max-w-xs mx-auto leading-snug">
-                    {mode === 'login' ? t('auth.loginDescription') : 
-                     mode === 'register' ? t('auth.registerDescription') :
-                     t('auth.forgotPasswordDescription')}
-                  </p>
+          {/* Botón de cerrar global */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-3 top-3 sm:right-4 sm:top-4 rounded-full h-8 w-8 sm:h-9 sm:w-9
+                      flex items-center justify-center hover:bg-gray-100 transition-colors z-20
+                      border border-gray-200 hover:border-gray-300 shadow-sm"
+            onClick={onClose}
+            aria-label={t('auth.closeModal')}
+          >
+            <X className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
+          </Button>
+          
+          {/* Container principal */}
+          <div className="flex h-full max-h-[88vh] sm:max-h-[82vh] md:max-h-[85vh] overflow-hidden">
+            {/* Columna izquierda: Brand & Descripción - Solo visible en desktop */}
+            <div className="hidden md:flex md:w-1/2 lg:w-[42%] bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800 relative">
+              {/* Patrón de fondo decorativo */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-8 left-8 w-16 h-16 bg-white rounded-full"></div>
+                <div className="absolute top-24 right-12 w-10 h-10 bg-white rounded-full"></div>
+                <div className="absolute bottom-16 left-12 w-12 h-12 bg-white rounded-full"></div>
+                <div className="absolute bottom-8 right-16 w-6 h-6 bg-white rounded-full"></div>
+              </div>
+              
+              {/* Contenido de la columna izquierda */}
+              <div className="relative z-10 flex flex-col justify-center px-6 lg:px-8 py-6">
+                <div className="space-y-4">
+                  {/* Logo y marca */}
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-white rounded-full w-20 h-20 lg:w-24 lg:h-24 shadow-lg flex items-center justify-end pr-1">
+                      <motion.img 
+                        src="/logoaunclic.svg" 
+                        alt="Logo A un clic" 
+                        className="h-16 w-16 lg:h-20 lg:w-20 filter drop-shadow-lg" 
+                        width="80"
+                        height="80"
+                      />
+                    </div>
+                    <div className="text-white">
+                      <div className="text-base font-medium">Tout À Un</div>
+                      <div className="text-xl lg:text-2xl font-bold">Clic là</div>
+                    </div>
+                  </div>
+                  
+                  {/* Título dinámico */}
+                  <div className="space-y-2">
+                    <h2 className="text-xl lg:text-2xl font-bold text-white leading-tight">
+                      {mode === 'login' ? t('auth.welcomeBack') : 
+                       mode === 'register' ? t('auth.joinOurCommunity') :
+                       t('auth.resetPasswordTitle')}
+                    </h2>
+                    <p className="text-indigo-100 text-base leading-relaxed">
+                      {mode === 'login' ? t('auth.loginDescriptionExtended') : 
+                       mode === 'register' ? t('auth.registerDescriptionExtended') :
+                       t('auth.forgotPasswordDescriptionExtended')}
+                    </p>
+                  </div>
+                  
+                  {/* Características destacadas */}
+                  <div className="space-y-2 pt-2">
+                    <div className="flex items-center space-x-3 text-indigo-100">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                      <span className="text-sm lg:text-base">{t('auth.feature1')}</span>
+                    </div>
+                    <div className="flex items-center space-x-3 text-indigo-100">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                      <span className="text-sm lg:text-base">{t('auth.feature2')}</span>
+                    </div>
+                    <div className="flex items-center space-x-3 text-indigo-100">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                      <span className="text-sm lg:text-base">{t('auth.feature3')}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Body con scroll */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6">
-              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">{/* ...existing code... */}
-                {error && (
-                  <div className="bg-red-50 text-red-700 p-3 rounded-xl text-sm flex items-start gap-3 border border-red-200">
-                    <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+            {/* Columna derecha: Formulario */}
+            <div className="w-full md:w-1/2 lg:w-[58%] flex flex-col">
+              {/* Header móvil - Solo visible en móvil */}
+              <div className="md:hidden relative flex-shrink-0 py-3 px-4 border-b bg-white">
+                {/* Logo y Título móvil */}
+                <div className="flex flex-col items-center text-center space-y-2">
+                  <div className="bg-white rounded-full p-3 shadow-lg flex items-center justify-end pr-2">
+                    <motion.img 
+                      src="/logoaunclic.svg" 
+                      alt="Logo A un clic" 
+                      className="h-12 w-12 sm:h-14 sm:w-14 filter drop-shadow-lg flex-shrink-0" 
+                      width="56"
+                      height="56"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
+                      {dialogTitle}
+                    </h2>
+                    <p className="text-sm sm:text-base text-gray-600 max-w-xs mx-auto leading-snug">
+                      {mode === 'login' ? t('auth.loginDescription') : 
+                       mode === 'register' ? t('auth.registerDescription') :
+                       t('auth.forgotPasswordDescription')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Header desktop - Solo visible en desktop */}
+              <div className="hidden md:block flex-shrink-0 py-4 px-5 lg:px-6 border-b bg-white">
+                <div className="text-center space-y-1">
+                  <h3 className="text-lg lg:text-xl font-bold text-gray-900 leading-tight">
+                    {mode === 'login' ? t('auth.loginFormTitle') : 
+                     mode === 'register' ? t('auth.registerFormTitle') :
+                     t('auth.forgotPasswordFormTitle')}
+                  </h3>
+                  <p className="text-sm lg:text-base text-gray-600 leading-snug">
+                    {mode === 'login' ? t('auth.loginFormDescription') : 
+                     mode === 'register' ? t('auth.registerFormDescription') :
+                     t('auth.forgotPasswordFormDescription')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Body con scroll */}
+              <div className="flex-1 overflow-y-auto px-4 py-3 sm:px-5 sm:py-4 md:px-5 md:py-4 lg:px-6 lg:py-5">
+              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">                {error && (
+                  <div className="bg-red-50 text-red-700 p-2.5 rounded-xl text-sm flex items-start gap-2.5 border border-red-200">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
                     <span className="leading-relaxed font-medium">{error}</span>
                   </div>
                 )}
@@ -399,7 +480,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                 {mode !== 'forgotPassword' && (
                   <>
                     {mode === 'register' && (
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                         <Label htmlFor="nombre" className="text-sm font-semibold text-gray-800 block">
                           {t('auth.fullName')}
                         </Label>
@@ -412,7 +493,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                             name="nombre"
                             value={formData.nombre}
                             onChange={handleInputChange}
-                            className="pl-10 pr-4 h-10 sm:h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
+                            className="pl-10 pr-4 h-9 sm:h-10 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
                                      bg-gray-50 focus:bg-white transition-all duration-200"
                             placeholder={t('auth.fullNamePlaceholder')}
                           />
@@ -420,7 +501,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                       </div>
                     )}
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label htmlFor="email" className="text-sm font-semibold text-gray-800 block">
                         {t('auth.email')}
                       </Label>
@@ -434,7 +515,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                           type="email"
                           value={formData.email}
                           onChange={handleInputChange}
-                          className="pl-10 pr-4 h-10 sm:h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
+                          className="pl-10 pr-4 h-9 sm:h-10 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
                                    bg-gray-50 focus:bg-white transition-all duration-200"
                           placeholder={t('auth.emailPlaceholder')}
                         />
@@ -442,7 +523,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                     </div>
 
                     {mode === 'register' && (
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                         <Label htmlFor="telefono" className="text-sm font-semibold text-gray-800 block">
                           {t('auth.phone')}
                         </Label>
@@ -455,7 +536,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                             name="telefono"
                             value={formData.telefono}
                             onChange={handleInputChange}
-                            className="pl-10 pr-4 h-10 sm:h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
+                            className="pl-10 pr-4 h-9 sm:h-10 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
                                      bg-gray-50 focus:bg-white transition-all duration-200"
                             placeholder={t('auth.phonePlaceholder')}
                           />
@@ -463,7 +544,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                       </div>
                     )}
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label htmlFor="password" className="text-sm font-semibold text-gray-800 block">
                         {t('auth.password')}
                       </Label>
@@ -477,7 +558,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                           type={showPassword ? "text" : "password"}
                           value={formData.password}
                           onChange={handleInputChange}
-                          className="pl-10 pr-12 h-10 sm:h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
+                          className="pl-10 pr-12 h-9 sm:h-10 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
                                    bg-gray-50 focus:bg-white transition-all duration-200"
                           placeholder={mode === 'register' ? t('auth.passwordRegisterPlaceholder') : t('auth.passwordPlaceholder')}
                         />
@@ -499,7 +580,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                     </div>
 
                     {mode === 'register' && (
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                         <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-800 block">
                           {t('auth.confirmPassword')}
                         </Label>
@@ -513,7 +594,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                             type={showConfirmPassword ? "text" : "password"}
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
-                            className="pl-10 pr-12 h-10 sm:h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
+                            className="pl-10 pr-12 h-9 sm:h-10 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
                                      bg-gray-50 focus:bg-white transition-all duration-200"
                             placeholder={t('auth.confirmPasswordPlaceholder')}
                           />
@@ -537,7 +618,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
 
                     {/* Checkbox de términos y condiciones (solo en registro) */}
                     {mode === 'register' && (
-                      <div className="flex items-start space-x-3 pt-2">
+                      <div className="flex items-start space-x-2.5 pt-1">
                         <input
                           id="acceptTerms"
                           type="checkbox"
@@ -570,7 +651,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
 
                     {/* Área de "Recuérdame" y "Olvidé mi contraseña" (solo en login) */}
                     {mode === 'login' && (
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-1">
                         <div className="flex items-center space-x-2">
                           <input
                             id="rememberMe"
@@ -599,7 +680,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
 
                 {/* Campo para recuperar contraseña */}
                 {mode === 'forgotPassword' && (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <Label htmlFor="email" className="text-sm font-semibold text-gray-800 block">
                       {t('auth.email')}
                     </Label>
@@ -613,7 +694,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                         type="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="pl-10 pr-4 h-10 sm:h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
+                        className="pl-10 pr-4 h-9 sm:h-10 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg
                                  bg-gray-50 focus:bg-white transition-all duration-200"
                         placeholder={t('auth.emailPlaceholder')}
                       />
@@ -624,7 +705,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                 {/* Botón de envío */}
                 <Button 
                   type="submit" 
-                  className="w-full h-11 sm:h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm sm:text-base
+                  className="w-full h-10 sm:h-11 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm sm:text-base
                            rounded-lg transition-all duration-300 focus:ring-4 focus:ring-blue-200 shadow-md hover:shadow-lg
                            transform hover:scale-[1.02] active:scale-[0.98] border-0"
                   disabled={isLoading}
@@ -721,6 +802,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
                   </p>
                 )}
               </div>
+            </div>
             </div>
           </div>
         </DialogContent>

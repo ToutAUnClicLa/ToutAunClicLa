@@ -198,10 +198,35 @@ export default {
     registerTitle: "Créer un Compte",
     forgotPasswordTitle: "Réinitialiser le Mot de Passe",
     
+    // Titres des formulaires pour desktop
+    loginFormTitle: "Accédez à votre compte",
+    registerFormTitle: "Rejoignez-nous",
+    forgotPasswordFormTitle: "Réinitialiser le mot de passe",
+    
     // Descriptions
     loginDescription: "Bon retour sur Tout À un clic là",
     registerDescription: "Rejoignez notre communauté",
     forgotPasswordDescription: "Nous vous enverrons un lien pour réinitialiser votre mot de passe",
+    
+    // Descriptions des formulaires pour desktop
+    loginFormDescription: "Entrez vos identifiants pour accéder",
+    registerFormDescription: "Complétez vos informations pour commencer",
+    forgotPasswordFormDescription: "Entrez votre email pour récupérer l'accès",
+    
+    // Descriptions étendues pour la colonne de gauche sur desktop
+    loginDescriptionExtended: "Accédez à votre compte et profitez de la meilleure expérience d'achat en ligne avec des produits latinos à Montréal.",
+    registerDescriptionExtended: "Rejoignez notre communauté et découvrez la meilleure sélection de produits latinos à Montréal avec livraison rapide.",
+    forgotPasswordDescriptionExtended: "Ne vous inquiétez pas, nous vous aidons à récupérer l'accès à votre compte en toute sécurité.",
+    
+    // Titres pour la colonne de gauche sur desktop
+    welcomeBack: "Bon retour !",
+    joinOurCommunity: "Rejoignez notre communauté",
+    resetPasswordTitle: "Récupérez votre compte",
+    
+    // Caractéristiques mises en avant
+    feature1: "Produits latinos authentiques",
+    feature2: "Livraison rapide à Montréal",
+    feature3: "Prix compétitifs",
     
     // Labels des champs
     fullName: "Nom complet",
@@ -261,7 +286,6 @@ export default {
     generalError: "Une erreur s'est produite",
     
     // Messages de succès
-    welcomeBack: "Bon retour !",
     accountCreated: "Compte créé avec succès. Veuillez vérifier votre e-mail.",
     passwordResetSent: "Un lien a été envoyé à votre e-mail pour réinitialiser votre mot de passe",
     redirecting: "Redirection...",
