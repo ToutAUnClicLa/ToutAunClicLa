@@ -521,5 +521,196 @@ export default {
       description: "Exclusive boutique with crafts, traditional clothing and souvenirs from Latin America in Montreal. Unique and authentic products. Find the perfect gift!",
       keywords: "Latino boutique Montreal, Latin American crafts, Latin America souvenirs, traditional clothing, unique gifts, Latino store Quebec"
     }
+  },
+
+  // Terms of Service
+  terms: {
+    title: "Terms of Service",
+    lastUpdated: "Last updated:",
+    sections: {
+      introduction: {
+        title: "1. Introduction",
+        paragraph1: "Welcome to Tout à un clic là. This document constitutes a legally binding agreement (\"Agreement\") between you and Tout à un clic là, governed by Canadian law. These Terms of Service regulate your access and use of our e-commerce platform (\"the Platform\"), including any associated mobile applications, content, functionalities, and services offered.",
+        paragraph2: "By accessing or using our Platform, you confirm that you have read, understood, and agree to be bound by these terms. If you do not agree with any part of this Agreement, please refrain from using our services."
+      },
+      eligibility: {
+        title: "2. Eligibility and User Accounts",
+        paragraph1: "To use our services, you must be at least 18 years old or the age of legal majority in your jurisdiction, whichever is greater. By creating an account, you warrant that all information provided is true, accurate, complete, and up-to-date.",
+        paragraph2: "It is your responsibility to maintain the confidentiality of your account and password, as well as restrict access to your device. You accept full responsibility for all activities that occur under your account. If you suspect unauthorized use of your account, you must notify us immediately.",
+        paragraph3: "Tout à un clic là reserves the right to suspend or terminate your account, at our discretion and without prior notice, if we determine that you have violated any provision of these Terms of Service or if your conduct could cause harm to our Platform, other users, or third parties."
+      },
+      products: {
+        title: "3. Products and Services",
+        paragraph1: "The products and services offered on our Platform are subject to availability. We strive to provide accurate descriptions, including specifications, features, and visual representations of our products. However, we do not guarantee that such descriptions or representations are accurate, complete, reliable, current, or error-free.",
+        paragraph2: "Colors shown on your device may vary from actual products due to different display technologies, settings, and technical limitations.",
+        paragraph3: "Tout à un clic là reserves the right, at its absolute discretion, to limit quantities of any product or service, restrict sales to any person or geographic region, and suspend or discontinue any product or service without prior notice."
+      },
+      pricing: {
+        title: "4. Pricing, Taxes, and Payments",
+        paragraph1: "All prices are denominated in Canadian dollars (CAD) unless otherwise indicated, and do not include applicable taxes, shipping fees, or other charges, which will be disclosed during the purchase process before order confirmation.",
+        paragraph2: "In accordance with Canadian tax legislation, we may be required to collect and remit provincial and federal taxes, including Goods and Services Tax (GST), Harmonized Sales Tax (HST), or Provincial Sales Tax (PST), as applicable to your location.",
+        paragraph3: "We reserve the right to modify prices at any time without prior notice. Your order is subject to the price in effect at the time we complete your transaction.",
+        paragraph4: "We accept various payment methods as specified on our Platform. By providing payment information, you warrant that you are authorized to use the selected payment method and that such information is accurate and complete."
+      },
+      shipping: {
+        title: "5. Shipping and Delivery",
+        paragraph1: "We ship to addresses within Canada and selected international destinations. Delivery times are estimates based on information provided by our logistics partners and may vary depending on your location, weather conditions, order volume, and other external factors.",
+        paragraph2: "For international shipments, you are responsible for any import taxes, customs duties, and additional charges imposed by your country's authorities. These charges are not under our control and are not included in the purchase price.",
+        paragraph3: "Risk of loss and title to products pass to you at the time of delivery. It is your responsibility to inspect products upon receipt and notify any damage or discrepancy within 48 hours of delivery."
+      },
+      returns: {
+        title: "6. Returns and Refunds Policy",
+        paragraph1: "In accordance with the Canadian Consumer Protection Act and applicable provincial laws, we offer a return policy that allows you to return most products within 30 days of receipt, provided the following conditions are met:",
+        list1: [
+          "The product must be in its original condition, unused, and with all original tags and packaging.",
+          "Proof of purchase or order confirmation must be included.",
+          "Customized, perishable, personal hygiene items, or items marked as final sale are not eligible for return, except in case of verifiable defects."
+        ],
+        paragraph2: "Refunds will be processed using the same payment method used for the original purchase within 14 business days of receiving and verifying returned items. Original shipping and return costs are generally non-refundable, except in cases of defective products or shipping errors attributable to our responsibility."
+      },
+      intellectualProperty: {
+        title: "7. Intellectual Property",
+        paragraph1: "The Platform and all its content, features, and functionalities, including but not limited to text, graphics, logos, icons, images, audio clips, digital downloads, data compilations, and software, are the exclusive property of Tout à un clic là, its licensors, or other content providers, and are protected by Canadian and international copyright, trademark, patent, trade secret, and other intellectual property laws.",
+        paragraph2: "Unauthorized use of any content or material on our Platform is strictly prohibited. No implicit or express license is granted to use any intellectual property without our prior written consent."
+      },
+      liability: {
+        title: "8. Limitation of Liability",
+        paragraph1: "To the maximum extent permitted by applicable law, Tout à un clic là, its directors, employees, agents, and affiliates shall not be liable for:",
+        list1: [
+          "Indirect, incidental, special, punitive, or consequential damages, including loss of profits, data, use, or any other intangible loss, resulting from (i) your access to or use of or inability to access or use our Platform; (ii) any conduct or content of third parties on the Platform; or (iii) unauthorized access, use, or alteration of your transmissions or content.",
+          "Interruptions, errors, omissions, or delays in Platform operation or delivery of products or services.",
+          "Viruses, trojans, or other malicious software that may be transmitted to or through our Platform."
+        ],
+        paragraph2: "Our total liability for any claim under these Terms shall not exceed the amount paid by you to Tout à un clic là during the six (6) months preceding the action giving rise to such liability.",
+        paragraph3: "The above limitations shall apply regardless of whether Tout à un clic là has been advised of the possibility of such damages and regardless of whether any remedy set forth herein fails of its essential purpose."
+      },
+      governing: {
+        title: "9. Governing Law and Dispute Resolution",
+        paragraph1: "These Terms of Service shall be governed and interpreted in accordance with the laws of the province of Quebec and the federal laws of Canada applicable therein, without regard to conflict of law principles.",
+        paragraph2: "Any dispute, controversy, or claim arising out of or relating to these Terms, or the breach, termination, or invalidity thereof, shall be resolved through good faith negotiation. If the dispute cannot be resolved through negotiation, both parties agree to submit the dispute to mediation in accordance with the mediation rules of the Canadian Institute for Mediation and Arbitration.",
+        paragraph3: "If mediation does not resolve the dispute, it shall be submitted to binding arbitration before a single arbitrator in accordance with the Canadian Commercial Arbitration Act. The place of arbitration shall be Montreal, Quebec, Canada, and the language of arbitration shall be English or French, as agreed by the parties."
+      },
+      changes: {
+        title: "10. Changes to Terms",
+        paragraph1: "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. The updated version will be effective as soon as it is published on our Platform. It is your responsibility to periodically review these Terms to stay informed of any changes.",
+        paragraph2: "Continued use of our Platform after the publication of any modifications constitutes acceptance of such modifications. If you do not agree with the new terms, you must stop using our Platform.",
+        paragraph3: "For substantial changes, we will make reasonable efforts to notify you, either through a prominent notice on our Platform, by email to the address associated with your account, or by other means."
+      },
+      contact: {
+        title: "11. Contact",
+        paragraph1: "If you have questions about these Terms of Service or need assistance with our products or services, you can contact us through:",
+        email: "serviceclient@toutaunclicla.com",
+        paragraph2: "Our customer service team is available to assist you Monday through Friday, 9:00 a.m. to 5:00 p.m. (Eastern Time)."
+      }
+    }
+  },
+
+  // Privacy Policy
+  privacy: {
+    title: "Privacy Policy",
+    lastUpdated: "Last updated:",
+    sections: {
+      introduction: {
+        title: "1. Introduction",
+        paragraph1: "At Tout à un clic là, we respect your privacy and are committed to protecting your personal data in accordance with Canada's Personal Information Protection and Electronic Documents Act (PIPEDA). This privacy policy details how we collect, use, protect, and disclose personal information you provide when using our e-commerce platform, as well as your privacy rights under Canadian legislation."
+      },
+      dataCollection: {
+        title: "2. Data We Collect",
+        paragraph1: "In accordance with privacy principles established by PIPEDA, we collect only personal information necessary for identified purposes and with your consent. This information may include:",
+        list1: [
+          "Identity data: full name, username, or similar identifiers.",
+          "Contact data: postal address, billing address, delivery address, email, and phone numbers.",
+          "Financial data: payment card information (processed securely through authorized payment providers and complying with PCI DSS standards).",
+          "Transaction data: purchase records, products acquired, purchase frequency, and payment methods used.",
+          "Technical data: IP address, login data, browser type and version, timezone settings, location, device types used to access the platform.",
+          "Profile data: username and password (stored encrypted), purchase preferences, interests, and survey responses when you have chosen to participate.",
+          "Usage data: information about how you browse and use our platform, including time spent on pages and browsing patterns."
+        ]
+      },
+      dataUsage: {
+        title: "3. How We Use Your Data",
+        paragraph1: "We use your personal information only for specific purposes for which it was collected and in accordance with PIPEDA and other applicable Canadian laws. These purposes include:",
+        list1: [
+          "Managing your account and our contractual relationship, including verifying your identity when necessary.",
+          "Processing and delivering your orders, including managing payments, billing, and shipping.",
+          "Managing our digital platform (including data analysis, testing, system maintenance, technical support, and computer security).",
+          "Improving our products and services through analysis of usage patterns and customer preferences.",
+          "Communicating with you about product updates, special offers, or relevant information, always with the option to unsubscribe from these communications.",
+          "Complying with legal and tax obligations as required by Canadian legislation."
+        ]
+      },
+      cookies: {
+        title: "4. Cookies and Tracking Technologies",
+        paragraph1: "We use cookies and similar technologies in accordance with Canadian electronic privacy laws. These technologies allow us to:",
+        list1: [
+          "Remember your preferences and settings to improve your experience.",
+          "Understand how you use our platform to optimize it.",
+          "Facilitate essential functionalities like shopping cart and session authentication."
+        ],
+        paragraph2: "You can configure your browser to reject all or some cookies, or to alert you when they are used. However, this could affect the functioning of certain parts of our platform. By continuing to use our site without changing your settings, you consent to our use of cookies as described in this policy."
+      },
+      dataDisclosure: {
+        title: "5. Disclosure of Your Personal Data",
+        paragraph1: "In accordance with Canadian legislation, we may share your personal information only in specific circumstances:",
+        list1: [
+          "With service providers who assist us in our business operations (payment processors, delivery services, web hosting providers) under strict confidentiality agreements.",
+          "With professionals such as legal advisors, accountants, and auditors when necessary for our business operations.",
+          "With government authorities when required by law, regulation, or legal process.",
+          "In the context of a business transaction such as merger, acquisition, or asset sale, with prior notification to affected users."
+        ],
+        paragraph2: "We require all third parties to respect the confidentiality and security of your personal data and to comply with all applicable privacy laws, including PIPEDA. We do not allow our service providers to use your data for unauthorized purposes of their own."
+      },
+      internationalTransfers: {
+        title: "6. International Data Transfers",
+        paragraph1: "If we transfer your personal data outside of Canada, we do so only when adequate safeguards exist to protect your privacy rights, in accordance with PIPEDA requirements. These safeguards may include:",
+        list1: [
+          "Transfers to countries that the Privacy Commissioner of Canada has determined offer an adequate level of protection.",
+          "Implementation of approved contractual clauses.",
+          "Obtaining your explicit consent when necessary."
+        ]
+      },
+      dataSecurity: {
+        title: "7. Data Security",
+        paragraph1: "We have implemented appropriate technical and organizational security measures according to Canadian industry standards to protect your personal data against unauthorized access, alterations, disclosures, or destruction. These measures include:",
+        list1: [
+          "Encryption of sensitive data and financial transactions.",
+          "Firewall systems and intrusion detection.",
+          "Restricted access to personal information based on need-to-know.",
+          "Regular security assessments and compliance audits."
+        ]
+      },
+      dataRetention: {
+        title: "8. Data Retention",
+        paragraph1: "We retain your personal data only for as long as necessary for the purposes for which it was collected, in accordance with our legal and business obligations. Criteria used to determine our retention periods include:",
+        list1: [
+          "The period during which we maintain an active business relationship with you.",
+          "Our legal obligations under applicable Canadian legislation, including tax and commercial regulations.",
+          "Requirements for dispute resolution or claims."
+        ]
+      },
+      yourRights: {
+        title: "9. Your Legal Rights",
+        paragraph1: "Under PIPEDA and other Canadian privacy laws, you have specific rights regarding your personal data, which include:",
+        list1: [
+          "Right of access: Request access to your personal data that we process.",
+          "Right of rectification: Request correction of inaccurate or incomplete information.",
+          "Right to withdraw consent: Withdraw your consent at any time when processing is based on your consent.",
+          "Right to file a complaint: File a complaint with the Office of the Privacy Commissioner of Canada if you believe we have violated your privacy rights.",
+          "Right to challenge compliance: Challenge our compliance with PIPEDA principles."
+        ],
+        paragraph2: "To exercise any of these rights, contact us using the information provided in the \"Contact\" section."
+      },
+      changes: {
+        title: "10. Changes to this Privacy Policy",
+        paragraph1: "We may update this privacy policy periodically to reflect changes in our practices or Canadian legislation. The most recent version will always be available on our platform, with the update date clearly indicated. For significant changes, we will provide visible notifications on our platform or send you direct communications."
+      },
+      contact: {
+        title: "11. Contact",
+        paragraph1: "For any inquiries related to this privacy policy or the processing of your personal data, you can contact us through:",
+        email: "serviceclient@toutaunclicla.com",
+        paragraph2: "If you believe we have not adequately addressed your concerns, you have the right to file a complaint with the Office of the Privacy Commissioner of Canada:",
+        website: "www.priv.gc.ca"
+      }
+    }
   }
 };

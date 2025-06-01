@@ -521,5 +521,196 @@ export default {
       description: "Boutique exclusiva con artesanías, ropa tradicional y souvenirs de América Latina en Montreal. Productos únicos y auténticos. ¡Encuentra el regalo perfecto!",
       keywords: "boutique latina Montreal, artesanías latinoamericanas, souvenirs América Latina, ropa tradicional, regalos únicos, tienda latina Quebec"
     }
+  },
+
+  // Términos y Condiciones
+  terms: {
+    title: "Términos de Servicio",
+    lastUpdated: "Última actualización:",
+    sections: {
+      introduction: {
+        title: "1. Introducción",
+        paragraph1: "Bienvenido a Tout à un clic là. El presente documento constituye un acuerdo legalmente vinculante (\"Acuerdo\") entre usted y Tout à un clic là, regido por las leyes de Canadá. Estos Términos de Servicio regulan su acceso y uso de nuestra plataforma de comercio electrónico (\"la Plataforma\"), incluyendo cualquier aplicación móvil asociada, contenido, funcionalidades y servicios ofrecidos.",
+        paragraph2: "Al acceder o utilizar nuestra Plataforma, usted confirma que ha leído, entendido y acepta estar sujeto a estos términos. Si no está de acuerdo con alguna parte de este Acuerdo, le rogamos que se abstenga de utilizar nuestros servicios."
+      },
+      eligibility: {
+        title: "2. Elegibilidad y Cuentas de Usuario",
+        paragraph1: "Para utilizar nuestros servicios, usted debe tener al menos 18 años de edad o la mayoría de edad legal en su jurisdicción, lo que sea mayor. Al crear una cuenta, usted garantiza que toda la información proporcionada es veraz, precisa, completa y actualizada.",
+        paragraph2: "Es su responsabilidad mantener la confidencialidad de su cuenta y contraseña, así como restringir el acceso a su dispositivo. Usted acepta la plena responsabilidad por todas las actividades que ocurran bajo su cuenta. Si sospecha de un uso no autorizado de su cuenta, debe notificárnoslo inmediatamente.",
+        paragraph3: "Tout à un clic là se reserva el derecho de suspender o terminar su cuenta, a nuestra discreción y sin previo aviso, si determinamos que ha violado cualquier disposición de estos Términos de Servicio o si su conducta podría causar daño a nuestra Plataforma, otros usuarios o terceros."
+      },
+      products: {
+        title: "3. Productos y Servicios",
+        paragraph1: "Los productos y servicios ofrecidos en nuestra Plataforma están sujetos a disponibilidad. Nos esforzamos por proporcionar descripciones precisas, incluyendo especificaciones, características, y representaciones visuales de nuestros productos. Sin embargo, no garantizamos que dichas descripciones o representaciones sean exactas, completas, confiables, actualizadas o libres de errores.",
+        paragraph2: "Los colores mostrados en su dispositivo pueden variar de los productos reales debido a diferentes tecnologías de visualización, configuraciones y limitaciones técnicas.",
+        paragraph3: "Tout à un clic là se reserva el derecho, a su absoluta discreción, de limitar las cantidades de cualquier producto o servicio, restringir las ventas a cualquier persona o región geográfica, y suspender o discontinuar cualquier producto o servicio sin previo aviso."
+      },
+      pricing: {
+        title: "4. Precios, Impuestos y Pagos",
+        paragraph1: "Todos los precios están denominados en dólares canadienses (CAD) a menos que se indique lo contrario, y no incluyen impuestos aplicables, tarifas de envío u otros cargos, que serán informados durante el proceso de compra antes de la confirmación del pedido.",
+        paragraph2: "De acuerdo con la legislación fiscal canadiense, podemos estar obligados a cobrar y remitir impuestos provinciales y federales, incluyendo el Impuesto sobre Bienes y Servicios (GST), el Impuesto de Venta Armonizado (HST) o el Impuesto de Venta Provincial (PST), según corresponda a su ubicación.",
+        paragraph3: "Nos reservamos el derecho de modificar los precios en cualquier momento sin previo aviso. Su pedido está sujeto al precio vigente en el momento en que completamos su transacción.",
+        paragraph4: "Aceptamos diversos métodos de pago según se especifica en nuestra Plataforma. Al proporcionar información de pago, usted garantiza que está autorizado a utilizar el método de pago seleccionado y que dicha información es precisa y completa."
+      },
+      shipping: {
+        title: "5. Envíos y Entregas",
+        paragraph1: "Realizamos envíos a direcciones dentro de Canadá y a destinos internacionales seleccionados. Los tiempos de entrega son estimados basados en la información proporcionada por nuestros socios logísticos y pueden variar según su ubicación, condiciones climáticas, volumen de pedidos, y otros factores externos.",
+        paragraph2: "Para envíos internacionales, usted es responsable de cualquier impuesto de importación, aranceles aduaneros, y cargos adicionales impuestos por las autoridades de su país. Estos cargos no están bajo nuestro control y no están incluidos en el precio de compra.",
+        paragraph3: "El riesgo de pérdida y título de propiedad de los productos pasa a usted en el momento de la entrega. Es su responsabilidad inspeccionar los productos a la recepción y notificar cualquier daño o discrepancia dentro de las 48 horas siguientes a la entrega."
+      },
+      returns: {
+        title: "6. Política de Devoluciones y Reembolsos",
+        paragraph1: "De conformidad con la Ley de Protección al Consumidor de Canadá y las leyes provinciales aplicables, ofrecemos una política de devolución que permite devolver la mayoría de los productos dentro de los 30 días siguientes a la recepción, siempre que se cumplan las siguientes condiciones:",
+        list1: [
+          "El producto debe estar en su estado original, sin usar y con todas las etiquetas y embalajes originales.",
+          "Debe incluirse el comprobante de compra o confirmación de pedido.",
+          "Los artículos personalizados, perecederos, de higiene personal o marcados como ventas finales no son elegibles para devolución, salvo en caso de defectos comprobables."
+        ],
+        paragraph2: "Los reembolsos se procesarán utilizando el mismo método de pago utilizado para la compra original dentro de los 14 días hábiles siguientes a la recepción y verificación de los artículos devueltos. Los gastos de envío originales y de devolución generalmente no son reembolsables, excepto en casos de productos defectuosos o errores de envío atribuibles a nuestra responsabilidad."
+      },
+      intellectualProperty: {
+        title: "7. Propiedad Intelectual",
+        paragraph1: "La Plataforma y todo su contenido, características y funcionalidades, incluyendo pero no limitado a texto, gráficos, logotipos, iconos, imágenes, clips de audio, descargas digitales, compilaciones de datos y software, son propiedad exclusiva de Tout à un clic là, sus licenciantes u otros proveedores de contenido, y están protegidos por las leyes canadienses e internacionales de derechos de autor, marcas registradas, patentes, secretos comerciales y otros derechos de propiedad intelectual.",
+        paragraph2: "Queda estrictamente prohibido el uso no autorizado de cualquier contenido o material en nuestra Plataforma. No se concede licencia implícita o expresa para utilizar cualquier propiedad intelectual sin nuestro consentimiento previo por escrito."
+      },
+      liability: {
+        title: "8. Limitación de Responsabilidad",
+        paragraph1: "En la máxima medida permitida por la ley aplicable, Tout à un clic là, sus directores, empleados, agentes y afiliados no serán responsables por:",
+        list1: [
+          "Daños indirectos, incidentales, especiales, punitivos o consecuentes, incluyendo pérdida de ganancias, datos, uso o cualquier otra pérdida intangible, resultantes de (i) su acceso o uso o incapacidad para acceder o usar nuestra Plataforma; (ii) cualquier conducta o contenido de terceros en la Plataforma; o (iii) acceso no autorizado, uso o alteración de sus transmisiones o contenido.",
+          "Interrupciones, errores, omisiones, o retrasos en la operación de la Plataforma o la entrega de productos o servicios.",
+          "Virus, troyanos u otro software malicioso que pueda transmitirse a o a través de nuestra Plataforma."
+        ],
+        paragraph2: "Nuestra responsabilidad total por cualquier reclamación bajo estos Términos no excederá el monto pagado por usted a Tout à un clic là durante los seis (6) meses anteriores a la acción que da lugar a dicha responsabilidad.",
+        paragraph3: "Las limitaciones anteriores se aplicarán independientemente de si se ha advertido a Tout à un clic là sobre la posibilidad de tales daños e independientemente de si cualquier recurso establecido en este documento falla en su propósito esencial."
+      },
+      governing: {
+        title: "9. Ley Aplicable y Resolución de Disputas",
+        paragraph1: "Estos Términos de Servicio se regirán e interpretarán de acuerdo con las leyes de la provincia de Quebec y las leyes federales de Canadá aplicables en ella, sin tener en cuenta sus principios de conflicto de leyes.",
+        paragraph2: "Cualquier disputa, controversia o reclamación que surja de o en relación con estos Términos, o su incumplimiento, terminación o invalidez, se resolverá mediante negociación de buena fe. Si la disputa no puede resolverse mediante negociación, ambas partes acuerdan someter la disputa a mediación de acuerdo con las reglas de mediación del Instituto de Mediación y Arbitraje de Canadá.",
+        paragraph3: "Si la mediación no resuelve la disputa, esta será sometida a arbitraje vinculante ante un solo árbitro de conformidad con la Ley de Arbitraje Comercial de Canadá. El lugar del arbitraje será Montreal, Quebec, Canadá, y el idioma del arbitraje será el inglés o el francés, según lo acordado por las partes."
+      },
+      changes: {
+        title: "10. Cambios a los Términos",
+        paragraph1: "Nos reservamos el derecho, a nuestra exclusiva discreción, de modificar o reemplazar estos Términos en cualquier momento. La versión actualizada será efectiva tan pronto como se publique en nuestra Plataforma. Es su responsabilidad revisar periódicamente estos Términos para estar informado de cualquier cambio.",
+        paragraph2: "El uso continuado de nuestra Plataforma después de la publicación de cualquier modificación constituye la aceptación de dichas modificaciones. Si no está de acuerdo con los nuevos términos, debe dejar de utilizar nuestra Plataforma.",
+        paragraph3: "Para cambios sustanciales, haremos esfuerzos razonables para notificarle, ya sea a través de un aviso prominente en nuestra Plataforma, por correo electrónico a la dirección asociada con su cuenta, o por otros medios."
+      },
+      contact: {
+        title: "11. Contacto",
+        paragraph1: "Si tiene preguntas sobre estos Términos de Servicio o necesita asistencia con nuestros productos o servicios, puede contactarnos a través de:",
+        email: "serviceclient@toutaunclicla.com",
+        paragraph2: "Nuestro equipo de atención al cliente está disponible para asistirle de lunes a viernes, de 9:00 a.m. a 5:00 p.m. (hora del Este)."
+      }
+    }
+  },
+
+  // Política de Privacidad
+  privacy: {
+    title: "Política de Privacidad",
+    lastUpdated: "Última actualización:",
+    sections: {
+      introduction: {
+        title: "1. Introducción",
+        paragraph1: "En Tout à un clic là, respetamos su privacidad y nos comprometemos a proteger sus datos personales de conformidad con la Ley de Protección de Información Personal y Documentos Electrónicos (PIPEDA) de Canadá. Esta política de privacidad detalla cómo recopilamos, utilizamos, protegemos y divulgamos la información personal que nos proporciona al utilizar nuestra plataforma de comercio electrónico, así como sus derechos de privacidad según la legislación canadiense."
+      },
+      dataCollection: {
+        title: "2. Datos que Recopilamos",
+        paragraph1: "De acuerdo con los principios de privacidad establecidos por la PIPEDA, recopilamos únicamente la información personal necesaria para los fines identificados y con su consentimiento. Esta información puede incluir:",
+        list1: [
+          "Datos de identidad: nombre completo, nombre de usuario o identificadores similares.",
+          "Datos de contacto: dirección postal, dirección de facturación, dirección de entrega, correo electrónico y números de teléfono.",
+          "Datos financieros: información de tarjetas de pago (procesada de forma segura a través de proveedores de pago autorizados y cumpliendo con los estándares PCI DSS).",
+          "Datos de transacción: registros de compras, productos adquiridos, frecuencia de compras y métodos de pago utilizados.",
+          "Datos técnicos: dirección IP, datos de inicio de sesión, tipo y versión del navegador, configuración de zona horaria, ubicación, tipos de dispositivos utilizados para acceder a la plataforma.",
+          "Datos de perfil: nombre de usuario y contraseña (almacenada de forma encriptada), preferencias de compra, intereses, y respuestas a encuestas cuando haya decidido participar en ellas.",
+          "Datos de uso: información sobre cómo navega y utiliza nuestra plataforma, incluyendo tiempo de permanencia en páginas y patrones de navegación."
+        ]
+      },
+      dataUsage: {
+        title: "3. Cómo Utilizamos sus Datos",
+        paragraph1: "Utilizamos su información personal únicamente para los fines específicos para los que fue recopilada y de conformidad con la PIPEDA y otras leyes canadienses aplicables. Estos fines incluyen:",
+        list1: [
+          "Administrar su cuenta y nuestra relación contractual, incluyendo la verificación de su identidad cuando sea necesario.",
+          "Procesar y entregar sus pedidos, incluyendo la gestión de pagos, facturación y envíos.",
+          "Administrar nuestra plataforma digital (incluyendo análisis de datos, pruebas, mantenimiento de sistemas, soporte técnico, y seguridad informática).",
+          "Mejorar nuestros productos y servicios mediante el análisis de patrones de uso y preferencias de los clientes.",
+          "Comunicarnos con usted sobre actualizaciones de productos, ofertas especiales o información relevante, siempre con la opción de darse de baja de estas comunicaciones.",
+          "Cumplir con obligaciones legales y fiscales según lo requiera la legislación canadiense."
+        ]
+      },
+      cookies: {
+        title: "4. Cookies y Tecnologías de Seguimiento",
+        paragraph1: "Utilizamos cookies y tecnologías similares de conformidad con las leyes canadienses de privacidad electrónica. Estas tecnologías nos permiten:",
+        list1: [
+          "Recordar sus preferencias y ajustes para mejorar su experiencia.",
+          "Entender cómo utiliza nuestra plataforma para optimizarla.",
+          "Facilitar funcionalidades esenciales como el carrito de compra y la autenticación de sesiones."
+        ],
+        paragraph2: "Puede configurar su navegador para rechazar todas o algunas cookies, o para alertarle cuando se utilizan. Sin embargo, esto podría afectar el funcionamiento de ciertas partes de nuestra plataforma. Al continuar utilizando nuestro sitio sin cambiar su configuración, usted consiente nuestro uso de cookies según lo descrito en esta política."
+      },
+      dataDisclosure: {
+        title: "5. Divulgación de sus Datos Personales",
+        paragraph1: "De acuerdo con la legislación canadiense, podemos compartir su información personal solo en circunstancias específicas:",
+        list1: [
+          "Con proveedores de servicios que nos asisten en nuestras operaciones comerciales (procesadores de pago, servicios de entrega, proveedores de alojamiento web) bajo estrictos acuerdos de confidencialidad.",
+          "Con profesionales como asesores legales, contadores y auditores cuando sea necesario para nuestras operaciones comerciales.",
+          "Con autoridades gubernamentales cuando sea requerido por ley, regulación o proceso legal.",
+          "En el contexto de una transacción comercial como fusión, adquisición o venta de activos, con notificación previa a los usuarios afectados."
+        ],
+        paragraph2: "Exigimos a todos los terceros que respeten la confidencialidad y seguridad de sus datos personales y que cumplan con todas las leyes de privacidad aplicables, incluyendo la PIPEDA. No permitimos que nuestros proveedores de servicios utilicen sus datos para fines propios no autorizados."
+      },
+      internationalTransfers: {
+        title: "6. Transferencias Internacionales de Datos",
+        paragraph1: "Si transferimos sus datos personales fuera de Canadá, lo hacemos únicamente cuando existen garantías adecuadas para proteger sus derechos de privacidad, de conformidad con los requisitos de la PIPEDA. Estas garantías pueden incluir:",
+        list1: [
+          "Transferencias a países que el Comisionado de Privacidad de Canadá ha determinado que ofrecen un nivel adecuado de protección.",
+          "Implementación de cláusulas contractuales aprobadas.",
+          "Obtención de su consentimiento explícito cuando sea necesario."
+        ]
+      },
+      dataSecurity: {
+        title: "7. Seguridad de Datos",
+        paragraph1: "Hemos implementado medidas de seguridad técnicas y organizativas apropiadas según los estándares de la industria canadiense para proteger sus datos personales contra accesos no autorizados, alteraciones, divulgaciones o destrucciones. Estas medidas incluyen:",
+        list1: [
+          "Encriptación de datos sensibles y transacciones financieras.",
+          "Sistemas de firewall y detección de intrusiones.",
+          "Acceso restringido a la información personal basado en necesidad de conocimiento.",
+          "Evaluaciones regulares de seguridad y auditorías de cumplimiento."
+        ]
+      },
+      dataRetention: {
+        title: "8. Retención de Datos",
+        paragraph1: "Conservamos sus datos personales únicamente durante el tiempo necesario para los fines para los que fueron recopilados, de acuerdo con nuestras obligaciones legales y comerciales. Los criterios utilizados para determinar nuestros períodos de retención incluyen:",
+        list1: [
+          "El período durante el cual mantenemos una relación comercial activa con usted.",
+          "Nuestras obligaciones legales según la legislación canadiense aplicable, incluyendo normativas fiscales y comerciales.",
+          "Requisitos para la resolución de disputas o reclamaciones."
+        ]
+      },
+      yourRights: {
+        title: "9. Sus Derechos Legales",
+        paragraph1: "Bajo la PIPEDA y otras leyes canadienses de privacidad, usted tiene derechos específicos con respecto a sus datos personales, que incluyen:",
+        list1: [
+          "Derecho de acceso: Solicitar acceso a sus datos personales que procesamos.",
+          "Derecho de rectificación: Solicitar la corrección de información inexacta o incompleta.",
+          "Derecho a retirar el consentimiento: Retirar su consentimiento en cualquier momento cuando el procesamiento se base en su consentimiento.",
+          "Derecho a presentar una queja: Presentar una reclamación ante la Oficina del Comisionado de Privacidad de Canadá si considera que hemos infringido sus derechos de privacidad.",
+          "Derecho a impugnar el cumplimiento: Cuestionar nuestro cumplimiento de los principios de la PIPEDA."
+        ],
+        paragraph2: "Para ejercer cualquiera de estos derechos, contáctenos utilizando la información proporcionada en la sección \"Contacto\"."
+      },
+      changes: {
+        title: "10. Cambios a esta Política de Privacidad",
+        paragraph1: "Podemos actualizar esta política de privacidad periódicamente para reflejar cambios en nuestras prácticas o en la legislación canadiense. La versión más reciente estará siempre disponible en nuestra plataforma, con la fecha de actualización claramente indicada. Para cambios significativos, proporcionaremos notificaciones visibles en nuestra plataforma o le enviaremos comunicaciones directas."
+      },
+      contact: {
+        title: "11. Contacto",
+        paragraph1: "Para cualquier consulta relacionada con esta política de privacidad o el tratamiento de sus datos personales, puede contactarnos a través de:",
+        email: "serviceclient@toutaunclicla.com",
+        paragraph2: "Si considera que no hemos abordado adecuadamente sus preocupaciones, tiene derecho a presentar una queja ante la Oficina del Comisionado de Privacidad de Canadá:",
+        website: "www.priv.gc.ca"
+      }
+    }
   }
 };

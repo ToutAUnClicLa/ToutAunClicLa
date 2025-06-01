@@ -521,5 +521,196 @@ export default {
       description: "Boutique exclusive avec artisanat, vêtements traditionnels et souvenirs d'Amérique Latine à Montréal. Produits uniques et authentiques. Trouvez le cadeau parfait!",
       keywords: "boutique latino Montréal, artisanat latino-américain, souvenirs Amérique Latine, vêtements traditionnels, cadeaux uniques, magasin latino Québec"
     }
+  },
+
+  // Conditions d'utilisation
+  terms: {
+    title: "Conditions d'utilisation",
+    lastUpdated: "Dernière mise à jour :",
+    sections: {
+      introduction: {
+        title: "1. Introduction",
+        paragraph1: "Bienvenue chez Tout à un clic là. Ce document constitue un accord juridiquement contraignant (« Accord ») entre vous et Tout à un clic là, régi par la loi canadienne. Ces Conditions d'utilisation régissent votre accès et votre utilisation de notre plateforme de commerce électronique (« la Plateforme »), y compris toute application mobile associée, contenu, fonctionnalités et services offerts.",
+        paragraph2: "En accédant ou en utilisant notre Plateforme, vous confirmez que vous avez lu, compris et acceptez d'être lié par ces conditions. Si vous n'êtes pas d'accord avec une partie de cet Accord, veuillez vous abstenir d'utiliser nos services."
+      },
+      eligibility: {
+        title: "2. Éligibilité et comptes d'utilisateur",
+        paragraph1: "Pour utiliser nos services, vous devez avoir au moins 18 ans ou l'âge de la majorité légale dans votre juridiction, selon le plus élevé. En créant un compte, vous garantissez que toutes les informations fournies sont vraies, exactes, complètes et à jour.",
+        paragraph2: "Il est de votre responsabilité de maintenir la confidentialité de votre compte et de votre mot de passe, ainsi que de restreindre l'accès à votre appareil. Vous acceptez la pleine responsabilité de toutes les activités qui se produisent sous votre compte. Si vous soupçonnez une utilisation non autorisée de votre compte, vous devez nous en informer immédiatement.",
+        paragraph3: "Tout à un clic là se réserve le droit de suspendre ou de terminer votre compte, à notre discrétion et sans préavis, si nous déterminons que vous avez violé toute disposition de ces Conditions d'utilisation ou si votre conduite pourrait causer du tort à notre Plateforme, à d'autres utilisateurs ou à des tiers."
+      },
+      products: {
+        title: "3. Produits et services",
+        paragraph1: "Les produits et services offerts sur notre Plateforme sont sujets à disponibilité. Nous nous efforçons de fournir des descriptions précises, y compris les spécifications, caractéristiques et représentations visuelles de nos produits. Cependant, nous ne garantissons pas que ces descriptions ou représentations soient exactes, complètes, fiables, actuelles ou sans erreur.",
+        paragraph2: "Les couleurs affichées sur votre appareil peuvent varier des produits réels en raison de différentes technologies d'affichage, paramètres et limitations techniques.",
+        paragraph3: "Tout à un clic là se réserve le droit, à sa discrétion absolue, de limiter les quantités de tout produit ou service, de restreindre les ventes à toute personne ou région géographique, et de suspendre ou discontinuer tout produit ou service sans préavis."
+      },
+      pricing: {
+        title: "4. Prix, taxes et paiements",
+        paragraph1: "Tous les prix sont libellés en dollars canadiens (CAD) sauf indication contraire, et n'incluent pas les taxes applicables, frais d'expédition ou autres charges, qui seront divulgués pendant le processus d'achat avant la confirmation de commande.",
+        paragraph2: "Conformément à la législation fiscale canadienne, nous pouvons être tenus de percevoir et de remettre les taxes provinciales et fédérales, y compris la Taxe sur les produits et services (TPS), la Taxe de vente harmonisée (TVH) ou la Taxe de vente provinciale (TVP), selon votre localisation.",
+        paragraph3: "Nous nous réservons le droit de modifier les prix à tout moment sans préavis. Votre commande est sujette au prix en vigueur au moment où nous complétons votre transaction.",
+        paragraph4: "Nous acceptons divers méthodes de paiement telles que spécifiées sur notre Plateforme. En fournissant des informations de paiement, vous garantissez que vous êtes autorisé à utiliser la méthode de paiement sélectionnée et que ces informations sont exactes et complètes."
+      },
+      shipping: {
+        title: "5. Expédition et livraison",
+        paragraph1: "Nous expédions aux adresses au Canada et à des destinations internationales sélectionnées. Les délais de livraison sont des estimations basées sur les informations fournies par nos partenaires logistiques et peuvent varier selon votre localisation, conditions météorologiques, volume de commandes et autres facteurs externes.",
+        paragraph2: "Pour les expéditions internationales, vous êtes responsable de toute taxe d'importation, droits de douane et charges supplémentaires imposées par les autorités de votre pays. Ces charges ne sont pas sous notre contrôle et ne sont pas incluses dans le prix d'achat.",
+        paragraph3: "Le risque de perte et le titre de propriété des produits vous sont transférés au moment de la livraison. Il est de votre responsabilité d'inspecter les produits à la réception et de signaler tout dommage ou divergence dans les 48 heures suivant la livraison."
+      },
+      returns: {
+        title: "6. Politique de retours et remboursements",
+        paragraph1: "Conformément à la Loi canadienne sur la protection du consommateur et aux lois provinciales applicables, nous offrons une politique de retour qui permet de retourner la plupart des produits dans les 30 jours suivant la réception, à condition que les conditions suivantes soient remplies :",
+        list1: [
+          "Le produit doit être dans son état original, inutilisé et avec toutes les étiquettes et emballages originaux.",
+          "Une preuve d'achat ou confirmation de commande doit être incluse.",
+          "Les articles personnalisés, périssables, d'hygiène personnelle ou marqués comme vente finale ne sont pas éligibles au retour, sauf en cas de défauts vérifiables."
+        ],
+        paragraph2: "Les remboursements seront traités en utilisant la même méthode de paiement utilisée pour l'achat original dans les 14 jours ouvrables suivant la réception et vérification des articles retournés. Les frais d'expédition originaux et de retour ne sont généralement pas remboursables, sauf en cas de produits défectueux ou d'erreurs d'expédition attribuables à notre responsabilité."
+      },
+      intellectualProperty: {
+        title: "7. Propriété intellectuelle",
+        paragraph1: "La Plateforme et tout son contenu, caractéristiques et fonctionnalités, y compris mais sans s'y limiter le texte, graphiques, logos, icônes, images, clips audio, téléchargements numériques, compilations de données et logiciels, sont la propriété exclusive de Tout à un clic là, ses concédants de licence ou autres fournisseurs de contenu, et sont protégés par les lois canadiennes et internationales sur le droit d'auteur, marques de commerce, brevets, secrets commerciaux et autres droits de propriété intellectuelle.",
+        paragraph2: "L'utilisation non autorisée de tout contenu ou matériel sur notre Plateforme est strictement interdite. Aucune licence implicite ou expresse n'est accordée pour utiliser toute propriété intellectuelle sans notre consentement écrit préalable."
+      },
+      liability: {
+        title: "8. Limitation de responsabilité",
+        paragraph1: "Dans la mesure maximale permise par la loi applicable, Tout à un clic là, ses administrateurs, employés, agents et affiliés ne seront pas responsables de :",
+        list1: [
+          "Dommages indirects, accessoires, spéciaux, punitifs ou consécutifs, y compris la perte de profits, données, utilisation ou toute autre perte intangible, résultant de (i) votre accès ou utilisation ou incapacité d'accéder ou d'utiliser notre Plateforme ; (ii) toute conduite ou contenu de tiers sur la Plateforme ; ou (iii) accès non autorisé, utilisation ou altération de vos transmissions ou contenu.",
+          "Interruptions, erreurs, omissions ou retards dans l'opération de la Plateforme ou la livraison de produits ou services.",
+          "Virus, chevaux de Troie ou autres logiciels malveillants qui peuvent être transmis vers ou à travers notre Plateforme."
+        ],
+        paragraph2: "Notre responsabilité totale pour toute réclamation sous ces Conditions ne dépassera pas le montant payé par vous à Tout à un clic là pendant les six (6) mois précédant l'action donnant lieu à cette responsabilité.",
+        paragraph3: "Les limitations ci-dessus s'appliqueront indépendamment du fait que Tout à un clic là ait été averti de la possibilité de tels dommages et indépendamment du fait qu'un recours énoncé dans les présentes échoue dans son objectif essentiel."
+      },
+      governing: {
+        title: "9. Loi applicable et résolution des litiges",
+        paragraph1: "Ces Conditions d'utilisation seront régies et interprétées conformément aux lois de la province de Québec et aux lois fédérales du Canada qui s'y appliquent, sans égard aux principes de conflit de lois.",
+        paragraph2: "Tout litige, controverse ou réclamation découlant de ou liée à ces Conditions, ou leur violation, résiliation ou invalidité, sera résolu par négociation de bonne foi. Si le litige ne peut être résolu par négociation, les deux parties acceptent de soumettre le litige à la médiation conformément aux règles de médiation de l'Institut canadien de médiation et d'arbitrage.",
+        paragraph3: "Si la médiation ne résout pas le litige, il sera soumis à un arbitrage exécutoire devant un seul arbitre conformément à la Loi canadienne sur l'arbitrage commercial. Le lieu d'arbitrage sera Montréal, Québec, Canada, et la langue d'arbitrage sera l'anglais ou le français, selon ce qui est convenu par les parties."
+      },
+      changes: {
+        title: "10. Modifications des conditions",
+        paragraph1: "Nous nous réservons le droit, à notre seule discrétion, de modifier ou remplacer ces Conditions à tout moment. La version mise à jour sera effective dès qu'elle sera publiée sur notre Plateforme. Il est de votre responsabilité de réviser périodiquement ces Conditions pour rester informé de tout changement.",
+        paragraph2: "L'utilisation continue de notre Plateforme après la publication de toute modification constitue l'acceptation de ces modifications. Si vous n'êtes pas d'accord avec les nouveaux termes, vous devez cesser d'utiliser notre Plateforme.",
+        paragraph3: "Pour des changements substantielles, nous ferons des efforts raisonnables pour vous notifier, soit par un avis proéminent sur notre Plateforme, par courriel à l'adresse associée à votre compte, ou par d'autres moyens."
+      },
+      contact: {
+        title: "11. Contact",
+        paragraph1: "Si vous avez des questions sur ces Conditions d'utilisation ou avez besoin d'assistance avec nos produits ou services, vous pouvez nous contacter via :",
+        email: "serviceclient@toutaunclicla.com",
+        paragraph2: "Notre équipe de service client est disponible pour vous aider du lundi au vendredi, de 9h00 à 17h00 (heure de l'Est)."
+      }
+    }
+  },
+
+  // Politique de confidentialité
+  privacy: {
+    title: "Politique de confidentialité",
+    lastUpdated: "Dernière mise à jour :",
+    sections: {
+      introduction: {
+        title: "1. Introduction",
+        paragraph1: "Chez Tout à un clic là, nous respectons votre vie privée et nous nous engageons à protéger vos données personnelles conformément à la Loi sur la protection des renseignements personnels et les documents électroniques (LPRPDE) du Canada. Cette politique de confidentialité détaille comment nous collectons, utilisons, protégeons et divulguons les informations personnelles que vous fournissez lors de l'utilisation de notre plateforme de commerce électronique, ainsi que vos droits de confidentialité selon la législation canadienne."
+      },
+      dataCollection: {
+        title: "2. Données que nous collectons",
+        paragraph1: "Conformément aux principes de confidentialité établis par la LPRPDE, nous collectons uniquement les informations personnelles nécessaires aux fins identifiées et avec votre consentement. Ces informations peuvent inclure :",
+        list1: [
+          "Données d'identité : nom complet, nom d'utilisateur ou identifiants similaires.",
+          "Données de contact : adresse postale, adresse de facturation, adresse de livraison, courriel et numéros de téléphone.",
+          "Données financières : informations de cartes de paiement (traitées de manière sécurisée par des fournisseurs de paiement autorisés et conformes aux normes PCI DSS).",
+          "Données de transaction : registres d'achats, produits acquis, fréquence d'achats et méthodes de paiement utilisées.",
+          "Données techniques : adresse IP, données de connexion, type et version du navigateur, paramètres de fuseau horaire, localisation, types d'appareils utilisés pour accéder à la plateforme.",
+          "Données de profil : nom d'utilisateur et mot de passe (stockés de manière cryptée), préférences d'achat, intérêts et réponses aux sondages lorsque vous avez choisi d'y participer.",
+          "Données d'utilisation : informations sur la façon dont vous naviguez et utilisez notre plateforme, y compris le temps passé sur les pages et les modèles de navigation."
+        ]
+      },
+      dataUsage: {
+        title: "3. Comment nous utilisons vos données",
+        paragraph1: "Nous utilisons vos informations personnelles uniquement aux fins spécifiques pour lesquelles elles ont été collectées et conformément à la LPRPDE et autres lois canadiennes applicables. Ces fins incluent :",
+        list1: [
+          "Gérer votre compte et notre relation contractuelle, y compris vérifier votre identité lorsque nécessaire.",
+          "Traiter et livrer vos commandes, y compris gérer les paiements, facturation et expédition.",
+          "Gérer notre plateforme numérique (y compris l'analyse de données, tests, maintenance des systèmes, support technique et sécurité informatique).",
+          "Améliorer nos produits et services grâce à l'analyse des modèles d'utilisation et préférences des clients.",
+          "Communiquer avec vous concernant les mises à jour de produits, offres spéciales ou informations pertinentes, toujours avec l'option de vous désabonner de ces communications.",
+          "Se conformer aux obligations légales et fiscales selon les exigences de la législation canadienne."
+        ]
+      },
+      cookies: {
+        title: "4. Cookies et technologies de suivi",
+        paragraph1: "Nous utilisons des cookies et technologies similaires conformément aux lois canadiennes sur la confidentialité électronique. Ces technologies nous permettent de :",
+        list1: [
+          "Mémoriser vos préférences et paramètres pour améliorer votre expérience.",
+          "Comprendre comment vous utilisez notre plateforme pour l'optimiser.",
+          "Faciliter les fonctionnalités essentielles comme le panier d'achat et l'authentification de session."
+        ],
+        paragraph2: "Vous pouvez configurer votre navigateur pour rejeter tous ou certains cookies, ou pour vous alerter lorsqu'ils sont utilisés. Cependant, cela pourrait affecter le fonctionnement de certaines parties de notre plateforme. En continuant à utiliser notre site sans changer vos paramètres, vous consentez à notre utilisation des cookies telle que décrite dans cette politique."
+      },
+      dataDisclosure: {
+        title: "5. Divulgation de vos données personnelles",
+        paragraph1: "Conformément à la législation canadienne, nous pouvons partager vos informations personnelles seulement dans des circonstances spécifiques :",
+        list1: [
+          "Avec des fournisseurs de services qui nous assistent dans nos opérations commerciales (processeurs de paiement, services de livraison, fournisseurs d'hébergement web) sous des accords de confidentialité stricts.",
+          "Avec des professionnels tels que conseillers juridiques, comptables et auditeurs lorsque nécessaire pour nos opérations commerciales.",
+          "Avec les autorités gouvernementales lorsque requis par la loi, réglementation ou processus juridique.",
+          "Dans le contexte d'une transaction commerciale telle que fusion, acquisition ou vente d'actifs, avec notification préalable aux utilisateurs affectés."
+        ],
+        paragraph2: "Nous exigeons de tous les tiers qu'ils respectent la confidentialité et sécurité de vos données personnelles et qu'ils se conforment à toutes les lois de confidentialité applicables, y compris la LPRPDE. Nous ne permettons pas à nos fournisseurs de services d'utiliser vos données à des fins non autorisées qui leur sont propres."
+      },
+      internationalTransfers: {
+        title: "6. Transferts internationaux de données",
+        paragraph1: "Si nous transférons vos données personnelles hors du Canada, nous le faisons seulement lorsque des garanties adéquates existent pour protéger vos droits de confidentialité, conformément aux exigences de la LPRPDE. Ces garanties peuvent inclure :",
+        list1: [
+          "Transferts vers des pays que le Commissaire à la protection de la vie privée du Canada a déterminés comme offrant un niveau adéquat de protection.",
+          "Mise en œuvre de clauses contractuelles approuvées.",
+          "Obtention de votre consentement explicite lorsque nécessaire."
+        ]
+      },
+      dataSecurity: {
+        title: "7. Sécurité des données",
+        paragraph1: "Nous avons mis en place des mesures de sécurité techniques et organisationnelles appropriées selon les normes de l'industrie canadienne pour protéger vos données personnelles contre l'accès non autorisé, altérations, divulgations ou destructions. Ces mesures incluent :",
+        list1: [
+          "Chiffrement des données sensibles et transactions financières.",
+          "Systèmes de pare-feu et détection d'intrusion.",
+          "Accès restreint aux informations personnelles basé sur le besoin de savoir.",
+          "Évaluations régulières de sécurité et audits de conformité."
+        ]
+      },
+      dataRetention: {
+        title: "8. Conservation des données",
+        paragraph1: "Nous conservons vos données personnelles seulement aussi longtemps que nécessaire pour les fins pour lesquelles elles ont été collectées, conformément à nos obligations légales et commerciales. Les critères utilisés pour déterminer nos périodes de conservation incluent :",
+        list1: [
+          "La période pendant laquelle nous maintenons une relation commerciale active avec vous.",
+          "Nos obligations légales selon la législation canadienne applicable, y compris les réglementations fiscales et commerciales.",
+          "Exigences pour la résolution de litiges ou réclamations."
+        ]
+      },
+      yourRights: {
+        title: "9. Vos droits légaux",
+        paragraph1: "Sous la LPRPDE et autres lois canadiennes sur la confidentialité, vous avez des droits spécifiques concernant vos données personnelles, qui incluent :",
+        list1: [
+          "Droit d'accès : Demander l'accès à vos données personnelles que nous traitons.",
+          "Droit de rectification : Demander la correction d'informations inexactes ou incomplètes.",
+          "Droit de retirer le consentement : Retirer votre consentement à tout moment lorsque le traitement est basé sur votre consentement.",
+          "Droit de déposer une plainte : Déposer une plainte auprès du Bureau du Commissaire à la protection de la vie privée du Canada si vous croyez que nous avons violé vos droits de confidentialité.",
+          "Droit de contester la conformité : Contester notre conformité avec les principes de la LPRPDE."
+        ],
+        paragraph2: "Pour exercer l'un de ces droits, contactez-nous en utilisant les informations fournies dans la section « Contact »."
+      },
+      changes: {
+        title: "10. Modifications à cette politique de confidentialité",
+        paragraph1: "Nous pouvons mettre à jour cette politique de confidentialité périodiquement pour refléter des changements dans nos pratiques ou la législation canadienne. La version la plus récente sera toujours disponible sur notre plateforme, avec la date de mise à jour clairement indiquée. Pour des changements significatifs, nous fournirons des notifications visibles sur notre plateforme ou vous enverrons des communications directes."
+      },
+      contact: {
+        title: "11. Contact",
+        paragraph1: "Pour toute question liée à cette politique de confidentialité ou au traitement de vos données personnelles, vous pouvez nous contacter via :",
+        email: "serviceclient@toutaunclicla.com",
+        paragraph2: "Si vous croyez que nous n'avons pas adéquatement adressé vos préoccupations, vous avez le droit de déposer une plainte auprès du Bureau du Commissaire à la protection de la vie privée du Canada :",
+        website: "www.priv.gc.ca"
+      }
+    }
   }
 };
