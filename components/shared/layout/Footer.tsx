@@ -185,12 +185,6 @@ export function Footer() {
                   </span>
                 </li>
                 <li className="flex items-center text-sm md:text-base">
-                  <Phone className="h-5 w-5 text-indigo-400 mr-2 flex-shrink-0" />
-                  <a href="tel:+15141234567" className="text-gray-400 hover:text-white transition-colors duration-200" itemProp="telephone">
-                    {t('footer.contact.phone')}
-                  </a>
-                </li>
-                <li className="flex items-center text-sm md:text-base">
                   <Mail className="h-5 w-5 text-indigo-400 mr-2 flex-shrink-0" />
                   <a href="mailto:info@toutaunclicla.com" className="text-gray-400 hover:text-white transition-colors duration-200" itemProp="email">
                     {t('footer.contact.email')}

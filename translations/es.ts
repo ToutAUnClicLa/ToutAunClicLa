@@ -43,9 +43,8 @@ export default {
     },
     contact: {
       title: "Contacto",
-      address: "123 Rue Latino, Montreal, QC H1H 1H1, Canadá",
-      phone: "+1 (514) 123-4567",
-      email: "info@toutaunclicla.com",
+      address: "1614 Av Bourbonnière Montreal Quebec. H1W3N4",
+      email: "serviceclient@toutaunclicla.com",
       contactNow: "Contactar Ahora"
     },
     boutique: {

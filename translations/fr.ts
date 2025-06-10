@@ -42,9 +42,8 @@ export default {
       specialIngredients: "Ingrédients Spéciaux"
     },    contact: {
       title: "Contact",
-      address: "123 Rue Latino, Montréal, QC H1H 1H1, Canada",
-      phone: "+1 (514) 123-4567",
-      email: "info@toutaunclicla.com",
+      address: "1614 Av Bourbonnière Montreal Quebec. H1W3N4",
+      email: "serviceclient@toutaunclicla.com",
       contactNow: "Contactez-nous"
     },
     boutique: {
