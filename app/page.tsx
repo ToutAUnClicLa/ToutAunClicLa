@@ -198,10 +198,10 @@ export default function Home() {
             style={{ width: "100%", height: "100%", minHeight: "inherit" }}
           >
             <picture className="block w-full h-full">
-              <source media="(min-width: 768px)" srcSet="/fondoEscritorio.png" />
+              <source media="(min-width: 768px)" srcSet="/fondoEscritorio.jpg" />
               <source media="(max-width: 767px)" srcSet="/fondoMobile.png" />
               <Image
-                src="/fondoEscritorio.png"
+                src="/fondoEscritorio.jpg"
                 alt="Hero background"
                 fill
                 className="object-cover filter blur-[0.5px] transition-opacity duration-300 opacity-100"
