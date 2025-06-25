@@ -142,7 +142,7 @@ export function ProductGrid({
   };
 
   const LoadingSkeleton = () => (
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
       {Array.from({ length: 8 }).map((_, i) => (
         <Card key={i} className="overflow-hidden">
           <Skeleton className="aspect-square w-full" />
@@ -348,7 +348,7 @@ export function ProductGrid({
                   variants={container}
                   initial="hidden"
                   animate="show"
-                  className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6"
+                  className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
                 >
                   {products.map((product) => (
                     <motion.div key={product.id} variants={item}>
