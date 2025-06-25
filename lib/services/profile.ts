@@ -1,90 +1,118 @@
-import { supabase } from '@/lib/database/client';
+const API_BASE_URL = 'https://backendtoutaunclicla-production.up.railway.app/api/v1';
 
-export async function getUserProfile(email: string) {
-  const { data, error } = await supabase
-    .from('usuarios')
-    .select(`
-      id,
-      nombre,
-      email,
-      fecha_creacion,
-      direcciones_envio (
-        id,
-        direccion,
-        ciudad,
-        estado,
-        codigo_postal,
-        pais,
-        telefono
-      ),
-      favoritos (
-        id,
-        productos (
-          id,
-          nombre,
-          descripcion,
-          precio,
-          imagen_principal
-        )
-      )
-    `)
-    .eq('email', email)
-    .single();
-
-  if (error) throw error;
-  return data;
+export interface UserProfile {
+  id: string;
+  email: string;
+  nombre: string;
+  telefono?: string;
+  verified: boolean;
+  createdAt: string;
+  avatarUrl?: string;
 }
 
-export async function updateUserProfile(userId: string, data: any) {
-  const { error } = await supabase
-    .from('usuarios')
-    .update(data)
-    .eq('id', userId);
-
-  if (error) throw error;
+export interface UpdateProfileData {
+  nombre: string;
+  telefono?: string;
+  avatarUrl?: string;
 }
 
-export async function addShippingAddress(userId: string, address: any) {
-  const { error } = await supabase
-    .from('direcciones_envio')
-    .insert([{ ...address, usuario_id: userId }]);
-
-  if (error) throw error;
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
 }
 
-export async function deleteShippingAddress(addressId: string) {
-  const { error } = await supabase
-    .from('direcciones_envio')
-    .delete()
-    .eq('id', addressId);
+/**
+ * Obtener perfil del usuario desde el backend Express
+ */
+export async function getUserProfile(): Promise<UserProfile> {
+  try {
+    const token = localStorage.getItem('auth_token');
+    
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
 
-  if (error) throw error;
-}
+    const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
-export async function toggleFavorite(userId: string, productId: string) {
-  const { data: existingFavorite, error: checkError } = await supabase
-    .from('favoritos')
-    .select('id')
-    .eq('usuario_id', userId)
-    .eq('producto_id', productId)
-    .single();
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al obtener perfil');
+    }
 
-  if (checkError && checkError.code !== 'PGRST116') throw checkError;
-
-  if (existingFavorite) {
-    const { error } = await supabase
-      .from('favoritos')
-      .delete()
-      .eq('id', existingFavorite.id);
-
-    if (error) throw error;
-    return false; // Removed from favorites
-  } else {
-    const { error } = await supabase
-      .from('favoritos')
-      .insert([{ usuario_id: userId, producto_id: productId }]);
-
-    if (error) throw error;
-    return true; // Added to favorites
+    const data = await response.json();
+    return data.user;
+  } catch (error: any) {
+    console.error('Error al obtener perfil:', error);
+    throw error;
   }
 }
+
+/**
+ * Actualizar perfil del usuario
+ */
+export async function updateUserProfile(data: UpdateProfileData): Promise<UserProfile> {
+  try {
+    const token = localStorage.getItem('auth_token');
+    
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al actualizar perfil');
+    }
+
+    const responseData = await response.json();
+    return responseData.user;
+  } catch (error: any) {
+    console.error('Error al actualizar perfil:', error);
+    throw error;
+  }
+}
+
+/**
+ * Cambiar contraseña del usuario
+ */
+export async function changePassword(data: ChangePasswordData): Promise<void> {
+  try {
+    const token = localStorage.getItem('auth_token');
+    
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users/password`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al cambiar contraseña');
+    }
+  } catch (error: any) {
+    console.error('Error al cambiar contraseña:', error);
+    throw error;
+  }
+}
+

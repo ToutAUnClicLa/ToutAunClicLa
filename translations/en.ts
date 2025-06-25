@@ -524,6 +524,102 @@ export default {
       loginToAddToFavorites: "Sign in to add products to favorites",
       errorLoadingProduct: "Error loading product",
       productNotFound: "Product not found"
+    },
+    
+    // RestaurantGrid
+    restaurantGrid: {
+      selectRestaurant: "Choose your restaurant",
+      title: "Authentic Restaurants",
+      subtitle: "Discover the best Latin American flavors in Montreal. Each restaurant offers traditional and authentic recipes.",
+      errorTitle: "Error loading restaurants",
+      noRestaurants: "No restaurants available",
+      noRestaurantsDesc: "Currently there are no restaurants available in this category.",
+      restaurantType: "Traditional Latin American food",
+      viewMenu: "View menu",
+      callToAction: "Can't find what you're looking for? Explore all our partner restaurants.",
+      exploreAll: "Explore all restaurants"
+    }
+  },
+
+  // User profile section
+  profile: {
+    general: {
+      title: "My Profile",
+      subtitle: "Manage your account and preferences",
+      memberSince: "Member since",
+      editProfile: "Edit profile",
+      verified: "Verified",
+      pendingVerification: "Pending verification",
+      needsHelp: "Need help?",
+      supportText: "If you have any questions or problems, our support team is here to help you.",
+      contactSupport: "Contact support",
+      manageAccount: "Manage account"
+    },
+    stats: {
+      favorites: "Favorite products",
+      addresses: "Saved addresses",
+      orders: "Orders placed"
+    },
+    sections: {
+      favorites: {
+        title: "Favorites",
+        description: "Products you like"
+      },
+      addresses: {
+        title: "Addresses",
+        description: "Delivery addresses"
+      },
+      orders: {
+        title: "Orders",
+        description: "Purchase history"
+      },
+      security: {
+        title: "Security",
+        description: "Password and privacy"
+      },
+      settings: {
+        title: "Settings",
+        description: "Preferences and notifications"
+      }
+    },
+    security: {
+      title: "Security",
+      subtitle: "Manage your account security",
+      accountInfo: {
+        title: "Account information",
+        email: "Email address",
+        verificationStatus: "Verification status",
+        verified: "Verified",
+        pending: "Pending verification"
+      },
+      passwordChange: {
+        title: "Change password",
+        currentPassword: "Current password",
+        newPassword: "New password",
+        confirmPassword: "Confirm new password",
+        submitButton: "Change password",
+        updating: "Updating...",
+        success: "Password updated successfully",
+        error: "Error changing password",
+        mismatch: "New passwords don't match",
+        minLength: "New password must be at least 6 characters"
+      },
+      emailChange: {
+        title: "Change email address",
+        newEmail: "New email address",
+        confirmPassword: "Confirm your password",
+        submitButton: "Change email address",
+        sending: "Sending...",
+        success: "A verification code has been sent to your new email",
+        error: "Error changing email address"
+      },
+      activeSessions: {
+        title: "Active sessions",
+        currentSession: "Current session",
+        lastActivity: "Last activity: Now",
+        active: "Active",
+        closeAllSessions: "Close all sessions"
+      }
     }
   },
   

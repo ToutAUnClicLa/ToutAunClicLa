@@ -6,9 +6,11 @@ import { Footer } from '@/components/shared/layout/Footer';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/common/providers/ThemeProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
+// import { AuthProvider } from '@/contexts/AuthContext';
 import { Suspense } from 'react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
+// import { AuthProvider } from '@/contexts/AuthContext';
 import StructuredData from './schema';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -148,46 +150,49 @@ export default function RootLayout({
         <link rel="alternate" hrefLang="fr" href="https://toutaunclicla.com/fr" />
         <link rel="alternate" hrefLang="en" href="https://toutaunclicla.com/en" />
         <link rel="alternate" hrefLang="x-default" href="https://toutaunclicla.com" />
-      </head>      <body className={inter.className}>
+      </head>
+      <body className={inter.className}>
         <LanguageProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem={false}
-            disableTransitionOnChange
-          >
-            <Suspense fallback={
-              <div className="flex min-h-screen items-center justify-center">
-                <div className="animate-pulse text-lg">Loading...</div>
-              </div>
-            }>
-              <div className="flex min-h-screen flex-col">
-                <Navbar />
-                <main className="flex-1 w-full pt-16">
-                  {children}
-                </main>
-                <Footer />
-              </div>
-            </Suspense>
-            <Toaster 
-              position="bottom-right"
-              expand={false}
-              richColors
-              closeButton
-              theme="light"
-              toastOptions={{
-                style: {
-                  background: 'white',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '0.75rem',
-                  padding: '1rem',
-                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                },
-                className: 'font-medium',
-                duration: 3000,
-              }}
-            />
-          </ThemeProvider>
+          {/* <AuthProvider> */}
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem={false}
+              disableTransitionOnChange
+            >
+              <Suspense fallback={
+                <div className="flex min-h-screen items-center justify-center">
+                  <div className="animate-pulse text-lg">Loading...</div>
+                </div>
+              }>
+                <div className="flex min-h-screen flex-col">
+                  <Navbar />
+                  <main className="flex-1 w-full pt-16">
+                    {children}
+                  </main>
+                  <Footer />
+                </div>
+              </Suspense>
+              <Toaster 
+                position="bottom-right"
+                expand={false}
+                richColors
+                closeButton
+                theme="light"
+                toastOptions={{
+                  style: {
+                    background: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '0.75rem',
+                    padding: '1rem',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                  },
+                  className: 'font-medium',
+                  duration: 3000,
+                }}
+              />
+            </ThemeProvider>
+          {/* </AuthProvider> */}
         </LanguageProvider>
         <SpeedInsights />
         <Analytics />

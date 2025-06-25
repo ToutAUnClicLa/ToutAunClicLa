@@ -4,12 +4,28 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { User, Mail, Calendar, MapPin, Heart, ShoppingBag, Settings } from 'lucide-react';
-import { supabase } from '@/lib/database/client';
+import { 
+  User, 
+  Mail, 
+  Calendar, 
+  MapPin, 
+  Heart, 
+  ShoppingBag, 
+  Settings, 
+  Shield,
+  Edit,
+  CheckCircle,
+  Clock,
+  ChevronRight
+} from 'lucide-react';
+// Removido import de supabase - ahora usamos solo el backend de Express
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/common/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
-import Image from 'next/image';
+import { Badge } from '@/components/common/ui/badge';
+import { Separator } from '@/components/common/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/ui/avatar';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface UserProfile {
   id: string;
@@ -28,38 +44,61 @@ const PROFILE_SECTIONS = [
   {
     icon: Heart,
     title: "Favoritos",
+    description: "Productos que te gustan",
     href: "/profile/favorites",
     color: "text-red-500",
     bgColor: "bg-red-50",
+    borderColor: "border-red-200",
+    count: 0
   },
   {
     icon: MapPin,
     title: "Direcciones",
+    description: "Direcciones de entrega",
     href: "/profile/addresses",
     color: "text-blue-500",
     bgColor: "bg-blue-50",
+    borderColor: "border-blue-200",
+    count: 0
   },
   {
     icon: ShoppingBag,
     title: "Pedidos",
+    description: "Historial de compras",
     href: "/profile/orders",
     color: "text-green-500",
     bgColor: "bg-green-50",
+    borderColor: "border-green-200",
+    count: 0
+  },
+  {
+    icon: Shield,
+    title: "Seguridad",
+    description: "Contraseña y privacidad",
+    href: "/profile/security",
+    color: "text-purple-500",
+    bgColor: "bg-purple-50",
+    borderColor: "border-purple-200",
+    count: null
   },
   {
     icon: Settings,
     title: "Configuración",
+    description: "Preferencias y notificaciones",
     href: "/profile/settings",
-    color: "text-purple-500",
-    bgColor: "bg-purple-50",
+    color: "text-gray-500",
+    bgColor: "bg-gray-50",
+    borderColor: "border-gray-200",
+    count: null
   },
 ];
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { 
     user, 
-    userData, 
+    userData,
     isLoading,
     isAuthenticated,
     error,
@@ -71,41 +110,59 @@ export default function ProfilePage() {
     favorites: 0,
     orders: 0,
   });
+  const [isDataLoading, setIsDataLoading] = useState(true);
+
+  // Función para obtener las iniciales del usuario
+  const getUserInitials = () => {
+    if (!user?.nombre) return 'U';
+    return user.nombre
+      .split(' ')
+      .map(name => name[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  };
+
+  // Función para formatear la fecha de registro
+  const formatJoinDate = (dateString?: string) => {
+    if (!dateString) return 'Fecha no disponible';
+    try {
+      return new Intl.DateTimeFormat('es-ES', { 
+        year: 'numeric', 
+        month: 'long' 
+      }).format(new Date(dateString));
+    } catch {
+      return 'Fecha no disponible';
+    }
+  };
 
   const loadUserData = useCallback(async () => {
     if (!user) return;
     
+    setIsDataLoading(true);
     try {
-      // Load user profile
-      const { data: profileData, error: profileError } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('correo_electronico', user.email)
-        .single();
-
-      if (profileError) throw profileError;
-      setProfile(profileData);
-
-      // Load stats
-      const [addressesCount, favoritesCount] = await Promise.all([
-        supabase
-          .from('direcciones_envio')
-          .select('id', { count: 'exact' })
-          .eq('usuario_id', profileData.id),
-        supabase
-          .from('favoritos')
-          .select('id', { count: 'exact' })
-          .eq('usuario_id', profileData.id),
-      ]);
-
-      setStats({
-        addresses: addressesCount.count || 0,
-        favorites: favoritesCount.count || 0,
-        orders: 0, // Placeholder for orders when implemented
+      // Ya tenemos los datos del usuario desde el hook useAuth
+      setProfile({
+        id: user.id,
+        nombre: user.nombre,
+        email: user.email,
+        fecha_creacion: user.createdAt,
       });
+
+      // TODO: Implementar endpoints en tu backend para obtener estadísticas
+      // Por ahora usar valores por defecto
+      setStats({
+        addresses: 0,
+        favorites: 0,
+        orders: 0,
+      });
+      
+      toast.success('Perfil cargado correctamente');
     } catch (error) {
       console.error('Error loading user data:', error);
-      toast.error('Error al cargar los datos del usuario');
+      toast.error('Error al cargar la información del usuario');
+    } finally {
+      setIsDataLoading(false);
     }
   }, [user]);
 
@@ -120,116 +177,176 @@ export default function ProfilePage() {
     }
   }, [user, isLoading, router, loadUserData]);
 
-  if (isLoading || !profile) {
+  if (isLoading || !user) {
     return (
-      <div className="container max-w-6xl py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-        </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
       </div>
     );
   }
 
+  // Mapear secciones con stats
+  const sectionsWithStats = PROFILE_SECTIONS.map(section => ({
+    ...section,
+    count: section.title === 'Favoritos' ? stats.favorites :
+           section.title === 'Direcciones' ? stats.addresses :
+           section.title === 'Pedidos' ? stats.orders :
+           section.count
+  }));
+
   return (
-    <div className="container max-w-6xl py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Profile Card */}
-        <Card className="lg:col-span-1">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center text-center">
-              <div className="relative w-24 h-24 rounded-full overflow-hidden mb-4 border-4 border-white shadow-lg">
-                {user?.user_metadata?.avatar_url ? (
-                  <Image
-                    src={user.user_metadata.avatar_url}
-                    alt={profile.nombre}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-indigo-100 flex items-center justify-center">
-                    <User className="h-12 w-12 text-indigo-600" />
+    <div className="min-h-screen bg-gray-50">
+      <div className="container max-w-7xl mx-auto py-8 px-4">
+        {/* Header del perfil */}
+        <div className="mb-8">
+          <Card className="overflow-hidden">
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                <Avatar className="h-20 w-20 md:h-24 md:w-24 border-4 border-white shadow-lg">
+                  <AvatarImage src="" alt={user.nombre} />
+                  <AvatarFallback className="bg-white text-indigo-600 text-xl font-bold">
+                    {getUserInitials()}
+                  </AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1">
+                  <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
+                    <h1 className="text-2xl md:text-3xl font-bold">{user.nombre}</h1>
+                    {user.verified ? (
+                      <Badge className="bg-green-500 hover:bg-green-600 w-fit">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Verificado
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="w-fit">
+                        <Clock className="h-3 w-3 mr-1" />
+                        Pendiente verificación
+                      </Badge>
+                    )}
                   </div>
-                )}
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                {profile.nombre}
-              </h2>
-              <div className="flex items-center text-gray-500 text-sm mb-4">
-                <Mail className="h-4 w-4 mr-1" />
-                {profile.email}
-              </div>
-              <div className="flex items-center text-gray-500 text-sm">
-                <Calendar className="h-4 w-4 mr-1" />
-                Miembro desde {new Date(profile.fecha_creacion).toLocaleDateString()}
+                  
+                  <div className="space-y-1 text-indigo-100">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      <span>{user.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      <span>Miembro desde {formatJoinDate(user.createdAt)}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="secondary" 
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  onClick={() => router.push('/profile/settings')}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Editar perfil
+                </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </Card>
+        </div>
 
-        {/* Stats and Quick Actions */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-50 text-red-500 mb-3">
-                    <Heart className="h-6 w-6" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">{stats.favorites}</h3>
-                  <p className="text-gray-500">Favoritos</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-500 mb-3">
-                    <MapPin className="h-6 w-6" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">{stats.addresses}</h3>
-                  <p className="text-gray-500">Direcciones</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-50 text-green-500 mb-3">
-                    <ShoppingBag className="h-6 w-6" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">{stats.orders}</h3>
-                  <p className="text-gray-500">Pedidos</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
+        {/* Estadísticas rápidas */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
-            <CardHeader>
-              <CardTitle>Accesos Rápidos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {PROFILE_SECTIONS.map((section) => (
-                  <motion.div
-                    key={section.href}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button
-                      variant="outline"
-                      className="w-full h-auto p-4 flex items-center gap-3"
-                      onClick={() => router.push(section.href)}
-                    >
-                      <div className={`p-2 rounded-lg ${section.bgColor}`}>
-                        <section.icon className={`h-5 w-5 ${section.color}`} />
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-red-50 rounded-full">
+                  <Heart className="h-6 w-6 text-red-500" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{stats.favorites}</p>
+                  <p className="text-sm text-gray-600">Productos favoritos</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-blue-50 rounded-full">
+                  <MapPin className="h-6 w-6 text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{stats.addresses}</p>
+                  <p className="text-sm text-gray-600">Direcciones guardadas</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-green-50 rounded-full">
+                  <ShoppingBag className="h-6 w-6 text-green-500" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{stats.orders}</p>
+                  <p className="text-sm text-gray-600">Pedidos realizados</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Secciones de gestión */}
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Gestionar cuenta</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sectionsWithStats.map((section, index) => (
+              <motion.div
+                key={section.href}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card 
+                  className={`hover:shadow-lg transition-all duration-200 cursor-pointer border-2 ${section.borderColor} hover:border-opacity-50`}
+                  onClick={() => router.push(section.href)}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-4">
+                        <div className={`p-3 ${section.bgColor} rounded-lg`}>
+                          <section.icon className={`h-6 w-6 ${section.color}`} />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 mb-1">{section.title}</h3>
+                          <p className="text-sm text-gray-600 mb-2">{section.description}</p>
+                          {section.count !== null && (
+                            <Badge variant="secondary" className="text-xs">
+                              {section.count} elementos
+                            </Badge>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex-1 text-left">
-                        <h3 className="font-medium">{section.title}</h3>
-                      </div>
-                    </Button>
-                  </motion.div>
-                ))}
+                      <ChevronRight className="h-5 w-5 text-gray-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Sección de ayuda */}
+        <div className="mt-12">
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">¿Necesitas ayuda?</h3>
+                <p className="text-gray-600 mb-4">
+                  Si tienes alguna pregunta o problema, nuestro equipo de soporte está aquí para ayudarte.
+                </p>
+                <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-100">
+                  Contactar soporte
+                </Button>
               </div>
             </CardContent>
           </Card>

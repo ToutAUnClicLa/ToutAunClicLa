@@ -1,9 +1,8 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
   
   // Agregar headers de seguridad
   res.headers.set('X-Frame-Options', 'DENY');
@@ -18,16 +17,21 @@ export async function middleware(req: NextRequest) {
     console.log(`🌐 [${new Date().toISOString()}] ${req.method} ${req.nextUrl.pathname} - IP: ${ip}`);
   }
   
-  // Rate limiting para rutas sensibles de API
-  const isAuthAPI = req.nextUrl.pathname.startsWith('/api/auth/');
-  if (isAuthAPI) {
-    // El rate limiting se maneja individualmente en cada endpoint
-    // pero aquí podemos agregar headers informativos
-    res.headers.set('X-Auth-Endpoint', 'true');
-  }
+  // Verificar si el usuario está autenticado usando el token del backend
+  let isAuthenticated = false;
+  const token = req.cookies.get('auth-token')?.value;
   
-  // Verificar si el usuario está autenticado
-  const { data: { session } } = await supabase.auth.getSession();
+  if (token) {
+    try {
+      // Verificar el token JWT (usando la misma clave secreta que el backend)
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret');
+      const { payload } = await jwtVerify(token, secret);
+      isAuthenticated = !!payload;
+    } catch (error) {
+      console.log('Token inválido o expirado:', error);
+      isAuthenticated = false;
+    }
+  }
 
   // Lista de rutas protegidas que requieren autenticación
   const protectedRoutes = [
@@ -47,11 +51,19 @@ export async function middleware(req: NextRequest) {
   );
 
   // Si la ruta está protegida y el usuario no está autenticado, redirigir al inicio de sesión
-  if (isProtectedRoute && !session) {
-    const redirectUrl = new URL('/sign-in', req.url);
+  if (isProtectedRoute && !isAuthenticated) {
+    const redirectUrl = new URL('/', req.url);
     // Añadir la URL actual como parámetro de redirección
-    redirectUrl.searchParams.set('redirect', req.nextUrl.pathname);
+    redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
+  }
+
+  // Si el usuario está autenticado y trata de acceder a páginas de auth, redirigir al perfil
+  const authPages = ['/auth', '/login', '/register'];
+  const isAuthPage = authPages.some(page => req.nextUrl.pathname.startsWith(page));
+  
+  if (isAuthPage && isAuthenticated) {
+    return NextResponse.redirect(new URL('/profile', req.url));
   }
 
   return res;

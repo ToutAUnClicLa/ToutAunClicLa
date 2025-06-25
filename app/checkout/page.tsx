@@ -8,8 +8,9 @@ import { MapPin, CreditCard, Package, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/common/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
-import { getCartItems, type CartItem } from '@/lib/services/cart';
+import { getCart, type CartItem } from '@/lib/services/cart';
 import Image from 'next/image';
+import { getImageUrl } from '@/lib/utils';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -33,8 +34,8 @@ export default function CheckoutPage() {
 
   const loadCartItems = async () => {
     try {
-      const items = await getCartItems();
-      setCartItems(items);
+      const cartResponse = await getCart();
+      setCartItems(cartResponse.cartItems);
     } catch (error) {
       console.error('Error loading cart items:', error);
       toast.error('Error al cargar el carrito');
@@ -42,7 +43,7 @@ export default function CheckoutPage() {
   };
 
   const subtotal = cartItems.reduce((sum, item) => 
-    sum + (item.producto.precio * item.cantidad), 0
+    sum + (item.productos.precio * item.cantidad), 0
   );
 
   if (isLoading) {
@@ -141,21 +142,21 @@ export default function CheckoutPage() {
                     >
                       <div className="relative aspect-square w-20 rounded-md overflow-hidden flex-shrink-0">
                         <Image
-                          src={item.producto.imagen_principal}
-                          alt={item.producto.nombre}
+                          src={getImageUrl(item.productos.imagen_principal)}
+                          alt={item.productos.nombre}
                           fill
                           className="object-cover"
                         />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-medium text-gray-900">
-                          {item.producto.nombre}
+                          {item.productos.nombre}
                         </h4>
                         <p className="mt-1 text-sm text-gray-500">
                           Cantidad: {item.cantidad}
                         </p>
                         <p className="mt-1 text-sm font-medium text-gray-900">
-                          ${(item.producto.precio * item.cantidad).toFixed(2)}
+                          ${(item.productos.precio * item.cantidad).toFixed(2)}
                         </p>
                       </div>
                     </motion.div>

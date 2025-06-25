@@ -37,9 +37,9 @@ export function ReviewForm({ productId }: ReviewFormProps) {
     try {
       setIsSubmitting(true);
       await createReview({
-        productId,
-        rating,
-        comment,
+        productId: parseInt(productId),
+        estrellas: rating,
+        comentario: comment,
       });
       toast.success('Reseña enviada exitosamente');
       setRating(0);

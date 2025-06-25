@@ -3,7 +3,7 @@
 import { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslation } from '@/hooks/useTranslation';
-import { ProductList } from '@/components/features/modules/catalog/ProductList';
+import { ProductGrid } from '@/components/features/modules/catalog/ProductGrid';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
 
@@ -62,7 +62,7 @@ function ProductosContent() {
     <>
       <SEOMetaTags page="products" />
       <StructuredData type="organization" />
-      <ProductList 
+      <ProductGrid 
         categoryId={1} 
         categoryName="productos" 
         title={t('catalog.productList.productsTitle')}

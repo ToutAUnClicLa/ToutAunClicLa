@@ -1,234 +1,349 @@
-import { supabase } from '@/lib/database/client';
+/**
+ * Servicio para gestión del carrito de compras
+ * Conecta con el backend de carrito en Railway
+ */
 
-export interface CartItem {
+// Configuración dinámica de URL basada en el entorno
+const getCartBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    // En el cliente
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return '/api/backend/cart';  // Proxy de Next.js
+    }
+  }
+  // En producción o SSR
+  return 'https://backendtoutaunclicla-production.up.railway.app/api/v1/cart';
+};
+
+const CART_BASE_URL = getCartBaseUrl();
+
+// Headers comunes para todas las requests
+const getHeaders = () => {
+  const token = localStorage.getItem('auth_token');
+  const isLocalhost = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    
+  return {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Authorization': token ? `Bearer ${token}` : '',
+    // Headers condicionales basados en el entorno
+    ...(isLocalhost ? {} : {
+      'Origin': 'https://toutaunclicla.com',
+      'Referer': 'https://toutaunclicla.com',
+    })
+  };
+};
+
+// Interfaces basadas en la documentación del backend
+export interface CartProduct {
   id: number;
-  usuario_id: number;
-  producto_id: number;
-  cantidad: number;
-  producto: {
-    id: number;
+  nombre: string;
+  precio: number;
+  imagen_principal: string;
+  stock: number;
+  categorias?: {
     nombre: string;
-    descripcion: string;
-    precio: number;
-    imagen_principal: string;
-    stock: number;
   };
 }
 
-// Interfaz para los datos devueltos por Supabase
-interface CartItemResponse {
-  id: string | number;
-  usuario_id: string | number;
-  producto_id: string | number;
+export interface CartItem {
+  id: string;
+  usuario_id: string;
+  producto_id: number;
   cantidad: number;
-  productos: {
-    id: string | number;
-    nombre: string;
-    descripcion: string;
-    precio: string | number;
-    imagen_principal: string;
-    stock: string | number;
-  }[];
+  productos: CartProduct;
+  addedAt?: string;
 }
 
-export async function addToCart(productId: number, quantity: number = 1) {
+export interface CartSummary {
+  totalItems: number;
+  totalQuantity: number;
+  subtotal: number;
+  total: number;
+}
+
+export interface CartPagination {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface CartResponse {
+  cartItems: CartItem[];
+  total: number;
+  itemCount: number;
+  pagination: CartPagination;
+  summary: CartSummary;
+}
+
+export interface Coupon {
+  codigo: string;
+  tipo: 'percentage' | 'fixed';
+  valor: number;
+  descripcion: string;
+}
+
+export interface CartWithCouponResponse extends CartResponse {
+  coupon?: Coupon;
+  summary: CartSummary & {
+    discount?: number;
+    savings?: number;
+  };
+}
+
+/**
+ * Obtener carrito del usuario con paginación
+ */
+export async function getCart(page: number = 1, limit: number = 20): Promise<CartResponse> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    const response = await fetch(`${CART_BASE_URL}?page=${page}&limit=${limit}`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
 
-    const { data: userData, error: userError } = await supabase
-      .from('usuarios')
-      .select('id')
-      .eq('correo_electronico', user.email)
-      .single();
+    const data = await response.json();
 
-    if (userError || !userData) {
-      console.error('Error al obtener el usuario:', userError);
-      throw new Error('User profile not found');
+    if (!response.ok) {
+      throw new Error(data.message || data.error || 'Error al obtener carrito');
     }
 
-    // Check if product already exists in cart
-    const { data: existingItem, error: existingError } = await supabase
-      .from('carrito')
-      .select('*')
-      .eq('usuario_id', userData.id)
-      .eq('producto_id', productId)
-      .single();
-
-    if (existingError && existingError.code !== 'PGRST116') {
-      console.error('Error al verificar carrito existente:', existingError);
-      throw existingError;
-    }
-
-    if (existingItem) {
-      // Update quantity if product exists
-      const { error } = await supabase
-        .from('carrito')
-        .update({ cantidad: existingItem.cantidad + quantity })
-        .eq('id', existingItem.id);
-
-      if (error) {
-        console.error('Error al actualizar cantidad en carrito:', error);
-        throw error;
-      }
-    } else {
-      // Insert new item if product doesn't exist
-      const { error } = await supabase
-        .from('carrito')
-        .insert({
-          usuario_id: userData.id,
-          producto_id: productId,
-          cantidad: quantity
-        });
-
-      if (error) {
-        console.error('Error al insertar en carrito:', error);
-        throw error;
-      }
-    }
-  } catch (err) {
-    console.error('Error en addToCart:', err);
-    throw err;
+    return data;
+  } catch (error: any) {
+    console.error('Error en getCart:', error);
+    throw error;
   }
 }
 
-export async function removeFromCart(cartItemId: number) {
+/**
+ * Obtener carrito con cupón aplicado
+ */
+export async function getCartWithCoupon(couponCode?: string): Promise<CartWithCouponResponse> {
   try {
-    const { error } = await supabase
-      .from('carrito')
-      .delete()
-      .eq('id', cartItemId);
-
-    if (error) {
-      console.error('Error al eliminar del carrito:', error);
-      throw error;
-    }
-  } catch (err) {
-    console.error('Error en removeFromCart:', err);
-    throw err;
-  }
-}
-
-export async function updateCartItemQuantity(cartItemId: number, quantity: number) {
-  try {
-    if (quantity <= 0) {
-      return removeFromCart(cartItemId);
-    }
-    
-    const { error } = await supabase
-      .from('carrito')
-      .update({ cantidad: quantity })
-      .eq('id', cartItemId);
-
-    if (error) {
-      console.error('Error al actualizar cantidad en carrito:', error);
-      throw error;
-    }
-  } catch (err) {
-    console.error('Error en updateCartItemQuantity:', err);
-    throw err;
-  }
-}
-
-export async function getCartItems(): Promise<CartItem[]> {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const { data: userData, error: userError } = await supabase
-      .from('usuarios')
-      .select('id')
-      .eq('correo_electronico', user.email)
-      .single();
-
-    if (userError || !userData) {
-      console.error('Error al obtener el usuario:', userError);
-      throw new Error('User profile not found');
-    }
-
-    const { data, error } = await supabase
-      .from('carrito')
-      .select(`
-        id,
-        usuario_id,
-        producto_id,
-        cantidad,
-        productos (
-          id,
-          nombre,
-          descripcion,
-          precio,
-          imagen_principal,
-          stock
-        )
-      `)
-      .eq('usuario_id', userData.id);
-
-    if (error) {
-      console.error('Error al obtener carrito:', error);
-      throw error;
-    }
-    
-    if (!data || data.length === 0) return [];
-    
-    // Convertir los datos de Supabase al formato CartItem
-    return (data as CartItemResponse[]).map(item => {
-      // Obtener el primer producto del array
-      const productoData = item.productos[0];
+    const url = couponCode 
+      ? `${CART_BASE_URL}/with-coupon?couponCode=${encodeURIComponent(couponCode)}`
+      : `${CART_BASE_URL}/with-coupon`;
       
-      if (!productoData) {
-        console.error('Error: Producto no encontrado para item de carrito', item);
-        return null;
-      }
-      
-      return {
-        id: Number(item.id),
-        usuario_id: Number(item.usuario_id),
-        producto_id: Number(item.producto_id),
-        cantidad: item.cantidad,
-        producto: {
-          id: Number(productoData.id),
-          nombre: productoData.nombre,
-          descripcion: productoData.descripcion,
-          precio: Number(productoData.precio),
-          imagen_principal: productoData.imagen_principal,
-          stock: Number(productoData.stock)
-        }
-      };
-    }).filter(Boolean) as CartItem[];
-  } catch (err) {
-    console.error('Error en getCartItems:', err);
-    return [];
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || data.error || 'Error al obtener carrito con cupón');
+    }
+
+    return data;
+  } catch (error: any) {
+    console.error('Error en getCartWithCoupon:', error);
+    throw error;
   }
 }
 
-export async function clearCart() {
+/**
+ * Agregar producto al carrito
+ */
+export async function addToCart(productId: number, quantity: number = 1): Promise<CartItem> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    const response = await fetch(`${CART_BASE_URL}/items`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ productId, quantity }),
+    });
 
-    const { data: userData, error: userError } = await supabase
-      .from('usuarios')
-      .select('id')
-      .eq('correo_electronico', user.email)
-      .single();
+    const data = await response.json();
 
-    if (userError || !userData) {
-      console.error('Error al obtener el usuario:', userError);
-      throw new Error('User profile not found');
+    if (!response.ok) {
+      if (response.status === 400 && data.error === 'Insufficient stock') {
+        throw new Error(`Solo quedan ${data.availableStock} unidades disponibles`);
+      }
+      if (response.status === 404) {
+        throw new Error('Producto no encontrado');
+      }
+      throw new Error(data.message || data.error || 'Error al agregar al carrito');
     }
 
-    const { error } = await supabase
-      .from('carrito')
-      .delete()
-      .eq('usuario_id', userData.id);
-
-    if (error) {
-      console.error('Error al limpiar carrito:', error);
-      throw error;
-    }
-  } catch (err) {
-    console.error('Error en clearCart:', err);
-    throw err;
+    return data.cartItem;
+  } catch (error: any) {
+    console.error('Error en addToCart:', error);
+    throw error;
   }
 }
+
+/**
+ * Actualizar cantidad de un item en el carrito
+ */
+export async function updateCartItem(itemId: string, quantity: number): Promise<CartItem> {
+  try {
+    const response = await fetch(`${CART_BASE_URL}/items/${itemId}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ quantity }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (response.status === 400 && data.error === 'Insufficient stock') {
+        throw new Error(`Solo quedan ${data.availableStock} unidades disponibles`);
+      }
+      if (response.status === 404) {
+        throw new Error('Item no encontrado en el carrito');
+      }
+      if (response.status === 403) {
+        throw new Error('No tienes permisos para modificar este item');
+      }
+      throw new Error(data.message || data.error || 'Error al actualizar item');
+    }
+
+    return data.cartItem;
+  } catch (error: any) {
+    console.error('Error en updateCartItem:', error);
+    throw error;
+  }
+}
+
+/**
+ * Eliminar producto del carrito
+ */
+export async function removeFromCart(itemId: string): Promise<void> {
+  try {
+    const response = await fetch(`${CART_BASE_URL}/items/${itemId}`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      if (response.status === 404) {
+        throw new Error('Item no encontrado en el carrito');
+      }
+      if (response.status === 403) {
+        throw new Error('No tienes permisos para eliminar este item');
+      }
+      throw new Error(data.message || data.error || 'Error al eliminar item');
+    }
+  } catch (error: any) {
+    console.error('Error en removeFromCart:', error);
+    throw error;
+  }
+}
+
+/**
+ * Vaciar carrito completo
+ */
+export async function clearCart(): Promise<{ itemsRemoved: number }> {
+  try {
+    const response = await fetch(`${CART_BASE_URL}`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || data.error || 'Error al limpiar carrito');
+    }
+
+    return { itemsRemoved: data.itemsRemoved || 0 };
+  } catch (error: any) {
+    console.error('Error en clearCart:', error);
+    throw error;
+  }
+}
+
+/**
+ * Aplicar cupón al carrito
+ */
+export async function applyCoupon(couponCode: string): Promise<{
+  coupon: Coupon;
+  summary: CartSummary & { discount: number; savings: number };
+}> {
+  try {
+    const response = await fetch(`${CART_BASE_URL}/apply-coupon`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ couponCode }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Cupón no válido o expirado');
+      }
+      if (response.status === 400) {
+        throw new Error(data.message || 'El cupón no se puede aplicar');
+      }
+      if (response.status === 429) {
+        throw new Error('Has alcanzado el límite de intentos. Intenta más tarde.');
+      }
+      throw new Error(data.message || data.error || 'Error al aplicar cupón');
+    }
+
+    return {
+      coupon: data.coupon,
+      summary: data.summary || {
+        ...data.discount,
+        total: data.newTotal
+      },
+    };
+  } catch (error: any) {
+    console.error('Error en applyCoupon:', error);
+    throw error;
+  }
+}
+
+/**
+ * Obtener conteo total de items en el carrito
+ */
+export async function getCartCount(): Promise<number> {
+  try {
+    const cart = await getCart(1, 1);
+    return cart.summary?.totalQuantity || 0;
+  } catch (error: any) {
+    console.error('Error en getCartCount:', error);
+    return 0;
+  }
+}
+
+/**
+ * Obtener resumen del carrito (totales sin items)
+ */
+export async function getCartSummary(): Promise<CartSummary> {
+  try {
+    const cart = await getCart(1, 1);
+    return cart.summary || {
+      totalItems: 0,
+      totalQuantity: 0,
+      subtotal: 0,
+      total: 0,
+    };
+  } catch (error: any) {
+    console.error('Error en getCartSummary:', error);
+    return {
+      totalItems: 0,
+      totalQuantity: 0,
+      subtotal: 0,
+      total: 0,
+    };
+  }
+}
+
+// Servicio unificado para manejo del carrito
+export const cartService = {
+  getCart,
+  getCartWithCoupon,
+  addToCart,
+  updateCartItem,
+  removeFromCart,
+  clearCart,
+  applyCoupon,
+  getCartCount,
+  getCartSummary,
+};

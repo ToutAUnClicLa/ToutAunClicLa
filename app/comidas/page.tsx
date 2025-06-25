@@ -3,19 +3,24 @@
 import { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslation } from '@/hooks/useTranslation';
-import { ProductList } from '@/components/features/modules/catalog/ProductList';
+import { ProductGrid } from '@/components/features/modules/catalog/ProductGrid';
+import { FoodCatalog } from '@/components/features/modules/catalog/FoodCatalog';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
 
 const LoadingFallback = () => (
-  <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 py-6">
+  <div className="min-h-screen bg-white py-6">
     <div className="container">
       <div className="animate-pulse">
-        <div className="h-8 bg-gray-200 rounded w-1/4 mb-6" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="text-center space-y-4 mb-8">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mx-auto mb-4" />
+          <div className="h-12 bg-gray-200 rounded w-1/2 mx-auto mb-2" />
+          <div className="h-6 bg-gray-200 rounded w-2/3 mx-auto" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white rounded-xl p-4">
-              <div className="aspect-square bg-gray-200 rounded-lg mb-4" />
+            <div key={i} className="bg-white rounded-xl p-4 shadow-sm">
+              <div className="aspect-video bg-gray-200 rounded-lg mb-4" />
               <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
               <div className="h-4 bg-gray-200 rounded w-1/2" />
             </div>
@@ -62,10 +67,8 @@ function ComidasContent() {
     <>
       <SEOMetaTags page="comidas" />
       <StructuredData type="organization" />
-      <ProductList 
-        categoryId={2} 
-        categoryName="comidas" 
-        title={t('catalog.productList.comidasTitle')}
+      <FoodCatalog
+        categoryId={2}
         initialSubcategory={subcategoriaId ? parseInt(subcategoriaId) : null}
       />
     </>

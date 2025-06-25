@@ -433,6 +433,41 @@ export default {
         loginRequired: "Debes iniciar sesión para continuar"
       }
     },
+
+    // FoodCatalog
+    foodCatalog: {
+      title: "Comidas Tradicionales",
+      subtitle: "Descubre los sabores auténticos de América Latina. Comida casera preparada con recetas tradicionales.",
+      selectRestaurant: "Selecciona tu restaurante favorito",
+      availableRestaurants: "Restaurantes Disponibles",
+      exploreAllFlavors: "Explorar todos los sabores",
+      noRestaurants: "No hay restaurantes disponibles",
+      comingSoon: "Próximamente tendremos más restaurantes disponibles en tu área.",
+      backToRestaurants: "Volver a restaurantes",
+      restaurantMenu: "Menú de {name}",
+      menuTitle: "Menú de",
+      menuSubtitle: "Descubre los platos auténticos y tradicionales",
+      authenticDishes: "Descubre los platos auténticos y tradicionales",
+      openNow: "Abierto",
+      closedNow: "Cerrado",
+      popular: "Popular",
+      fastDelivery: "Entrega rápida",
+      freeShipping: "Envío gratis",
+      viewMenu: "Ver menú",
+      viewFullMenu: "Ver menú completo",
+      deliveryTime: "25-35 min",
+      distance: "2.5 km",
+      rating: "4.5",
+      contactUs: "¿No encuentras tu restaurante favorito? Contáctanos para agregar más opciones.",
+      benefits: {
+        fastDelivery: "Entrega rápida",
+        fastDeliveryDesc: "En 30-45 minutos",
+        freeShipping: "Envío gratis", 
+        freeShippingDesc: "En pedidos +$25",
+        quality: "Calidad garantizada",
+        qualityDesc: "Restaurantes verificados"
+      }
+    },
     
     // ProductDetail
     productDetail: {
@@ -524,6 +559,102 @@ export default {
       loginToAddToFavorites: "Inicia sesión para agregar productos a favoritos",
       errorLoadingProduct: "Error al cargar el producto",
       productNotFound: "Producto no encontrado"
+    },
+    
+    // RestaurantGrid
+    restaurantGrid: {
+      selectRestaurant: "Elige tu restaurante",
+      title: "Restaurantes Auténticos",
+      subtitle: "Descubre los mejores sabores de América Latina en Montreal. Cada restaurante ofrece recetas tradicionales y auténticas.",
+      errorTitle: "Error al cargar restaurantes",
+      noRestaurants: "No hay restaurantes disponibles",
+      noRestaurantsDesc: "En este momento no hay restaurantes disponibles en esta categoría.",
+      restaurantType: "Comida tradicional latinoamericana",
+      viewMenu: "Ver menú",
+      callToAction: "¿No encuentras lo que buscas? Explora todos nuestros restaurantes asociados.",
+      exploreAll: "Explorar todos los restaurantes"
+    }
+  },
+
+  // Sección de perfil de usuario
+  profile: {
+    general: {
+      title: "Mi Perfil",
+      subtitle: "Gestiona tu cuenta y preferencias",
+      memberSince: "Miembro desde",
+      editProfile: "Editar perfil",
+      verified: "Verificado",
+      pendingVerification: "Pendiente verificación",
+      needsHelp: "¿Necesitas ayuda?",
+      supportText: "Si tienes alguna pregunta o problema, nuestro equipo de soporte está aquí para ayudarte.",
+      contactSupport: "Contactar soporte",
+      manageAccount: "Gestionar cuenta"
+    },
+    stats: {
+      favorites: "Productos favoritos",
+      addresses: "Direcciones guardadas",
+      orders: "Pedidos realizados"
+    },
+    sections: {
+      favorites: {
+        title: "Favoritos",
+        description: "Productos que te gustan"
+      },
+      addresses: {
+        title: "Direcciones",
+        description: "Direcciones de entrega"
+      },
+      orders: {
+        title: "Pedidos",
+        description: "Historial de compras"
+      },
+      security: {
+        title: "Seguridad",
+        description: "Contraseña y privacidad"
+      },
+      settings: {
+        title: "Configuración",
+        description: "Preferencias y notificaciones"
+      }
+    },
+    security: {
+      title: "Seguridad",
+      subtitle: "Gestiona la seguridad de tu cuenta",
+      accountInfo: {
+        title: "Información de la cuenta",
+        email: "Correo electrónico",
+        verificationStatus: "Estado de verificación",
+        verified: "Verificado",
+        pending: "Pendiente de verificación"
+      },
+      passwordChange: {
+        title: "Cambiar contraseña",
+        currentPassword: "Contraseña actual",
+        newPassword: "Nueva contraseña",
+        confirmPassword: "Confirmar nueva contraseña",
+        submitButton: "Cambiar contraseña",
+        updating: "Actualizando...",
+        success: "Contraseña actualizada correctamente",
+        error: "Error al cambiar la contraseña",
+        mismatch: "Las contraseñas nuevas no coinciden",
+        minLength: "La nueva contraseña debe tener al menos 6 caracteres"
+      },
+      emailChange: {
+        title: "Cambiar correo electrónico",
+        newEmail: "Nuevo correo electrónico",
+        confirmPassword: "Confirma tu contraseña",
+        submitButton: "Cambiar correo electrónico",
+        sending: "Enviando...",
+        success: "Se ha enviado un código de verificación a tu nuevo correo",
+        error: "Error al cambiar el correo electrónico"
+      },
+      activeSessions: {
+        title: "Sesiones activas",
+        currentSession: "Sesión actual",
+        lastActivity: "Última actividad: Ahora",
+        active: "Activa",
+        closeAllSessions: "Cerrar todas las sesiones"
+      }
     }
   },
   

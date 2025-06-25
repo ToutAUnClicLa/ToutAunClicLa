@@ -6,6 +6,15 @@ const nextConfig = {
     localeDetection: false,
   },
   output: 'standalone',
+  // Proxy para desarrollo - redirige /api/backend/* al backend real
+  async rewrites() {
+    return [
+      {
+        source: '/api/backend/:path*',
+        destination: 'https://backendtoutaunclicla-production.up.railway.app/api/v1/:path*',
+      },
+    ]
+  },
   images: {
     remotePatterns: [
       {
@@ -14,11 +23,11 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'fthunnrkcpzygyspynus.supabase.co',
+        hostname: 'lh3.googleusercontent.com',
       },
       {
         protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
+        hostname: 'fthunnrkcpzygyspynus.supabase.co',
       },
     ],
     formats: ['image/avif', 'image/webp'],

@@ -37,7 +37,6 @@ import { CartDrawer } from "@/components/features/modules/cart/CartDrawer";
 import { getFavoritesCount } from "@/lib/services/favorites";
 import { useAuth } from "@/hooks/useAuth";
 import AuthModal from "@/components/features/auth/AuthModal";
-import { signOut } from '@/lib/database/auth';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/common/ui/avatar";
 import { Badge } from "@/components/common/ui/badge";
 import { Separator } from "@/components/common/ui/separator";
@@ -71,7 +70,7 @@ const PROFILE_MENU_ITEMS = [
 export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, user, userData, isLoading } = useAuth();
+  const { isAuthenticated, user, isLoading, logout } = useAuth();
   
   const { currentLanguage, setLanguage, availableLanguages } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -81,10 +80,14 @@ export function Navbar() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (isAuthenticated && userData) {
+    if (isAuthenticated && user) {
       loadFavoritesCount();
     }
-  }, [isAuthenticated, userData]);
+    // Reset favorites count when user logs out
+    if (!isAuthenticated) {
+      setFavoritesCount(0);
+    }
+  }, [isAuthenticated, user]);
 
   const loadFavoritesCount = async () => {
     try {
@@ -101,7 +104,7 @@ export function Navbar() {
   };
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await logout();
       toast.success(t('navbar.logoutSuccess'));
       if (pathname.startsWith('/profile')) {
         router.push('/');
@@ -123,14 +126,14 @@ export function Navbar() {
 
   // Obtener las iniciales del usuario para el avatar fallback
   const getUserInitials = () => {
-    if (!userData || !userData.nombre) return 'U';
-    const nombre = userData.nombre;
+    if (!user || !user.nombre) return 'U';
+    const nombre = user.nombre;
     return nombre.split(' ').map((n: string) => n[0]).join('').toUpperCase().substring(0, 2);
   };
 
   // Obtener el estado de verificación del usuario
   const isUserVerified = () => {
-    return userData?.verificado || false;
+    return user?.verified || false;
   };
 
   // Nuevo código: Agrupar los enlaces para el menú móvil
@@ -288,7 +291,7 @@ export function Navbar() {
                     <DropdownMenuTrigger asChild>
                       <div className="relative cursor-pointer">
                         <Avatar className="h-10 w-10 border-2 border-gray-200 hover:border-indigo-500 transition-colors">
-                          <AvatarImage src={userData?.url_avatar || ''} />
+                          <AvatarImage src="" />
                           <AvatarFallback className="bg-indigo-100 text-indigo-600">
                             {getUserInitials()}
                           </AvatarFallback>
@@ -301,15 +304,15 @@ export function Navbar() {
                       </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-48" align="end">
-                      {userData && (
+                      {user && (
                         <>
                           <DropdownMenuLabel>
                             <div className="flex flex-col space-y-1">
                               <p className="text-sm font-medium leading-none truncate">
-                                {userData.nombre}
+                                {user.nombre}
                               </p>
                               <p className="text-xs leading-none text-muted-foreground truncate">
-                                {userData.correo_electronico}
+                                {user.email}
                               </p>
                               {!isUserVerified() && (
                                 <p className="text-xs text-amber-600 font-medium">
@@ -412,21 +415,23 @@ export function Navbar() {
                 {isAuthenticated ? (
                   <div className="flex items-start gap-4">
                     <Avatar className="h-14 w-14 rounded-full border-2 border-indigo-100 shadow-sm relative">
-                      <AvatarImage src={userData?.url_avatar || ''} />
+                      <AvatarImage src="" />
                       <AvatarFallback className="bg-gradient-to-br from-indigo-100 to-indigo-200 text-indigo-600 text-lg">
                         {getUserInitials()}
                       </AvatarFallback>
-                      {!isUserVerified() && (                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-amber-500 border-2 border-white flex items-center justify-center">
+                      {!isUserVerified() && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-amber-500 border-2 border-white flex items-center justify-center">
                         <span className="sr-only">{t('navbar.unverifiedAccount')}</span>
                       </span>
                       )}
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <h2 className="text-lg font-semibold text-gray-900 truncate">
-                        {userData?.nombre || 'Usuario'}
+                        {user?.nombre || 'Usuario'}
                       </h2>
-                      <p className="text-sm text-gray-500 truncate">{userData?.correo_electronico}</p>
-                      {!isUserVerified() && (                        <Badge variant="outline" className="mt-1 bg-amber-50 text-amber-600 border-amber-200 gap-1">
+                      <p className="text-sm text-gray-500 truncate">{user?.email}</p>
+                      {!isUserVerified() && (
+                        <Badge variant="outline" className="mt-1 bg-amber-50 text-amber-600 border-amber-200 gap-1">
                           <span className="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
                           {t('navbar.pendingVerification')}
                         </Badge>

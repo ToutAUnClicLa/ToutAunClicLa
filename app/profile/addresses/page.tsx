@@ -8,7 +8,7 @@ import { MapPin, Plus, ChevronLeft, Home, Building2, Phone } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/common/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
-import { supabase } from '@/lib/database/client';
+// Removido import de supabase - TODO: Implementar servicio de direcciones con tu backend
 
 interface Address {
   id: number;
@@ -47,27 +47,15 @@ export default function AddressesPage() {
 
   const loadAddresses = useCallback(async () => {
     try {
-      const { data: userData } = await supabase
-        .from('usuarios')
-        .select('id')
-        .eq('correo_electronico', user!.email)
-        .single();
-
-      if (!userData) throw new Error('Usuario no encontrado');
-
-      const { data, error } = await supabase
-        .from('direcciones_envio')
-        .select('*')
-        .eq('usuario_id', userData.id)
-        .order('id', { ascending: true });
-
-      if (error) throw error;
-      setAddresses(data || []);
+      // TODO: Implementar endpoint GET /addresses en tu backend
+      console.warn('loadAddresses: Endpoint de direcciones no implementado en el backend');
+      setAddresses([]);
+      toast.info('Funcionalidad de direcciones pendiente de implementar');
     } catch (error) {
       console.error('Error loading addresses:', error);
       toast.error('Error al cargar las direcciones');
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -83,15 +71,10 @@ export default function AddressesPage() {
 
   async function handleDeleteAddress(addressId: number) {
     try {
-      const { error } = await supabase
-        .from('direcciones_envio')
-        .delete()
-        .eq('id', addressId);
-
-      if (error) throw error;
-
+      // TODO: Implementar endpoint DELETE /addresses/:id en tu backend
+      console.warn('handleDeleteAddress: Endpoint de eliminación de direcciones no implementado');
       setAddresses(addresses.filter(addr => addr.id !== addressId));
-      toast.success('Dirección eliminada');
+      toast.info('Funcionalidad de eliminación pendiente de implementar');
     } catch (error) {
       console.error('Error deleting address:', error);
       toast.error('Error al eliminar la dirección');

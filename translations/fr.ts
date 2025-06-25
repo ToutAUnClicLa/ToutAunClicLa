@@ -524,6 +524,102 @@ export default {
       loginToAddToFavorites: "Connectez-vous pour ajouter des produits aux favoris",
       errorLoadingProduct: "Erreur lors du chargement du produit",
       productNotFound: "Produit non trouvé"
+    },
+    
+    // RestaurantGrid
+    restaurantGrid: {
+      selectRestaurant: "Choisissez votre restaurant",
+      title: "Restaurants Authentiques",
+      subtitle: "Découvrez les meilleures saveurs d'Amérique Latine à Montréal. Chaque restaurant propose des recettes traditionnelles et authentiques.",
+      errorTitle: "Erreur lors du chargement des restaurants",
+      noRestaurants: "Aucun restaurant disponible",
+      noRestaurantsDesc: "Actuellement, il n'y a pas de restaurants disponibles dans cette catégorie.",
+      restaurantType: "Cuisine traditionnelle latino-américaine",
+      viewMenu: "Voir le menu",
+      callToAction: "Vous ne trouvez pas ce que vous cherchez? Explorez tous nos restaurants partenaires.",
+      exploreAll: "Explorer tous les restaurants"
+    }
+  },
+
+  // Section profil utilisateur
+  profile: {
+    general: {
+      title: "Mon Profil",
+      subtitle: "Gérez votre compte et vos préférences",
+      memberSince: "Membre depuis",
+      editProfile: "Modifier le profil",
+      verified: "Vérifié",
+      pendingVerification: "Vérification en attente",
+      needsHelp: "Besoin d'aide?",
+      supportText: "Si vous avez des questions ou des problèmes, notre équipe de support est là pour vous aider.",
+      contactSupport: "Contacter le support",
+      manageAccount: "Gérer le compte"
+    },
+    stats: {
+      favorites: "Produits favoris",
+      addresses: "Adresses sauvegardées",
+      orders: "Commandes passées"
+    },
+    sections: {
+      favorites: {
+        title: "Favoris",
+        description: "Produits que vous aimez"
+      },
+      addresses: {
+        title: "Adresses",
+        description: "Adresses de livraison"
+      },
+      orders: {
+        title: "Commandes",
+        description: "Historique d'achats"
+      },
+      security: {
+        title: "Sécurité",
+        description: "Mot de passe et confidentialité"
+      },
+      settings: {
+        title: "Paramètres",
+        description: "Préférences et notifications"
+      }
+    },
+    security: {
+      title: "Sécurité",
+      subtitle: "Gérez la sécurité de votre compte",
+      accountInfo: {
+        title: "Informations du compte",
+        email: "Adresse e-mail",
+        verificationStatus: "Statut de vérification",
+        verified: "Vérifié",
+        pending: "En attente de vérification"
+      },
+      passwordChange: {
+        title: "Changer le mot de passe",
+        currentPassword: "Mot de passe actuel",
+        newPassword: "Nouveau mot de passe",
+        confirmPassword: "Confirmer le nouveau mot de passe",
+        submitButton: "Changer le mot de passe",
+        updating: "Mise à jour...",
+        success: "Mot de passe mis à jour avec succès",
+        error: "Erreur lors du changement de mot de passe",
+        mismatch: "Les nouveaux mots de passe ne correspondent pas",
+        minLength: "Le nouveau mot de passe doit contenir au moins 6 caractères"
+      },
+      emailChange: {
+        title: "Changer l'adresse e-mail",
+        newEmail: "Nouvelle adresse e-mail",
+        confirmPassword: "Confirmez votre mot de passe",
+        submitButton: "Changer l'adresse e-mail",
+        sending: "Envoi...",
+        success: "Un code de vérification a été envoyé à votre nouveau e-mail",
+        error: "Erreur lors du changement d'adresse e-mail"
+      },
+      activeSessions: {
+        title: "Sessions actives",
+        currentSession: "Session actuelle",
+        lastActivity: "Dernière activité : Maintenant",
+        active: "Active",
+        closeAllSessions: "Fermer toutes les sessions"
+      }
     }
   },
   

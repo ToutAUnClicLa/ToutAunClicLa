@@ -2,23 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ProductCard } from './ProductCard';
-import { 
-  getProductsByCategory, 
-  getSubcategories,
-  type ProductFilters,
-  Product,
-  FormattedProduct,
-  formatProduct
-} from '@/lib/services/products';
+import { Package, Utensils, Store, Filter, Search, Grid, List, Clock, Shield, Truck, X } from 'lucide-react';
+import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useProducts, useProductsByCategory } from '@/hooks/useProducts';
+import { useSubcategories } from '@/hooks/useCategories';
+import { ProductCard } from './ProductCard';
+import { Product, ProductFilters } from '@/lib/services/products';
+import { Subcategory } from '@/lib/services/categories';
+import { Button } from '@/components/common/ui/button';
 import { Input } from '@/components/common/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/ui/select';
-import { Button } from '@/components/common/ui/button';
-import { Search, Package, ShoppingBag, Store, Truck, Shield, Clock, Filter, Utensils } from 'lucide-react';
+import { Badge } from '@/components/common/ui/badge';
+import { Skeleton } from '@/components/common/ui/skeleton';
+import { Card, CardContent } from '@/components/common/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/common/ui/sheet';
+import { StateDisplay } from '@/components/common/StateDisplay';
+import { Pagination } from '@/components/common/Pagination';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 
 const container = {  
   hidden: { opacity: 0 },
@@ -66,77 +67,95 @@ interface ProductListProps {
   categoryName: CategoryName;
   title: string;
   initialSubcategory?: number | null;
+  showHeader?: boolean;
 }
 
-export function ProductList({ categoryId, categoryName, title, initialSubcategory = null }: ProductListProps) {
+export function ProductList({ 
+  categoryId, 
+  categoryName, 
+  title, 
+  initialSubcategory = null, 
+  showHeader = true 
+}: ProductListProps) {
   const { t } = useTranslation();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [subcategories, setSubcategories] = useState<any[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState<ProductFilters>({
+    category: typeof categoryId === 'string' ? parseInt(categoryId) : categoryId,
+    subcategory: initialSubcategory || undefined,
     search: '',
-    subcategory: initialSubcategory,
-    minPrice: 0,
-    maxPrice: 100,
-    sortBy: 'nameAsc'
+    page: 1,
+    limit: 20,
+    sortBy: 'fecha_creacion',
+    sortOrder: 'desc'
   });
+
+  // Usar el hook de productos con los filtros actuales
+  const { products, pagination, loading, error, refetch } = useProducts(filters);
+  
+  // Obtener subcategorías para filtros
+  const { 
+    subcategories, 
+    loading: subcategoriesLoading 
+  } = useSubcategories(typeof categoryId === 'string' ? parseInt(categoryId) : categoryId);
 
   const colors = categoryColors[categoryName];
   const Icon = categoryIcons[categoryName];
 
+  // Actualizar filtros cuando cambie la subcategoría inicial
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        const categoryIdNumber = typeof categoryId === 'string' ? parseInt(categoryId) : categoryId;
-        const [productsData, subcategoriesData] = await Promise.all([
-          getProductsByCategory(categoryIdNumber, filters),
-          getSubcategories(categoryIdNumber)
-        ]);
-
-        // Formatear los productos para que coincidan con la interfaz Product
-        const formattedProducts = productsData.map((product: any) => ({
-          id: Number(product.id),
-          nombre: product.nombre,
-          descripcion: product.descripcion,
-          precio: Number(product.precio),
-          imagen_principal: product.imagen_principal,
-          stock: Number(product.stock),
-          categoria_id: Number(product.categoria_id),
-          subcategoria_id: Number(product.subcategoria_id),
-          rating: Number(product.rating || 0),
-          reviewCount: product.reviews?.length || 0,
-          subcategorias: {
-            nombre: product.subcategorias?.[0]?.nombre || ''
-          },
-          categorias: {
-            nombre: product.categorias?.[0]?.nombre || ''
-          },
-          reviews: product.reviews || []
-        }));
-
-        setProducts(formattedProducts);
-        setSubcategories(subcategoriesData);
-      } catch (error) {
-        console.error('Error loading data:', error);
-        toast.error(t('catalog.productList.noProductsMessage'));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
-  }, [categoryId, filters]);
-
-  useEffect(() => {
-    if (initialSubcategory !== null) {
+    if (initialSubcategory !== null && initialSubcategory !== filters.subcategory) {
       setFilters(prev => ({
         ...prev,
-        subcategory: initialSubcategory
+        subcategory: initialSubcategory,
+        page: 1
       }));
     }
-  }, [initialSubcategory]);
+  }, [initialSubcategory, filters.subcategory]);
+
+  const handleFilterChange = (key: keyof ProductFilters, value: any) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value,
+      page: 1 // Reset to first page when filters change
+    }));
+  };
+
+  const handleSearch = (searchTerm: string) => {
+    handleFilterChange('search', searchTerm);
+  };
+
+  const handlePageChange = (page: number) => {
+    setFilters(prev => ({ ...prev, page }));
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      category: typeof categoryId === 'string' ? parseInt(categoryId) : categoryId,
+      search: '',
+      subcategory: undefined,
+      page: 1,
+      limit: 20,
+      sortBy: 'fecha_creacion',
+      sortOrder: 'desc'
+    });
+  };
+
+  const LoadingSkeleton = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <Card key={i} className="overflow-hidden">
+          <Skeleton className="aspect-square w-full" />
+          <CardContent className="p-4 space-y-2">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/2" />
+            <Skeleton className="h-6 w-1/4" />
+            <Skeleton className="h-9 w-full" />
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
 
   const FilterContent = () => (
     <div className="space-y-6">
@@ -144,10 +163,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
         <label className="text-sm font-medium mb-2 block">{t('catalog.productList.subcategory')}</label>
         <Select
           value={filters.subcategory?.toString() || "all"}
-          onValueChange={(value) => setFilters(prev => ({ 
-            ...prev, 
-            subcategory: value === "all" ? null : parseInt(value)
-          }))}
+          onValueChange={(value) => handleFilterChange('subcategory', value === "all" ? undefined : parseInt(value))}
         >
           <SelectTrigger>
             <SelectValue placeholder={t('catalog.productList.allSubcategories')} />
@@ -188,16 +204,7 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
 
       <Button 
         className="w-full"
-        onClick={() => {
-          setFilters({
-            search: '',
-            subcategory: null,
-            minPrice: 0,
-            maxPrice: 100,
-            sortBy: 'nameAsc'
-          });
-          setIsFilterOpen(false);
-        }}
+        onClick={handleClearFilters}
       >
         {t('catalog.productList.clearFilters')}
       </Button>
@@ -223,24 +230,26 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
   ];
 
   return (
-    <div className={cn("min-h-screen py-6", colors.bg)}>
-      <div className="container">
-        <div className="flex items-center gap-3 mb-6">
-          <Icon className={cn("h-6 w-6", colors.text)} />
-          <div>
-            <h1 className="text-2xl font-bold">{title}</h1>
-            <p className="text-sm text-gray-600">
-              {categoryName === 'productos' 
-                ? t('catalog.productList.productsSubtitle')
-                : categoryName === 'comidas'
-                ? t('catalog.productList.comidasSubtitle')
-                : t('catalog.productList.boutiqueSubtitle')
-              }
-            </p>
+    <div className={cn("min-h-screen py-6", showHeader ? colors.bg : 'bg-white')}>
+      <div className={showHeader ? "container" : "max-w-7xl mx-auto px-4"}>
+        {showHeader && (
+          <div className="flex items-center gap-3 mb-6">
+            <Icon className={cn("h-6 w-6", colors.text)} />
+            <div>
+              <h1 className="text-2xl font-bold">{title}</h1>
+              <p className="text-sm text-gray-600">
+                {categoryName === 'productos' 
+                  ? t('catalog.productList.productsSubtitle')
+                  : categoryName === 'comidas'
+                  ? t('catalog.productList.comidasSubtitle')
+                  : t('catalog.productList.boutiqueSubtitle')
+                }
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           <div className="hidden lg:block w-64 flex-shrink-0 space-y-6">
             <div className={cn("p-4 rounded-lg border", colors.border)}>
               <h3 className="font-semibold mb-4">{t('catalog.productList.filters')}</h3>
@@ -264,76 +273,93 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
           </div>
 
           <div className="flex-1">
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4 sm:mb-6">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   type="search"
                   placeholder={t('catalog.productList.searchPlaceholder')}
-                  className="pl-10"
+                  className="pl-10 h-10 sm:h-auto"
                   value={filters.search}
                   onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                 />
               </div>
 
-              <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" className="lg:hidden">
-                    <Filter className="h-4 w-4 mr-2" />
-                    {t('catalog.productList.filters')}
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="bottom" className="h-[80vh]">
-                  <SheetHeader>
-                    <SheetTitle>{t('catalog.productList.filters')}</SheetTitle>
-                  </SheetHeader>
-                  <div className="mt-4">
-                    <FilterContent />
-                  </div>
-                </SheetContent>
-              </Sheet>
+              <div className="flex gap-2">
+                <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="lg:hidden flex-1 sm:flex-none h-10 sm:h-auto">
+                      <Filter className="h-4 w-4 mr-2" />
+                      {t('catalog.productList.filters')}
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="h-[80vh]">
+                    <SheetHeader>
+                      <SheetTitle>{t('catalog.productList.filters')}</SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-4">
+                      <FilterContent />
+                    </div>
+                  </SheetContent>
+                </Sheet>
 
-              <Select
-                value={filters.sortBy}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, sortBy: value as ProductFilters['sortBy'] }))}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder={t('catalog.productList.sortBy')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="nameAsc">{t('catalog.productList.sortOptions.nameAsc')}</SelectItem>
-                  <SelectItem value="nameDesc">{t('catalog.productList.sortOptions.nameDesc')}</SelectItem>
-                  <SelectItem value="priceAsc">{t('catalog.productList.sortOptions.priceAsc')}</SelectItem>
-                  <SelectItem value="priceDesc">{t('catalog.productList.sortOptions.priceDesc')}</SelectItem>
-                </SelectContent>
-              </Select>
+                <Select
+                  value={filters.sortBy}
+                  onValueChange={(value) => setFilters(prev => ({ ...prev, sortBy: value as ProductFilters['sortBy'] }))}
+                >
+                  <SelectTrigger className="w-[120px] sm:w-[180px] h-10 sm:h-auto">
+                    <SelectValue placeholder={t('catalog.productList.sortBy')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="nameAsc">{t('catalog.productList.sortOptions.nameAsc')}</SelectItem>
+                    <SelectItem value="nameDesc">{t('catalog.productList.sortOptions.nameDesc')}</SelectItem>
+                    <SelectItem value="priceAsc">{t('catalog.productList.sortOptions.priceAsc')}</SelectItem>
+                    <SelectItem value="priceDesc">{t('catalog.productList.sortOptions.priceDesc')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            {isLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 sm:gap-6">
-                {[...Array(8)].map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="bg-gray-200 rounded-xl aspect-square"></div>
-                    <div className="mt-4 space-y-3">
-                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            {loading ? (
+              <StateDisplay 
+                type="loading" 
+                itemsCount={8}
+                variant="grid"
+              />
+            ) : error ? (
+              <StateDisplay 
+                type="error" 
+                title="Error al cargar productos"
+                message={error}
+                onRetry={refetch}
+                retryLabel="Intentar de nuevo"
+              />
+            ) : products.length === 0 ? (
+              <StateDisplay 
+                type="empty" 
+                title="No se encontraron productos"
+                message="Intenta ajustar tus filtros o buscar con otros términos."
+                onRetry={handleClearFilters}
+                retryLabel="Limpiar filtros"
+              />
             ) : (
               <AnimatePresence>
                 <motion.div 
                   variants={container}
                   initial="hidden"
                   animate="show"
-                  className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 sm:gap-6"
+                  className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6"
                 >
                   {products.map((product) => (
                     <motion.div key={product.id} variants={item}>
                       <ProductCard
-                        product={formatProduct(product, categoryName)}
+                        product={product}
                         categoryName={categoryName}
+                        variant="default"
+                        showCategory={showHeader}
+                        showRating={true}
+                        showSubcategory={categoryName === 'comidas'}
+                        className="h-full"
                       />
                     </motion.div>
                   ))}
@@ -341,11 +367,17 @@ export function ProductList({ categoryId, categoryName, title, initialSubcategor
               </AnimatePresence>
             )}
 
-            {products.length === 0 && !isLoading && (
-              <div className="text-center py-12">
-                <p className="text-gray-500">{t('catalog.productList.noProducts')}</p>
-                <p className="text-sm text-gray-400 mt-1">{t('catalog.productList.tryDifferentFilters')}</p>
-              </div>
+            {/* Paginación */}
+            {pagination && pagination.totalPages > 1 && !loading && (
+              <Pagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                totalItems={pagination.totalItems}
+                itemsPerPage={pagination.itemsPerPage}
+                onPageChange={handlePageChange}
+                disabled={loading}
+                className="mt-8"
+              />
             )}
           </div>
         </div>

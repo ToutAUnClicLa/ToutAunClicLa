@@ -13,9 +13,9 @@ import {ReviewList} from '@/components/features/modules/reviews/ReviewList';
 import { getProductDetail } from '@/lib/services/products';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
+import { cn, getImageUrl } from '@/lib/utils';
 import dynamic from 'next/dynamic';
-import { isFavorite, addToFavorites, removeFromFavorites } from '@/lib/services/favorites';
+import { getFavoriteStatus, addToFavorites, removeFromFavorites } from '@/lib/services/favorites';
 import { addToCart } from '@/lib/services/cart';
 import { useAuth } from '@/hooks/useAuth';
 import AuthModal from '@/components/features/auth/AuthModal';
@@ -91,16 +91,16 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
   ];
 
   const images = [
-    product.imagen_principal,
-    ...(product.imagenes_adicionales || [])
+    getImageUrl(product.imagen_principal),
+    ...(product.imagenes_adicionales || []).map((img: string) => getImageUrl(img))
   ];
 
   // Verificar si el producto está en favoritos al cargar el componente
   const checkFavoriteStatus = useCallback(async () => {
     try {
       if (user) {
-        const favoriteStatus = await isFavorite(product.id);
-        setIsFavorited(favoriteStatus);
+        const favoriteStatus = await getFavoriteStatus(product.id);
+        setIsFavorited(favoriteStatus.isFavorite);
       }
     } catch (error) {
       console.error('Error al verificar estado de favorito:', error);
@@ -400,7 +400,7 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
               >
                 <div className="relative aspect-square rounded-lg overflow-hidden mb-2">
                   <Image
-                    src={relatedProduct.imagen_principal}
+                    src={getImageUrl(relatedProduct.imagen_principal)}
                     alt={relatedProduct.nombre}
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
@@ -451,7 +451,7 @@ export default function ProductDetailPage() {
     }
 
     loadProduct();
-  }, [params.productId]);
+  }, [params.productId, t]);
 
   if (isLoading) {
     return <LoadingState />;
