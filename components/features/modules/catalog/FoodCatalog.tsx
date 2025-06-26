@@ -107,45 +107,40 @@ export function FoodCatalog({ categoryId, initialSubcategory = null }: FoodCatal
             >
               {/* Header mejorado con botón de regreso */}
               <div className="mb-6 sm:mb-8">
+                {/* Título elegante con botón de regreso completamente responsive */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
-                  className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8"
+                  className="relative text-center space-y-3 sm:space-y-4"
                 >
-                  <Button
-                    variant="outline"
-                    onClick={handleBackToRestaurants}
-                    className="inline-flex items-center gap-2 px-4 py-3 h-12 bg-white/90 backdrop-blur-sm border-2 border-orange-200/60 text-orange-700 hover:bg-orange-50 hover:border-orange-300 focus:ring-4 focus:ring-orange-100 transition-all duration-300 rounded-xl shadow-md hover:shadow-lg font-medium"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span>{t('catalog.foodCatalog.backToRestaurants')}</span>
-                  </Button>
-                  
-                  <div className="flex items-center gap-2 px-3 py-2 bg-orange-50/80 rounded-lg border border-orange-200/40">
-                    <ChefHat className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
-                    <span className="text-sm sm:text-base font-medium text-gray-700">
-                      {selectedRestaurant?.name || t('catalog.foodCatalog.selectedRestaurant')}
-                    </span>
+                  {/* Botón de regreso responsive - esquina izquierda en desktop, arriba en mobile */}
+                  <div className="absolute left-0 top-0 z-10 sm:left-0 sm:top-0">
+                    <Button
+                      variant="ghost"
+                      onClick={handleBackToRestaurants}
+                      className="inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-2 h-7 sm:h-8 text-xs sm:text-sm text-gray-600 hover:text-orange-600 hover:bg-orange-50/50 transition-all duration-200 rounded-lg font-medium touch-target-large"
+                    >
+                      <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                      <span className="hidden xs:inline sm:inline">{t('catalog.foodCatalog.backToRestaurants')}</span>
+                      <span className="xs:hidden sm:hidden">Volver</span>
+                    </Button>
                   </div>
-                </motion.div>
 
-                {/* Título elegante para la vista de productos */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                  className="text-center space-y-3 sm:space-y-4"
-                >
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-                    {t('catalog.foodCatalog.menuTitle')} {selectedRestaurant?.name}
-                  </h1>
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="h-1 w-12 sm:w-16 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full" />
-                    <p className="text-sm sm:text-base lg:text-lg text-gray-600 px-2">
+                  {/* Título principal - responsive con padding adaptativo */}
+                  <div className="pt-8 sm:pt-6 md:pt-4 px-4 sm:px-6">
+                    <h1 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight break-words">
+                      {t('catalog.foodCatalog.menuTitle')} {selectedRestaurant?.name}
+                    </h1>
+                  </div>
+                  
+                  {/* Subtítulo con decoración - responsive */}
+                  <div className="flex items-center justify-center gap-2 px-4 sm:px-6">
+                    <div className="h-0.5 sm:h-1 w-8 sm:w-12 md:w-16 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full flex-shrink-0" />
+                    <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600 px-2 text-center leading-relaxed">
                       {t('catalog.foodCatalog.menuSubtitle')}
                     </p>
-                    <div className="h-1 w-12 sm:w-16 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full" />
+                    <div className="h-0.5 sm:h-1 w-8 sm:w-12 md:w-16 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full flex-shrink-0" />
                   </div>
                 </motion.div>
               </div>

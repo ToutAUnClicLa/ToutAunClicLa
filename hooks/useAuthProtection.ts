@@ -2,7 +2,7 @@
 
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 /**
  * Hook simple para proteger acciones que requieren autenticación
@@ -13,28 +13,39 @@ export function useAuthProtection() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
 
+  // Referencias estables para evitar re-renders infinitos
+  const authRef = useRef({ isAuthenticated, user });
+
+  // Actualizar referencias cuando cambien los valores
+  useEffect(() => {
+    authRef.current = { isAuthenticated, user };
+  }, [isAuthenticated, user]);
+
   /**
    * Verifica si el usuario puede realizar acciones
    */
-  const canPerformAction = () => {
-    return isAuthenticated && user?.verified;
-  };
+  const canPerformAction = useCallback(() => {
+    const { isAuthenticated: auth, user: currentUser } = authRef.current;
+    return auth && currentUser?.verified;
+  }, []);
 
   /**
    * Ejecuta una acción solo si el usuario está autenticado y verificado
    */
-  const executeProtected = (
+  const executeProtected = useCallback((
     action: () => void | Promise<void>,
     errorMessage = "Debes iniciar sesión para realizar esta acción"
   ) => {
-    if (!isAuthenticated || !user) {
+    const { isAuthenticated: auth, user: currentUser } = authRef.current;
+    
+    if (!auth || !currentUser) {
       toast.error(errorMessage);
       setAuthModalMode('login');
       setIsAuthModalOpen(true);
       return false;
     }
     
-    if (!user.verified) {
+    if (!currentUser.verified) {
       toast.error("Debes verificar tu cuenta para realizar esta acción");
       setAuthModalMode('login');
       setIsAuthModalOpen(true);
@@ -43,21 +54,21 @@ export function useAuthProtection() {
     
     action();
     return true;
-  };
+  }, []);
 
   /**
    * Para favoritos específicamente
    */
-  const executeForFavorites = (action: () => void | Promise<void>) => {
+  const executeForFavorites = useCallback((action: () => void | Promise<void>) => {
     return executeProtected(action, "Inicia sesión para gestionar tus favoritos");
-  };
+  }, [executeProtected]);
 
   /**
    * Para carrito específicamente
    */
-  const executeForCart = (action: () => void | Promise<void>) => {
+  const executeForCart = useCallback((action: () => void | Promise<void>) => {
     return executeProtected(action, "Inicia sesión para agregar productos al carrito");
-  };
+  }, [executeProtected]);
 
   return {
     // Estado
@@ -73,7 +84,7 @@ export function useAuthProtection() {
     // Modal de autenticación
     isAuthModalOpen,
     authModalMode,
-    openAuthModal: () => setIsAuthModalOpen(true),
-    closeAuthModal: () => setIsAuthModalOpen(false),
+    openAuthModal: useCallback(() => setIsAuthModalOpen(true), []),
+    closeAuthModal: useCallback(() => setIsAuthModalOpen(false), []),
   };
 }

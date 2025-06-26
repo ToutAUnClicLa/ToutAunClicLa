@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useAuth } from './useAuth';
 import { useAuthProtection } from './useAuthProtection';
 import * as favoritesService from '@/lib/services/favorites';
@@ -23,14 +23,30 @@ export function useFavorites() {
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
 
+  // Referencias estables para evitar re-renders infinitos
+  const authRef = useRef({ isAuthenticated, user });
+  const loadingRef = useRef(false);
+
+  // Actualizar referencias cuando cambien los valores
+  useEffect(() => {
+    authRef.current = { isAuthenticated, user };
+  }, [isAuthenticated, user]);
+
   // Cargar favoritos cuando el usuario esté autenticado
   const loadFavorites = useCallback(async () => {
-    if (!canPerformAction()) {
+    const { isAuthenticated: auth, user: currentUser } = authRef.current;
+    
+    if (!auth || !currentUser?.verified) {
       setFavoriteIds(new Set());
       return;
     }
 
+    if (loadingRef.current) {
+      return; // Evitar múltiples cargas simultáneas
+    }
+
     try {
+      loadingRef.current = true;
       setIsLoading(true);
       const response = await favoritesService.getFavorites();
       const ids = new Set(response.favorites.map((fav: favoritesService.FavoriteItem) => fav.producto_id.toString()));
@@ -40,8 +56,9 @@ export function useFavorites() {
       setFavoriteIds(new Set());
     } finally {
       setIsLoading(false);
+      loadingRef.current = false;
     }
-  }, [canPerformAction]);
+  }, []);
 
   useEffect(() => {
     loadFavorites();
@@ -53,7 +70,11 @@ export function useFavorites() {
       setIsLoading(true);
       try {
         await favoritesService.addToFavorites(parseInt(productId));
-        setFavoriteIds(prev => new Set(Array.from(prev).concat(productId)));
+        setFavoriteIds(prev => {
+          const newIds = new Set(prev);
+          newIds.add(productId);
+          return newIds;
+        });
         toast.success('Producto agregado a favoritos');
       } catch (error: any) {
         toast.error(error.message || 'Error al agregar a favoritos');
@@ -71,8 +92,9 @@ export function useFavorites() {
       try {
         await favoritesService.removeFromFavorites(parseInt(productId));
         setFavoriteIds(prev => {
-          const newIds = Array.from(prev).filter(id => id !== productId);
-          return new Set(newIds);
+          const newIds = new Set(prev);
+          newIds.delete(productId);
+          return newIds;
         });
         toast.success('Producto removido de favoritos');
       } catch (error: any) {
@@ -84,17 +106,40 @@ export function useFavorites() {
     });
   }, [executeForFavorites]);
 
-  // Toggle favorito
+  // Toggle favorito - usar useCallback estable
   const toggleFavorite = useCallback(async (productId: string) => {
-    const isFav = favoriteIds.has(productId);
-    if (isFav) {
-      return await removeFromFavorites(productId);
-    } else {
-      return await addToFavorites(productId);
-    }
-  }, [favoriteIds, addToFavorites, removeFromFavorites]);
+    return executeForFavorites(async () => {
+      const isFav = favoriteIds.has(productId);
+      setIsLoading(true);
+      
+      try {
+        if (isFav) {
+          await favoritesService.removeFromFavorites(parseInt(productId));
+          setFavoriteIds(prev => {
+            const newIds = new Set(prev);
+            newIds.delete(productId);
+            return newIds;
+          });
+          toast.success('Producto removido de favoritos');
+        } else {
+          await favoritesService.addToFavorites(parseInt(productId));
+          setFavoriteIds(prev => {
+            const newIds = new Set(prev);
+            newIds.add(productId);
+            return newIds;
+          });
+          toast.success('Producto agregado a favoritos');
+        }
+      } catch (error: any) {
+        toast.error(error.message || 'Error al gestionar favoritos');
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    });
+  }, [executeForFavorites, favoriteIds]);
 
-  // Verificar si un producto es favorito
+  // Verificar si un producto es favorito - memoizado con referencia estable
   const isFavorite = useCallback((productId: string) => {
     return favoriteIds.has(productId);
   }, [favoriteIds]);
