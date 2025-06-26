@@ -106,9 +106,7 @@ export function ProductCard({
   };
 
   const getProductUrl = () => {
-    if (product.subcategoria_id && categoryName === 'comidas') {
-      return `/comidas/${product.subcategoria_id}/${product.id}`;
-    }
+    // Para todas las categorías, usar la estructura estándar: /categoria/productId
     return `/${categoryName}/${product.id}`;
   };
 
