@@ -20,7 +20,6 @@ export default function SettingsPage() {
   const router = useRouter();
   const { 
     user, 
-    userData,
     isLoading 
   } = useAuth();
   const [darkMode, setDarkMode] = useState(false);

@@ -2,13 +2,12 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useAuth } from './useAuth';
-import { useAuthProtection } from './useAuthProtection';
+import { useAuthProtection } from './useAuthGuard';
 import * as favoritesService from '@/lib/services/favorites';
 import { toast } from 'sonner';
 
 /**
- * Hook para manejar favoritos con protección de autenticación integrada
- * Proporciona funcionalidades completas para gestión de favoritos con validación automática
+ * Hook optimizado para manejar favoritos con protección de autenticación
  */
 export function useFavorites() {
   const { isAuthenticated, user } = useAuth();

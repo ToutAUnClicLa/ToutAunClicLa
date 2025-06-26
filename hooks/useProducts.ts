@@ -2,7 +2,7 @@
  * Hook personalizado para productos con soporte completo para categorías y subcategorías
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Product, 
   ProductsResponse, 
@@ -48,12 +48,24 @@ export function useProducts(filters: ProductFilters = {}): UseProductsReturn {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Usar useRef para evitar re-creaciones innecesarias del callback
+  const filtersRef = useRef(filters);
+  const isInitialMount = useRef(true);
+
+  // Solo actualizar la ref si los filtros realmente cambiaron
+  useEffect(() => {
+    const filtersChanged = JSON.stringify(filtersRef.current) !== JSON.stringify(filters);
+    if (filtersChanged) {
+      filtersRef.current = filters;
+    }
+  }, [filters]);
 
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await productsService.getProducts(filters);
+      const data = await productsService.getProducts(filtersRef.current);
       setProducts(data.products);
       setPagination(data.pagination);
     } catch (err: any) {
@@ -62,11 +74,20 @@ export function useProducts(filters: ProductFilters = {}): UseProductsReturn {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(filters)]);
+  }, []);
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    // Solo hacer la llamada inicial o cuando los filtros cambiaron realmente
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      fetchProducts();
+    } else {
+      const filtersChanged = JSON.stringify(filtersRef.current) !== JSON.stringify(filters);
+      if (filtersChanged) {
+        fetchProducts();
+      }
+    }
+  }, [filters, fetchProducts]);
 
   return {
     products,

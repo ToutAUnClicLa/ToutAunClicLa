@@ -2,7 +2,7 @@
  * Hook personalizado para manejar categorías y subcategorías
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Category, 
   Subcategory, 
@@ -72,14 +72,18 @@ export function useSubcategories(categoryId?: number): UseSubcategoriesReturn {
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Usar useRef para evitar llamadas innecesarias
+  const categoryIdRef = useRef(categoryId);
+  const isInitialMount = useRef(true);
 
-  const fetchSubcategories = useCallback(async () => {
+  const fetchSubcategories = useCallback(async (id?: number) => {
     try {
       setLoading(true);
       setError(null);
       
-      const data = categoryId 
-        ? await categoriesService.getSubcategoriesByCategory(categoryId)
+      const data = id 
+        ? await categoriesService.getSubcategoriesByCategory(id)
         : await categoriesService.getAllSubcategories();
       
       setSubcategories(data);
@@ -89,11 +93,16 @@ export function useSubcategories(categoryId?: number): UseSubcategoriesReturn {
     } finally {
       setLoading(false);
     }
-  }, [categoryId]);
+  }, []);
 
   useEffect(() => {
-    fetchSubcategories();
-  }, [fetchSubcategories]);
+    // Solo hacer la llamada inicial o cuando categoryId cambie realmente
+    if (isInitialMount.current || categoryIdRef.current !== categoryId) {
+      isInitialMount.current = false;
+      categoryIdRef.current = categoryId;
+      fetchSubcategories(categoryId);
+    }
+  }, [categoryId, fetchSubcategories]);
 
   return {
     subcategories,

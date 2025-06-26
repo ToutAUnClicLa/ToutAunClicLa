@@ -36,7 +36,6 @@ export default function NotificationsPage() {
   const router = useRouter();
   const { 
     user,
-    userData,
     isLoading 
   } = useAuth();
   const [settings, setSettings] = useState<Record<string, boolean>>({});

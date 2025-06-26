@@ -433,6 +433,60 @@ export default {
         loginRequired: "Vous devez vous connecter pour continuer"
       }
     },
+
+    // FoodCatalog
+    foodCatalog: {
+      title: "Cuisines Traditionnelles",
+      subtitle: "Saveurs authentiques de toute l'Amérique latine - Gastronomie traditionnelle à Montréal",
+      whyChooseUs: "Pourquoi nous choisir?",
+      whyChooseUsDesc: "La meilleure expérience culinaire de Montréal",
+      restaurantsAvailable: "restaurants disponibles",
+      selectRestaurant: "Sélectionnez votre restaurant favori",
+      availableRestaurants: "Restaurants Disponibles",
+      exploreAllFlavors: "Explorer toutes les saveurs",
+      noRestaurants: "Aucun restaurant disponible",
+      comingSoon: "Bientôt, nous aurons plus de restaurants disponibles dans votre région.",
+      backToRestaurants: "Retour aux restaurants",
+      restaurantMenu: "Menu de {name}",
+      menuTitle: "Menu de",
+      menuSubtitle: "Découvrez les plats authentiques et traditionnels",
+      authenticDishes: "Découvrez les plats authentiques et traditionnels",
+      openNow: "Ouvert",
+      closedNow: "Fermé",
+      popular: "Populaire",
+      viewMenu: "Voir le menu",
+      viewFullMenu: "Voir le menu complet",
+      contactUs: "Vous ne trouvez pas votre restaurant favori? Contactez-nous pour ajouter plus d'options.",
+      deliveryTime: "min",
+      reviews: "avis",
+      selectedRestaurant: "Restaurant sélectionné",
+      searchPlaceholder: "Rechercher des restaurants...",
+      sortByRating: "Par note",
+      sortByName: "Par nom",
+      sortByTime: "Par temps",
+      filterAll: "Tous",
+      filterNew: "Nouveaux",
+      filterTopRated: "Mieux notés"
+    },
+
+    // RestaurantList
+    restaurantList: {
+      errorTitle: "Erreur lors du chargement des restaurants",
+      errorDesc: "Une erreur s'est produite lors du chargement de la liste des restaurants. Veuillez réessayer.",
+      noRestaurants: "Aucun restaurant disponible",
+      noRestaurantsDesc: "Nous aurons bientôt plus d'options de cuisine traditionnelle pour vous.",
+      viewMenu: "Voir le menu",
+      available: "Disponible",
+      rating: "note",
+      openNow: "Ouvert maintenant",
+      popular: "Populaire",
+      verified: "Vérifié",
+      cuisine: "Cuisine",
+      addToFavorites: "Ajouter aux favoris",
+      removeFromFavorites: "Retirer des favoris",
+      viewMenuFor: "Voir le menu de",
+      noDescription: "Découvrez les saveurs uniques de ce restaurant"
+    },
     
     // ProductDetail
     productDetail: {

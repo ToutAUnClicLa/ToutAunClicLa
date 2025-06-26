@@ -98,7 +98,6 @@ export default function ProfilePage() {
   const { t } = useTranslation();
   const { 
     user, 
-    userData,
     isLoading,
     isAuthenticated,
     error,

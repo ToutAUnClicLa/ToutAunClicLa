@@ -16,7 +16,6 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { 
     user, 
-    userData,
     isLoading, 
     isAuthenticated 
   } = useAuth();

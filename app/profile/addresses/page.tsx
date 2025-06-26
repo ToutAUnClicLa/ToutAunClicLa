@@ -39,7 +39,6 @@ export default function AddressesPage() {
   const router = useRouter();
   const { 
     user, 
-    userData, 
     isLoading,
     isAuthenticated
   } = useAuth();

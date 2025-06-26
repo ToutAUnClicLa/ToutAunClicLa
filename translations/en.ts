@@ -433,6 +433,60 @@ export default {
         loginRequired: "You must sign in to continue"
       }
     },
+
+    // FoodCatalog
+    foodCatalog: {
+      title: "Traditional Foods",
+      subtitle: "Authentic flavors from all Latin America - Traditional gastronomy in Montreal",
+      whyChooseUs: "Why choose us?",
+      whyChooseUsDesc: "The best culinary experience in Montreal",
+      restaurantsAvailable: "restaurants available",
+      selectRestaurant: "Select your favorite restaurant",
+      availableRestaurants: "Available Restaurants",
+      exploreAllFlavors: "Explore all flavors",
+      noRestaurants: "No restaurants available",
+      comingSoon: "Coming soon, we'll have more restaurants available in your area.",
+      backToRestaurants: "Back to restaurants",
+      restaurantMenu: "Menu of {name}",
+      menuTitle: "Menu of",
+      menuSubtitle: "Discover authentic and traditional dishes",
+      authenticDishes: "Discover authentic and traditional dishes",
+      openNow: "Open",
+      closedNow: "Closed",
+      popular: "Popular",
+      viewMenu: "View menu",
+      viewFullMenu: "View full menu",
+      contactUs: "Can't find your favorite restaurant? Contact us to add more options.",
+      deliveryTime: "min",
+      reviews: "reviews",
+      selectedRestaurant: "Selected restaurant",
+      searchPlaceholder: "Search restaurants...",
+      sortByRating: "By rating",
+      sortByName: "By name",
+      sortByTime: "By time",
+      filterAll: "All",
+      filterNew: "New",
+      filterTopRated: "Top rated"
+    },
+
+    // RestaurantList
+    restaurantList: {
+      errorTitle: "Error loading restaurants",
+      errorDesc: "An error occurred while loading the restaurant list. Please try again.",
+      noRestaurants: "No restaurants available",
+      noRestaurantsDesc: "We will soon have more traditional food options for you.",
+      viewMenu: "View menu",
+      available: "Available",
+      rating: "rating",
+      openNow: "Open now",
+      popular: "Popular",
+      verified: "Verified",
+      cuisine: "Cuisine",
+      addToFavorites: "Add to favorites",
+      removeFromFavorites: "Remove from favorites",
+      viewMenuFor: "View menu for",
+      noDescription: "Discover the unique flavors of this restaurant"
+    },
     
     // ProductDetail
     productDetail: {

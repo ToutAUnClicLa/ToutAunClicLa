@@ -6,11 +6,10 @@ import { Footer } from '@/components/shared/layout/Footer';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/common/providers/ThemeProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
-// import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { Suspense } from 'react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
-// import { AuthProvider } from '@/contexts/AuthContext';
 import StructuredData from './schema';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -153,7 +152,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <LanguageProvider>
-          {/* <AuthProvider> */}
+          <AuthProvider>
             <ThemeProvider
               attribute="class"
               defaultTheme="light"
@@ -192,7 +191,7 @@ export default function RootLayout({
                 }}
               />
             </ThemeProvider>
-          {/* </AuthProvider> */}
+          </AuthProvider>
         </LanguageProvider>
         <SpeedInsights />
         <Analytics />

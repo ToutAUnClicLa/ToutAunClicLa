@@ -3,6 +3,8 @@
  * Usa proxy de Next.js en desarrollo, directo en producción
  */
 
+import { apiCache, generateCacheKey } from '@/lib/utils/cache';
+
 // Configuración de URLs - usar proxy en desarrollo, directo en producción
 const isDev = process.env.NODE_ENV === 'development';
 const PRODUCTS_BASE_URL = isDev 
@@ -55,6 +57,12 @@ export interface CategoryWithSubcategories extends Category {
  */
 export async function getCategories(): Promise<Category[]> {
   try {
+    const cacheKey = 'categories';
+    const cachedData = apiCache.get<Category[]>(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     const response = await fetch(`${PRODUCTS_BASE_URL}/categories`, {
       method: 'GET',
       headers: getHeaders(),
@@ -67,7 +75,12 @@ export async function getCategories(): Promise<Category[]> {
       throw new Error(data.message || data.error || `HTTP ${response.status}: Error al obtener categorías`);
     }
 
-    return data.categories || data || [];
+    const result = data.categories || data || [];
+    
+    // Cache por 10 minutos (las categorías cambian poco)
+    apiCache.set(cacheKey, result, 10 * 60 * 1000);
+    
+    return result;
   } catch (error: any) {
     console.error('Error en getCategories:', error);
     throw error;
@@ -79,6 +92,12 @@ export async function getCategories(): Promise<Category[]> {
  */
 export async function getSubcategoriesByCategory(categoryId: number): Promise<Subcategory[]> {
   try {
+    const cacheKey = generateCacheKey('subcategories', { categoryId });
+    const cachedData = apiCache.get<Subcategory[]>(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     const response = await fetch(`${PRODUCTS_BASE_URL}/subcategories?categoryId=${categoryId}`, {
       method: 'GET',
       headers: getHeaders(),
@@ -91,7 +110,12 @@ export async function getSubcategoriesByCategory(categoryId: number): Promise<Su
       throw new Error(data.message || data.error || `HTTP ${response.status}: Error al obtener subcategorías`);
     }
 
-    return data.subcategories || data || [];
+    const result = data.subcategories || data || [];
+    
+    // Cache por 5 minutos
+    apiCache.set(cacheKey, result, 5 * 60 * 1000);
+    
+    return result;
   } catch (error: any) {
     console.error('Error en getSubcategoriesByCategory:', error);
     throw error;

@@ -3,14 +3,19 @@
  * Proporciona acceso unificado a todos los hooks de la aplicación
  */
 
-// Hooks principales
+// Hooks de autenticación
 export { useAuth } from './useAuth';
+export { useAuthProtection } from './useAuthProtection';
+
+// Hooks de datos y funcionalidad
 export { useCart } from './useCart';
+export { useCartCount, useCartSync } from './useCartCount';
 export { useFavorites } from './useFavorites';
+export { useFavoritesList } from './useFavoritesList';
 export { useProducts, useProductsByCategory, useProduct, useRestaurantMenu } from './useProducts';
 export { useCategories, useSubcategories } from './useCategories';
 export { useTranslation } from './useTranslation';
 export { useCatalog } from './useCatalog';
 
-// Re-exportación del hook de toast
+// Utilidades
 export { toast } from './use-toast';

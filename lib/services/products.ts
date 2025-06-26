@@ -3,6 +3,8 @@
  * Usa proxy de Next.js en desarrollo, directo en producción
  */
 
+import { apiCache, generateCacheKey } from '@/lib/utils/cache';
+
 // Configuración de URLs - usar proxy en desarrollo, directo en producción
 const isDev = process.env.NODE_ENV === 'development';
 const PRODUCTS_BASE_URL = isDev 
@@ -164,6 +166,15 @@ export interface ProductFilters {
  */
 export async function getProducts(filters: ProductFilters = {}): Promise<ProductsResponse> {
   try {
+    // Generar clave de cache basada en los filtros
+    const cacheKey = generateCacheKey('products', filters);
+    
+    // Verificar si tenemos datos en cache
+    const cachedData = apiCache.get<ProductsResponse>(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     const params = new URLSearchParams();
     
     // Agregar filtros como query parameters
@@ -199,10 +210,15 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
       averageRating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
     }));
 
-    return {
+    const result = {
       products: mappedProducts,
       pagination: data.pagination
     };
+
+    // Guardar en cache por 3 minutos
+    apiCache.set(cacheKey, result, 3 * 60 * 1000);
+
+    return result;
   } catch (error: any) {
     console.error('Error en getProducts:', error);
     throw error;

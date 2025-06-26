@@ -59,7 +59,7 @@ export function AnimatedSections({ sampleProducts, subcategories }: AnimatedSect
               <CategoryCard 
                 title="Products"
                 description="Everything you need for your home and more"
-                href="/products"
+                href="/productos"
                 icon={<Package className="h-10 w-10 text-indigo-600" />}
                 color="bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-950/60"
                 textColor="text-indigo-600 dark:text-indigo-400"
@@ -70,7 +70,7 @@ export function AnimatedSections({ sampleProducts, subcategories }: AnimatedSect
               <CategoryCard 
                 title="Food"
                 description="Fresh and delicious food delivered to your door"
-                href="/food"
+                href="/comidas"
                 icon={<Utensils className="h-10 w-10 text-amber-600" />}
                 color="bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/60"
                 textColor="text-amber-600 dark:text-amber-400"

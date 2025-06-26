@@ -1,10 +1,19 @@
 /**
  * Servicio de autenticación que se conecta al backend
  * Base URL: https://backendtoutaunclicla-production.up.railway.app/api/v1/auth
+ * 
+ * Este servicio está preparado para funcionar tanto con localStorage como con cookies HttpOnly
  */
 
 // Configuración para usar siempre el backend de producción
 const AUTH_BASE_URL = 'https://backendtoutaunclicla-production.up.railway.app/api/v1/auth';
+
+// Configuración de autenticación
+const AUTH_CONFIG = {
+  TOKEN_KEY: 'auth_token',
+  PENDING_EMAIL_KEY: 'pending_verification_email',
+  USE_HTTP_ONLY_COOKIES: false, // Cambiar a true cuando migres a cookies
+};
 
 // Headers comunes para todas las requests
 const getHeaders = () => {
@@ -15,6 +24,54 @@ const getHeaders = () => {
     'Referer': 'https://toutaunclicla.com',
   };
 };
+
+/**
+ * Abstracción para manejo de tokens - preparado para localStorage y cookies
+ */
+class TokenManager {
+  private static setToken(token: string): void {
+    if (AUTH_CONFIG.USE_HTTP_ONLY_COOKIES) {
+      // En el futuro: hacer request al backend para set cookie
+      console.log('Setting token via HTTP-only cookie (not implemented yet)');
+    } else {
+      localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, token);
+    }
+  }
+
+  private static getToken(): string | null {
+    if (AUTH_CONFIG.USE_HTTP_ONLY_COOKIES) {
+      // En el futuro: el token vendrá automáticamente en las cookies
+      return null; // Las cookies se manejan automáticamente
+    } else {
+      return localStorage.getItem(AUTH_CONFIG.TOKEN_KEY);
+    }
+  }
+
+  private static removeToken(): void {
+    if (AUTH_CONFIG.USE_HTTP_ONLY_COOKIES) {
+      // En el futuro: hacer request al backend para clear cookie
+      console.log('Removing token via HTTP-only cookie (not implemented yet)');
+    } else {
+      localStorage.removeItem(AUTH_CONFIG.TOKEN_KEY);
+    }
+  }
+
+  static saveToken(token: string): void {
+    this.setToken(token);
+  }
+
+  static retrieveToken(): string | null {
+    return this.getToken();
+  }
+
+  static clearToken(): void {
+    this.removeToken();
+  }
+
+  static hasToken(): boolean {
+    return !!this.getToken();
+  }
+}
 
 export interface User {
   id: string;
@@ -63,9 +120,9 @@ export async function registerUser(userData: RegisterData): Promise<AuthResponse
       throw new Error(data.message || data.error || 'Error al registrar usuario');
     }
 
-    // Guardar token en localStorage
+    // Guardar token usando TokenManager
     if (data.token) {
-      localStorage.setItem('auth_token', data.token);
+      TokenManager.saveToken(data.token);
     }
 
     // Guardar email pendiente de verificación
@@ -102,9 +159,9 @@ export async function loginUser(loginData: LoginData): Promise<AuthResponse> {
       throw new Error(data.message || data.error || 'Error al iniciar sesión');
     }
 
-    // Guardar token en localStorage
+    // Guardar token usando TokenManager
     if (data.token) {
-      localStorage.setItem('auth_token', data.token);
+      TokenManager.saveToken(data.token);
     }
 
     return data;
@@ -133,7 +190,7 @@ export async function verifyEmail(code: string, email: string): Promise<AuthResp
 
     // Actualizar token si se proporciona uno nuevo
     if (data.token) {
-      localStorage.setItem('auth_token', data.token);
+      TokenManager.saveToken(data.token);
     }
 
     // Limpiar email pendiente de verificación
@@ -200,7 +257,7 @@ export async function checkVerificationStatus(email: string): Promise<{ verified
  */
 export async function getUserProfile(): Promise<{ user: User }> {
   try {
-    const token = localStorage.getItem('auth_token');
+    const token = TokenManager.retrieveToken();
     
     if (!token) {
       throw new Error('No hay token de autenticación');
@@ -221,7 +278,7 @@ export async function getUserProfile(): Promise<{ user: User }> {
     if (!response.ok) {
       if (response.status === 401) {
         // Token expirado o inválido
-        localStorage.removeItem('auth_token');
+        TokenManager.clearToken();
         throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.');
       }
       throw new Error(data.message || data.error || 'Error al obtener perfil');
@@ -238,22 +295,21 @@ export async function getUserProfile(): Promise<{ user: User }> {
  * Cerrar sesión
  */
 export function logout(): void {
-  localStorage.removeItem('auth_token');
+  TokenManager.clearToken();
 }
 
 /**
  * Verificar si el usuario está autenticado
  */
 export function isAuthenticated(): boolean {
-  const token = localStorage.getItem('auth_token');
-  return !!token;
+  return TokenManager.hasToken();
 }
 
 /**
  * Obtener token actual
  */
 export function getAuthToken(): string | null {
-  return localStorage.getItem('auth_token');
+  return TokenManager.retrieveToken();
 }
 
 /**
@@ -280,19 +336,19 @@ export async function checkEmailExists(email: string): Promise<boolean> {
  * Guardar email pendiente de verificación
  */
 export function setPendingVerificationEmail(email: string): void {
-  localStorage.setItem('pending_verification_email', email);
+  localStorage.setItem(AUTH_CONFIG.PENDING_EMAIL_KEY, email);
 }
 
 /**
  * Obtener email pendiente de verificación
  */
 export function getPendingVerificationEmail(): string | null {
-  return localStorage.getItem('pending_verification_email');
+  return localStorage.getItem(AUTH_CONFIG.PENDING_EMAIL_KEY);
 }
 
 /**
  * Limpiar email pendiente de verificación
  */
 export function clearPendingVerificationEmail(): void {
-  localStorage.removeItem('pending_verification_email');
+  localStorage.removeItem(AUTH_CONFIG.PENDING_EMAIL_KEY);
 }

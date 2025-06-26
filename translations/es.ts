@@ -437,7 +437,10 @@ export default {
     // FoodCatalog
     foodCatalog: {
       title: "Comidas Tradicionales",
-      subtitle: "Descubre los sabores auténticos de América Latina. Comida casera preparada con recetas tradicionales.",
+      subtitle: "Sabores auténticos de toda América Latina - Gastronomía tradicional en Montreal",
+      whyChooseUs: "¿Por qué elegirnos?",
+      whyChooseUsDesc: "La mejor experiencia culinaria de Montreal",
+      restaurantsAvailable: "restaurantes disponibles",
       selectRestaurant: "Selecciona tu restaurante favorito",
       availableRestaurants: "Restaurantes Disponibles",
       exploreAllFlavors: "Explorar todos los sabores",
@@ -451,22 +454,38 @@ export default {
       openNow: "Abierto",
       closedNow: "Cerrado",
       popular: "Popular",
-      fastDelivery: "Entrega rápida",
-      freeShipping: "Envío gratis",
       viewMenu: "Ver menú",
       viewFullMenu: "Ver menú completo",
-      deliveryTime: "25-35 min",
-      distance: "2.5 km",
-      rating: "4.5",
       contactUs: "¿No encuentras tu restaurante favorito? Contáctanos para agregar más opciones.",
-      benefits: {
-        fastDelivery: "Entrega rápida",
-        fastDeliveryDesc: "En 30-45 minutos",
-        freeShipping: "Envío gratis", 
-        freeShippingDesc: "En pedidos +$25",
-        quality: "Calidad garantizada",
-        qualityDesc: "Restaurantes verificados"
-      }
+      deliveryTime: "min",
+      reviews: "reseñas",
+      selectedRestaurant: "Restaurante seleccionado",
+      searchPlaceholder: "Buscar restaurantes...",
+      sortByRating: "Por rating",
+      sortByName: "Por nombre", 
+      sortByTime: "Por tiempo",
+      filterAll: "Todos",
+      filterNew: "Nuevos",
+      filterTopRated: "Mejor valorados"
+    },
+
+    // RestaurantList
+    restaurantList: {
+      errorTitle: "Error al cargar restaurantes",
+      errorDesc: "Ha ocurrido un error al cargar la lista de restaurantes. Por favor, inténtalo de nuevo.",
+      noRestaurants: "No hay restaurantes disponibles",
+      noRestaurantsDesc: "Próximamente tendremos más opciones de comida tradicional para ti.",
+      viewMenu: "Ver menú",
+      available: "Disponible",
+      rating: "puntuación",
+      openNow: "Abierto ahora",
+      popular: "Popular",
+      verified: "Verificado",
+      cuisine: "Cocina",
+      addToFavorites: "Agregar a favoritos",
+      removeFromFavorites: "Quitar de favoritos",
+      viewMenuFor: "Ver menú de",
+      noDescription: "Descubre los sabores únicos de este restaurante"
     },
     
     // ProductDetail

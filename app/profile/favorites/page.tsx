@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/common/ui/select';
 import { Input } from '@/components/common/ui/input';
-import { useFavorites } from '@/hooks/useFavorites';
+import { useFavoritesList } from '@/hooks/useFavoritesList';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import { ProductCard } from '@/components/features/modules/catalog/ProductCard';
@@ -67,7 +67,7 @@ export default function FavoritesPage() {
     removeFromFavorites,
     isEmpty,
     totalCount 
-  } = useFavorites();
+  } = useFavoritesList();
   const { addToCart } = useCart();
   
   const [viewMode, setViewMode] = useState<ViewMode>('grid');

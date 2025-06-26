@@ -70,7 +70,15 @@ const PROFILE_MENU_ITEMS = [
 export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, user, isLoading, logout } = useAuth();
+  
+  // Usar el estado global del contexto de autenticación
+  const { 
+    isAuthenticated, 
+    user, 
+    isLoading: authLoading, 
+    logout, 
+    error: authError 
+  } = useAuth();
   
   const { currentLanguage, setLanguage, availableLanguages } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -79,33 +87,49 @@ export function Navbar() {
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgotPassword'>('login');
   const { t } = useTranslation();
 
+  // Optimización: Solo cargar favoritos cuando el usuario esté autenticado y verificado
   useEffect(() => {
-    if (isAuthenticated && user) {
-      loadFavoritesCount();
-    }
-    // Reset favorites count when user logs out
-    if (!isAuthenticated) {
-      setFavoritesCount(0);
-    }
-  }, [isAuthenticated, user]);
+    let isMounted = true;
+    
+    const loadFavoritesCount = async () => {
+      if (!isAuthenticated || !user?.verified) {
+        setFavoritesCount(0);
+        return;
+      }
+      
+      try {
+        const count = await getFavoritesCount();
+        if (isMounted) {
+          setFavoritesCount(count);
+        }
+      } catch (error) {
+        console.error('Error loading favorites count:', error);
+        if (isMounted) {
+          setFavoritesCount(0);
+        }
+      }
+    };
 
-  const loadFavoritesCount = async () => {
-    try {
-      const count = await getFavoritesCount();
-      setFavoritesCount(count);
-    } catch (error) {
-      console.error('Error loading favorites count:', error);
-    }
-  };
+    loadFavoritesCount();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated, user?.verified]);
 
+  // Memoizar las funciones para evitar re-renders innecesarios
   const handleProfileNavigation = (href: string) => {
     setIsMobileMenuOpen(false);
     router.push(href);
   };
+
   const handleSignOut = async () => {
     try {
+      setIsMobileMenuOpen(false);
       await logout();
       toast.success(t('navbar.logoutSuccess'));
+      
+      // Redireccionar si está en una página protegida
       if (pathname.startsWith('/profile')) {
         router.push('/');
       }
@@ -124,17 +148,18 @@ export function Navbar() {
     setIsAuthModalOpen(false);
   };
 
-  // Obtener las iniciales del usuario para el avatar fallback
+  // Funciones optimizadas para obtener datos del usuario
   const getUserInitials = () => {
-    if (!user || !user.nombre) return 'U';
-    const nombre = user.nombre;
-    return nombre.split(' ').map((n: string) => n[0]).join('').toUpperCase().substring(0, 2);
+    if (!user?.nombre) return 'U';
+    return user.nombre
+      .split(' ')
+      .map((n: string) => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
   };
 
-  // Obtener el estado de verificación del usuario
-  const isUserVerified = () => {
-    return user?.verified || false;
-  };
+  const isUserVerified = () => user?.verified || false;
 
   // Nuevo código: Agrupar los enlaces para el menú móvil
   const MENU_GROUPS = [

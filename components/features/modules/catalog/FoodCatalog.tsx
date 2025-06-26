@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ChefHat, Clock, Star, Truck, Shield } from 'lucide-react';
+import { ArrowLeft, ChefHat, Filter, Search, SlidersHorizontal, Star, Sparkles } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
+import { Input } from '@/components/common/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/ui/select';
 import { Badge } from '@/components/common/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
 import { RestaurantList } from './RestaurantList';
@@ -21,6 +23,9 @@ export function FoodCatalog({ categoryId, initialSubcategory = null }: FoodCatal
     name: string;
   } | null>(initialSubcategory ? { id: initialSubcategory, name: 'Restaurante' } : null);
   const [showProducts, setShowProducts] = useState(!!initialSubcategory);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('rating');
+  const [filterBy, setFilterBy] = useState('all');
 
   // Si hay una subcategoría inicial, mostrar directamente los productos
   useEffect(() => {
@@ -40,104 +45,53 @@ export function FoodCatalog({ categoryId, initialSubcategory = null }: FoodCatal
     setShowProducts(false);
   };
 
-  const benefits = [
-    {
-      icon: Clock,
-      title: t('catalog.foodCatalog.benefits.fastDelivery') || "Entrega rápida",
-      description: t('catalog.foodCatalog.benefits.fastDeliveryDesc') || "En 30-45 minutos"
-    },
-    {
-      icon: Truck,
-      title: t('catalog.foodCatalog.benefits.freeShipping') || "Envío gratis",
-      description: t('catalog.foodCatalog.benefits.freeShippingDesc') || "En pedidos +$200"
-    },
-    {
-      icon: Shield,
-      title: t('catalog.foodCatalog.benefits.quality') || "Calidad garantizada",
-      description: t('catalog.foodCatalog.benefits.qualityDesc') || "Restaurantes verificados"
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-      <div className={`mx-auto px-4 py-6 sm:py-8 ${showProducts ? 'max-w-7xl' : 'container'}`}>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30">
+      <div className={`mx-auto px-4 sm:px-6 py-6 sm:py-8 ${showProducts ? 'max-w-7xl' : 'container'}`}>
         
         {/* Vista principal: Listado de restaurantes */}
         {!showProducts && (
-          <div className="mb-8 sm:mb-12">
-            {/* Título principal */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center mb-6 sm:mb-8"
-            >
-              <div className="flex items-center justify-center gap-3 mb-3 sm:mb-4">
-                <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-amber-600" />
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-                  {t('catalog.foodCatalog.title') || 'Comidas Tradicionales'}
-                </h1>
-              </div>
-              <p className="text-sm sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
-                {t('catalog.foodCatalog.subtitle') || 'Sabores auténticos de toda América Latina - Gastronomía tradicional en Montreal'}
-              </p>
-            </motion.div>
-
-            {/* Layout responsive: Benefits a la izquierda, Restaurantes a la derecha */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-              
-              {/* Benefits - columna izquierda en desktop, arriba en móvil */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-                className="lg:col-span-1 space-y-4"
-              >
-                <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-xl border border-amber-100 shadow-lg">
-                  <h3 className="font-bold text-lg sm:text-xl text-amber-700 mb-4 text-center lg:text-left">
-                    ¿Por qué elegirnos?
-                  </h3>
-                  <div className="space-y-4">
-                    {benefits.map((benefit, index) => (
-                      <div key={index} className="flex items-start gap-3">
-                        <div className="p-2 bg-amber-100 rounded-lg flex-shrink-0">
-                          <benefit.icon className="h-5 w-5 text-amber-600" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900 text-sm sm:text-base mb-1">
-                            {benefit.title}
-                          </h4>
-                          <p className="text-xs sm:text-sm text-gray-600">
-                            {benefit.description}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="mt-6 pt-4 border-t border-amber-200">
-                    <Badge 
-                      variant="outline" 
-                      className="bg-amber-50 text-amber-700 border-amber-300 px-3 py-1 text-sm w-full justify-center"
-                    >
-                      🍕 +50 restaurantes disponibles
-                    </Badge>
-                  </div>
+          <div className="mb-6">
+            {/* Encabezado consistente con otras secciones */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              {/* Título y icono - Centrado en mobile, izquierda en desktop */}
+              <div className="flex items-center justify-center sm:justify-start gap-3">
+                <ChefHat className="h-6 w-6 text-amber-600" strokeWidth={2} fill="none" />
+                <div className="text-center sm:text-left">
+                  <h1 className="text-2xl font-bold">{t('catalog.foodCatalog.title')}</h1>
+                  <p className="text-sm text-gray-600">
+                    {t('catalog.foodCatalog.subtitle')}
+                  </p>
                 </div>
-              </motion.div>
+              </div>
 
-              {/* Restaurantes - columna derecha en desktop, abajo en móvil */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-                className="lg:col-span-3"
-              >
-                <RestaurantList
-                  categoryId={categoryId}
-                  onRestaurantSelect={handleRestaurantSelect}
-                />
-              </motion.div>
+              {/* Buscador - Responsivo */}
+              <div className="w-full sm:w-auto sm:max-w-sm">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    type="search"
+                    placeholder={t('catalog.foodCatalog.searchPlaceholder')}
+                    className="pl-10 h-10 w-full"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
+
+            {/* Lista de restaurantes */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="px-1 sm:px-0"
+            >
+              <RestaurantList
+                categoryId={categoryId}
+                onRestaurantSelect={handleRestaurantSelect}
+              />
+            </motion.div>
           </div>
         )}
 
@@ -151,44 +105,48 @@ export function FoodCatalog({ categoryId, initialSubcategory = null }: FoodCatal
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.4 }}
             >
-              {/* Header con botón de regreso */}
+              {/* Header mejorado con botón de regreso */}
               <div className="mb-6 sm:mb-8">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
-                  className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6"
+                  className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8"
                 >
                   <Button
                     variant="outline"
                     onClick={handleBackToRestaurants}
-                    className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-white/80 backdrop-blur-sm border-orange-200 text-orange-700 hover:bg-orange-50 transition-all duration-300 text-sm"
+                    className="inline-flex items-center gap-2 px-4 py-3 h-12 bg-white/90 backdrop-blur-sm border-2 border-orange-200/60 text-orange-700 hover:bg-orange-50 hover:border-orange-300 focus:ring-4 focus:ring-orange-100 transition-all duration-300 rounded-xl shadow-md hover:shadow-lg font-medium"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    <span>{t('catalog.foodCatalog.backToRestaurants') || 'Volver a restaurantes'}</span>
+                    <span>{t('catalog.foodCatalog.backToRestaurants')}</span>
                   </Button>
                   
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-orange-50/80 rounded-lg border border-orange-200/40">
                     <ChefHat className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
-                    <span className="text-sm">
-                      {selectedRestaurant?.name || 'Restaurante seleccionado'}
+                    <span className="text-sm sm:text-base font-medium text-gray-700">
+                      {selectedRestaurant?.name || t('catalog.foodCatalog.selectedRestaurant')}
                     </span>
                   </div>
                 </motion.div>
 
-                {/* Título para la vista de productos */}
+                {/* Título elegante para la vista de productos */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 }}
-                  className="text-center space-y-2"
+                  className="text-center space-y-3 sm:space-y-4"
                 >
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
-                    {t('catalog.foodCatalog.menuTitle') || 'Menú de'} {selectedRestaurant?.name}
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+                    {t('catalog.foodCatalog.menuTitle')} {selectedRestaurant?.name}
                   </h1>
-                  <p className="text-sm sm:text-lg text-gray-600">
-                    {t('catalog.foodCatalog.menuSubtitle') || 'Descubre los platos auténticos y tradicionales'}
-                  </p>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="h-1 w-12 sm:w-16 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full" />
+                    <p className="text-sm sm:text-base lg:text-lg text-gray-600 px-2">
+                      {t('catalog.foodCatalog.menuSubtitle')}
+                    </p>
+                    <div className="h-1 w-12 sm:w-16 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full" />
+                  </div>
                 </motion.div>
               </div>
 

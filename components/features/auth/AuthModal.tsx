@@ -237,17 +237,18 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
 
   const handleLogin = async () => {
     try {
-      const response = await login({ email: formData.email, password: formData.password });
+      await login({ email: formData.email, password: formData.password });
       
       // Cerrar modal inmediatamente
       onClose();
+      
+      // Ejecutar callback si existe
+      onLoginSuccess?.();
       
       // Navegar si hay redirectUrl
       if (redirectUrl) {
         router.push(redirectUrl);
       }
-      
-      return response;
     } catch (err: any) {
       console.error('Error de login:', err);
       

@@ -56,7 +56,7 @@ export function ProductCard({
   const [imageError, setImageError] = useState(false);
 
   // Estados derivados del producto
-  const isProductFavorite = isFavorite(product.id);
+  const isProductFavorite = isFavorite(product.id.toString());
   const isOutOfStock = product.stock === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5;
   const inCart = isInCart(product.id);
@@ -136,7 +136,7 @@ export function ProductCard({
     }
 
     try {
-      await toggleFavorite(product.id);
+      await toggleFavorite(product.id.toString());
       toast.success(
         isProductFavorite 
           ? t('catalog.messages.removedFromFavorites') || 'Eliminado de favoritos'
@@ -327,9 +327,10 @@ export function ProductCard({
                 </h3>
               </Link>
 
-              {variant === 'detailed' && showDescription && product.descripcion && (
-                <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 hidden sm:block">
-                  {product.descripcion}
+              {/* Mostrar descripción siempre para variantes no compactas */}
+              {(variant === 'default' || variant === 'detailed' || variant === 'list') && showDescription && (
+                <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                  {product.descripcion || 'Sin descripción disponible'}
                 </p>
               )}
 

@@ -79,10 +79,10 @@ export function AddToCartButton({
       return;
     }
 
-    await toggleFavorite(productId);
+    await toggleFavorite(productId.toString());
   };
 
-  const isProductFavorite = isFavorite(productId);
+  const isProductFavorite = isFavorite(productId.toString());
   const isOutOfStock = stock === 0;
   const isLowStock = stock > 0 && stock <= 5;
 
