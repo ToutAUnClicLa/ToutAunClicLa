@@ -5,6 +5,65 @@
 
 import { apiCache, generateCacheKey } from '@/lib/utils/cache';
 
+// Control de peticiones en curso para evitar duplicados
+const pendingRequests = new Map<string, Promise<any>>();
+
+// Sistema de throttling más agresivo para evitar rate limiting
+const requestHistory = new Map<string, number[]>();
+const MAX_REQUESTS_PER_MINUTE = 5; // Reducido de 10 a 5
+const THROTTLE_WINDOW = 60000; // 1 minuto
+
+// Función para verificar si podemos hacer una petición
+const canMakeRequest = (endpoint: string): boolean => {
+  const now = Date.now();
+  const history = requestHistory.get(endpoint) || [];
+  
+  // Filtrar requests dentro de la ventana de tiempo
+  const recentRequests = history.filter(timestamp => now - timestamp < THROTTLE_WINDOW);
+  
+  // Actualizar historial
+  requestHistory.set(endpoint, recentRequests);
+  
+  return recentRequests.length < MAX_REQUESTS_PER_MINUTE;
+};
+
+// Función para registrar una petición
+const recordRequest = (endpoint: string): void => {
+  const now = Date.now();
+  const history = requestHistory.get(endpoint) || [];
+  history.push(now);
+  requestHistory.set(endpoint, history);
+};
+
+// Sistema de circuit breaker para evitar spam de peticiones fallidas
+let circuitBreakerOpenUntil = 0;
+const CIRCUIT_BREAKER_TIMEOUT = 60000; // Aumentado a 60 segundos
+let consecutiveErrors = 0;
+const MAX_CONSECUTIVE_ERRORS = 2; // Reducido de 3 a 2
+
+// Función para verificar si el circuit breaker está abierto
+const isCircuitBreakerOpen = (): boolean => {
+  return Date.now() < circuitBreakerOpenUntil;
+};
+
+// Función para abrir el circuit breaker
+const openCircuitBreaker = (): void => {
+  circuitBreakerOpenUntil = Date.now() + CIRCUIT_BREAKER_TIMEOUT;
+  console.warn('Circuit breaker opened due to consecutive errors. Requests will be blocked for 60 seconds.');
+};
+
+// Función para manejar errores del circuit breaker
+const handleRequestResult = (success: boolean): void => {
+  if (success) {
+    consecutiveErrors = 0;
+  } else {
+    consecutiveErrors++;
+    if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+      openCircuitBreaker();
+    }
+  }
+};
+
 // Configuración de URLs - usar proxy en desarrollo, directo en producción
 const isDev = process.env.NODE_ENV === 'development';
 const PRODUCTS_BASE_URL = isDev 
@@ -175,50 +234,100 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
       return cachedData;
     }
 
-    const params = new URLSearchParams();
-    
-    // Agregar filtros como query parameters
-    if (filters.page) params.append('page', filters.page.toString());
-    if (filters.limit) params.append('limit', filters.limit.toString());
-    if (filters.category) params.append('category', filters.category.toString());
-    if (filters.subcategory) params.append('subcategory', filters.subcategory.toString());
-    if (filters.search) params.append('search', filters.search);
-    if (filters.minPrice) params.append('minPrice', filters.minPrice.toString());
-    if (filters.maxPrice) params.append('maxPrice', filters.maxPrice.toString());
-    if (filters.inStock !== undefined) params.append('inStock', filters.inStock.toString());
-    if (filters.sortBy) params.append('sortBy', filters.sortBy);
-    if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
-
-    const url = `${PRODUCTS_BASE_URL}?${params.toString()}`;
-    
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: getHeaders(),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || data.error || 'Error al obtener productos');
+    // Verificar circuit breaker
+    if (isCircuitBreakerOpen()) {
+      console.warn('Circuit breaker is open, using stale cache or throwing error');
+      const staleCachedData = apiCache.get<ProductsResponse>(cacheKey, true);
+      if (staleCachedData) {
+        return staleCachedData;
+      }
+      throw new Error('Servicio temporalmente no disponible. Inténtalo de nuevo en unos minutos.');
     }
 
-    // Mapear productos para agregar propiedades computadas de compatibilidad
-    const mappedProducts = data.products.map((product: any) => ({
-      ...product,
-      rating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
-      reviewCount: product.reviewCount || product.estadisticas?.total_reviews || 0,
-      averageRating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
-    }));
+    // Verificar throttling
+    const endpoint = 'products';
+    if (!canMakeRequest(endpoint)) {
+      console.warn('Request throttled for products, using stale cache or throwing error');
+      const staleCachedData = apiCache.get<ProductsResponse>(cacheKey, true);
+      if (staleCachedData) {
+        return staleCachedData;
+      }
+      throw new Error('Demasiadas peticiones. Inténtalo de nuevo en un momento.');
+    }
 
-    const result = {
-      products: mappedProducts,
-      pagination: data.pagination
-    };
+    // Verificar si ya hay una petición en curso
+    const requestKey = `products-${JSON.stringify(filters)}`;
+    if (pendingRequests.has(requestKey)) {
+      console.log('Waiting for pending products request');
+      return await pendingRequests.get(requestKey);
+    }
 
-    // Guardar en cache por 3 minutos
-    apiCache.set(cacheKey, result, 3 * 60 * 1000);
+    const fetchPromise = (async () => {
+      // Registrar la petición
+      recordRequest(endpoint);
 
-    return result;
+      const params = new URLSearchParams();
+      
+      // Agregar filtros como query parameters
+      if (filters.page) params.append('page', filters.page.toString());
+      if (filters.limit) params.append('limit', filters.limit.toString());
+      if (filters.category) params.append('category', filters.category.toString());
+      if (filters.subcategory) params.append('subcategory', filters.subcategory.toString());
+      if (filters.search) params.append('search', filters.search);
+      if (filters.minPrice) params.append('minPrice', filters.minPrice.toString());
+      if (filters.maxPrice) params.append('maxPrice', filters.maxPrice.toString());
+      if (filters.inStock !== undefined) params.append('inStock', filters.inStock.toString());
+      if (filters.sortBy) params.append('sortBy', filters.sortBy);
+      if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
+
+      const url = `${PRODUCTS_BASE_URL}?${params.toString()}`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          handleRequestResult(false);
+          throw new Error('Demasiadas peticiones. Inténtalo de nuevo en un momento.');
+        }
+        handleRequestResult(false);
+        throw new Error(data.message || data.error || 'Error al obtener productos');
+      }
+
+      // Mapear productos para agregar propiedades computadas de compatibilidad
+      const mappedProducts = data.products.map((product: any) => ({
+        ...product,
+        rating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
+        reviewCount: product.reviewCount || product.estadisticas?.total_reviews || 0,
+        averageRating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
+      }));
+
+      const result = {
+        products: mappedProducts,
+        pagination: data.pagination
+      };
+
+      // Guardar en cache por 3 minutos
+      apiCache.set(cacheKey, result, 3 * 60 * 1000);
+      handleRequestResult(true);
+
+      return result;
+    })();
+
+    // Guardar la promesa en pending requests
+    pendingRequests.set(requestKey, fetchPromise);
+
+    try {
+      const result = await fetchPromise;
+      return result;
+    } finally {
+      // Limpiar la petición pendiente
+      pendingRequests.delete(requestKey);
+    }
   } catch (error: any) {
     console.error('Error en getProducts:', error);
     throw error;
@@ -247,30 +356,99 @@ export async function getProductsByCategory(
  */
 export async function getProductById(id: number): Promise<Product> {
   try {
-    const response = await fetch(`${PRODUCTS_BASE_URL}/${id}`, {
-      method: 'GET',
-      headers: getHeaders(),
-    });
-
-    const data: ProductDetailResponse = await response.json();
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('Producto no encontrado');
-      }
-      throw new Error(data.message || data.error || 'Error al obtener producto');
+    // Agregar cache para productos individuales
+    const cacheKey = generateCacheKey('product', { id });
+    const cachedProduct = apiCache.get<Product>(cacheKey);
+    
+    if (cachedProduct) {
+      console.log(`Using cached product ${id}`);
+      return cachedProduct;
     }
 
-    // Manejar tanto respuestas con wrapper como sin wrapper
-    const product = data.product || data;
+    // Verificar circuit breaker
+    if (isCircuitBreakerOpen()) {
+      console.warn(`Circuit breaker is open for product ${id}, using stale cache or throwing error`);
+      const staleCachedProduct = apiCache.get<Product>(cacheKey, true);
+      if (staleCachedProduct) {
+        return staleCachedProduct;
+      }
+      throw new Error('Servicio temporalmente no disponible. Inténtalo de nuevo en unos minutos.');
+    }
 
-    // Agregar propiedades computadas para compatibilidad
-    return {
-      ...product,
-      rating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
-      reviewCount: product.reviewCount || product.estadisticas?.total_reviews || 0,
-      averageRating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
-    } as Product;
+    // Verificar si ya hay una petición en curso para este producto
+    const requestKey = `product-${id}`;
+    if (pendingRequests.has(requestKey)) {
+      console.log(`Waiting for pending request for product ${id}`);
+      return await pendingRequests.get(requestKey);
+    }
+
+    // Verificar throttling
+    const endpoint = `product-${id}`;
+    if (!canMakeRequest(endpoint)) {
+      console.warn(`Request throttled for product ${id}, using cache or throwing error`);
+      // Si no podemos hacer la petición, intentar cache extendido
+      const extendedCachedProduct = apiCache.get<Product>(cacheKey, true); // true para cache extendido
+      if (extendedCachedProduct) {
+        return extendedCachedProduct;
+      }
+      throw new Error('Demasiadas peticiones. Inténtalo de nuevo en un momento.');
+    }
+
+    // Crear la petición y guardarla en pending
+    const fetchPromise = (async () => {
+      // Registrar la petición
+      recordRequest(endpoint);
+      
+      console.log(`Fetching product ${id} from server`);
+      const response = await fetch(`${PRODUCTS_BASE_URL}/${id}`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+
+      const data: ProductDetailResponse = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          handleRequestResult(false);
+          throw new Error('Producto no encontrado');
+        }
+        if (response.status === 429) {
+          handleRequestResult(false);
+          throw new Error('Demasiadas peticiones. Inténtalo de nuevo en un momento.');
+        }
+        handleRequestResult(false);
+        throw new Error(data.message || data.error || 'Error al obtener producto');
+      }
+
+      // Manejar tanto respuestas con wrapper como sin wrapper
+      const product = data.product || data;
+
+      // Agregar propiedades computadas para compatibilidad
+      const processedProduct = {
+        ...product,
+        rating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
+        reviewCount: product.reviewCount || product.estadisticas?.total_reviews || 0,
+        averageRating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
+      } as Product;
+
+      // Guardar en cache por 5 minutos (productos individuales pueden ser más estables)
+      apiCache.set(cacheKey, processedProduct, 5 * 60 * 1000);
+      console.log(`Product ${id} cached successfully`);
+      handleRequestResult(true);
+
+      return processedProduct;
+    })();
+
+    // Guardar la promesa en pending requests
+    pendingRequests.set(requestKey, fetchPromise);
+
+    try {
+      const result = await fetchPromise;
+      return result;
+    } finally {
+      // Limpiar la petición pendiente
+      pendingRequests.delete(requestKey);
+    }
   } catch (error: any) {
     console.error('Error en getProductById:', error);
     throw error;
@@ -318,6 +496,37 @@ export async function getRelatedProducts(
  */
 export async function getCategories(): Promise<Category[]> {
   try {
+    const cacheKey = generateCacheKey('categories', {});
+    const cachedCategories = apiCache.get<Category[]>(cacheKey);
+    
+    if (cachedCategories) {
+      return cachedCategories;
+    }
+
+    // Verificar circuit breaker
+    if (isCircuitBreakerOpen()) {
+      console.warn('Circuit breaker is open for categories, using stale cache or throwing error');
+      const staleCachedCategories = apiCache.get<Category[]>(cacheKey, true);
+      if (staleCachedCategories) {
+        return staleCachedCategories;
+      }
+      throw new Error('Servicio temporalmente no disponible. Inténtalo de nuevo en unos minutos.');
+    }
+
+    // Verificar throttling
+    const endpoint = 'categories';
+    if (!canMakeRequest(endpoint)) {
+      console.warn('Request throttled for categories, using stale cache or throwing error');
+      const staleCachedCategories = apiCache.get<Category[]>(cacheKey, true);
+      if (staleCachedCategories) {
+        return staleCachedCategories;
+      }
+      throw new Error('Demasiadas peticiones. Inténtalo de nuevo en un momento.');
+    }
+
+    // Registrar la petición
+    recordRequest(endpoint);
+
     const response = await fetch(`${PRODUCTS_BASE_URL}/categories`, {
       method: 'GET',
       headers: getHeaders(),
@@ -326,8 +535,17 @@ export async function getCategories(): Promise<Category[]> {
     const data: CategoriesResponse = await response.json();
 
     if (!response.ok) {
+      if (response.status === 429) {
+        handleRequestResult(false);
+        throw new Error('Demasiadas peticiones. Inténtalo de nuevo en un momento.');
+      }
+      handleRequestResult(false);
       throw new Error(data.message || data.error || 'Error al obtener categorías');
     }
+
+    // Guardar en cache por 10 minutos (las categorías cambian poco)
+    apiCache.set(cacheKey, data.categories, 10 * 60 * 1000);
+    handleRequestResult(true);
 
     return data.categories;
   } catch (error: any) {
@@ -341,6 +559,37 @@ export async function getCategories(): Promise<Category[]> {
  */
 export async function getSubcategories(categoryId?: number): Promise<Subcategory[]> {
   try {
+    const cacheKey = generateCacheKey('subcategories', { categoryId });
+    const cachedSubcategories = apiCache.get<Subcategory[]>(cacheKey);
+    
+    if (cachedSubcategories) {
+      return cachedSubcategories;
+    }
+
+    // Verificar circuit breaker
+    if (isCircuitBreakerOpen()) {
+      console.warn('Circuit breaker is open for subcategories, using stale cache or throwing error');
+      const staleCachedSubcategories = apiCache.get<Subcategory[]>(cacheKey, true);
+      if (staleCachedSubcategories) {
+        return staleCachedSubcategories;
+      }
+      throw new Error('Servicio temporalmente no disponible. Inténtalo de nuevo en unos minutos.');
+    }
+
+    // Verificar throttling
+    const endpoint = 'subcategories';
+    if (!canMakeRequest(endpoint)) {
+      console.warn('Request throttled for subcategories, using stale cache or throwing error');
+      const staleCachedSubcategories = apiCache.get<Subcategory[]>(cacheKey, true);
+      if (staleCachedSubcategories) {
+        return staleCachedSubcategories;
+      }
+      throw new Error('Demasiadas peticiones. Inténtalo de nuevo en un momento.');
+    }
+
+    // Registrar la petición
+    recordRequest(endpoint);
+
     const params = new URLSearchParams();
     if (categoryId) {
       params.append('categoryId', categoryId.toString());
@@ -356,8 +605,17 @@ export async function getSubcategories(categoryId?: number): Promise<Subcategory
     const data: SubcategoriesResponse = await response.json();
 
     if (!response.ok) {
+      if (response.status === 429) {
+        handleRequestResult(false);
+        throw new Error('Demasiadas peticiones. Inténtalo de nuevo en un momento.');
+      }
+      handleRequestResult(false);
       throw new Error(data.message || data.error || 'Error al obtener subcategorías');
     }
+
+    // Guardar en cache por 10 minutos (las subcategorías cambian poco)
+    apiCache.set(cacheKey, data.subcategories, 10 * 60 * 1000);
+    handleRequestResult(true);
 
     return data.subcategories;
   } catch (error: any) {

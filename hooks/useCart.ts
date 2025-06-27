@@ -411,7 +411,7 @@ export function useCart(options: UseCartOptions = {}) {
 
   // Limpiar estado cuando el usuario se deslogea
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && hasLoadedOnce) { // Solo ejecutar si ya se había cargado antes
       console.log('User logged out, clearing cart state');
       setItems([]);
       setError(null);
@@ -435,7 +435,7 @@ export function useCart(options: UseCartOptions = {}) {
       // Limpiar cache global
       globalCartCache = null;
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, hasLoadedOnce]); // Agregar hasLoadedOnce como dependencia
 
   // Cleanup en unmount
   useEffect(() => {

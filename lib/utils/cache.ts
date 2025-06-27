@@ -19,7 +19,7 @@ class SimpleCache {
     });
   }
 
-  get<T>(key: string): T | null {
+  get<T>(key: string, allowStale: boolean = false): T | null {
     const entry = this.cache.get(key);
     
     if (!entry) {
@@ -30,6 +30,14 @@ class SimpleCache {
     const isExpired = (now - entry.timestamp) > entry.expiresIn;
 
     if (isExpired) {
+      if (allowStale) {
+        // Permitir datos stalé por hasta 1 hora en casos de emergencia
+        const isVeryStale = (now - entry.timestamp) > (60 * 60 * 1000);
+        if (!isVeryStale) {
+          console.warn(`Using stale cache for key: ${key}`);
+          return entry.data as T;
+        }
+      }
       this.cache.delete(key);
       return null;
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense, useCallback } from 'react';
+import { useEffect, useState, Suspense, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { Star, ShoppingCart, Heart, Share2, ChevronRight, Package, Shield, Truck, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -72,7 +72,7 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { user } = useAuth();
 
-  const benefits = [
+  const benefits = useMemo(() => [
     {
       icon: Package,
       title: t('catalog.productDetail.authentic'),
@@ -88,28 +88,30 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
       title: t('catalog.productDetail.fastShipping'),
       description: "+$200"
     }
-  ];
+  ], [t]);
 
-  const images = [
+  const images = useMemo(() => [
     getImageUrl(product.imagen_principal),
     ...(product.imagenes_adicionales || []).map((img: string) => getImageUrl(img))
-  ];
+  ], [product.imagen_principal, product.imagenes_adicionales]);
 
   // Verificar si el producto está en favoritos al cargar el componente
   const checkFavoriteStatus = useCallback(async () => {
     try {
-      if (user) {
+      if (user?.id && product?.id) {
         const favoriteStatus = await getFavoriteStatus(product.id);
         setIsFavorited(favoriteStatus.isFavorite);
       }
     } catch (error) {
       console.error('Error al verificar estado de favorito:', error);
     }
-  }, [product.id, user]);
+  }, [product?.id, user?.id]); // Solo depender del ID del usuario, no del objeto completo
 
   useEffect(() => {
-    checkFavoriteStatus();
-  }, [checkFavoriteStatus]);
+    if (product?.id && user?.id) {
+      checkFavoriteStatus();
+    }
+  }, [product?.id, user?.id]); // Remover checkFavoriteStatus de las dependencias
 
   const handleAddToCart = async () => {
     if (!user) {
@@ -444,14 +446,16 @@ export default function ProductDetailPage() {
         setProduct(data);
       } catch (error) {
         console.error('Error loading product:', error);
-        toast.error(t('catalog.productDetail.errorLoadingProduct'));
+        toast.error('Error al cargar el producto');
       } finally {
         setIsLoading(false);
       }
     }
 
-    loadProduct();
-  }, [params.productId, t]);
+    if (params.productId) {
+      loadProduct();
+    }
+  }, [params.productId]); // Solo depender del productId, no del objeto t
 
   if (isLoading) {
     return <LoadingState />;

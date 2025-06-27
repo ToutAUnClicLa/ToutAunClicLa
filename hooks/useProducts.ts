@@ -105,11 +105,26 @@ export function useProduct(id?: number): UseProductReturn {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Usar ref para evitar múltiples peticiones del mismo producto
+  const lastRequestedIdRef = useRef<number | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchProduct = useCallback(async (productId: number) => {
+    // Evitar peticiones duplicadas
+    if (lastRequestedIdRef.current === productId && loading) {
+      return;
+    }
+
+    lastRequestedIdRef.current = productId;
+
     try {
       setLoading(true);
       setError(null);
+      
+      // Pequeño delay para evitar ráfagas de peticiones
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const data = await productsService.getProductById(productId);
       setProduct(data);
     } catch (err: any) {
@@ -118,12 +133,27 @@ export function useProduct(id?: number): UseProductReturn {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
-    if (id) {
-      fetchProduct(id);
+    if (id && id !== lastRequestedIdRef.current) {
+      // Limpiar timeout anterior si existe
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      // Debounce de 200ms para evitar múltiples peticiones rápidas
+      timeoutRef.current = setTimeout(() => {
+        fetchProduct(id);
+      }, 200);
     }
+
+    // Cleanup
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [id, fetchProduct]);
 
   return {

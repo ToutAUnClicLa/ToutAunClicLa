@@ -1,7 +1,7 @@
 export default {
   nav: {
     home: "Accueil",
-    products: "Produits",
+    products: "Épicerie",
     foods: "Cuisine",
     boutique: "Boutique",
     login: "Se connecter",
