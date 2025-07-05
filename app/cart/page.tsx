@@ -16,22 +16,6 @@ import { toast } from 'sonner';
 import { CartItem } from '@/lib/services/cart';
 import { useTranslation } from '@/hooks/useTranslation';
 
-// Añadir clase CSS para mejorar el truncado de texto en móviles
-const styles = `
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  @media (max-width: 640px) {
-    .line-clamp-2 {
-      -webkit-line-clamp: 1;
-    }
-  }
-`;
-
 // Mapeo de categorías con estilos modernos
 const categoryMap = {
   productos: { 
@@ -65,7 +49,7 @@ const categoryMap = {
 
 // Función para determinar la categoría de un item
 const getItemCategory = (item: CartItem): string => {
-  const categoryName = item.productos.categorias?.nombre?.toLowerCase() || '';
+  const categoryName = item.productos?.categorias?.nombre?.toLowerCase() || '';
   
   // Lógica para mapear categorías
   if (categoryName.includes('comida') || categoryName.includes('food') || categoryName.includes('snack')) {
@@ -94,14 +78,46 @@ export default function CartPage() {
     removeFromCart,
     clearCart,
     isEmpty,
-    loadCartNow
-  } = useCart({ autoLoad: true });
+    refreshCart 
+  } = useCart();
   
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
+  
+  // Cálculos de totales mejorados - recalcular desde los items
+  const calculatedSubtotal = useMemo(() => {
+    return items.reduce((sum, item) => sum + (item.cantidad * item.productos.precio), 0);
+  }, [items]);
+
+  const taxRate = 0.15; // 15% de impuestos
+  const shippingThreshold = 50; // Envío gratis a partir de $50
+  const shippingCost = calculatedSubtotal >= shippingThreshold ? 0 : 8.99;
+  const taxes = calculatedSubtotal * taxRate;
+  const finalTotal = calculatedSubtotal + taxes + shippingCost;
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('es-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(price);
+  };
+
+  // Efecto para cargar el carrito al montar el componente
+  useEffect(() => {
+    if (isAuthenticated) {
+      refreshCart();
+    }
+  }, [isAuthenticated, refreshCart]);
+
+  // Mostrar modal de autenticación si no está autenticado
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      setShowAuthModal(true);
+    }
+  }, [isAuthenticated, isLoading]);
 
   // Agrupar items por categoría
-  const itemsByCategory = useMemo(() => {
+  const groupedItems = useMemo(() => {
     const grouped: { [key: string]: CartItem[] } = {};
     
     items.forEach(item => {
@@ -115,37 +131,17 @@ export default function CartPage() {
     return grouped;
   }, [items]);
 
-  // Ordenar categorías
-  const sortedCategories = useMemo(() => {
-    return categoryOrder.filter(category => itemsByCategory[category]?.length > 0);
-  }, [itemsByCategory]);
-
-  // Cálculos de totales mejorados - recalcular desde los items
-  const calculatedSubtotal = useMemo(() => {
-    return items.reduce((sum, item) => sum + (item.cantidad * item.productos.precio), 0);
-  }, [items]);
-
-  const taxRate = 0.19; // 15% de impuestos (GST/HST en Quebec)
-  const shippingThreshold = 50; // Envío gratis a partir de $50
-  const shippingCost = calculatedSubtotal >= shippingThreshold ? 0 : 8.99;
-  const taxes = calculatedSubtotal * taxRate;
-  const finalTotal = calculatedSubtotal + taxes + shippingCost;
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('es-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(price);
-  };
-
+  // Función para manejar cambios de cantidad
   const handleQuantityChange = async (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     
     setLoadingItems(prev => new Set(prev).add(itemId));
+    
     try {
       await updateQuantity(itemId, newQuantity);
-      toast.success('Cantidad actualizada');
+      toast.success('Cantidad actualizada correctamente');
     } catch (error) {
+      console.error('Error actualizando cantidad:', error);
       toast.error('Error al actualizar la cantidad');
     } finally {
       setLoadingItems(prev => {
@@ -156,12 +152,15 @@ export default function CartPage() {
     }
   };
 
+  // Función para eliminar item del carrito
   const handleRemoveItem = async (itemId: string) => {
     setLoadingItems(prev => new Set(prev).add(itemId));
+    
     try {
       await removeFromCart(itemId);
       toast.success('Producto eliminado del carrito');
     } catch (error) {
+      console.error('Error eliminando item:', error);
       toast.error('Error al eliminar el producto');
     } finally {
       setLoadingItems(prev => {
@@ -172,25 +171,18 @@ export default function CartPage() {
     }
   };
 
-  const handleCheckout = () => {
-    if (!user) {
-      setShowAuthModal(true);
-      return;
-    }
-    router.push('/checkout');
-  };
-
+  // Función para limpiar el carrito
   const handleClearCart = async () => {
-    if (window.confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
-      try {
-        await clearCart();
-        toast.success('Carrito vaciado');
-      } catch (error) {
-        toast.error('Error al vaciar el carrito');
-      }
+    try {
+      await clearCart();
+      toast.success('Carrito vaciado correctamente');
+    } catch (error) {
+      console.error('Error limpiando carrito:', error);
+      toast.error('Error al vaciar el carrito');
     }
   };
 
+  // Renderizar item del carrito con diseño responsive
   const renderCartItem = (item: CartItem) => {
     const isItemLoading = loadingItems.has(item.id);
     const itemTotal = item.cantidad * item.productos.precio;
@@ -198,21 +190,22 @@ export default function CartPage() {
     return (
       <motion.div
         key={item.id}
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 0}}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, x: -100 }}
         transition={{ duration: 0.2 }}
       >
         <Card className={`overflow-hidden transition-all duration-200 border-0 shadow-sm hover:shadow-md ${isItemLoading ? 'opacity-50' : ''}`}>
-          <CardContent className="p-2">
-            <div className="flex gap-6">
-              <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-sm">
+          <CardContent className="p-3 sm:p-4 md:p-3">
+            <div className="flex gap-3 sm:gap-4 md:gap-6">
+              {/* Imagen del producto - responsive */}
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg md:rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-sm">
                 <Image
                   src={item.productos.imagen_principal}
                   alt={item.productos.nombre}
                   fill
                   className="object-cover"
-                  sizes="96px"
+                  sizes="(max-width: 640px) 64px, (max-width: 768px) 80px, 96px"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = '/placeholder-product.svg';
@@ -220,69 +213,75 @@ export default function CartPage() {
                 />
               </div>
 
-              <div className="flex-1 min-w-0 space-y-3">
+              <div className="flex-1 min-w-0 space-y-2 sm:space-y-3">
                 <div className="flex justify-between items-start">
-                  <div className="flex-1 pr-4">
-                    <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                  <div className="flex-1 pr-2 sm:pr-4">
+                    <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 mb-1 line-clamp-2">
                       {item.productos.nombre}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-2">
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
                       {item.productos.categorias?.nombre || 'Sin categoría'}
                     </p>
-                    <div className="flex items-center gap-4">
-                      <span className="text-lg font-bold text-indigo-600">
+                    <div className="flex items-center gap-2 sm:gap-4">
+                      <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
                         {formatPrice(item.productos.precio)}
                       </span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs sm:text-sm text-gray-500">
                         c/u
                       </span>
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 flex-shrink-0 rounded-full"
-                    onClick={() => handleRemoveItem(item.id)}
-                    disabled={isItemLoading}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  
+                  <div className="flex flex-col items-end gap-1 sm:gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveItem(item.id)}
+                      disabled={isItemLoading}
+                      className="h-6 w-6 sm:h-8 sm:w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                    </Button>
+                    <Badge variant="secondary" className="text-xs">
+                      Stock: {item.productos.stock}
+                    </Badge>
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 border rounded-lg bg-gray-50 overflow-hidden">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:bg-gray-200 rounded-none"
-                      onClick={() => handleQuantityChange(item.id, Math.max(1, item.cantidad - 1))}
-                      disabled={item.cantidad <= 1 || isItemLoading}
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <span className="px-4 py-1 text-sm font-semibold bg-white min-w-[48px] text-center">
-                      {item.cantidad}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:bg-gray-200 rounded-none"
-                      onClick={() => handleQuantityChange(item.id, item.cantidad + 1)}
-                      disabled={isItemLoading || item.cantidad >= item.productos.stock}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="flex items-center border rounded-lg">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleQuantityChange(item.id, item.cantidad - 1)}
+                        disabled={isItemLoading || item.cantidad <= 1}
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 rounded-r-none"
+                      >
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                      <span className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium min-w-[2rem] sm:min-w-[3rem] text-center">
+                        {item.cantidad}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleQuantityChange(item.id, item.cantidad + 1)}
+                        disabled={isItemLoading || item.cantidad >= item.productos.stock}
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 rounded-l-none"
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                   
                   <div className="text-right">
-                    <div className="text-xl font-bold text-gray-900">
+                    <p className="text-sm sm:text-base md:text-lg font-bold text-gray-900">
                       {formatPrice(itemTotal)}
-                    </div>
-                    {item.productos.stock <= 5 && (
-                      <Badge variant="secondary" className="mt-1 text-xs bg-amber-100 text-amber-700 border-amber-200">
-                        Solo {item.productos.stock} disponibles
-                      </Badge>
-                    )}
+                    </p>
+                    <p className="text-xs sm:text-sm text-gray-500 hidden sm:block">
+                      {item.cantidad} × {formatPrice(item.productos.precio)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -293,304 +292,192 @@ export default function CartPage() {
     );
   };
 
+  // Renderizar grupo de categoría con diseño responsive
+  const renderCategoryGroup = (category: string, items: CartItem[]) => {
+    const categoryInfo = categoryMap[category as keyof typeof categoryMap];
+    const IconComponent = categoryInfo.icon;
+    
+    return (
+      <div key={category} className="space-y-3 sm:space-y-4">
+        <div className={`${categoryInfo.bgColor} ${categoryInfo.borderColor} border-2 rounded-xl sm:rounded-2xl p-3 sm:p-4`}>
+          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+            <div className={`${categoryInfo.iconBg} p-1.5 sm:p-2 rounded-lg`}>
+              <IconComponent className={`w-4 h-4 sm:w-5 sm:h-5 ${categoryInfo.color}`} />
+            </div>
+            <div className="flex-1">
+              <h2 className={`text-lg sm:text-xl font-bold ${categoryInfo.color}`}>
+                {categoryInfo.name}
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-600">
+                {items.length} {items.length === 1 ? 'producto' : 'productos'}
+              </p>
+            </div>
+            <div className="ml-auto">
+              <Badge className={`${categoryInfo.badgeColor} border-0 text-xs sm:text-sm`}>
+                {items.reduce((sum, item) => sum + item.cantidad, 0)} items
+              </Badge>
+            </div>
+          </div>
+          
+          <div className="space-y-2 sm:space-y-3">
+            <AnimatePresence mode="popLayout">
+              {items.map(item => renderCartItem(item))}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Estados de carga
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container max-w-7xl mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center space-y-4">
-              <div className="relative">
-                <div className="h-12 w-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <ShoppingCart className="h-6 w-6 text-indigo-600" />
-                </div>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Cargando carrito...</h3>
-                <p className="text-sm text-gray-600">
-                  Estamos preparando tus productos
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container max-w-7xl mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center space-y-6 p-8">
-              <div className="relative">
-                <div className="h-20 w-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto">
-                  <ShoppingCart className="h-10 w-10 text-indigo-600" />
-                </div>
-                <div className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 rounded-full flex items-center justify-center">
-                  <X className="h-3 w-3 text-white" />
-                </div>
-              </div>
-              <div>
-                <h3 className="font-bold text-2xl text-gray-900 mb-2">¡Inicia sesión!</h3>
-                <p className="text-gray-600 mb-6">
-                  Para ver y gestionar tu carrito de compras necesitas iniciar sesión
-                </p>
-                <Button 
-                  onClick={() => setShowAuthModal(true)}
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                >
-                  Iniciar sesión
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (isEmpty) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container max-w-7xl mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center space-y-6 p-8">
-              <div className="relative">
-                <div className="h-20 w-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto">
-                  <ShoppingBag className="h-10 w-10 text-gray-400" />
-                </div>
-                <div className="absolute -bottom-1 -right-1 h-8 w-8 bg-white rounded-full border-4 border-gray-50 flex items-center justify-center">
-                  <Plus className="h-4 w-4 text-gray-600" />
-                </div>
-              </div>
-              <div>
-                <h3 className="font-bold text-2xl text-gray-900 mb-2">Tu carrito está vacío</h3>
-                <p className="text-gray-600 mb-6">
-                  Descubre nuestros increíbles productos y añade algunos a tu carrito
-                </p>
-                <Button 
-                  onClick={() => router.push('/productos')}
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                >
-                  Explorar productos
-                </Button>
-              </div>
-            </div>
-          </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="text-gray-600">Cargando tu carrito...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container max-w-7xl mx-auto py-8 px-4">
-        {/* Header con estilo de la página */}
-        <div className="mb-8">
-          <Card className="overflow-hidden">
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-                <div className="p-4 bg-white/10 rounded-full">
-                  <ShoppingCart className="h-8 w-8 text-white" />
+    <div className="min-h-screen bg-gray-50 pt-16">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Header responsive */}
+          <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => router.back()}
+                  className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full"
+                >
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                </Button>
+                <div className="p-1.5 sm:p-2 bg-indigo-100 rounded-lg">
+                  <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-indigo-600" />
                 </div>
-                
-                <div className="flex-1">
-                  <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-                    <h1 className="text-2xl md:text-3xl font-bold">Mi Carrito</h1>
-                    <Badge className="bg-white/20 hover:bg-white/30 w-fit text-white border-white/30">
-                      {totalQuantity} {totalQuantity === 1 ? 'producto' : 'productos'}
-                    </Badge>
-                  </div>
-                  
-                  <div className="space-y-1 text-indigo-100">
-                    <p className="text-sm">
-                      Total: {formatPrice(finalTotal)}
-                    </p>
-                    <p className="text-xs">
-                      {shippingCost === 0 ? 'Envío gratis incluido' : `+ ${formatPrice(shippingCost)} envío`}
-                    </p>
-                  </div>
+                <div>
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Mi Carrito</h1>
+                  <p className="text-sm sm:text-base text-gray-600">
+                    {totalQuantity} {totalQuantity === 1 ? 'producto' : 'productos'}
+                  </p>
                 </div>
-                
-                <div className="flex gap-2">
-                  <Button 
-                    variant="secondary" 
-                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                    onClick={() => router.back()}
+              </div>
+              
+              {!isEmpty && (
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="text-right hidden sm:block">
+                    <p className="text-xs sm:text-sm text-gray-600">Total estimado</p>
+                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">
+                      {formatPrice(finalTotal)}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {shippingCost === 0 ? 'Envío gratis' : `+ ${formatPrice(shippingCost)} envío`}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearCart}
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 sm:h-10 sm:w-10 p-0"
                   >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Volver
+                    <Trash2 className="h-4 w-4" />
                   </Button>
-                  
-                  {!isEmpty && (
-                    <Button
-                      variant="secondary"
-                      onClick={handleClearCart}
-                      className="bg-red-500/20 border-red-400/30 text-red-100 hover:bg-red-500/30"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Vaciar
-                    </Button>
-                  )}
                 </div>
-              </div>
+              )}
             </div>
-          </Card>
-        </div>
-
-        {/* Estadísticas rápidas */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-indigo-50 rounded-full">
-                  <Package className="h-6 w-6 text-indigo-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{totalQuantity}</p>
-                  <p className="text-sm text-gray-600">Productos en carrito</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-50 rounded-full">
-                  <ShoppingBag className="h-6 w-6 text-green-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{formatPrice(subtotal)}</p>
-                  <p className="text-sm text-gray-600">Subtotal</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-purple-50 rounded-full">
-                  <Heart className="h-6 w-6 text-purple-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{formatPrice(finalTotal)}</p>
-                  <p className="text-sm text-gray-600">Total final</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Lista de productos */}
-          <div className="lg:col-span-2 space-y-8">
-            <AnimatePresence>
-              {sortedCategories.map((categoryKey, index) => {
-                const categoryItems = itemsByCategory[categoryKey];
-                const categoryInfo = categoryMap[categoryKey as keyof typeof categoryMap];
-                const Icon = categoryInfo.icon;
-                
-                return (
-                  <motion.div
-                    key={categoryKey}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="space-y-4"
-                  >
-                    {/* Header de categoría */}
-                    <div className={`flex items-center gap-4 px-6 py-4 rounded-xl ${categoryInfo.bgColor} border ${categoryInfo.borderColor}`}>
-                      <div className={`p-3 rounded-lg ${categoryInfo.iconBg}`}>
-                        <Icon className={`h-6 w-6 ${categoryInfo.color}`} />
-                      </div>
-                      <div className="flex-1">
-                        <h2 className={`font-bold text-xl ${categoryInfo.color}`}>
-                          {categoryInfo.name}
-                        </h2>
-                        <p className="text-sm text-gray-600">
-                          {categoryItems.length} {categoryItems.length === 1 ? 'producto' : 'productos'}
-                        </p>
-                      </div>
-                      <Badge className={`${categoryInfo.badgeColor} font-semibold px-3 py-1`}>
-                        {categoryItems.length}
-                      </Badge>
-                    </div>
-                    
-                    {/* Items de la categoría */}
-                    <div className="space-y-4">
-                      {categoryItems.map(item => renderCartItem(item))}
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
           </div>
 
-          {/* Resumen del carrito */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <Card className="border-0 shadow-lg">
-                <CardContent className="p-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">Resumen del pedido</h2>
+          {/* Contenido principal */}
+          {isEmpty ? (
+            <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 text-center">
+              <div className="max-w-md mx-auto">
+                <div className="p-3 sm:p-4 bg-gray-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4">
+                  <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
+                </div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Tu carrito está vacío</h3>
+                <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+                  Comienza a agregar productos para continuar con tu compra
+                </p>
+                <Button 
+                  onClick={() => router.push('/productos')}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base px-4 sm:px-6"
+                >
+                  Explorar Productos
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+              {/* Lista de productos */}
+              <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+                {categoryOrder.map(category => {
+                  const items = groupedItems[category];
+                  if (!items || items.length === 0) return null;
+                  return renderCategoryGroup(category, items);
+                })}
+              </div>
+
+              {/* Resumen del carrito - responsive */}
+              <div className="lg:col-span-1">
+                <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 sticky top-20 sm:top-24">
+                  <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                    <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900">Resumen del Pedido</h3>
+                  </div>
                   
-                  <div className="space-y-4 mb-6">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Subtotal ({totalQuantity} productos):</span>
-                      <span className="font-medium text-gray-900">{formatPrice(subtotal)}</span>
+                  <div className="space-y-3 sm:space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm sm:text-base text-gray-600">Subtotal</span>
+                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(calculatedSubtotal)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Envío:</span>
-                      <span className={`font-medium ${shippingCost === 0 ? 'text-green-600' : 'text-gray-900'}`}>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm sm:text-base text-gray-600">Envío</span>
+                      <span className="text-sm sm:text-base font-medium text-gray-900">
                         {shippingCost === 0 ? 'Gratis' : formatPrice(shippingCost)}
                       </span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">TPS - TVQ (19%):</span>
-                      <span className="font-medium text-gray-900">{formatPrice(taxes)}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm sm:text-base text-gray-600">Impuestos (15%)</span>
+                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(taxes)}</span>
                     </div>
-                    {subtotal < shippingThreshold && (
-                      <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg">
-                        Agrega {formatPrice(shippingThreshold - subtotal)} más para envío gratis
+                    {calculatedSubtotal < shippingThreshold && (
+                      <div className="text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 sm:p-3 rounded-lg">
+                        Agrega {formatPrice(shippingThreshold - calculatedSubtotal)} más para envío gratis
                       </div>
                     )}
                     <Separator />
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-lg text-gray-900">Total:</span>
-                      <span className="font-bold text-2xl text-indigo-600">{formatPrice(finalTotal)}</span>
+                      <span className="text-base sm:text-lg font-semibold text-gray-900">Total</span>
+                      <span className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">{formatPrice(finalTotal)}</span>
                     </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <Button 
-                      onClick={handleCheckout}
-                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      disabled={isEmpty}
-                    >
-                      Proceder al checkout
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => router.push('/productos')}
-                      className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 py-3 rounded-xl"
-                    >
-                      Seguir comprando
-                    </Button>
                   </div>
                   
-                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Heart className="h-4 w-4" />
-                      <span>Envío gratis en pedidos superiores a $50</span>
-                    </div>
+                  <div className="space-y-2 sm:space-y-3 mt-4 sm:mt-6">
+                    <Button 
+                      size="lg" 
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base h-10 sm:h-12"
+                      onClick={() => router.push('/checkout')}
+                    >
+                      Proceder al Pago
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      className="w-full text-sm sm:text-base h-10 sm:h-12"
+                      onClick={() => router.push('/productos')}
+                    >
+                      Continuar Comprando
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       
