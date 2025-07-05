@@ -1,127 +1,123 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ShoppingCart, Grid, List, Filter, ArrowUpDown, Search } from 'lucide-react';
+import Image from 'next/image';
+import { Heart, ShoppingCart, ShoppingBag, Plus, X, Package, Utensils, Store, ArrowLeft, Trash2 } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
 import { Badge } from '@/components/common/ui/badge';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/common/ui/select';
-import { Input } from '@/components/common/ui/input';
-import { useFavoritesList } from '@/hooks/useFavoritesList';
-import { useCart } from '@/hooks/useCart';
+import { Card, CardContent } from '@/components/common/ui/card';
+import { Separator } from '@/components/common/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
-import { ProductCard } from '@/components/features/modules/catalog/ProductCard';
+import { useCart } from '@/hooks/useCart';
+import { useFavoritesList } from '@/hooks/useFavoritesList';
+import AuthModal from '@/components/features/auth/AuthModal';
+import { addToCart } from '@/lib/services/cart';
+import { removeFromFavorites } from '@/lib/services/favorites';
+import { toast } from 'sonner';
+import { FavoriteItem } from '@/lib/services/favorites';
 import { useTranslation } from '@/hooks/useTranslation';
-import Link from 'next/link';
-import { Product } from '@/lib/services/products';
-import { FavoriteProduct } from '@/lib/services/favorites';
-import { getImageUrl } from '@/lib/utils';
 
-type ViewMode = 'grid' | 'list';
-type SortBy = 'recent' | 'name' | 'price-low' | 'price-high';
-type FilterBy = 'all' | 'available' | 'out-of-stock' | 'discontinued';
+// Mapeo de categorías con estilos modernos
+const categoryMap = {
+  productos: { 
+    name: 'Productos', 
+    icon: Package, 
+    color: 'text-indigo-600',
+    bgColor: 'bg-gradient-to-r from-indigo-50 to-indigo-100',
+    borderColor: 'border-indigo-200',
+    badgeColor: 'bg-indigo-100 text-indigo-700',
+    iconBg: 'bg-indigo-100'
+  },
+  comidas: { 
+    name: 'Comidas', 
+    icon: Utensils, 
+    color: 'text-amber-600',
+    bgColor: 'bg-gradient-to-r from-amber-50 to-amber-100',
+    borderColor: 'border-amber-200',
+    badgeColor: 'bg-amber-100 text-amber-700',
+    iconBg: 'bg-amber-100'
+  },
+  boutique: { 
+    name: 'Boutique', 
+    icon: Store, 
+    color: 'text-purple-600',
+    bgColor: 'bg-gradient-to-r from-purple-50 to-purple-100',
+    borderColor: 'border-purple-200',
+    badgeColor: 'bg-purple-100 text-purple-700',
+    iconBg: 'bg-purple-100'
+  }
+};
 
-// Función para convertir FavoriteProduct a Product para compatibilidad con ProductCard
-const convertFavoriteToProduct = (favoriteProduct: FavoriteProduct): Product => {
-  const product: Product = {
-    id: favoriteProduct.id,
-      nombre: favoriteProduct.nombre,
-      descripcion: '', // FavoriteProduct no tiene descripción
-      precio: favoriteProduct.precio,
-      stock: favoriteProduct.stock,
-      imagen_principal: getImageUrl(favoriteProduct.imagen_principal),
-      categoria_id: 0, // Default value
-      fecha_creacion: new Date().toISOString(), // Default value
-      activo: favoriteProduct.activo ?? true,
-      imagenes: [],
-      rating: 0,
-      reviewCount: 0,
-      categorias: favoriteProduct.categorias ? {
-        id: 0,
-        nombre: favoriteProduct.categorias.nombre
-      } : {
-        id: 0,
-        nombre: 'Sin categoría'
-      }
-    };
-    
-    return product;
-  };
+// Función para determinar la categoría de un item
+const getItemCategory = (item: FavoriteItem): string => {
+  const categoryName = item.productos.categorias?.nombre?.toLowerCase() || '';
+  
+  // Lógica para mapear categorías
+  if (categoryName.includes('comida') || categoryName.includes('food') || categoryName.includes('snack')) {
+    return 'comidas';
+  } else if (categoryName.includes('boutique') || categoryName.includes('ropa') || categoryName.includes('accesorio')) {
+    return 'boutique';
+  } else {
+    return 'productos';
+  }
+};
+
+// Orden de categorías
+const categoryOrder = ['productos', 'comidas', 'boutique'];
 
 export default function FavoritesPage() {
+  const router = useRouter();
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
+  const { addToCart: addToCartHook } = useCart();
   const { 
     favorites, 
     isLoading, 
-    error, 
-    pagination, 
-    loadFavorites,
-    removeFromFavorites,
-    isEmpty,
-    totalCount 
+    totalCount, 
+    loadFavorites, 
+    removeFromFavorites: removeFavoriteHook 
   } = useFavoritesList();
-  const { addToCart } = useCart();
   
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [sortBy, setSortBy] = useState<SortBy>('recent');
-  const [filterBy, setFilterBy] = useState<FilterBy>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
+  const [addingToCart, setAddingToCart] = useState<Set<string>>(new Set());
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // Cargar favoritos al montar el componente
+  // Mostrar modal si no está autenticado
   useEffect(() => {
-    if (isAuthenticated) {
-      loadFavorites(currentPage);
+    if (!isAuthenticated && !isLoading) {
+      setShowAuthModal(true);
+    } else {
+      setShowAuthModal(false);
     }
-  }, [isAuthenticated, currentPage, loadFavorites]);
+  }, [isAuthenticated, isLoading]);
 
-  // Filtrar y ordenar favoritos
-  const filteredAndSortedFavorites = favorites
-    .filter(favorite => {
-      // Filtro por búsqueda
-      const matchesSearch = favorite.productos.nombre
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      
-      if (!matchesSearch) return false;
+  useEffect(() => {
+    if (user) {
+      loadFavorites();
+    }
+  }, [user, loadFavorites]);
 
-      // Filtro por estado
-      if (filterBy === 'all') return true;
-      if (filterBy === 'available') return favorite.productos.stock > 0 && favorite.productos.activo !== false;
-      if (filterBy === 'out-of-stock') return favorite.productos.stock === 0 && favorite.productos.activo !== false;
-      if (filterBy === 'discontinued') return favorite.productos.activo === false;
-      return true;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'recent':
-          return new Date(b.fecha_agregado).getTime() - new Date(a.fecha_agregado).getTime();
-        case 'name':
-          return a.productos.nombre.localeCompare(b.productos.nombre);
-        case 'price-low':
-          return a.productos.precio - b.productos.precio;
-        case 'price-high':
-          return b.productos.precio - a.productos.precio;
-        default:
-          return 0;
+  // Agrupar favoritos por categoría
+  const itemsByCategory = useMemo(() => {
+    const grouped: { [key: string]: FavoriteItem[] } = {};
+    
+    favorites.forEach(item => {
+      const category = getItemCategory(item);
+      if (!grouped[category]) {
+        grouped[category] = [];
       }
+      grouped[category].push(item);
     });
+    
+    return grouped;
+  }, [favorites]);
 
-  const handleRemoveFromFavorites = async (productId: number) => {
-    await removeFromFavorites(productId);
-  };
-
-  const handleAddToCart = async (productId: number) => {
-    await addToCart(productId, 1);
-  };
+  // Ordenar categorías
+  const sortedCategories = useMemo(() => {
+    return categoryOrder.filter(category => itemsByCategory[category]?.length > 0);
+  }, [itemsByCategory]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-US', {
@@ -130,54 +126,167 @@ export default function FavoritesPage() {
     }).format(price);
   };
 
-  const getStockBadge = (product: any) => {
-    if (product.activo === false) {
-      return <Badge variant="secondary" className="bg-gray-500">Descontinuado</Badge>;
+  const handleAddToCart = async (item: FavoriteItem) => {
+    if (item.productos.stock === 0) {
+      toast.error('Producto agotado');
+      return;
     }
-    if (product.stock === 0) {
-      return <Badge variant="destructive">Sin stock</Badge>;
+
+    setAddingToCart(prev => new Set(prev).add(item.id));
+    try {
+      await addToCart(item.producto_id, 1);
+      toast.success('Producto agregado al carrito');
+    } catch (error) {
+      toast.error('Error al agregar al carrito');
+    } finally {
+      setAddingToCart(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(item.id);
+        return newSet;
+      });
     }
-    if (product.stock <= 5) {
-      return <Badge variant="secondary" className="bg-amber-500">Poco stock</Badge>;
-    }
-    return <Badge variant="secondary" className="bg-green-500">Disponible</Badge>;
   };
 
-  if (!isAuthenticated) {
+  const handleRemoveFromFavorites = async (item: FavoriteItem) => {
+    setLoadingItems(prev => new Set(prev).add(item.id));
+    try {
+      await removeFromFavorites(item.producto_id);
+      await loadFavorites(); // Recargar la lista
+      toast.success('Producto eliminado de favoritos');
+    } catch (error) {
+      toast.error('Error al eliminar de favoritos');
+    } finally {
+      setLoadingItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(item.id);
+        return newSet;
+      });
+    }
+  };
+
+  const renderFavoriteItem = (item: FavoriteItem) => {
+    const isItemLoading = loadingItems.has(item.id);
+    const isAddingToCart = addingToCart.has(item.id);
+    const isOutOfStock = item.productos.stock === 0;
+    
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Heart className="w-16 h-16 mx-auto text-gray-400" />
-          <h2 className="text-2xl font-bold text-gray-900">
-            Inicia sesión para ver tus favoritos
-          </h2>
-          <p className="text-gray-600 max-w-md mx-auto">
-            Debes estar autenticado para acceder a tu lista de favoritos
-          </p>
-          <Link href="/auth/login">
-            <Button className="bg-red-500 hover:bg-red-600">
-              Iniciar sesión
-            </Button>
-          </Link>
-        </div>
-      </div>
+      <motion.div
+        key={item.id}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, x: -100 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Card className={`overflow-hidden transition-all duration-200 border-0 shadow-sm hover:shadow-md ${isItemLoading ? 'opacity-50' : ''}`}>
+          <CardContent className="p-6">
+            <div className="flex gap-6">
+              <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-sm">
+                <Image
+                  src={item.productos.imagen_principal}
+                  alt={item.productos.nombre}
+                  fill
+                  className="object-cover"
+                  sizes="96px"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/placeholder-product.svg';
+                  }}
+                />
+                {isOutOfStock && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <span className="text-white text-xs font-semibold">Agotado</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex-1 min-w-0 space-y-3">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1 pr-4">
+                    <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                      {item.productos.nombre}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {item.productos.categorias?.nombre || 'Sin categoría'}
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <span className="text-lg font-bold text-indigo-600">
+                        {formatPrice(item.productos.precio)}
+                      </span>
+                      {item.productos.stock <= 5 && item.productos.stock > 0 && (
+                        <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-700 border-amber-200">
+                          Solo {item.productos.stock} disponibles
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 flex-shrink-0 rounded-full"
+                    onClick={() => handleRemoveFromFavorites(item)}
+                    disabled={isItemLoading}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-gray-500">
+                    Agregado: {new Date(item.fecha_agregado).toLocaleDateString()}
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => router.push(`/productos/${item.producto_id}`)}
+                      className="text-gray-600 hover:text-gray-900"
+                    >
+                      Ver detalles
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => handleAddToCart(item)}
+                      disabled={isAddingToCart || isOutOfStock}
+                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+                    >
+                      {isAddingToCart ? (
+                        <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          {isOutOfStock ? 'Agotado' : 'Agregar'}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     );
-  }
+  };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg p-4 space-y-4">
-                  <div className="h-48 bg-gray-200 rounded"></div>
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+      <div className="min-h-screen bg-gray-50">
+        <div className="container max-w-7xl mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center space-y-4">
+              <div className="relative">
+                <div className="h-12 w-12 border-4 border-red-200 border-t-red-600 rounded-full animate-spin mx-auto"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Heart className="h-6 w-6 text-red-600" />
                 </div>
-              ))}
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">Cargando favoritos...</h3>
+                <p className="text-sm text-gray-600">
+                  Estamos preparando tus productos favoritos
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -185,231 +294,214 @@ export default function FavoritesPage() {
     );
   }
 
-  if (error) {
+  if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="text-red-500 text-6xl">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-900">
-            Error al cargar favoritos
-          </h2>
-          <p className="text-gray-600 max-w-md mx-auto">
-            {error}
-          </p>
-          <Button onClick={() => loadFavorites(1)} variant="outline">
-            Intentar de nuevo
-          </Button>
+      <div className="min-h-screen bg-gray-50">
+        <div className="container max-w-7xl mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center space-y-6 p-8">
+              <div className="relative">
+                <div className="h-20 w-20 bg-gradient-to-br from-red-100 to-pink-100 rounded-full flex items-center justify-center mx-auto">
+                  <Heart className="h-10 w-10 text-red-600" />
+                </div>
+                <div className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 rounded-full flex items-center justify-center">
+                  <X className="h-3 w-3 text-white" />
+                </div>
+              </div>
+              <div>
+                <h3 className="font-bold text-2xl text-gray-900 mb-2">¡Inicia sesión!</h3>
+                <p className="text-gray-600 mb-6">
+                  Para ver y gestionar tus productos favoritos necesitas iniciar sesión
+                </p>
+                <Button 
+                  onClick={() => router.push('/')}
+                  className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  Iniciar sesión
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (favorites.length === 0 && !isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="container max-w-7xl mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center space-y-6 p-8">
+              <div className="relative">
+                <div className="h-20 w-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto">
+                  <Heart className="h-10 w-10 text-gray-400" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 h-8 w-8 bg-white rounded-full border-4 border-gray-50 flex items-center justify-center">
+                  <Plus className="h-4 w-4 text-gray-600" />
+                </div>
+              </div>
+              <div>
+                <h3 className="font-bold text-2xl text-gray-900 mb-2">Sin favoritos aún</h3>
+                <p className="text-gray-600 mb-6">
+                  Descubre nuestros increíbles productos y añade algunos a tus favoritos
+                </p>
+                <Button 
+                  onClick={() => router.push('/productos')}
+                  className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  Explorar productos
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-            <div className="flex items-center space-x-3">
-              <Heart className="w-8 h-8 text-red-500" />
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  Mis Favoritos
-                </h1>
-                <p className="text-gray-600">
-                  {totalCount} productos guardados
-                </p>
-              </div>
-            </div>
-            
-            {/* View Mode Toggle */}
-            <div className="flex items-center space-x-2">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className="p-2"
-              >
-                <Grid className="w-4 h-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="p-2"
-              >
-                <List className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters and Search */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Buscar productos..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            {/* Filter by Status */}
-            <Select value={filterBy} onValueChange={(value: FilterBy) => setFilterBy(value)}>
-              <SelectTrigger>
-                <Filter className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Filtrar por estado" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="available">Disponibles</SelectItem>
-                <SelectItem value="out-of-stock">Sin stock</SelectItem>
-                <SelectItem value="discontinued">Descontinuados</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Sort by */}
-            <Select value={sortBy} onValueChange={(value: SortBy) => setSortBy(value)}>
-              <SelectTrigger>
-                <ArrowUpDown className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Ordenar por" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="recent">Más recientes</SelectItem>
-                <SelectItem value="name">Nombre</SelectItem>
-                <SelectItem value="price-low">Precio: menor a mayor</SelectItem>
-                <SelectItem value="price-high">Precio: mayor a menor</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Clear Filters */}
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSearchQuery('');
-                setFilterBy('all');
-                setSortBy('recent');
-              }}
-              className="w-full"
-            >
-              Limpiar filtros
-            </Button>
-          </div>
-        </div>
-
-        {/* Content */}
-        {isEmpty ? (
-          <div className="bg-white rounded-lg shadow-sm p-12">
-            <div className="text-center space-y-6">
-              <Heart className="w-24 h-24 mx-auto text-gray-300" />
-              <div className="space-y-2">
-                <h3 className="text-2xl font-bold text-gray-900">
-                  {searchQuery || filterBy !== 'all' 
-                    ? 'No se encontraron resultados' 
-                    : 'Tu lista de favoritos está vacía'
-                  }
-                </h3>
-                <p className="text-gray-600 max-w-md mx-auto">
-                  {searchQuery || filterBy !== 'all'
-                    ? 'Intenta con otros filtros o términos de búsqueda'
-                    : 'Explora nuestros productos y guarda tus favoritos aquí'
-                  }
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                {(searchQuery || filterBy !== 'all') && (
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSearchQuery('');
-                      setFilterBy('all');
-                    }}
-                  >
-                    Limpiar filtros
-                  </Button>
-                )}
-                <Link href="/productos">
-                  <Button className="bg-red-500 hover:bg-red-600">
-                    Explorar productos
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Products Grid/List */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`${viewMode}-${filteredAndSortedFavorites.length}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className={
-                  viewMode === 'grid'
-                    ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-                    : 'space-y-4'
-                }
-              >
-                {filteredAndSortedFavorites.map((favorite) => (
-                  <motion.div
-                    key={favorite.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ProductCard
-                      product={convertFavoriteToProduct(favorite.productos)}
-                      className={viewMode === 'list' ? 'flex-row h-32' : ''}
-                      showCategory={true}
-                      showRating={true}
-                    />
-                  </motion.div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Pagination */}
-            {pagination.totalPages > 1 && (
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600">
-                    Mostrando {((currentPage - 1) * pagination.itemsPerPage) + 1} - {Math.min(currentPage * pagination.itemsPerPage, pagination.totalItems)} de {pagination.totalItems} productos
-                  </p>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                      disabled={pagination.currentPage === 1}
-                    >
-                      Anterior
-                    </Button>
-                    <span className="text-sm text-gray-600">
-                      {currentPage} / {pagination.totalPages}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(prev => prev + 1)}
-                      disabled={pagination.currentPage === pagination.totalPages}
-                    >
-                      Siguiente
-                    </Button>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container max-w-7xl mx-auto py-8 px-4">
+        {/* Header con estilo de la página */}
+        <div className="mb-8">
+          <Card className="overflow-hidden">
+            <div className="bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                <div className="p-4 bg-white/10 rounded-full">
+                  <Heart className="h-8 w-8 text-white" />
+                </div>
+                
+                <div className="flex-1">
+                  <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
+                    <h1 className="text-2xl md:text-3xl font-bold">Mis Favoritos</h1>
+                    <Badge className="bg-white/20 hover:bg-white/30 w-fit text-white border-white/30">
+                      {totalCount} {totalCount === 1 ? 'producto' : 'productos'}
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-1 text-red-100">
+                    <p className="text-sm">
+                      Tus productos favoritos guardados
+                    </p>
+                    <p className="text-xs">
+                      Agrega al carrito cuando estés listo
+                    </p>
                   </div>
                 </div>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    variant="secondary" 
+                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                    onClick={() => router.back()}
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Volver
+                  </Button>
+                </div>
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          </Card>
+        </div>
+
+        {/* Estadísticas rápidas */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-red-50 rounded-full">
+                  <Heart className="h-6 w-6 text-red-500" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{totalCount}</p>
+                  <p className="text-sm text-gray-600">Productos favoritos</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-green-50 rounded-full">
+                  <ShoppingBag className="h-6 w-6 text-green-500" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{sortedCategories.length}</p>
+                  <p className="text-sm text-gray-600">Categorías</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-purple-50 rounded-full">
+                  <Package className="h-6 w-6 text-purple-500" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {favorites.filter(f => f.productos.stock > 0).length}
+                  </p>
+                  <p className="text-sm text-gray-600">Disponibles</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Lista de favoritos */}
+        <div className="space-y-8">
+          <AnimatePresence>
+            {sortedCategories.map((categoryKey, index) => {
+              const categoryItems = itemsByCategory[categoryKey];
+              const categoryInfo = categoryMap[categoryKey as keyof typeof categoryMap];
+              const Icon = categoryInfo.icon;
+              
+              return (
+                <motion.div
+                  key={categoryKey}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className="space-y-4"
+                >
+                  {/* Header de categoría */}
+                  <div className={`flex items-center gap-4 px-6 py-4 rounded-xl ${categoryInfo.bgColor} border ${categoryInfo.borderColor}`}>
+                    <div className={`p-3 rounded-lg ${categoryInfo.iconBg}`}>
+                      <Icon className={`h-6 w-6 ${categoryInfo.color}`} />
+                    </div>
+                    <div className="flex-1">
+                      <h2 className={`font-bold text-xl ${categoryInfo.color}`}>
+                        {categoryInfo.name}
+                      </h2>
+                      <p className="text-sm text-gray-600">
+                        {categoryItems.length} {categoryItems.length === 1 ? 'producto' : 'productos'}
+                      </p>
+                    </div>
+                    <Badge className={`${categoryInfo.badgeColor} font-semibold px-3 py-1`}>
+                      {categoryItems.length}
+                    </Badge>
+                  </div>
+                  
+                  {/* Items de la categoría */}
+                  <div className="space-y-4">
+                    {categoryItems.map(item => renderFavoriteItem(item))}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
       </div>
+      
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)}
+        redirectUrl="/profile/favorites"
+      />
     </div>
   );
 }

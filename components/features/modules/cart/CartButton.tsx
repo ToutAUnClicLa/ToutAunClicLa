@@ -6,7 +6,7 @@ import { Button } from '@/components/common/ui/button';
 import { Badge } from '@/components/common/ui/badge';
 import { useCart } from '@/hooks/useCart';
 
-export function CartDrawer() {
+export function CartButton() {
   const router = useRouter();
   const { totalQuantity } = useCart({ autoLoad: false, lazy: true });
 

@@ -464,6 +464,7 @@ export function useCart(options: UseCartOptions = {}) {
     
     // Funciones optimizadas
     loadCart: loadCartNow, // Exponer la versión sin debounce para uso manual
+    loadCartNow, // Exponer también con el nombre original
     addToCart,
     updateQuantity,
     removeFromCart,

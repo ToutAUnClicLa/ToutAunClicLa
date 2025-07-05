@@ -33,25 +33,31 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Lista de rutas protegidas que requieren autenticación
-  const protectedRoutes = [
-    '/profile',
+  // Lista de rutas protegidas que requieren autenticación estricta (server-side)
+  const strictProtectedRoutes = [
+    '/checkout',
     '/profile/orders',
-    '/profile/favorites',
-    '/profile/addresses',
+    '/profile/addresses', 
     '/profile/notifications',
     '/profile/settings',
-    '/checkout',
-    // Añadir más rutas protegidas según sea necesario
+    // Rutas que requieren redirección obligatoria
   ];
 
-  // Verificar si la URL actual está en la lista de rutas protegidas
-  const isProtectedRoute = protectedRoutes.some(route => 
+  // Rutas que pueden manejar autenticación del lado del cliente
+  const clientSideAuthRoutes = [
+    '/profile',
+    '/profile/favorites',
+    '/cart',
+    // Rutas que pueden mostrar modal de login
+  ];
+
+  // Verificar si la URL actual está en la lista de rutas estrictamente protegidas
+  const isStrictProtectedRoute = strictProtectedRoutes.some(route => 
     req.nextUrl.pathname === route || req.nextUrl.pathname.startsWith(`${route}/`)
   );
 
-  // Si la ruta está protegida y el usuario no está autenticado, redirigir al inicio de sesión
-  if (isProtectedRoute && !isAuthenticated) {
+  // Solo redirigir para rutas estrictamente protegidas
+  if (isStrictProtectedRoute && !isAuthenticated) {
     const redirectUrl = new URL('/', req.url);
     // Añadir la URL actual como parámetro de redirección
     redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname);
