@@ -66,21 +66,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const response = await authService.getUserProfile();
         setUser(response.user);
         setIsAuthenticated(true);
+        
+        console.log('Usuario autenticado:', response.user.email);
       } else {
         // Limpiar estado si no hay token
         setUser(null);
         setIsAuthenticated(false);
+        console.log('No hay token, usuario no autenticado');
       }
     } catch (error: any) {
       console.error('Error al verificar estado de autenticación:', error);
       
       // Si hay error de token expirado o inválido, limpiar estado
-      if (error.message.includes('Sesión expirada') || error.message.includes('No hay token')) {
+      if (error.message.includes('Sesión expirada') || 
+          error.message.includes('No hay token') ||
+          error.message.includes('401') ||
+          error.message.includes('Unauthorized')) {
         authService.logout();
         setUser(null);
         setIsAuthenticated(false);
+        console.log('Token inválido o expirado, limpiando sesión');
       } else {
-        setError(error.message || 'Error al verificar autenticación');
+        // Para otros errores, no mostrar al usuario pero log en consola
+        console.warn('Error de autenticación (no crítico):', error.message);
+        // No setear error en el estado para evitar mostrar errores al cargar
       }
     } finally {
       setIsLoading(false);
@@ -103,11 +112,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await authService.loginUser(credentials);
       setUser(response.user);
       setIsAuthenticated(true);
-      toast.success('¡Bienvenido! Has iniciado sesión correctamente');
+      
+      console.log('Login exitoso para:', response.user.email);
+      toast.success(`¡Bienvenido ${response.user.nombre}!`);
+      
       return response;
     } catch (error: any) {
       console.error('Error en login:', error);
-      const errorMessage = error.message || 'Error al iniciar sesión';
+      
+      let errorMessage = 'Error al iniciar sesión';
+      
+      // Manejo específico de errores
+      if (error.message.includes('verificación') || error.message.includes('403')) {
+        errorMessage = 'Tu cuenta requiere verificación. Revisa tu correo electrónico.';
+      } else if (error.message.includes('401') || error.message.includes('credentials')) {
+        errorMessage = 'Email o contraseña incorrectos';
+      } else if (error.message.includes('423') || error.message.includes('locked')) {
+        errorMessage = 'Cuenta bloqueada por múltiples intentos fallidos';
+      } else if (error.message.includes('429') || error.message.includes('rate limit')) {
+        errorMessage = 'Demasiados intentos. Espera unos minutos';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setError(errorMessage);
       toast.error(errorMessage);
       throw error;
@@ -122,12 +149,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     try {
       const response = await authService.registerUser(data);
+      
       // No establecemos el usuario hasta que se verifique el email
+      console.log('Registro exitoso para:', data.email);
       toast.success('Cuenta creada. Revisa tu email para verificar tu cuenta');
+      
       return response;
     } catch (error: any) {
       console.error('Error en registro:', error);
-      const errorMessage = error.message || 'Error al crear cuenta';
+      
+      let errorMessage = 'Error al crear cuenta';
+      
+      // Manejo específico de errores
+      if (error.message.includes('409') || error.message.includes('already exists')) {
+        errorMessage = 'Este email ya está registrado';
+      } else if (error.message.includes('400') || error.message.includes('validation')) {
+        errorMessage = 'Datos inválidos. Verifica la información';
+      } else if (error.message.includes('429') || error.message.includes('rate limit')) {
+        errorMessage = 'Demasiados intentos. Espera unos minutos';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setError(errorMessage);
       toast.error(errorMessage);
       throw error;
@@ -164,11 +207,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await authService.verifyEmail(code, email);
       setUser(response.user);
       setIsAuthenticated(true);
-      toast.success('Email verificado correctamente. ¡Bienvenido!');
+      
+      console.log('Email verificado exitosamente para:', email);
+      toast.success(`¡Bienvenido ${response.user.nombre}! Email verificado correctamente`);
+      
       return response;
     } catch (error: any) {
       console.error('Error en verificación:', error);
-      const errorMessage = error.message || 'Código de verificación inválido';
+      
+      let errorMessage = 'Código de verificación inválido';
+      
+      // Manejo específico de errores
+      if (error.message.includes('400') || error.message.includes('invalid')) {
+        errorMessage = 'Código incorrecto o expirado';
+      } else if (error.message.includes('404')) {
+        errorMessage = 'Usuario no encontrado';
+      } else if (error.message.includes('409') || error.message.includes('already verified')) {
+        errorMessage = 'Esta cuenta ya está verificada';
+      } else if (error.message.includes('429')) {
+        errorMessage = 'Demasiados intentos. Espera unos minutos';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setError(errorMessage);
       toast.error(errorMessage);
       throw error;

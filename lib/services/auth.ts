@@ -232,17 +232,23 @@ export async function resendVerification(email: string): Promise<{ message: stri
  */
 export async function checkVerificationStatus(email: string): Promise<{ verified: boolean; email: string }> {
   try {
-    const { 'Content-Type': _, ...headers } = getHeaders();
-    
-    const response = await fetch(`${AUTH_BASE_URL}/verification-status?email=${encodeURIComponent(email)}`, {
+    if (!email || !email.trim()) {
+      throw new Error('Email es requerido para verificar estado');
+    }
+
+    const response = await fetch(`${AUTH_BASE_URL}/verification-status?email=${encodeURIComponent(email.trim())}`, {
       method: 'GET',
-      headers,
+      headers: {
+        'Accept': 'application/json',
+        'Origin': 'https://toutaunclicla.com',
+        'Referer': 'https://toutaunclicla.com',
+      },
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || data.error || 'Error al verificar estado');
+      throw new Error(data.message || data.error || `Error ${response.status}: ${response.statusText}`);
     }
 
     return data;
@@ -314,21 +320,35 @@ export function getAuthToken(): string | null {
 
 /**
  * Verificar si un email ya está registrado
+ * Simplificado: deja que el backend maneje la validación durante el registro
  */
 export async function checkEmailExists(email: string): Promise<boolean> {
   try {
-    // Usamos el endpoint de verification-status para verificar si el email existe
-    // Si el usuario no existe, el backend responderá con 404
-    await checkVerificationStatus(email);
-    return true; // Si no da error 404, el email existe
-  } catch (error: any) {
-    // Si es un error 404, significa que el usuario no existe
-    if (error.message.includes('404') || error.message.includes('User not found')) {
-      return false;
+    if (!email || !email.trim()) {
+      return false; // Email vacío no existe
     }
-    // Si es otro tipo de error, asumimos que el email existe pero hay otro problema
-    console.warn('Error checking email existence:', error);
-    return true;
+
+    const response = await fetch(`${AUTH_BASE_URL}/verification-status?email=${encodeURIComponent(email.trim())}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    // Si el response es exitoso (200), el usuario existe
+    if (response.ok) {
+      return true;
+    }
+
+    // Para cualquier otro caso, asumimos que no existe
+    // El backend validará durante el registro real
+    return false;
+
+  } catch (error: any) {
+    console.warn('No se pudo verificar la existencia del email, continuando con el flujo:', error);
+    // En caso de error, asumimos que no existe y dejamos que el registro maneje la validación
+    return false;
   }
 }
 
