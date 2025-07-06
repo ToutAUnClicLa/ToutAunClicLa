@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/common/ui/tabs";
 import Link from 'next/link';
 import { User, Heart, MapPin, ShoppingBag, Settings } from 'lucide-react';
 
@@ -48,24 +47,27 @@ export default function ProfileLayout({
 }) {
   return (
     <div className="container py-8">
-      <div className="flex flex-col md:flex-row gap-8">
-        <aside className="w-full md:w-64 shrink-0">
-          <nav className="space-y-2">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Menú lateral - Solo visible en desktop */}
+        <aside className="hidden lg:block w-64 shrink-0">
+          <nav className="sticky top-24 space-y-2">
             {profileTabs.map((tab) => {
               const Icon = tab.icon;
               return (
                 <Link
                   key={tab.value}
                   href={tab.href}
-                  className="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors group"
                 >
-                  <Icon className="h-5 w-5" />
-                  <span>{tab.label}</span>
+                  <Icon className="h-5 w-5 text-gray-500 group-hover:text-gray-700" />
+                  <span className="font-medium">{tab.label}</span>
                 </Link>
               );
             })}
           </nav>
         </aside>
+        
+        {/* Contenido principal */}
         <main className="flex-1">
           {children}
         </main>

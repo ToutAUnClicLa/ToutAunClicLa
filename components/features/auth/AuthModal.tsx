@@ -398,21 +398,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', redi
             <div className="relative z-10 flex flex-col justify-center px-6 lg:px-8 py-6">
               <div className="space-y-4">
                 {/* Logo y marca */}
-                <div className="flex items-center space-x-3">
-                  <div className="bg-white rounded-full w-20 h-20 lg:w-24 lg:h-24 shadow-lg flex items-center justify-end pr-1">
-                    <motion.img 
-                      src="/logoaunclic.svg" 
-                      alt="Logo A un clic" 
-                      className="h-16 w-16 lg:h-20 lg:w-20 filter drop-shadow-lg" 
-                      width="80"
-                      height="80"
-                    />
-                  </div>
-                  <div className="text-white">
-                    <div className="text-base font-medium">Tout À Un</div>
-                    <div className="text-xl lg:text-2xl font-bold">Clic là</div>
-                  </div>
-                </div>
+
                 
                 {/* Título dinámico */}
                 <div className="space-y-2">

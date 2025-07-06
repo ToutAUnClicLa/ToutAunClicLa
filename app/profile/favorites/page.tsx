@@ -329,8 +329,8 @@ export default function FavoritesPage() {
 
   if (favorites.length === 0 && !isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container max-w-7xl mx-auto px-4 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-red-50/30">
+        <div className="container max-w-7xl mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center space-y-6 p-8">
               <div className="relative">
@@ -359,51 +359,75 @@ export default function FavoritesPage() {
       </div>
     );
   }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container max-w-7xl mx-auto py-8 px-4">
-        {/* Header con estilo de la página */}
-        <div className="mb-8">
-          <Card className="overflow-hidden">
-            <div className="bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white">
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-                <div className="p-4 bg-white/10 rounded-full">
-                  <Heart className="h-8 w-8 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-red-50/30">
+      <div className="container max-w-7xl mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4">
+        {/* Header mejorado con estilo empático */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-6 sm:mb-8"
+        >
+          <Card className="overflow-hidden shadow-xl border-0">
+            <div className="bg-gradient-to-r from-red-500 via-pink-500 to-rose-600 p-4 sm:p-6 lg:p-8 text-white relative">
+              {/* Decoraciones de fondo */}
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-rose-600/20 backdrop-blur-sm"></div>
+              <div className="absolute top-4 right-4 w-20 h-20 bg-white/10 rounded-full blur-2xl"></div>
+              <div className="absolute bottom-4 left-4 w-16 h-16 bg-white/5 rounded-full blur-xl"></div>
+              
+              <div className="relative flex flex-col lg:flex-row items-start lg:items-center gap-4 sm:gap-6">
+                <div className="p-3 sm:p-4 bg-white/20 rounded-2xl backdrop-blur-sm border border-white/30 shadow-lg">
+                  <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" />
                 </div>
                 
-                <div className="flex-1">
-                  <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-                    <h1 className="text-2xl md:text-3xl font-bold">Mis Favoritos</h1>
-                    <Badge className="bg-white/20 hover:bg-white/30 w-fit text-white border-white/30">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white to-red-100 bg-clip-text text-transparent">
+                      {totalCount === 0 ? "Tus productos favoritos" : "Productos que ❤️ amas"}
+                    </h1>
+                    <Badge className="bg-white/30 hover:bg-white/40 w-fit text-white border-white/40 text-sm font-medium backdrop-blur-sm">
                       {totalCount} {totalCount === 1 ? 'producto' : 'productos'}
                     </Badge>
                   </div>
                   
-                  <div className="space-y-1 text-red-100">
-                    <p className="text-sm">
-                      Tus productos favoritos guardados
+                  <div className="space-y-2 text-red-100">
+                    <p className="text-sm sm:text-base font-medium">
+                      {totalCount === 0 
+                        ? "Aquí aparecerán todos los productos que marques como favoritos" 
+                        : "Aquí tienes todos los productos que has guardado para más tarde"
+                      }
                     </p>
-                    <p className="text-xs">
-                      Agrega al carrito cuando estés listo
+                    <p className="text-xs sm:text-sm opacity-90">
+                      {totalCount === 0 
+                        ? "Haz clic en el ❤️ de cualquier producto para agregarlo a esta lista especial" 
+                        : "Puedes agregar productos al carrito o eliminarlos de favoritos fácilmente"
+                      }
                     </p>
                   </div>
                 </div>
                 
-                <div className="flex gap-2">
-                  <Button 
-                    variant="secondary" 
-                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+                  <Button
+                    variant="secondary"
+                    className="bg-white/20 border-white/30 text-white hover:bg-white/30 text-sm font-medium backdrop-blur-sm transition-all duration-200 flex-1 sm:flex-none"
                     onClick={() => router.back()}
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     Volver
                   </Button>
+                  <Button
+                    className="bg-white text-red-600 hover:bg-red-50 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-200 flex-1 sm:flex-none"
+                    onClick={() => router.push('/productos')}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    {totalCount === 0 ? 'Explorar productos' : 'Buscar más productos'}
+                  </Button>
                 </div>
               </div>
             </div>
           </Card>
-        </div>
+        </motion.div>
 
         {/* Estadísticas rápidas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

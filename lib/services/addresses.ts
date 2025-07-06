@@ -7,7 +7,6 @@ export interface Address {
   state: string;
   zipCode: string;
   country: string;
-  phone?: string;
 }
 
 export interface CreateAddressData {
@@ -16,7 +15,6 @@ export interface CreateAddressData {
   state: string;
   zipCode: string;
   country: string;
-  phone?: string;
 }
 
 export interface UpdateAddressData {
@@ -25,7 +23,29 @@ export interface UpdateAddressData {
   state: string;
   zipCode: string;
   country: string;
-  phone?: string;
+}
+
+// Función para transformar datos del frontend al backend
+function transformToBackendFormat(data: CreateAddressData | UpdateAddressData) {
+  return {
+    direccion: data.street,
+    ciudad: data.city,
+    estado: data.state,
+    codigo_postal: data.zipCode,
+    pais: data.country
+  };
+}
+
+// Función para transformar datos del backend al frontend
+function transformFromBackendFormat(data: any): Address {
+  return {
+    id: data.id,
+    street: data.direccion,
+    city: data.ciudad,
+    state: data.estado,
+    zipCode: data.codigo_postal,
+    country: data.pais
+  };
 }
 
 /**
@@ -53,7 +73,8 @@ export async function getUserAddresses(): Promise<Address[]> {
     }
 
     const data = await response.json();
-    return data.addresses || [];
+    const addresses = data.addresses || [];
+    return addresses.map(transformFromBackendFormat);
   } catch (error: any) {
     console.error('Error al obtener direcciones:', error);
     throw error;
@@ -71,13 +92,15 @@ export async function createAddress(addressData: CreateAddressData): Promise<Add
       throw new Error('No hay token de autenticación');
     }
 
+    const backendData = transformToBackendFormat(addressData);
+
     const response = await fetch(`${API_BASE_URL}/addresses`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(addressData),
+      body: JSON.stringify(backendData),
     });
 
     if (!response.ok) {
@@ -86,7 +109,7 @@ export async function createAddress(addressData: CreateAddressData): Promise<Add
     }
 
     const data = await response.json();
-    return data.address;
+    return transformFromBackendFormat(data.address);
   } catch (error: any) {
     console.error('Error al crear dirección:', error);
     throw error;
@@ -104,13 +127,15 @@ export async function updateAddress(addressId: string, addressData: UpdateAddres
       throw new Error('No hay token de autenticación');
     }
 
+    const backendData = transformToBackendFormat(addressData);
+
     const response = await fetch(`${API_BASE_URL}/addresses/${addressId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(addressData),
+      body: JSON.stringify(backendData),
     });
 
     if (!response.ok) {
@@ -119,7 +144,7 @@ export async function updateAddress(addressId: string, addressData: UpdateAddres
     }
 
     const data = await response.json();
-    return data.address;
+    return transformFromBackendFormat(data.address);
   } catch (error: any) {
     console.error('Error al actualizar dirección:', error);
     throw error;

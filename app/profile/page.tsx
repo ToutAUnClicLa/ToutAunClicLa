@@ -18,7 +18,6 @@ import {
   Clock,
   ChevronRight
 } from 'lucide-react';
-// Removido import de supabase - ahora usamos solo el backend de Express
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/common/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
@@ -26,6 +25,8 @@ import { Badge } from '@/components/common/ui/badge';
 import { Separator } from '@/components/common/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/ui/avatar';
 import { useTranslation } from '@/hooks/useTranslation';
+import { getUserAddresses } from '@/lib/services/addresses';
+import { getFavoritesCount } from '@/lib/services/favorites';
 
 interface UserProfile {
   id: string;
@@ -148,15 +149,18 @@ export default function ProfilePage() {
         fecha_creacion: user.createdAt,
       });
 
-      // TODO: Implementar endpoints en tu backend para obtener estadísticas
-      // Por ahora usar valores por defecto
+      // Cargar estadísticas reales
+      const [addressesData, favoritesCount] = await Promise.all([
+        getUserAddresses().catch(() => []),
+        getFavoritesCount().catch(() => 0)
+      ]);
+
       setStats({
-        addresses: 0,
-        favorites: 0,
-        orders: 0,
+        addresses: addressesData.length,
+        favorites: favoritesCount,
+        orders: 0, // TODO: Implementar cuando tengamos endpoint de pedidos
       });
       
-      toast.success('Perfil cargado correctamente');
     } catch (error) {
       console.error('Error loading user data:', error);
       toast.error('Error al cargar la información del usuario');
@@ -194,51 +198,63 @@ export default function ProfilePage() {
   }));
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container max-w-7xl mx-auto py-8 px-4">
-        {/* Header del perfil */}
-        <div className="mb-8">
-          <Card className="overflow-hidden">
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-                <Avatar className="h-20 w-20 md:h-24 md:w-24 border-4 border-white shadow-lg">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50/30">
+      <div className="container max-w-7xl mx-auto py-3 sm:py-6 md:py-8 px-3 sm:px-4">
+        {/* Header del perfil - responsive mejorado */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-6 sm:mb-8"
+        >
+          <Card className="overflow-hidden shadow-xl border-0">
+            <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-4 sm:p-6 md:p-8 text-white relative">
+              {/* Decoraciones de fondo */}
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-pink-600/20 backdrop-blur-sm"></div>
+              <div className="absolute top-4 right-4 w-24 h-24 bg-white/10 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-4 left-4 w-20 h-20 bg-white/5 rounded-full blur-2xl"></div>
+              
+              <div className="relative flex flex-col lg:flex-row items-start lg:items-center gap-4 sm:gap-6">
+                <Avatar className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 border-4 border-white/40 shadow-2xl backdrop-blur-sm">
                   <AvatarImage src="" alt={user.nombre} />
-                  <AvatarFallback className="bg-white text-indigo-600 text-xl font-bold">
+                  <AvatarFallback className="bg-white/20 text-white text-xl sm:text-2xl font-bold backdrop-blur-sm">
                     {getUserInitials()}
                   </AvatarFallback>
                 </Avatar>
                 
-                <div className="flex-1">
-                  <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-                    <h1 className="text-2xl md:text-3xl font-bold">{user.nombre}</h1>
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white to-indigo-100 bg-clip-text text-transparent">
+                      ¡Hola, {user.nombre.split(' ')[0]}! 👋
+                    </h1>
                     {user.verified ? (
-                      <Badge className="bg-green-500 hover:bg-green-600 w-fit">
+                      <Badge className="bg-green-500/80 hover:bg-green-600/80 w-fit text-white border-green-400/50 text-sm font-medium backdrop-blur-sm shadow-lg">
                         <CheckCircle className="h-3 w-3 mr-1" />
                         Verificado
                       </Badge>
                     ) : (
-                      <Badge variant="secondary" className="w-fit">
+                      <Badge variant="secondary" className="bg-amber-500/80 text-white border-amber-400/50 w-fit text-sm font-medium backdrop-blur-sm">
                         <Clock className="h-3 w-3 mr-1" />
                         Pendiente verificación
                       </Badge>
                     )}
                   </div>
                   
-                  <div className="space-y-1 text-indigo-100">
+                  <div className="space-y-2 text-indigo-100">
                     <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4" />
-                      <span>{user.email}</span>
+                      <Mail className="h-4 w-4 sm:h-5 sm:w-5 opacity-80" />
+                      <span className="text-sm sm:text-base truncate font-medium">{user.email}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span>Miembro desde {formatJoinDate(user.createdAt)}</span>
+                      <Calendar className="h-4 w-4 sm:h-5 sm:w-5 opacity-80" />
+                      <span className="text-sm sm:text-base font-medium">Miembro desde {formatJoinDate(user.createdAt)}</span>
                     </div>
                   </div>
                 </div>
                 
                 <Button 
                   variant="secondary" 
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  className="bg-white/20 border-white/30 text-white hover:bg-white/30 text-sm font-medium backdrop-blur-sm transition-all duration-200 shadow-lg hover:shadow-xl"
                   onClick={() => router.push('/profile/settings')}
                 >
                   <Edit className="h-4 w-4 mr-2" />
@@ -247,109 +263,160 @@ export default function ProfilePage() {
               </div>
             </div>
           </Card>
-        </div>
+        </motion.div>
 
-        {/* Estadísticas rápidas */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-red-50 rounded-full">
-                  <Heart className="h-6 w-6 text-red-500" />
+        {/* Estadísticas rápidas - responsive mejoradas */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8"
+        >
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-3 sm:p-4 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl shadow-lg">
+                  <Heart className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{stats.favorites}</p>
-                  <p className="text-sm text-gray-600">Productos favoritos</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.favorites}</p>
+                  <p className="text-sm sm:text-base text-gray-600 font-medium">Productos favoritos</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-50 rounded-full">
-                  <MapPin className="h-6 w-6 text-blue-500" />
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-3 sm:p-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl shadow-lg">
+                  <MapPin className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{stats.addresses}</p>
-                  <p className="text-sm text-gray-600">Direcciones guardadas</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.addresses}</p>
+                  <p className="text-sm sm:text-base text-gray-600 font-medium">Direcciones guardadas</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-50 rounded-full">
-                  <ShoppingBag className="h-6 w-6 text-green-500" />
+          <Card className="sm:col-span-2 lg:col-span-1 bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-3 sm:p-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg">
+                  <ShoppingBag className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{stats.orders}</p>
-                  <p className="text-sm text-gray-600">Pedidos realizados</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.orders}</p>
+                  <p className="text-sm sm:text-base text-gray-600 font-medium">Pedidos realizados</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
 
-        {/* Secciones de gestión */}
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Gestionar cuenta</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Secciones de gestión - responsive mejoradas */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg">
+              <Settings className="h-5 w-5 text-white" />
+            </div>
+            Gestionar cuenta
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {sectionsWithStats.map((section, index) => (
               <motion.div
                 key={section.href}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ delay: 0.5 + index * 0.1 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <Card 
-                  className={`hover:shadow-lg transition-all duration-200 cursor-pointer border-2 ${section.borderColor} hover:border-opacity-50`}
+                  className={`hover:shadow-xl transition-all duration-300 cursor-pointer border-0 shadow-lg bg-white/80 backdrop-blur-sm hover:bg-white group`}
                   onClick={() => router.push(section.href)}
                 >
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-4">
-                        <div className={`p-3 ${section.bgColor} rounded-lg`}>
-                          <section.icon className={`h-6 w-6 ${section.color}`} />
+                      <div className="flex items-start gap-3 sm:gap-4 flex-1">
+                        <div className={`p-3 sm:p-4 bg-gradient-to-r ${
+                          section.title === 'Favoritos' ? 'from-red-500 to-pink-500' :
+                          section.title === 'Direcciones' ? 'from-blue-500 to-indigo-500' :
+                          section.title === 'Pedidos' ? 'from-green-500 to-emerald-500' :
+                          section.title === 'Seguridad' ? 'from-purple-500 to-violet-500' :
+                          'from-gray-500 to-slate-500'
+                        } rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+                          <section.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                         </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900 mb-1">{section.title}</h3>
-                          <p className="text-sm text-gray-600 mb-2">{section.description}</p>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-gray-900 mb-1 text-base sm:text-lg">{section.title}</h3>
+                          <p className="text-sm sm:text-base text-gray-600 mb-3">{section.description}</p>
                           {section.count !== null && (
-                            <Badge variant="secondary" className="text-xs">
+                            <Badge 
+                              variant="secondary" 
+                              className="text-xs bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 border-indigo-200 font-medium"
+                            >
                               {section.count} elementos
                             </Badge>
                           )}
                         </div>
                       </div>
-                      <ChevronRight className="h-5 w-5 text-gray-400" />
+                      <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 flex-shrink-0 group-hover:text-indigo-500 transition-colors duration-300 group-hover:translate-x-1 transform" />
                     </div>
                   </CardContent>
                 </Card>
               </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        {/* Sección de ayuda */}
-        <div className="mt-12">
-          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-            <CardContent className="p-6">
-              <div className="text-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">¿Necesitas ayuda?</h3>
-                <p className="text-gray-600 mb-4">
-                  Si tienes alguna pregunta o problema, nuestro equipo de soporte está aquí para ayudarte.
-                </p>
-                <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-100">
-                  Contactar soporte
-                </Button>
+        {/* Sección de ayuda - responsive mejorada */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="mt-8 sm:mt-12"
+        >
+          <Card className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-0 shadow-lg">
+            <CardContent className="p-6 sm:p-8">
+              <div className="text-center space-y-4">
+                <div className="flex justify-center">
+                  <div className="p-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-lg">
+                    <Heart className="h-8 w-8 text-white" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
+                    ¿Necesitas ayuda? Estamos aquí para ti
+                  </h3>
+                  <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                    Nuestro equipo de soporte está disponible para ayudarte con cualquier pregunta o problema. 
+                    <span className="font-semibold text-indigo-600"> Tu satisfacción es nuestra prioridad.</span>
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2">
+                  <Button 
+                    variant="outline" 
+                    className="border-2 border-blue-300 text-blue-700 hover:bg-blue-100 hover:border-blue-400 font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
+                  >
+                    💬 Contactar soporte
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="border-2 border-purple-300 text-purple-700 hover:bg-purple-100 hover:border-purple-400 font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
+                  >
+                    📖 Ver preguntas frecuentes
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
