@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 import AuthModal from '@/components/features/auth/AuthModal';

@@ -6,6 +6,7 @@
 // Hooks de autenticación
 export { useAuth } from './useAuth';
 export { useAuthProtection } from './useAuthProtection';
+export { useProtectedAction, useFavoritesProtection, useCartProtection } from './useProtectedAction';
 
 // Hooks de datos y funcionalidad
 export { useCart } from './useCart';
