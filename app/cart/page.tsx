@@ -11,7 +11,9 @@ import { Card, CardContent } from '@/components/common/ui/card';
 import { Separator } from '@/components/common/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
+import { useAddresses } from '@/hooks/useAddresses';
 import AuthModal from '@/components/features/auth/AuthModal';
+import { AddressSelector } from '@/components/features/modules/cart/AddressSelector';
 import { toast } from 'sonner';
 import { CartItem } from '@/lib/services/cart';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -80,6 +82,8 @@ export default function CartPage() {
     isEmpty,
     refreshCart 
   } = useCart();
+  
+  const { selectedAddress, hasAddresses } = useAddresses();
   
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
@@ -180,6 +184,27 @@ export default function CartPage() {
       console.error('Error limpiando carrito:', error);
       toast.error('Error al vaciar el carrito');
     }
+  };
+
+  // Función para proceder al checkout
+  const handleCheckout = () => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    if (!selectedAddress) {
+      toast.error('Por favor selecciona una dirección de envío');
+      return;
+    }
+
+    if (isEmpty) {
+      toast.error('Tu carrito está vacío');
+      return;
+    }
+
+    // Proceder al checkout
+    router.push('/checkout');
   };
 
   // Renderizar item del carrito con diseño responsive
@@ -457,13 +482,21 @@ export default function CartPage() {
                     </div>
                   </div>
                   
+                  {/* Selector de direcciones */}
+                  <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
+                    <AddressSelector />
+                  </div>
+                  
                   <div className="space-y-2 sm:space-y-3 mt-4 sm:mt-6">
                     <Button 
                       size="lg" 
                       className="w-full bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base h-10 sm:h-12"
-                      onClick={() => router.push('/checkout')}
+                      onClick={handleCheckout}
+                      disabled={!isAuthenticated || !selectedAddress}
                     >
-                      Proceder al Pago
+                      {!isAuthenticated ? 'Inicia sesión para continuar' : 
+                       !selectedAddress ? 'Selecciona una dirección' : 
+                       'Proceder al Pago'}
                     </Button>
                     <Button 
                       variant="outline" 

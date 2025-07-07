@@ -13,6 +13,7 @@ export { useCart } from './useCart';
 export { useCartCount, useCartSync } from './useCartCount';
 export { useFavorites } from './useFavorites';
 export { useFavoritesList } from './useFavoritesList';
+export { useAddresses } from './useAddresses';
 export { useProducts, useProductsByCategory, useProduct, useRestaurantMenu } from './useProducts';
 export { useCategories, useSubcategories } from './useCategories';
 export { useTranslation } from './useTranslation';
