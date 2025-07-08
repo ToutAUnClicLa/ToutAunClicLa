@@ -235,83 +235,82 @@ export default function AddressesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container max-w-7xl mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4">
-        {/* Header responsive */}
-        <div className="mb-6 sm:mb-8">
-          <Card className="overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-4 sm:p-6 text-white">
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-4 sm:gap-6">
-                <div className="p-3 sm:p-4 bg-white/10 rounded-full">
-                  <MapPin className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-                </div>
-                
-                <div className="flex-1">
-                  <div className="flex flex-col md:flex-row md:items-center gap-2 sm:gap-3 mb-2">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">Mis Direcciones</h1>
-                    <Badge className="bg-white/20 hover:bg-white/30 w-fit text-white border-white/30 text-sm">
+      <div className="container max-w-6xl mx-auto py-2 sm:py-4 md:py-6 px-3 sm:px-4">
+        {/* Header optimizado para móvil */}
+        <div className="mb-4 sm:mb-6">
+          <Card className="overflow-hidden shadow-lg border-0">
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 sm:p-4 md:p-5 text-white">
+              <div className="flex flex-col gap-3 sm:gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 sm:p-3 bg-white/10 rounded-full">
+                    <MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold truncate">Mis Direcciones</h1>
+                    <Badge className="bg-white/20 text-white border-white/30 text-xs sm:text-sm mt-1">
                       {addresses.length} {addresses.length === 1 ? 'dirección' : 'direcciones'}
                     </Badge>
                   </div>
                   
-                  <div className="space-y-1 text-blue-100">
-                    <p className="text-sm">
-                      Solo se permiten direcciones en Montreal
-                    </p>
-                    <p className="text-xs">
-                      Agrega, edita o elimina direcciones de entrega
-                    </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="bg-white/10 border-white/20 text-white hover:bg-white/20 h-8 w-8 sm:h-9 sm:w-auto sm:px-3 p-0 sm:p-2"
+                      onClick={() => router.back()}
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      <span className="hidden sm:inline ml-2">Volver</span>
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="bg-white text-blue-600 hover:bg-white/90 h-8 sm:h-9 px-2 sm:px-3"
+                      onClick={openCreateDialog}
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span className="hidden sm:inline ml-2">Agregar</span>
+                    </Button>
                   </div>
                 </div>
                 
-                <div className="flex gap-2">
-                  <Button
-                    variant="secondary"
-                    className="bg-white/10 border-white/20 text-white hover:bg-white/20 text-sm h-9"
-                    onClick={() => router.back()}
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Volver
-                  </Button>
-                  <Button
-                    className="bg-white text-blue-600 hover:bg-white/90 text-sm h-9"
-                    onClick={openCreateDialog}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Agregar
-                  </Button>
+                <div className="space-y-1 text-blue-100">
+                  <p className="text-xs sm:text-sm">
+                    Solo se permiten direcciones en Montreal
+                  </p>
                 </div>
               </div>
             </div>
           </Card>
         </div>
 
-        {/* Estadísticas rápidas */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        {/* Estadísticas más compactas */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <Card>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="p-2 sm:p-3 bg-blue-50 rounded-full">
-                  <MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" />
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 bg-blue-50 rounded-full">
+                  <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{addresses.length}</p>
-                  <p className="text-xs sm:text-sm text-gray-600">Direcciones guardadas</p>
+                  <p className="text-lg sm:text-xl font-bold text-gray-900">{addresses.length}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Direcciones</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
           <Card>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="p-2 sm:p-3 bg-green-50 rounded-full">
-                  <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-2 bg-green-50 rounded-full">
+                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                 </div>
                 <div>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">
+                  <p className="text-lg sm:text-xl font-bold text-gray-900">
                     {addresses.filter(addr => addr.city.toLowerCase().includes('montreal')).length}
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-600">En Montreal</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Montreal</p>
                 </div>
               </div>
             </CardContent>
@@ -355,7 +354,7 @@ export default function AddressesPage() {
               variants={containerVariants}
               initial="hidden"
               animate="show"
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+              className="space-y-3 sm:space-y-4"
             >
               {addresses.map((address, index) => (
                 <motion.div 
@@ -364,49 +363,52 @@ export default function AddressesPage() {
                   layout
                   className="group"
                 >
-                  <Card className="h-full transition-all duration-200 hover:shadow-lg border-0 shadow-sm">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                        <Home className="h-5 w-5 text-blue-600" />
-                        <span className="truncate">Dirección {address.id.slice(-6)}</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-3">
-                          <Building2 className="h-4 w-4 text-gray-500 mt-1 flex-shrink-0" />
+                  <Card className="transition-all duration-200 hover:shadow-lg border-0 shadow-sm">
+                    <CardContent className="p-4 sm:p-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                        <div className="flex items-start gap-3 flex-1 min-w-0">
+                          <div className="p-2 bg-blue-50 rounded-full mt-1">
+                            <Home className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                          </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-gray-900 font-medium break-words">{address.street}</p>
-                            <p className="text-gray-600 text-sm break-words">
-                              {address.city}, {address.state} {address.zipCode}
-                            </p>
-                            <p className="text-gray-500 text-sm">{address.country}</p>
+                            <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1">
+                              Dirección {address.id.slice(-6)}
+                            </h3>
+                            <div className="space-y-1 text-xs sm:text-sm text-gray-600">
+                              <p className="font-medium text-gray-900 break-words">{address.street}</p>
+                              <p className="break-words">
+                                {address.city}, {address.state} {address.zipCode}
+                              </p>
+                              <p className="text-gray-500">{address.country}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex gap-2 pt-4 border-t">
-                        <Button 
-                          variant="outline" 
-                          className="flex-1 text-xs sm:text-sm h-8 sm:h-9"
-                          onClick={() => openEditDialog(address)}
-                        >
-                          <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                          Editar
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          className="flex-1 text-xs sm:text-sm h-8 sm:h-9 text-red-600 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => handleDeleteAddress(address.id)}
-                          disabled={deletingId === address.id}
-                        >
-                          {deletingId === address.id ? (
-                            <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin mr-1 sm:mr-2" />
-                          ) : (
-                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                          )}
-                          Eliminar
-                        </Button>
+                        
+                        <div className="flex gap-2 sm:gap-3 sm:flex-col sm:w-auto w-full">
+                          <Button 
+                            variant="outline" 
+                            className="flex-1 sm:flex-none text-xs sm:text-sm h-8 sm:h-9 sm:w-20"
+                            onClick={() => openEditDialog(address)}
+                          >
+                            <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                            Editar
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="flex-1 sm:flex-none text-xs sm:text-sm h-8 sm:h-9 sm:w-20 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => handleDeleteAddress(address.id)}
+                            disabled={deletingId === address.id}
+                          >
+                            {deletingId === address.id ? (
+                              <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <>
+                                <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                                Eliminar
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -416,58 +418,61 @@ export default function AddressesPage() {
           </AnimatePresence>
         )}
 
-        {/* Modal para crear/editar dirección */}
+        {/* Modal para crear/editar dirección - optimizado móvil */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-lg sm:text-xl">
                 {editingAddress ? 'Editar dirección' : 'Nueva dirección'}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="bg-blue-50 p-3 rounded-lg">
                 <div className="flex items-center gap-2 text-blue-800">
-                  <Shield className="h-4 w-4" />
+                  <Shield className="h-4 w-4 flex-shrink-0" />
                   <p className="text-sm font-medium">Solo direcciones en Montreal</p>
                 </div>
                 <p className="text-xs text-blue-600 mt-1">
-                  Validamos que la ciudad sea Montreal y que el código postal sea válido (H1A-H1Z, H2A-H2Z, H3A-H3Z, H4A-H4Z, H5A-H5B)
+                  Validamos que la ciudad sea Montreal y el código postal sea válido
                 </p>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="street">Dirección *</Label>
+                <Label htmlFor="street" className="text-sm font-medium">Dirección *</Label>
                 <Input
                   id="street"
                   name="street"
                   value={formData.street}
                   onChange={handleInputChange}
                   placeholder="Ej: 1234 Rue Sainte-Catherine"
+                  className="h-10 text-sm"
                   required
                 />
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="city">Ciudad *</Label>
+                  <Label htmlFor="city" className="text-sm font-medium">Ciudad *</Label>
                   <Input
                     id="city"
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
                     placeholder="Montreal"
+                    className="h-10 text-sm"
                     required
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="state">Provincia *</Label>
+                  <Label htmlFor="state" className="text-sm font-medium">Provincia *</Label>
                   <Input
                     id="state"
                     name="state"
                     value={formData.state}
                     onChange={handleInputChange}
                     placeholder="Quebec"
+                    className="h-10 text-sm"
                     required
                   />
                 </div>
@@ -475,25 +480,27 @@ export default function AddressesPage() {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="zipCode">Código Postal *</Label>
+                  <Label htmlFor="zipCode" className="text-sm font-medium">Código Postal *</Label>
                   <Input
                     id="zipCode"
                     name="zipCode"
                     value={formData.zipCode}
                     onChange={handleInputChange}
                     placeholder="H2X 1L4"
+                    className="h-10 text-sm"
                     required
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="country">País *</Label>
+                  <Label htmlFor="country" className="text-sm font-medium">País *</Label>
                   <Input
                     id="country"
                     name="country"
                     value={formData.country}
                     onChange={handleInputChange}
                     placeholder="Canadá"
+                    className="h-10 text-sm"
                     required
                   />
                 </div>
@@ -503,7 +510,7 @@ export default function AddressesPage() {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  className="flex-1"
+                  className="flex-1 h-10 text-sm"
                   onClick={() => setIsDialogOpen(false)}
                   disabled={isSubmitting}
                 >
@@ -511,7 +518,7 @@ export default function AddressesPage() {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                  className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 h-10 text-sm"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (

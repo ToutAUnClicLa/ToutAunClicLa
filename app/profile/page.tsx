@@ -199,124 +199,133 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50/30">
-      <div className="container max-w-7xl mx-auto py-3 sm:py-6 md:py-8 px-3 sm:px-4">
-        {/* Header del perfil - responsive mejorado */}
+      <div className="container max-w-6xl mx-auto py-2 sm:py-4 md:py-6 px-3 sm:px-4">
+        {/* Header del perfil - optimizado móvil */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-6 sm:mb-8"
+          className="mb-4 sm:mb-6"
         >
-          <Card className="overflow-hidden shadow-xl border-0">
-            <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-4 sm:p-6 md:p-8 text-white relative">
-              {/* Decoraciones de fondo */}
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-pink-600/20 backdrop-blur-sm"></div>
-              <div className="absolute top-4 right-4 w-24 h-24 bg-white/10 rounded-full blur-3xl"></div>
-              <div className="absolute bottom-4 left-4 w-20 h-20 bg-white/5 rounded-full blur-2xl"></div>
+          <Card className="overflow-hidden shadow-lg border-0">
+            <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-3 sm:p-4 md:p-6 text-white relative">
+              {/* Decoraciones de fondo más sutiles */}
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-pink-600/20"></div>
+              <div className="absolute top-2 right-2 w-16 h-16 bg-white/5 rounded-full blur-2xl"></div>
               
-              <div className="relative flex flex-col lg:flex-row items-start lg:items-center gap-4 sm:gap-6">
-                <Avatar className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 border-4 border-white/40 shadow-2xl backdrop-blur-sm">
-                  <AvatarImage src="" alt={user.nombre} />
-                  <AvatarFallback className="bg-white/20 text-white text-xl sm:text-2xl font-bold backdrop-blur-sm">
-                    {getUserInitials()}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
-                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white to-indigo-100 bg-clip-text text-transparent">
-                      ¡Hola, {user.nombre.split(' ')[0]}! 👋
-                    </h1>
-                    {user.verified ? (
-                      <Badge className="bg-green-500/80 hover:bg-green-600/80 w-fit text-white border-green-400/50 text-sm font-medium backdrop-blur-sm shadow-lg">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Verificado
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="bg-amber-500/80 text-white border-amber-400/50 w-fit text-sm font-medium backdrop-blur-sm">
-                        <Clock className="h-3 w-3 mr-1" />
-                        Pendiente verificación
-                      </Badge>
-                    )}
+              <div className="relative">
+                {/* Layout móvil: vertical compacto */}
+                <div className="flex flex-col space-y-3 sm:space-y-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <Avatar className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 border-2 border-white/40 shadow-lg">
+                      <AvatarImage src="" alt={user.nombre} />
+                      <AvatarFallback className="bg-white/20 text-white text-sm sm:text-base md:text-lg font-bold">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    <div className="flex-1 min-w-0">
+                      <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white truncate">
+                        ¡Hola, {user.nombre.split(' ')[0]}! 👋
+                      </h1>
+                      {user.verified ? (
+                        <Badge className="bg-green-500/80 text-white border-green-400/50 text-xs sm:text-sm font-medium mt-1">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          Verificado
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-amber-500/80 text-white border-amber-400/50 text-xs sm:text-sm font-medium mt-1">
+                          <Clock className="h-3 w-3 mr-1" />
+                          Pendiente
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   
-                  <div className="space-y-2 text-indigo-100">
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 sm:h-5 sm:w-5 opacity-80" />
-                      <span className="text-sm sm:text-base truncate font-medium">{user.email}</span>
+                  {/* Información del usuario más compacta */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-indigo-100">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Mail className="h-4 w-4 flex-shrink-0 opacity-80" />
+                      <span className="text-xs sm:text-sm truncate font-medium">{user.email}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 sm:h-5 sm:w-5 opacity-80" />
-                      <span className="text-sm sm:text-base font-medium">Miembro desde {formatJoinDate(user.createdAt)}</span>
+                      <Calendar className="h-4 w-4 flex-shrink-0 opacity-80" />
+                      <span className="text-xs sm:text-sm font-medium">Desde {formatJoinDate(user.createdAt)}</span>
                     </div>
                   </div>
                 </div>
                 
-                <Button 
-                  variant="secondary" 
-                  className="bg-white/20 border-white/30 text-white hover:bg-white/30 text-sm font-medium backdrop-blur-sm transition-all duration-200 shadow-lg hover:shadow-xl"
-                  onClick={() => router.push('/profile/settings')}
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Editar perfil
-                </Button>
+                {/* Botón de editar posicionado mejor */}
+                <div className="absolute top-0 right-0">
+                  <Button 
+                    size="sm"
+                    variant="ghost"
+                    className="bg-white/10 border border-white/20 text-white hover:bg-white/20 text-xs sm:text-sm backdrop-blur-sm h-8 sm:h-9 px-2 sm:px-3"
+                    onClick={() => router.push('/profile/settings')}
+                  >
+                    <Edit className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Editar</span>
+                  </Button>
+                </div>
               </div>
             </div>
           </Card>
         </motion.div>
-        
-        {/* Secciones de gestión - responsive mejoradas */}
+
+        {/* Secciones de gestión - grid responsivo optimizado */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg">
-              <Settings className="h-5 w-5 text-white" />
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+            <div className="p-1.5 sm:p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg">
+              <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
             Gestionar cuenta
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          
+          {/* Grid responsivo mejorado */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
             {sectionsWithStats.map((section, index) => (
               <motion.div
                 key={section.href}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
+                transition={{ delay: 0.3 + index * 0.1 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Card 
-                  className={`hover:shadow-xl transition-all duration-300 cursor-pointer border-0 shadow-lg bg-white/80 backdrop-blur-sm hover:bg-white group`}
+                  className="hover:shadow-lg transition-all duration-200 cursor-pointer border-0 shadow-sm bg-white group hover:bg-gray-50/80 h-full"
                   onClick={() => router.push(section.href)}
                 >
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-3 sm:gap-4 flex-1">
-                        <div className={`p-3 sm:p-4 bg-gradient-to-r ${
+                  <CardContent className="p-4 sm:p-5 h-full">
+                    <div className="flex items-center justify-between h-full">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className={`p-2.5 sm:p-3 bg-gradient-to-r ${
                           section.title === 'Favoritos' ? 'from-red-500 to-pink-500' :
                           section.title === 'Direcciones' ? 'from-blue-500 to-indigo-500' :
                           section.title === 'Pedidos' ? 'from-green-500 to-emerald-500' :
                           section.title === 'Seguridad' ? 'from-purple-500 to-violet-500' :
                           'from-gray-500 to-slate-500'
-                        } rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+                        } rounded-lg shadow-sm group-hover:shadow-md transition-shadow duration-200`}>
                           <section.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-gray-900 mb-1 text-base sm:text-lg">{section.title}</h3>
-                          <p className="text-sm sm:text-base text-gray-600 mb-3">{section.description}</p>
+                          <h3 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base truncate">{section.title}</h3>
+                          <p className="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-2">{section.description}</p>
                           {section.count !== null && (
                             <Badge 
                               variant="secondary" 
-                              className="text-xs bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 border-indigo-200 font-medium"
+                              className="text-xs bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 border-indigo-100 font-medium px-2 py-0.5"
                             >
-                              {section.count} elementos
+                              {section.count}
                             </Badge>
                           )}
                         </div>
                       </div>
-                      <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 flex-shrink-0 group-hover:text-indigo-500 transition-colors duration-300 group-hover:translate-x-1 transform" />
+                      <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0 group-hover:text-indigo-500 transition-all duration-200 group-hover:translate-x-0.5" />
                     </div>
                   </CardContent>
                 </Card>
@@ -325,42 +334,41 @@ export default function ProfilePage() {
           </div>
         </motion.div>
 
-        {/* Sección de ayuda - responsive mejorada */}
+        {/* Sección de ayuda - más compacta */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-8 sm:mt-12"
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mt-6 sm:mt-8"
         >
-          <Card className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-0 shadow-lg">
-            <CardContent className="p-6 sm:p-8">
-              <div className="text-center space-y-4">
+          <Card className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-0 shadow-sm">
+            <CardContent className="p-4 sm:p-6">
+              <div className="text-center space-y-3 sm:space-y-4">
                 <div className="flex justify-center">
-                  <div className="p-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-lg">
-                    <Heart className="h-8 w-8 text-white" />
+                  <div className="p-3 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-sm">
+                    <Heart className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
-                    ¿Necesitas ayuda? Estamos aquí para ti
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">
+                    ¿Necesitas ayuda?
                   </h3>
-                  <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                    Nuestro equipo de soporte está disponible para ayudarte con cualquier pregunta o problema. 
-                    <span className="font-semibold text-indigo-600"> Tu satisfacción es nuestra prioridad.</span>
+                  <p className="text-sm sm:text-base text-gray-600 max-w-xl mx-auto">
+                    Nuestro equipo está disponible para ayudarte con cualquier pregunta.
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
                   <Button 
                     variant="outline" 
-                    className="border-2 border-blue-300 text-blue-700 hover:bg-blue-100 hover:border-blue-400 font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
+                    className="border-blue-300 text-blue-700 hover:bg-blue-100 text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200"
                   >
                     💬 Contactar soporte
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-2 border-purple-300 text-purple-700 hover:bg-purple-100 hover:border-purple-400 font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
+                    className="border-purple-300 text-purple-700 hover:bg-purple-100 text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200"
                   >
-                    📖 Ver preguntas frecuentes
+                    📖 Preguntas frecuentes
                   </Button>
                 </div>
               </div>
