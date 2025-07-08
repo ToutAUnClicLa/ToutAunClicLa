@@ -94,7 +94,7 @@ export default function CartPage() {
   }, [items]);
 
   const taxRate = 0.15; // 15% de impuestos
-  const shippingThreshold = 50; // Envío gratis a partir de $50
+  const shippingThreshold = 200; // Envío gratis a partir de $50
   const shippingCost = calculatedSubtotal >= shippingThreshold ? 0 : 8.99;
   const taxes = calculatedSubtotal * taxRate;
   const finalTotal = calculatedSubtotal + taxes + shippingCost;
@@ -367,7 +367,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-16">
+    <div className="min-h-screen bg-gray-50 ">
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
         <div className="max-w-6xl mx-auto">
           {/* Header responsive */}

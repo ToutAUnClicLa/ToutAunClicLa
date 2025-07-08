@@ -264,57 +264,7 @@ export default function ProfilePage() {
             </div>
           </Card>
         </motion.div>
-
-        {/* Estadísticas rápidas - responsive mejoradas */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8"
-        >
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="p-3 sm:p-4 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl shadow-lg">
-                  <Heart className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.favorites}</p>
-                  <p className="text-sm sm:text-base text-gray-600 font-medium">Productos favoritos</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="p-3 sm:p-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl shadow-lg">
-                  <MapPin className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.addresses}</p>
-                  <p className="text-sm sm:text-base text-gray-600 font-medium">Direcciones guardadas</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="sm:col-span-2 lg:col-span-1 bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="p-3 sm:p-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg">
-                  <ShoppingBag className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.orders}</p>
-                  <p className="text-sm sm:text-base text-gray-600 font-medium">Pedidos realizados</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
+        
         {/* Secciones de gestión - responsive mejoradas */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -234,7 +234,7 @@ export default function AddressesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-16">
+    <div className="min-h-screen bg-gray-50">
       <div className="container max-w-7xl mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4">
         {/* Header responsive */}
         <div className="mb-6 sm:mb-8">
