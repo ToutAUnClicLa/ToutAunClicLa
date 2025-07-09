@@ -8,9 +8,14 @@ import { toast } from 'sonner';
 
 /**
  * Hook para manejar favoritos con protección de autenticación integrada
- * Proporciona funcionalidades completas para gestión de favoritos con validación automática
+ * Proporciona funcionalidades completas para gestión de favoritos
+ * 
+ * @param options.loadOnMount - Si debe cargar favoritos automáticamente (default: false)
+ * @param options.trackFavorites - Si debe mantener seguimiento de favoritos (default: false)
  */
-export function useFavorites() {
+export function useFavorites(options: { loadOnMount?: boolean; trackFavorites?: boolean } = {}) {
+  const { loadOnMount = false, trackFavorites = false } = options;
+  
   const { isAuthenticated, user } = useAuth();
   const {
     executeForFavorites,
@@ -32,7 +37,7 @@ export function useFavorites() {
     authRef.current = { isAuthenticated, user };
   }, [isAuthenticated, user]);
 
-  // Cargar favoritos cuando el usuario esté autenticado
+  // Cargar favoritos cuando el usuario esté autenticado (solo si está habilitado)
   const loadFavorites = useCallback(async () => {
     const { isAuthenticated: auth, user: currentUser } = authRef.current;
     
@@ -60,21 +65,29 @@ export function useFavorites() {
     }
   }, []);
 
+  // Solo cargar favoritos si está habilitado loadOnMount
   useEffect(() => {
-    loadFavorites();
-  }, [loadFavorites]);
+    if (loadOnMount) {
+      loadFavorites();
+    }
+  }, [loadFavorites, loadOnMount]);
 
-  // Agregar a favoritos
+  // Agregar a favoritos (sin verificación previa)
   const addToFavorites = useCallback(async (productId: string) => {
     return executeForFavorites(async () => {
       setIsLoading(true);
       try {
         await favoritesService.addToFavorites(parseInt(productId));
-        setFavoriteIds(prev => {
-          const newIds = new Set(prev);
-          newIds.add(productId);
-          return newIds;
-        });
+        
+        // Solo actualizar el estado local si trackFavorites está habilitado
+        if (trackFavorites) {
+          setFavoriteIds(prev => {
+            const newIds = new Set(prev);
+            newIds.add(productId);
+            return newIds;
+          });
+        }
+        
         toast.success('Producto agregado a favoritos');
       } catch (error: any) {
         toast.error(error.message || 'Error al agregar a favoritos');
@@ -83,19 +96,24 @@ export function useFavorites() {
         setIsLoading(false);
       }
     });
-  }, [executeForFavorites]);
+  }, [executeForFavorites, trackFavorites]);
 
-  // Remover de favoritos
+  // Remover de favoritos (sin verificación previa)
   const removeFromFavorites = useCallback(async (productId: string) => {
     return executeForFavorites(async () => {
       setIsLoading(true);
       try {
         await favoritesService.removeFromFavorites(parseInt(productId));
-        setFavoriteIds(prev => {
-          const newIds = new Set(prev);
-          newIds.delete(productId);
-          return newIds;
-        });
+        
+        // Solo actualizar el estado local si trackFavorites está habilitado
+        if (trackFavorites) {
+          setFavoriteIds(prev => {
+            const newIds = new Set(prev);
+            newIds.delete(productId);
+            return newIds;
+          });
+        }
+        
         toast.success('Producto removido de favoritos');
       } catch (error: any) {
         toast.error(error.message || 'Error al remover de favoritos');
@@ -104,31 +122,44 @@ export function useFavorites() {
         setIsLoading(false);
       }
     });
-  }, [executeForFavorites]);
+  }, [executeForFavorites, trackFavorites]);
 
-  // Toggle favorito - usar useCallback estable
+  // Toggle favorito - agregar directo sin verificar estado previo
   const toggleFavorite = useCallback(async (productId: string) => {
     return executeForFavorites(async () => {
-      const isFav = favoriteIds.has(productId);
       setIsLoading(true);
       
       try {
-        if (isFav) {
-          await favoritesService.removeFromFavorites(parseInt(productId));
-          setFavoriteIds(prev => {
-            const newIds = new Set(prev);
-            newIds.delete(productId);
-            return newIds;
-          });
-          toast.success('Producto removido de favoritos');
-        } else {
+        // Intentar agregar primero, si falla (409), entonces remover
+        try {
           await favoritesService.addToFavorites(parseInt(productId));
-          setFavoriteIds(prev => {
-            const newIds = new Set(prev);
-            newIds.add(productId);
-            return newIds;
-          });
+          
+          if (trackFavorites) {
+            setFavoriteIds(prev => {
+              const newIds = new Set(prev);
+              newIds.add(productId);
+              return newIds;
+            });
+          }
+          
           toast.success('Producto agregado a favoritos');
+        } catch (addError: any) {
+          // Si da error 409 (ya existe), entonces remover
+          if (addError.message?.includes('ya está') || addError.message?.includes('already')) {
+            await favoritesService.removeFromFavorites(parseInt(productId));
+            
+            if (trackFavorites) {
+              setFavoriteIds(prev => {
+                const newIds = new Set(prev);
+                newIds.delete(productId);
+                return newIds;
+              });
+            }
+            
+            toast.success('Producto removido de favoritos');
+          } else {
+            throw addError;
+          }
         }
       } catch (error: any) {
         toast.error(error.message || 'Error al gestionar favoritos');
@@ -137,22 +168,24 @@ export function useFavorites() {
         setIsLoading(false);
       }
     });
-  }, [executeForFavorites, favoriteIds]);
+  }, [executeForFavorites, trackFavorites]);
 
-  // Verificar si un producto es favorito - memoizado con referencia estable
+  // Verificar si un producto es favorito - solo funciona si trackFavorites está habilitado
   const isFavorite = useCallback((productId: string) => {
+    if (!trackFavorites) return false; // No verificar si no está habilitado el tracking
     return favoriteIds.has(productId);
-  }, [favoriteIds]);
+  }, [favoriteIds, trackFavorites]);
 
   return {
     // Estado
     isLoading,
-    favoritesCount: favoriteIds.size,
+    favoritesCount: trackFavorites ? favoriteIds.size : 0,
     
     // Acciones
     addToFavorites,
     removeFromFavorites,
     toggleFavorite,
+    loadFavorites, // Exponer para cargar manualmente si es necesario
     
     // Utilidades
     isFavorite,
@@ -166,5 +199,8 @@ export function useFavorites() {
     // Estado de autenticación
     isAuthenticated,
     isVerified: user?.verified || false,
+    
+    // Configuración
+    trackingEnabled: trackFavorites,
   };
 }
