@@ -27,7 +27,8 @@ export default {
       myProfile: "My Profile",
       addresses: "Addresses",
       favorites: "Favorites",
-      myOrders: "Orders", 
+      myOrders: "Orders",
+      security: "Security", 
       notifications: "Notifications",
       settings: "Settings",
       logout: "Logout"
@@ -457,6 +458,7 @@ export default {
       favorites: "Favorites",
       addresses: "Addresses", 
       orders: "Orders",
+      security: "Security",
       settings: "Settings"
     },
     stats: {
@@ -489,45 +491,82 @@ export default {
     security: {
       title: "Security",
       subtitle: "Manage your account security",
-      accountInfo: {
+      account: {
         title: "Account information",
         email: "Email address",
-        verificationStatus: "Verification status",
+        verification: "Verification status",
         verified: "Verified",
-        pending: "Pending verification"
+        notVerified: "Not verified"
       },
-      passwordChange: {
+      password: {
         title: "Change password",
-        currentPassword: "Current password",
-        newPassword: "New password",
-        confirmPassword: "Confirm new password",
-        submitButton: "Change password",
-        updating: "Updating...",
+        current: "Current password",
+        new: "New password",
+        confirm: "Confirm new password",
+        currentPlaceholder: "Enter your current password",
+        newPlaceholder: "Enter a new password",
+        confirmPlaceholder: "Confirm your new password",
+        update: "Update password",
         success: "Password updated successfully",
-        error: "Error changing password",
-        mismatch: "New passwords don't match",
-        minLength: "New password must be at least 6 characters"
+        errors: {
+          passwordsNotMatch: "New passwords don't match",
+          minLength: "New password must be at least 6 characters",
+          generic: "Error changing password"
+        }
       },
-      emailChange: {
-        title: "Change email address",
-        newEmail: "New email address",
-        confirmPassword: "Confirm your password",
-        submitButton: "Change email address",
-        sending: "Sending...",
-        success: "Verification code sent to your new email",
-        error: "Error changing email address"
+      basicInfo: {
+        title: "Basic information",
+        subtitle: "Update your name and phone number",
+        name: "Full name",
+        namePlaceholder: "Enter your full name",
+        phone: "Phone number",
+        phonePlaceholder: "Enter your phone number",
+        update: "Update information",
+        success: "Information updated successfully",
+        errors: {
+          nameRequired: "Name is required",
+          nameMinLength: "Name must be at least 2 characters",
+          generic: "Error updating information"
+        }
       },
-      activeSessions: {
+      sessions: {
         title: "Active sessions",
-        currentSession: "Current session",
+        currentDevice: "Current device",
         lastActivity: "Last activity: Now",
         active: "Active",
-        closeAllSessions: "Close all sessions"
+        closeAll: "Close all sessions",
+        logoutAllNotAvailable: "This feature will be available soon"
+      },
+      delete: {
+        title: "Danger zone",
+        warning: "This action will permanently delete your account and all associated data. This action cannot be undone.",
+        showForm: "Delete my account",
+        passwordConfirm: "Confirm your password",
+        passwordPlaceholder: "Enter your password",
+        confirmLabel: "Type 'DELETE' to confirm",
+        confirmHelp: "You must type exactly 'DELETE' in uppercase",
+        confirm: "Delete account",
+        success: "Account deleted successfully",
+        errors: {
+          confirmText: "You must type 'DELETE' to continue",
+          generic: "Error deleting account"
+        }
       }
     },
     settings: {
       title: "Settings",
       subtitle: "Customize your experience",
+      preferences: {
+        title: "Preferences",
+        description: "Configure your personalized experience"
+      },
+      appearance: {
+        title: "Appearance",
+        darkMode: "Dark mode",
+        darkModeDesc: "Switch between light and dark themes",
+        theme: "Theme",
+        themeDesc: "Select your preferred theme"
+      },
       language: {
         title: "Language",
         description: "Select your preferred language",
@@ -541,16 +580,47 @@ export default {
         title: "Notifications",
         description: "Manage your notification preferences",
         email: "Email notifications",
-        orderUpdates: "Order updates",
-        promotions: "Offers and promotions",
-        newsletter: "Newsletter"
+        emailDescription: "Receive important notifications by email",
+        orders: "Order updates",
+        ordersDescription: "Receive updates about your order status",
+        promotions: "Offers and promotions", 
+        promotionsDescription: "Receive special offers and promotions",
+        newsletter: "Newsletter",
+        manage: "Manage notifications"
+      },
+      security: {
+        title: "Security",
+        description: "Protect your account",
+        changePassword: "Change password",
+        securitySettings: "Security settings",
+        twoFactor: "Two-factor authentication"
+      },
+      payment: {
+        title: "Payments",
+        description: "Manage your payment methods",
+        methods: "Payment methods",
+        addMethod: "Add payment method",
+        defaultMethod: "Default method"
       },
       privacy: {
         title: "Privacy",
         description: "Control your personal information",
-        dataDownload: "Download my data",
-        dataDelete: "Delete my account",
+        security: "Security settings",
+        downloadData: "Download my data",
+        deleteData: "Delete my account",
         cookiePreferences: "Cookie preferences"
+      },
+      general: {
+        title: "General preferences",
+        language: "Language",
+        darkMode: "Dark mode"
+      },
+      account: {
+        title: "Account",
+        deleteAccount: "Delete account",
+        deleteAccountDesc: "Permanently delete your account",
+        exportData: "Export data",
+        exportDataDesc: "Download a copy of your data"
       }
     },
     errors: {

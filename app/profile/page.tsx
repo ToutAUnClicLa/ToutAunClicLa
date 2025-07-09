@@ -306,10 +306,10 @@ export default function ProfilePage() {
                     <div className="flex items-center justify-between h-full">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         <div className={`p-2.5 sm:p-3 bg-gradient-to-r ${
-                          section.title === 'Favoritos' ? 'from-red-500 to-pink-500' :
-                          section.title === 'Direcciones' ? 'from-blue-500 to-indigo-500' :
-                          section.title === 'Pedidos' ? 'from-green-500 to-emerald-500' :
-                          section.title === 'Seguridad' ? 'from-purple-500 to-violet-500' :
+                          section.title === t('profile.sections.favorites.title') ? 'from-red-500 to-pink-500' :
+                          section.title === t('profile.sections.addresses.title') ? 'from-blue-500 to-indigo-500' :
+                          section.title === t('profile.sections.orders.title') ? 'from-green-500 to-emerald-500' :
+                          section.title === t('profile.sections.security.title') ? 'from-purple-500 to-violet-500' :
                           'from-gray-500 to-slate-500'
                         } rounded-lg shadow-sm group-hover:shadow-md transition-shadow duration-200`}>
                           <section.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />

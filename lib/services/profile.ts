@@ -16,9 +16,23 @@ export interface UpdateProfileData {
   avatarUrl?: string;
 }
 
+export interface UpdateBasicInfoData {
+  nombre: string;
+  telefono?: string;
+}
+
 export interface ChangePasswordData {
   currentPassword: string;
   newPassword: string;
+}
+
+export interface ChangeEmailData {
+  newEmail: string;
+  password: string;
+}
+
+export interface DeleteAccountData {
+  password: string;
 }
 
 /**
@@ -87,6 +101,39 @@ export async function updateUserProfile(data: UpdateProfileData): Promise<UserPr
 }
 
 /**
+ * Actualizar información básica del usuario (desde página de seguridad)
+ */
+export async function updateBasicInfo(data: UpdateBasicInfoData): Promise<UserProfile> {
+  try {
+    const token = localStorage.getItem('auth_token');
+    
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al actualizar información básica');
+    }
+
+    const responseData = await response.json();
+    return responseData.user;
+  } catch (error: any) {
+    console.error('Error al actualizar información básica:', error);
+    throw error;
+  }
+}
+
+/**
  * Cambiar contraseña del usuario
  */
 export async function changePassword(data: ChangePasswordData): Promise<void> {
@@ -112,6 +159,61 @@ export async function changePassword(data: ChangePasswordData): Promise<void> {
     }
   } catch (error: any) {
     console.error('Error al cambiar contraseña:', error);
+    throw error;
+  }
+}
+
+/**
+ * Cambiar email del usuario
+ * Nota: El backend no tiene endpoint específico para cambio de email
+ * Esta función está preparada para cuando se implemente
+ */
+export async function changeEmail(data: ChangeEmailData): Promise<void> {
+  try {
+    const token = localStorage.getItem('auth_token');
+    
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    // TODO: Implementar cuando el backend tenga el endpoint
+    // Por ahora simulamos la funcionalidad
+    throw new Error('Función no disponible aún en el backend');
+  } catch (error: any) {
+    console.error('Error al cambiar email:', error);
+    throw error;
+  }
+}
+
+/**
+ * Eliminar cuenta del usuario
+ */
+export async function deleteAccount(data: DeleteAccountData): Promise<void> {
+  try {
+    const token = localStorage.getItem('auth_token');
+    
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users/account`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al eliminar cuenta');
+    }
+
+    // Limpiar el token después de eliminar la cuenta
+    localStorage.removeItem('auth_token');
+  } catch (error: any) {
+    console.error('Error al eliminar cuenta:', error);
     throw error;
   }
 }

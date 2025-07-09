@@ -28,6 +28,7 @@ export default {
       addresses: "Direcciones",
       favorites: "Favoritos", 
       myOrders: "Pedidos",
+      security: "Seguridad",
       notifications: "Notificaciones",
       settings: "Configuración",
       logout: "Cerrar sesión"
@@ -634,6 +635,7 @@ export default {
       favorites: "Favoritos", 
       addresses: "Direcciones",
       orders: "Pedidos",
+      security: "Seguridad",
       settings: "Ajustes"
     },
     stats: {
@@ -666,45 +668,82 @@ export default {
     security: {
       title: "Seguridad",
       subtitle: "Gestiona la seguridad de tu cuenta",
-      accountInfo: {
+      account: {
         title: "Información de la cuenta",
         email: "Correo electrónico",
-        verificationStatus: "Estado de verificación",
+        verification: "Estado de verificación",
         verified: "Verificado",
-        pending: "Pendiente de verificación"
+        notVerified: "No verificado"
       },
-      passwordChange: {
+      password: {
         title: "Cambiar contraseña",
-        currentPassword: "Contraseña actual",
-        newPassword: "Nueva contraseña",
-        confirmPassword: "Confirmar nueva contraseña",
-        submitButton: "Cambiar contraseña",
-        updating: "Actualizando...",
+        current: "Contraseña actual",
+        new: "Nueva contraseña",
+        confirm: "Confirmar nueva contraseña",
+        currentPlaceholder: "Ingresa tu contraseña actual",
+        newPlaceholder: "Ingresa una nueva contraseña",
+        confirmPlaceholder: "Confirma tu nueva contraseña",
+        update: "Actualizar contraseña",
         success: "Contraseña actualizada correctamente",
-        error: "Error al cambiar la contraseña",
-        mismatch: "Las contraseñas nuevas no coinciden",
-        minLength: "La nueva contraseña debe tener al menos 6 caracteres"
+        errors: {
+          passwordsNotMatch: "Las contraseñas nuevas no coinciden",
+          minLength: "La nueva contraseña debe tener al menos 6 caracteres",
+          generic: "Error al cambiar la contraseña"
+        }
       },
-      emailChange: {
-        title: "Cambiar correo electrónico",
-        newEmail: "Nuevo correo electrónico",
-        confirmPassword: "Confirma tu contraseña",
-        submitButton: "Cambiar correo electrónico",
-        sending: "Enviando...",
-        success: "Se ha enviado un código de verificación a tu nuevo correo",
-        error: "Error al cambiar el correo electrónico"
+      basicInfo: {
+        title: "Información básica",
+        subtitle: "Actualiza tu nombre y teléfono",
+        name: "Nombre completo",
+        namePlaceholder: "Ingresa tu nombre completo",
+        phone: "Teléfono",
+        phonePlaceholder: "Ingresa tu número de teléfono",
+        update: "Actualizar información",
+        success: "Información actualizada correctamente",
+        errors: {
+          nameRequired: "El nombre es requerido",
+          nameMinLength: "El nombre debe tener al menos 2 caracteres",
+          generic: "Error al actualizar la información"
+        }
       },
-      activeSessions: {
+      sessions: {
         title: "Sesiones activas",
-        currentSession: "Sesión actual",
+        currentDevice: "Dispositivo actual",
         lastActivity: "Última actividad: Ahora",
         active: "Activa",
-        closeAllSessions: "Cerrar todas las sesiones"
+        closeAll: "Cerrar todas las sesiones",
+        logoutAllNotAvailable: "Esta funcionalidad estará disponible próximamente"
+      },
+      delete: {
+        title: "Zona peligrosa",
+        warning: "Esta acción eliminará permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
+        showForm: "Eliminar mi cuenta",
+        passwordConfirm: "Confirma tu contraseña",
+        passwordPlaceholder: "Ingresa tu contraseña",
+        confirmLabel: "Escribe 'ELIMINAR' para confirmar",
+        confirmHelp: "Debes escribir exactamente 'ELIMINAR' en mayúsculas",
+        confirm: "Eliminar cuenta",
+        success: "Cuenta eliminada correctamente",
+        errors: {
+          confirmText: "Debes escribir 'ELIMINAR' para continuar",
+          generic: "Error al eliminar la cuenta"
+        }
       }
     },
     settings: {
       title: "Configuración",
       subtitle: "Personaliza tu experiencia",
+      preferences: {
+        title: "Preferencias",
+        description: "Configura tu experiencia personalizada"
+      },
+      appearance: {
+        title: "Apariencia",
+        darkMode: "Modo oscuro",
+        darkModeDesc: "Cambiar entre tema claro y oscuro",
+        theme: "Tema",
+        themeDesc: "Selecciona tu tema preferido"
+      },
       language: {
         title: "Idioma",
         description: "Selecciona tu idioma preferido",
@@ -718,16 +757,47 @@ export default {
         title: "Notificaciones",
         description: "Gestiona tus preferencias de notificación",
         email: "Notificaciones por email",
-        orderUpdates: "Actualizaciones de pedidos",
+        emailDescription: "Recibir notificaciones importantes por correo",
+        orders: "Actualizaciones de pedidos",
+        ordersDescription: "Recibir actualizaciones sobre el estado de tus pedidos",
         promotions: "Ofertas y promociones",
-        newsletter: "Boletín informativo"
+        promotionsDescription: "Recibir ofertas especiales y promociones",
+        newsletter: "Boletín informativo",
+        manage: "Administrar notificaciones"
+      },
+      security: {
+        title: "Seguridad",
+        description: "Protege tu cuenta",
+        changePassword: "Cambiar contraseña",
+        securitySettings: "Configuración de seguridad",
+        twoFactor: "Autenticación de dos factores"
+      },
+      payment: {
+        title: "Pagos",
+        description: "Gestiona tus métodos de pago",
+        methods: "Métodos de pago",
+        addMethod: "Agregar método de pago",
+        defaultMethod: "Método predeterminado"
       },
       privacy: {
         title: "Privacidad",
         description: "Controla tu información personal",
-        dataDownload: "Descargar mis datos",
-        dataDelete: "Eliminar mi cuenta",
+        security: "Configuración de seguridad",
+        downloadData: "Descargar mis datos",
+        deleteData: "Eliminar mi cuenta",
         cookiePreferences: "Preferencias de cookies"
+      },
+      general: {
+        title: "Preferencias generales",
+        language: "Idioma",
+        darkMode: "Modo oscuro"
+      },
+      account: {
+        title: "Cuenta",
+        deleteAccount: "Eliminar cuenta",
+        deleteAccountDesc: "Eliminar permanentemente tu cuenta",
+        exportData: "Exportar datos",
+        exportDataDesc: "Descargar una copia de tus datos"
       }
     }
   },

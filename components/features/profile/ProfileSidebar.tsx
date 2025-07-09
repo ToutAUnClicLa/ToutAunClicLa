@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { User, Heart, MapPin, ShoppingBag, Settings } from 'lucide-react';
+import { User, Heart, MapPin, ShoppingBag, Settings, Shield } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const getProfileTabs = (t: any) => [
@@ -28,6 +28,12 @@ const getProfileTabs = (t: any) => [
     label: t('profile.navigation.orders'),
     icon: ShoppingBag,
     href: "/profile/orders"
+  },
+  {
+    value: "security",
+    label: t('profile.navigation.security'),
+    icon: Shield,
+    href: "/profile/security"
   },
   {
     value: "settings",

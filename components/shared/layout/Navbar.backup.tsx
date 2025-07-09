@@ -64,6 +64,7 @@ const PROFILE_MENU_ITEMS = [
   { icon: MapPin, label: "nav.profile.addresses", href: "/profile/addresses" },
   { icon: ShoppingBag, label: "nav.profile.myOrders", href: "/profile/orders" },
   { icon: Shield, label: "nav.profile.security", href: "/profile/security" },
+  { icon: Bell, label: "nav.profile.notifications", href: "/profile/notifications" },
   { icon: Settings, label: "nav.profile.settings", href: "/profile/settings" }
 ];
 
@@ -520,6 +521,28 @@ export function Navbar() {
                   Accesos rápidos
                 </h3>
                 <div className="grid grid-cols-3 gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="h-auto flex flex-col items-center py-4 px-2 gap-2 relative"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      if (isAuthenticated) {
+                        router.push('/profile/favorites');
+                      } else {
+                        openAuthModal('login');
+                      }
+                    }}
+                  >
+                    <div className="p-2 bg-red-50 rounded-full">
+                      <Heart className="h-5 w-5 text-red-500" />
+                    </div>
+                    <span className="text-xs font-medium">Favoritos</span>
+                    {isAuthenticated && favoritesCount > 0 && (
+                      <Badge className="absolute -top-1 -right-1 h-5 min-w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
+                        {favoritesCount}
+                      </Badge>
+                    )}
+                  </Button>
                   <Button 
                     variant="outline" 
                     className="h-auto flex flex-col items-center py-4 px-2 gap-2"

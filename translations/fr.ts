@@ -28,6 +28,7 @@ export default {
       addresses: "Adresses",
       favorites: "Favoris",
       myOrders: "Commandes",
+      security: "Sécurité",
       notifications: "Notifications", 
       settings: "Paramètres",
       logout: "Déconnexion"
@@ -456,7 +457,8 @@ export default {
       profile: "Profil",
       favorites: "Favoris",
       addresses: "Adresses",
-      orders: "Commandes", 
+      orders: "Commandes",
+      security: "Sécurité", 
       settings: "Paramètres"
     },
     stats: {
@@ -489,45 +491,82 @@ export default {
     security: {
       title: "Sécurité",
       subtitle: "Gérez la sécurité de votre compte",
-      accountInfo: {
+      account: {
         title: "Informations du compte",
-        email: "Adresse email",
-        verificationStatus: "Statut de vérification",
+        email: "Adresse e-mail",
+        verification: "Statut de vérification",
         verified: "Vérifié",
-        pending: "Vérification en attente"
+        notVerified: "Non vérifié"
       },
-      passwordChange: {
+      password: {
         title: "Changer le mot de passe",
-        currentPassword: "Mot de passe actuel",
-        newPassword: "Nouveau mot de passe",
-        confirmPassword: "Confirmer le nouveau mot de passe",
-        submitButton: "Changer le mot de passe",
-        updating: "Mise à jour...",
+        current: "Mot de passe actuel",
+        new: "Nouveau mot de passe",
+        confirm: "Confirmer le nouveau mot de passe",
+        currentPlaceholder: "Entrez votre mot de passe actuel",
+        newPlaceholder: "Entrez un nouveau mot de passe",
+        confirmPlaceholder: "Confirmez votre nouveau mot de passe",
+        update: "Mettre à jour le mot de passe",
         success: "Mot de passe mis à jour avec succès",
-        error: "Erreur lors du changement de mot de passe",
-        mismatch: "Les nouveaux mots de passe ne correspondent pas",
-        minLength: "Le nouveau mot de passe doit contenir au moins 6 caractères"
+        errors: {
+          passwordsNotMatch: "Les nouveaux mots de passe ne correspondent pas",
+          minLength: "Le nouveau mot de passe doit contenir au moins 6 caractères",
+          generic: "Erreur lors du changement de mot de passe"
+        }
       },
-      emailChange: {
-        title: "Changer l'adresse email",
-        newEmail: "Nouvelle adresse email",
-        confirmPassword: "Confirmez votre mot de passe",
-        submitButton: "Changer l'adresse email",
-        sending: "Envoi...",
-        success: "Code de vérification envoyé à votre nouveau email",
-        error: "Erreur lors du changement d'adresse email"
+      basicInfo: {
+        title: "Informations de base",
+        subtitle: "Mettez à jour votre nom et votre téléphone",
+        name: "Nom complet",
+        namePlaceholder: "Entrez votre nom complet",
+        phone: "Numéro de téléphone",
+        phonePlaceholder: "Entrez votre numéro de téléphone",
+        update: "Mettre à jour les informations",
+        success: "Informations mises à jour avec succès",
+        errors: {
+          nameRequired: "Le nom est requis",
+          nameMinLength: "Le nom doit contenir au moins 2 caractères",
+          generic: "Erreur lors de la mise à jour des informations"
+        }
       },
-      activeSessions: {
+      sessions: {
         title: "Sessions actives",
-        currentSession: "Session actuelle",
+        currentDevice: "Appareil actuel",
         lastActivity: "Dernière activité : Maintenant",
         active: "Active",
-        closeAllSessions: "Fermer toutes les sessions"
+        closeAll: "Fermer toutes les sessions",
+        logoutAllNotAvailable: "Cette fonctionnalité sera bientôt disponible"
+      },
+      delete: {
+        title: "Zone dangereuse",
+        warning: "Cette action supprimera définitivement votre compte et toutes les données associées. Cette action ne peut pas être annulée.",
+        showForm: "Supprimer mon compte",
+        passwordConfirm: "Confirmez votre mot de passe",
+        passwordPlaceholder: "Entrez votre mot de passe",
+        confirmLabel: "Tapez 'SUPPRIMER' pour confirmer",
+        confirmHelp: "Vous devez taper exactement 'SUPPRIMER' en majuscules",
+        confirm: "Supprimer le compte",
+        success: "Compte supprimé avec succès",
+        errors: {
+          confirmText: "Vous devez taper 'SUPPRIMER' pour continuer",
+          generic: "Erreur lors de la suppression du compte"
+        }
       }
     },
     settings: {
       title: "Paramètres",
       subtitle: "Personnalisez votre expérience",
+      preferences: {
+        title: "Préférences",
+        description: "Configurez votre expérience personnalisée"
+      },
+      appearance: {
+        title: "Apparence",
+        darkMode: "Mode sombre",
+        darkModeDesc: "Basculer entre les thèmes clair et sombre",
+        theme: "Thème",
+        themeDesc: "Sélectionnez votre thème préféré"
+      },
       language: {
         title: "Langue",
         description: "Sélectionnez votre langue préférée",
@@ -541,16 +580,47 @@ export default {
         title: "Notifications",
         description: "Gérez vos préférences de notification",
         email: "Notifications par email",
-        orderUpdates: "Mises à jour des commandes",
+        emailDescription: "Recevoir des notifications importantes par email",
+        orders: "Mises à jour des commandes",
+        ordersDescription: "Recevoir des mises à jour sur l'état de vos commandes",
         promotions: "Offres et promotions",
-        newsletter: "Bulletin d'information"
+        promotionsDescription: "Recevoir des offres spéciales et promotions",
+        newsletter: "Bulletin d'information",
+        manage: "Gérer les notifications"
+      },
+      security: {
+        title: "Sécurité",
+        description: "Protégez votre compte",
+        changePassword: "Changer le mot de passe",
+        securitySettings: "Paramètres de sécurité",
+        twoFactor: "Authentification à deux facteurs"
+      },
+      payment: {
+        title: "Paiements",
+        description: "Gérez vos méthodes de paiement",
+        methods: "Méthodes de paiement",
+        addMethod: "Ajouter méthode de paiement",
+        defaultMethod: "Méthode par défaut"
       },
       privacy: {
         title: "Confidentialité",
         description: "Contrôlez vos informations personnelles",
-        dataDownload: "Télécharger mes données",
-        dataDelete: "Supprimer mon compte",
+        security: "Paramètres de sécurité",
+        downloadData: "Télécharger mes données",
+        deleteData: "Supprimer mon compte",
         cookiePreferences: "Préférences de cookies"
+      },
+      general: {
+        title: "Préférences générales",
+        language: "Langue",
+        darkMode: "Mode sombre"
+      },
+      account: {
+        title: "Compte",
+        deleteAccount: "Supprimer le compte",
+        deleteAccountDesc: "Supprimer définitivement votre compte",
+        exportData: "Exporter les données",
+        exportDataDesc: "Télécharger une copie de vos données"
       }
     },
     errors: {
