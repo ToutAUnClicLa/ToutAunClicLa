@@ -126,14 +126,14 @@ export default function ProfilePage() {
 
   // Función para formatear la fecha de registro
   const formatJoinDate = (dateString?: string) => {
-    if (!dateString) return 'Fecha no disponible';
+    if (!dateString) return t('common.dateNotAvailable');
     try {
       return new Intl.DateTimeFormat('es-ES', { 
         year: 'numeric', 
         month: 'long' 
       }).format(new Date(dateString));
     } catch {
-      return 'Fecha no disponible';
+      return t('common.dateNotAvailable');
     }
   };
 

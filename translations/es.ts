@@ -14,7 +14,8 @@ export default {
     yes: "Sí",
     no: "No",
     update: "Actualizar",
-    create: "Crear"
+    create: "Crear",
+    dateNotAvailable: "Fecha no disponible"
   },
   nav: {
     home: "Inicio",
@@ -628,6 +629,13 @@ export default {
       welcome: "¡Hola,",
       faq: "Preguntas frecuentes"
     },
+    navigation: {
+      profile: "Perfil",
+      favorites: "Favoritos", 
+      addresses: "Direcciones",
+      orders: "Pedidos",
+      settings: "Ajustes"
+    },
     stats: {
       favorites: "Productos favoritos",
       addresses: "Direcciones guardadas",
@@ -728,47 +736,49 @@ export default {
   cart: {
     title: "Carrito de Compras",
     subtitle: "Productos seleccionados",
+    product: "producto",
+    products: "productos",
+    estimatedTotal: "Total estimado",
+    shipping: "envío",
+    freeShipping: "Envío gratis",
+    loading: "Cargando carrito...",
+    noCategory: "Sin categoría",
+    perUnit: "por unidad",
+    stock: "Stock",
     empty: {
       title: "Tu carrito está vacío",
       description: "¡Agrega algunos productos para comenzar tu compra!",
-      button: "Explorar productos"
+      exploreProducts: "Explorar productos"
     },
-    items: {
-      quantity: "Cantidad",
-      price: "Precio",
-      total: "Total",
-      remove: "Eliminar",
-      outOfStock: "Sin stock",
-      updating: "Actualizando...",
-      removeConfirm: "¿Estás seguro de que quieres eliminar este producto?",
-      categories: {
-        productos: "Productos",
-        comidas: "Comidas",
-        boutique: "Boutique"
-      }
+    categories: {
+      productos: "Productos",
+      comidas: "Comidas", 
+      boutique: "Boutique"
     },
     summary: {
+      title: "Resumen del Pedido",
       subtotal: "Subtotal",
       shipping: "Envío",
-      taxes: "Impuestos",
+      taxes: "Impuestos (15%)",
       total: "Total",
-      freeShipping: "Envío gratis",
-      shippingThreshold: "Envío gratis en pedidos de $200 o más",
-      proceed: "Proceder al pago",
-      continue: "Continuar comprando",
-      clear: "Vaciar carrito",
-      clearConfirm: "¿Estás seguro de que quieres vaciar tu carrito?",
-      itemsCount: "{count} artículos",
-      itemsCount_one: "{count} artículo"
+      freeShipping: "Gratis",
+      shippingThreshold: "Agrega {amount} más para envío gratis",
+      proceed: "Proceder al Pago",
+      continue: "Continuar Comprando",
+      authRequired: "Inicia sesión para continuar",
+      addressRequired: "Selecciona una dirección"
     },
-    messages: {
-      added: "Producto agregado al carrito",
-      updated: "Cantidad actualizada",
-      removed: "Producto eliminado",
-      cleared: "Carrito vaciado",
-      error: "Error al actualizar el carrito",
-      authRequired: "Debes iniciar sesión para continuar",
-      addressRequired: "Selecciona una dirección de envío"
+    success: {
+      quantityUpdated: "Cantidad actualizada",
+      productRemoved: "Producto eliminado",
+      cartCleared: "Carrito vaciado"
+    },
+    errors: {
+      updateQuantity: "Error al actualizar cantidad",
+      removeProduct: "Error al eliminar producto",
+      clearCart: "Error al vaciar carrito",
+      selectAddress: "Debes seleccionar una dirección",
+      emptyCart: "Tu carrito está vacío"
     },
     auth: {
       title: "Inicia sesión para continuar",
@@ -782,16 +792,27 @@ export default {
   favorites: {
     title: "Mis Favoritos",
     subtitle: "Productos que te gustan",
+    headerTitle: "Tus favoritos",
+    headerSubtitle: "Aún no tienes favoritos",
+    headerSubtitleWithCount: "Productos que te encantan",
+    loading: {
+      title: "Cargando favoritos...",
+      description: "Estamos preparando tus productos favoritos"
+    },
     empty: {
-      title: "No tienes favoritos aún",
-      description: "Guarda tus productos favoritos para encontrarlos fácilmente",
+      title: "Sin favoritos aún",
+      description: "Descubre nuestros increíbles productos y añade algunos a tus favoritos",
       button: "Explorar productos"
     },
     items: {
-      addToCart: "Agregar al carrito",
+      addToCart: "Agregar",
       remove: "Quitar de favoritos",
-      outOfStock: "Sin stock",
+      view: "Ver",
+      outOfStock: "Agotado",
       price: "Precio",
+      stock: "Solo",
+      noCategory: "Sin categoría",
+      addedDate: "Agregado el",
       categories: {
         productos: "Productos",
         comidas: "Comidas",
@@ -799,20 +820,28 @@ export default {
       }
     },
     stats: {
-      total: "Total de favoritos",
-      categories: "Categorías",
-      recent: "Agregados recientemente"
+      favorites: "Favoritos",
+      categories: "Categorías", 
+      available: "Disponibles",
+      product: "producto",
+      products: "productos"
+    },
+    buttons: {
+      back: "Volver",
+      explore: "Explorar"
     },
     messages: {
       added: "Agregado a favoritos",
-      removed: "Eliminado de favoritos",
+      removed: "Producto eliminado de favoritos",
       addedToCart: "Producto agregado al carrito",
-      error: "Error al actualizar favoritos",
+      errorAdd: "Error al agregar al carrito",
+      errorRemove: "Error al eliminar de favoritos",
+      outOfStock: "Producto agotado",
       authRequired: "Debes iniciar sesión para ver favoritos"
     },
     auth: {
-      title: "Inicia sesión para ver favoritos",
-      description: "Para ver y guardar tus productos favoritos, necesitas iniciar sesión",
+      title: "¡Inicia sesión!",
+      description: "Para ver y gestionar tus productos favoritos necesitas iniciar sesión",
       login: "Iniciar sesión",
       register: "Crear cuenta"
     }
@@ -829,10 +858,20 @@ export default {
     noAddressesDesc: "Agrega tu primera dirección para facilitar tus compras futuras",
     addFirstAddress: "Agregar primera dirección",
     
+    // Selector de direcciones
+    selector: {
+      title: "Dirección de Envío",
+      add: "Agregar",
+      deliveryInfo: "Solo entregas en Montreal",
+      deliveryNote: "Validamos que la dirección esté dentro del área metropolitana de Montreal",
+      montrealOnly: "Solo direcciones en Montreal",
+      validationNote: "Validamos que la ciudad sea Montreal y que el código postal sea válido (H1A-H5B)"
+    },
+    
     // Formulario
     form: {
-      street: "Dirección",
-      streetPlaceholder: "Ej: 123 Calle Principal",
+      street: "Dirección *",
+      streetPlaceholder: "Ej: 1234 Rue Sainte-Catherine",
       city: "Ciudad",
       cityPlaceholder: "Montreal",
       state: "Provincia",
@@ -859,7 +898,7 @@ export default {
       created: "Dirección creada",
       createdDesc: "La dirección se ha creado correctamente",
       updated: "Dirección actualizada", 
-      updatedDesc: "La dirección se ha actualizado correctamente",
+      updatedDesc: "La dirección se ha actualizada correctamente",
       deleted: "Dirección eliminada",
       deletedDesc: "La dirección se ha eliminado correctamente"
     },
@@ -879,6 +918,18 @@ export default {
       total: "Total de direcciones",
       main: "Dirección principal",
       delivery: "Direcciones de entrega"
+    },
+
+    // Acciones
+    actions: {
+      edit: "Editar",
+      delete: "Eliminar", 
+      addressTitle: "Dirección"
+    },
+
+    // Ciudades
+    cities: {
+      montreal: "Montreal"
     }
   },
 

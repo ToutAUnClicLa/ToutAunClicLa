@@ -19,9 +19,9 @@ import { CartItem } from '@/lib/services/cart';
 import { useTranslation } from '@/hooks/useTranslation';
  
 // Mapeo de categorías con estilos modernos
-const categoryMap = {
+const getCategoryMap = (t: any) => ({
   productos: { 
-    name: 'Productos', 
+    name: t('cart.categories.productos'), 
     icon: Package, 
     color: 'text-indigo-600',
     bgColor: 'bg-gradient-to-r from-indigo-50 to-indigo-100',
@@ -30,7 +30,7 @@ const categoryMap = {
     iconBg: 'bg-indigo-100'
   },
   comidas: { 
-    name: 'Comidas', 
+    name: t('cart.categories.comidas'), 
     icon: Utensils, 
     color: 'text-amber-600',
     bgColor: 'bg-gradient-to-r from-amber-50 to-amber-100',
@@ -39,7 +39,7 @@ const categoryMap = {
     iconBg: 'bg-amber-100'
   },
   boutique: { 
-    name: 'Boutique', 
+    name: t('cart.categories.boutique'), 
     icon: Store, 
     color: 'text-purple-600',
     bgColor: 'bg-gradient-to-r from-purple-50 to-purple-100',
@@ -47,7 +47,7 @@ const categoryMap = {
     badgeColor: 'bg-purple-100 text-purple-700',
     iconBg: 'bg-purple-100'
   }
-};
+});
 
 // Función para determinar la categoría de un item
 const getItemCategory = (item: CartItem): string => {
@@ -143,10 +143,10 @@ export default function CartPage() {
     
     try {
       await updateQuantity(itemId, newQuantity);
-      toast.success('Cantidad actualizada correctamente');
+      toast.success(t('cart.success.quantityUpdated'));
     } catch (error) {
       console.error('Error actualizando cantidad:', error);
-      toast.error('Error al actualizar la cantidad');
+      toast.error(t('cart.errors.updateQuantity'));
     } finally {
       setLoadingItems(prev => {
         const newSet = new Set(prev);
@@ -162,10 +162,10 @@ export default function CartPage() {
     
     try {
       await removeFromCart(itemId);
-      toast.success('Producto eliminado del carrito');
+      toast.success(t('cart.success.productRemoved'));
     } catch (error) {
       console.error('Error eliminando item:', error);
-      toast.error('Error al eliminar el producto');
+      toast.error(t('cart.errors.removeProduct'));
     } finally {
       setLoadingItems(prev => {
         const newSet = new Set(prev);
@@ -179,10 +179,10 @@ export default function CartPage() {
   const handleClearCart = async () => {
     try {
       await clearCart();
-      toast.success('Carrito vaciado correctamente');
+      toast.success(t('cart.success.cartCleared'));
     } catch (error) {
       console.error('Error limpiando carrito:', error);
-      toast.error('Error al vaciar el carrito');
+      toast.error(t('cart.errors.clearCart'));
     }
   };
 
@@ -194,12 +194,12 @@ export default function CartPage() {
     }
 
     if (!selectedAddress) {
-      toast.error('Por favor selecciona una dirección de envío');
+      toast.error(t('cart.errors.selectAddress'));
       return;
     }
 
     if (isEmpty) {
-      toast.error('Tu carrito está vacío');
+      toast.error(t('cart.errors.emptyCart'));
       return;
     }
 
@@ -245,14 +245,14 @@ export default function CartPage() {
                       {item.productos.nombre}
                     </h3>
                     <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
-                      {item.productos.categorias?.nombre || 'Sin categoría'}
+                      {item.productos.categorias?.nombre || t('cart.noCategory')}
                     </p>
                     <div className="flex items-center gap-2 sm:gap-4">
                       <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
                         {formatPrice(item.productos.precio)}
                       </span>
                       <span className="text-xs sm:text-sm text-gray-500">
-                        c/u
+                        {t('cart.perUnit')}
                       </span>
                     </div>
                   </div>
@@ -268,7 +268,7 @@ export default function CartPage() {
                       <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
                     <Badge variant="secondary" className="text-xs">
-                      Stock: {item.productos.stock}
+                      {t('cart.stock')}: {item.productos.stock}
                     </Badge>
                   </div>
                 </div>
@@ -319,6 +319,7 @@ export default function CartPage() {
 
   // Renderizar grupo de categoría con diseño responsive
   const renderCategoryGroup = (category: string, items: CartItem[]) => {
+    const categoryMap = getCategoryMap(t);
     const categoryInfo = categoryMap[category as keyof typeof categoryMap];
     const IconComponent = categoryInfo.icon;
     
@@ -334,12 +335,12 @@ export default function CartPage() {
                 {categoryInfo.name}
               </h2>
               <p className="text-xs sm:text-sm text-gray-600">
-                {items.length} {items.length === 1 ? 'producto' : 'productos'}
+                {items.length} {items.length === 1 ? t('cart.product') : t('cart.products')}
               </p>
             </div>
             <div className="ml-auto">
               <Badge className={`${categoryInfo.badgeColor} border-0 text-xs sm:text-sm`}>
-                {items.reduce((sum, item) => sum + item.cantidad, 0)} items
+                {items.reduce((sum, item) => sum + item.cantidad, 0)} {t('cart.products')}
               </Badge>
             </div>
           </div>
@@ -360,7 +361,7 @@ export default function CartPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="text-gray-600">Cargando tu carrito...</p>
+          <p className="text-gray-600">{t('cart.loading')}</p>
         </div>
       </div>
     );
@@ -386,9 +387,9 @@ export default function CartPage() {
                   <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-indigo-600" />
                 </div>
                 <div>
-                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Mi Carrito</h1>
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">{t('cart.title')}</h1>
                   <p className="text-sm sm:text-base text-gray-600">
-                    {totalQuantity} {totalQuantity === 1 ? 'producto' : 'productos'}
+                    {totalQuantity} {totalQuantity === 1 ? t('cart.product') : t('cart.products')}
                   </p>
                 </div>
               </div>
@@ -396,12 +397,12 @@ export default function CartPage() {
               {!isEmpty && (
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="text-right hidden sm:block">
-                    <p className="text-xs sm:text-sm text-gray-600">Total estimado</p>
+                    <p className="text-xs sm:text-sm text-gray-600">{t('cart.estimatedTotal')}</p>
                     <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">
                       {formatPrice(finalTotal)}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {shippingCost === 0 ? 'Envío gratis' : `+ ${formatPrice(shippingCost)} envío`}
+                      {shippingCost === 0 ? t('cart.freeShipping') : `+ ${formatPrice(shippingCost)} ${t('cart.shipping')}`}
                     </p>
                   </div>
                   <Button
@@ -424,15 +425,15 @@ export default function CartPage() {
                 <div className="p-3 sm:p-4 bg-gray-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4">
                   <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
                 </div>
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Tu carrito está vacío</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">{t('cart.empty.title')}</h3>
                 <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
-                  Comienza a agregar productos para continuar con tu compra
+                  {t('cart.empty.description')}
                 </p>
                 <Button 
                   onClick={() => router.push('/productos')}
                   className="bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base px-4 sm:px-6"
                 >
-                  Explorar Productos
+                  {t('cart.empty.exploreProducts')}
                 </Button>
               </div>
             </div>
@@ -452,32 +453,32 @@ export default function CartPage() {
                 <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 sticky top-20 sm:top-24">
                   <div className="flex items-center gap-2 mb-4 sm:mb-6">
                     <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900">Resumen del Pedido</h3>
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900">{t('cart.summary.title')}</h3>
                   </div>
                   
                   <div className="space-y-3 sm:space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm sm:text-base text-gray-600">Subtotal</span>
+                      <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.subtotal')}</span>
                       <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(calculatedSubtotal)}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm sm:text-base text-gray-600">Envío</span>
+                      <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.shipping')}</span>
                       <span className="text-sm sm:text-base font-medium text-gray-900">
-                        {shippingCost === 0 ? 'Gratis' : formatPrice(shippingCost)}
+                        {shippingCost === 0 ? t('cart.summary.freeShipping') : formatPrice(shippingCost)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm sm:text-base text-gray-600">Impuestos (15%)</span>
+                      <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.taxes')}</span>
                       <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(taxes)}</span>
                     </div>
                     {calculatedSubtotal < shippingThreshold && (
                       <div className="text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 sm:p-3 rounded-lg">
-                        Agrega {formatPrice(shippingThreshold - calculatedSubtotal)} más para envío gratis
+                        {t('cart.summary.shippingThreshold').replace('{amount}', formatPrice(shippingThreshold - calculatedSubtotal))}
                       </div>
                     )}
                     <Separator />
                     <div className="flex justify-between items-center">
-                      <span className="text-base sm:text-lg font-semibold text-gray-900">Total</span>
+                      <span className="text-base sm:text-lg font-semibold text-gray-900">{t('cart.summary.total')}</span>
                       <span className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">{formatPrice(finalTotal)}</span>
                     </div>
                   </div>
@@ -494,9 +495,9 @@ export default function CartPage() {
                       onClick={handleCheckout}
                       disabled={!isAuthenticated || !selectedAddress}
                     >
-                      {!isAuthenticated ? 'Inicia sesión para continuar' : 
-                       !selectedAddress ? 'Selecciona una dirección' : 
-                       'Proceder al Pago'}
+                      {!isAuthenticated ? t('cart.summary.authRequired') : 
+                       !selectedAddress ? t('cart.summary.addressRequired') : 
+                       t('cart.summary.proceed')}
                     </Button>
                     <Button 
                       variant="outline" 
@@ -504,7 +505,7 @@ export default function CartPage() {
                       className="w-full text-sm sm:text-base h-10 sm:h-12"
                       onClick={() => router.push('/productos')}
                     >
-                      Continuar Comprando
+                      {t('cart.summary.continue')}
                     </Button>
                   </div>
                 </div>

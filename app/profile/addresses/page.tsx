@@ -312,7 +312,7 @@ export default function AddressesPage() {
                   <p className="text-lg sm:text-xl font-bold text-gray-900">
                     {addresses.filter(addr => addr.city.toLowerCase().includes('montreal')).length}
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-600">Montreal</p>
+                  <p className="text-xs sm:text-sm text-gray-600">{t('addresses.cities.montreal')}</p>
                 </div>
               </div>
             </CardContent>
@@ -374,7 +374,7 @@ export default function AddressesPage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1">
-                              Dirección {address.id.slice(-6)}
+                              {t('addresses.actions.addressTitle')} {address.id.slice(-6)}
                             </h3>
                             <div className="space-y-1 text-xs sm:text-sm text-gray-600">
                               <p className="font-medium text-gray-900 break-words">{address.street}</p>
@@ -393,7 +393,7 @@ export default function AddressesPage() {
                             onClick={() => openEditDialog(address)}
                           >
                             <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                            Editar
+                            {t('addresses.actions.edit')}
                           </Button>
                           <Button 
                             variant="outline" 
@@ -406,7 +406,7 @@ export default function AddressesPage() {
                             ) : (
                               <>
                                 <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                                Eliminar
+                                {t('addresses.actions.delete')}
                               </>
                             )}
                           </Button>

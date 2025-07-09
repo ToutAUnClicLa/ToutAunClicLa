@@ -14,7 +14,8 @@ export default {
     yes: "Yes",
     no: "No",
     update: "Update",
-    create: "Create"
+    create: "Create",
+    dateNotAvailable: "Date not available"
   },
   nav: {
     home: "Home",
@@ -214,47 +215,49 @@ export default {
   cart: {
     title: "Shopping Cart",
     subtitle: "Selected products",
+    product: "product",
+    products: "products",
+    estimatedTotal: "Estimated total",
+    shipping: "shipping",
+    freeShipping: "Free shipping",
+    loading: "Loading cart...",
+    noCategory: "No category",
+    perUnit: "per unit",
+    stock: "Stock",
     empty: {
       title: "Your cart is empty",
       description: "Add some products to start shopping!",
-      button: "Explore products"
+      exploreProducts: "Explore products"
     },
-    items: {
-      quantity: "Quantity",
-      price: "Price",
-      total: "Total",
-      remove: "Remove",
-      outOfStock: "Out of stock",
-      updating: "Updating...",
-      removeConfirm: "Are you sure you want to remove this product?",
-      categories: {
-        productos: "Products",
-        comidas: "Foods",
-        boutique: "Boutique"
-      }
+    categories: {
+      productos: "Products",
+      comidas: "Foods",
+      boutique: "Boutique"
     },
     summary: {
+      title: "Order Summary",
       subtotal: "Subtotal",
       shipping: "Shipping",
-      taxes: "Taxes",
+      taxes: "Taxes (15%)",
       total: "Total",
-      freeShipping: "Free shipping",
-      shippingThreshold: "Free shipping on orders $200+",
-      proceed: "Proceed to checkout",
-      continue: "Continue shopping",
-      clear: "Clear cart",
-      clearConfirm: "Are you sure you want to clear your cart?",
-      itemsCount: "{count} items",
-      itemsCount_one: "{count} item"
+      freeShipping: "Free",
+      shippingThreshold: "Add {amount} more for free shipping",
+      proceed: "Proceed to Checkout",
+      continue: "Continue Shopping",
+      authRequired: "Sign in to continue",
+      addressRequired: "Select an address"
     },
-    messages: {
-      added: "Product added to cart",
-      updated: "Quantity updated",
-      removed: "Product removed",
-      cleared: "Cart cleared",
-      error: "Error updating cart",
-      authRequired: "You must sign in to continue",
-      addressRequired: "Please select a shipping address"
+    success: {
+      quantityUpdated: "Quantity updated",
+      productRemoved: "Product removed",
+      cartCleared: "Cart cleared"
+    },
+    errors: {
+      updateQuantity: "Error updating quantity",
+      removeProduct: "Error removing product",
+      clearCart: "Error clearing cart",
+      selectAddress: "You must select an address",
+      emptyCart: "Your cart is empty"
     },
     auth: {
       title: "Sign in to continue",
@@ -268,16 +271,27 @@ export default {
   favorites: {
     title: "My Favorites",
     subtitle: "Products you love",
+    headerTitle: "Your favorites",
+    headerSubtitle: "You don't have favorites yet",
+    headerSubtitleWithCount: "Products you love",
+    loading: {
+      title: "Loading favorites...",
+      description: "We're preparing your favorite products"
+    },
     empty: {
       title: "No favorites yet",
-      description: "Save your favorite products to find them easily",
+      description: "Discover our amazing products and add some to your favorites",
       button: "Explore products"
     },
     items: {
-      addToCart: "Add to cart",
+      addToCart: "Add",
       remove: "Remove from favorites",
+      view: "View",
       outOfStock: "Out of stock",
       price: "Price",
+      stock: "Only",
+      noCategory: "No category",
+      addedDate: "Added on",
       categories: {
         productos: "Products",
         comidas: "Foods",
@@ -285,20 +299,28 @@ export default {
       }
     },
     stats: {
-      total: "Total favorites",
+      favorites: "Favorites",
       categories: "Categories",
-      recent: "Recently added"
+      available: "Available",
+      product: "product",
+      products: "products"
+    },
+    buttons: {
+      back: "Back",
+      explore: "Explore"
     },
     messages: {
       added: "Added to favorites",
-      removed: "Removed from favorites",
+      removed: "Product removed from favorites",
       addedToCart: "Product added to cart",
-      error: "Error updating favorites",
+      errorAdd: "Error adding to cart",
+      errorRemove: "Error removing from favorites",
+      outOfStock: "Product out of stock",
       authRequired: "You must sign in to view favorites"
     },
     auth: {
-      title: "Sign in to view favorites",
-      description: "To view and save your favorite products, you need to sign in",
+      title: "Sign in!",
+      description: "To view and manage your favorite products you need to sign in",
       login: "Sign in",
       register: "Create account"
     }
@@ -315,10 +337,20 @@ export default {
     noAddressesDesc: "Add your first address to make future purchases easier",
     addFirstAddress: "Add first address",
     
+    // Address selector
+    selector: {
+      title: "Shipping Address",
+      add: "Add",
+      deliveryInfo: "Montreal deliveries only",
+      deliveryNote: "We validate that the address is within Montreal metropolitan area",
+      montrealOnly: "Montreal addresses only",
+      validationNote: "We validate that the city is Montreal and the postal code is valid (H1A-H5B)"
+    },
+    
     // Form
     form: {
-      street: "Street address",
-      streetPlaceholder: "e.g., 123 Main Street",
+      street: "Address *",
+      streetPlaceholder: "e.g., 1234 Rue Sainte-Catherine",
       city: "City",
       cityPlaceholder: "Montreal",
       state: "Province",
@@ -365,6 +397,18 @@ export default {
       total: "Total addresses",
       main: "Main address",
       delivery: "Delivery addresses"
+    },
+
+    // Actions
+    actions: {
+      edit: "Edit",
+      delete: "Delete",
+      addressTitle: "Address"
+    },
+
+    // Cities
+    cities: {
+      montreal: "Montreal"
     }
   },
 
@@ -407,6 +451,13 @@ export default {
       manageAccount: "Manage account",
       welcome: "Hello,",
       faq: "Frequently asked questions"
+    },
+    navigation: {
+      profile: "Profile",
+      favorites: "Favorites",
+      addresses: "Addresses", 
+      orders: "Orders",
+      settings: "Settings"
     },
     stats: {
       favorites: "Favorite products",

@@ -22,7 +22,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 // Mapeo de categorías con estilos modernos
 const categoryMap = {
   productos: { 
-    name: 'Productos', 
+    name: 'productos', 
     icon: Package, 
     color: 'text-indigo-600',
     bgColor: 'bg-gradient-to-r from-indigo-50 to-indigo-100',
@@ -31,7 +31,7 @@ const categoryMap = {
     iconBg: 'bg-indigo-100'
   },
   comidas: { 
-    name: 'Comidas', 
+    name: 'comidas', 
     icon: Utensils, 
     color: 'text-amber-600',
     bgColor: 'bg-gradient-to-r from-amber-50 to-amber-100',
@@ -40,7 +40,7 @@ const categoryMap = {
     iconBg: 'bg-amber-100'
   },
   boutique: { 
-    name: 'Boutique', 
+    name: 'boutique', 
     icon: Store, 
     color: 'text-purple-600',
     bgColor: 'bg-gradient-to-r from-purple-50 to-purple-100',
@@ -128,16 +128,16 @@ export default function FavoritesPage() {
 
   const handleAddToCart = async (item: FavoriteItem) => {
     if (item.productos.stock === 0) {
-      toast.error('Producto agotado');
+      toast.error(t('favorites.messages.outOfStock'));
       return;
     }
 
     setAddingToCart(prev => new Set(prev).add(item.id));
     try {
       await addToCart(item.producto_id, 1);
-      toast.success('Producto agregado al carrito');
+      toast.success(t('favorites.messages.addedToCart'));
     } catch (error) {
-      toast.error('Error al agregar al carrito');
+      toast.error(t('favorites.messages.errorAdd'));
     } finally {
       setAddingToCart(prev => {
         const newSet = new Set(prev);
@@ -152,9 +152,9 @@ export default function FavoritesPage() {
     try {
       await removeFromFavorites(item.producto_id);
       await loadFavorites(); // Recargar la lista
-      toast.success('Producto eliminado de favoritos');
+      toast.success(t('favorites.messages.removed'));
     } catch (error) {
-      toast.error('Error al eliminar de favoritos');
+      toast.error(t('favorites.messages.errorRemove'));
     } finally {
       setLoadingItems(prev => {
         const newSet = new Set(prev);
@@ -194,7 +194,7 @@ export default function FavoritesPage() {
                 />
                 {isOutOfStock && (
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <span className="text-white text-xs font-semibold">Agotado</span>
+                    <span className="text-white text-xs font-semibold">{t('favorites.items.outOfStock')}</span>
                   </div>
                 )}
               </div>
@@ -206,7 +206,7 @@ export default function FavoritesPage() {
                       {item.productos.nombre}
                     </h3>
                     <p className="text-xs sm:text-sm text-gray-600 mb-2 truncate">
-                      {item.productos.categorias?.nombre || 'Sin categoría'}
+                      {item.productos.categorias?.nombre || t('favorites.items.noCategory')}
                     </p>
                     <div className="flex items-center gap-2 sm:gap-3 mb-2">
                       <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
@@ -214,7 +214,7 @@ export default function FavoritesPage() {
                       </span>
                       {item.productos.stock <= 5 && item.productos.stock > 0 && (
                         <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-700 border-amber-200">
-                          Solo {item.productos.stock}
+                          {t('favorites.items.stock')} {item.productos.stock}
                         </Badge>
                       )}
                     </div>
@@ -242,7 +242,7 @@ export default function FavoritesPage() {
                       onClick={() => router.push(`/productos/${item.producto_id}`)}
                       className="text-gray-600 hover:text-gray-900 h-8 text-xs sm:text-sm flex-1 sm:flex-none"
                     >
-                      Ver
+                      {t('favorites.items.view')}
                     </Button>
                     <Button
                       size="sm"
@@ -255,7 +255,7 @@ export default function FavoritesPage() {
                       ) : (
                         <>
                           <ShoppingCart className="h-3 w-3 mr-1" />
-                          {isOutOfStock ? 'Agotado' : 'Agregar'}
+                          {isOutOfStock ? t('favorites.items.outOfStock') : t('favorites.items.addToCart')}
                         </>
                       )}
                     </Button>
@@ -282,9 +282,9 @@ export default function FavoritesPage() {
                 </div>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Cargando favoritos...</h3>
+                <h3 className="font-semibold text-gray-900 mb-1">{t('favorites.loading.title')}</h3>
                 <p className="text-sm text-gray-600">
-                  Estamos preparando tus productos favoritos
+                  {t('favorites.loading.description')}
                 </p>
               </div>
             </div>
@@ -309,15 +309,15 @@ export default function FavoritesPage() {
                 </div>
               </div>
               <div>
-                <h3 className="font-bold text-2xl text-gray-900 mb-2">¡Inicia sesión!</h3>
+                <h3 className="font-bold text-2xl text-gray-900 mb-2">{t('favorites.auth.title')}</h3>
                 <p className="text-gray-600 mb-6">
-                  Para ver y gestionar tus productos favoritos necesitas iniciar sesión
+                  {t('favorites.auth.description')}
                 </p>
                 <Button 
                   onClick={() => router.push('/')}
                   className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                 >
-                  Iniciar sesión
+                  {t('favorites.auth.login')}
                 </Button>
               </div>
             </div>
@@ -342,15 +342,15 @@ export default function FavoritesPage() {
                 </div>
               </div>
               <div>
-                <h3 className="font-bold text-2xl text-gray-900 mb-2">Sin favoritos aún</h3>
+                <h3 className="font-bold text-2xl text-gray-900 mb-2">{t('favorites.empty.title')}</h3>
                 <p className="text-gray-600 mb-6">
-                  Descubre nuestros increíbles productos y añade algunos a tus favoritos
+                  {t('favorites.empty.description')}
                 </p>
                 <Button 
                   onClick={() => router.push('/productos')}
                   className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                 >
-                  Explorar productos
+                  {t('favorites.empty.button')}
                 </Button>
               </div>
             </div>
@@ -382,10 +382,10 @@ export default function FavoritesPage() {
                     </div>
                     <div>
                       <h1 className="text-lg sm:text-xl md:text-2xl font-bold">
-                        {totalCount === 0 ? "Tus favoritos" : `${totalCount} Favoritos`}
+                        {totalCount === 0 ? t('favorites.headerTitle') : `${totalCount} ${t('favorites.stats.favorites')}`}
                       </h1>
                       <p className="text-xs sm:text-sm text-red-100 opacity-90">
-                        {totalCount === 0 ? "Aún no tienes favoritos" : "Productos que te encantan"}
+                        {totalCount === 0 ? t('favorites.headerSubtitle') : t('favorites.headerSubtitleWithCount')}
                       </p>
                     </div>
                   </div>
@@ -398,7 +398,7 @@ export default function FavoritesPage() {
                       onClick={() => router.back()}
                     >
                       <ArrowLeft className="h-4 w-4" />
-                      <span className="hidden sm:inline ml-2">Volver</span>
+                      <span className="hidden sm:inline ml-2">{t('favorites.buttons.back')}</span>
                     </Button>
                     <Button
                       size="sm"
@@ -406,7 +406,7 @@ export default function FavoritesPage() {
                       onClick={() => router.push('/productos')}
                     >
                       <Plus className="h-4 w-4" />
-                      <span className="hidden sm:inline ml-2">Explorar</span>
+                      <span className="hidden sm:inline ml-2">{t('favorites.buttons.explore')}</span>
                     </Button>
                   </div>
                 </div>
@@ -425,7 +425,7 @@ export default function FavoritesPage() {
                 </div>
                 <div>
                   <p className="text-lg sm:text-xl font-bold text-gray-900">{totalCount}</p>
-                  <p className="text-xs sm:text-sm text-gray-600">Favoritos</p>
+                  <p className="text-xs sm:text-sm text-gray-600">{t('favorites.stats.favorites')}</p>
                 </div>
               </div>
             </CardContent>
@@ -439,7 +439,7 @@ export default function FavoritesPage() {
                 </div>
                 <div>
                   <p className="text-lg sm:text-xl font-bold text-gray-900">{sortedCategories.length}</p>
-                  <p className="text-xs sm:text-sm text-gray-600">Categorías</p>
+                  <p className="text-xs sm:text-sm text-gray-600">{t('favorites.stats.categories')}</p>
                 </div>
               </div>
             </CardContent>
@@ -455,7 +455,7 @@ export default function FavoritesPage() {
                   <p className="text-lg sm:text-xl font-bold text-gray-900">
                     {favorites.filter(f => f.productos.stock > 0).length}
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-600">Disponibles</p>
+                  <p className="text-xs sm:text-sm text-gray-600">{t('favorites.stats.available')}</p>
                 </div>
               </div>
             </CardContent>
@@ -485,10 +485,10 @@ export default function FavoritesPage() {
                     </div>
                     <div className="flex-1">
                       <h2 className={`font-semibold text-base sm:text-lg ${categoryInfo.color}`}>
-                        {categoryInfo.name}
+                        {t(`favorites.items.categories.${categoryInfo.name}`)}
                       </h2>
                       <p className="text-xs sm:text-sm text-gray-600">
-                        {categoryItems.length} {categoryItems.length === 1 ? 'producto' : 'productos'}
+                        {categoryItems.length} {categoryItems.length === 1 ? t('favorites.stats.product') : t('favorites.stats.products')}
                       </p>
                     </div>
                     <Badge className={`${categoryInfo.badgeColor} font-medium px-2 py-1 text-xs`}>

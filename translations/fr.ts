@@ -14,7 +14,8 @@ export default {
     yes: "Oui",
     no: "Non",
     update: "Mettre à jour",
-    create: "Créer"
+    create: "Créer",
+    dateNotAvailable: "Date non disponible"
   },
   nav: {
     home: "Accueil",
@@ -214,47 +215,49 @@ export default {
   cart: {
     title: "Panier d'Achat",
     subtitle: "Produits sélectionnés",
+    product: "produit",
+    products: "produits",
+    estimatedTotal: "Total estimé",
+    shipping: "expédition",
+    freeShipping: "Livraison gratuite",
+    loading: "Chargement du panier...",
+    noCategory: "Sans catégorie",
+    perUnit: "par unité",
+    stock: "Stock",
     empty: {
       title: "Votre panier est vide",
       description: "Ajoutez des produits pour commencer vos achats !",
-      button: "Explorer les produits"
+      exploreProducts: "Explorer les produits"
     },
-    items: {
-      quantity: "Quantité",
-      price: "Prix",
-      total: "Total",
-      remove: "Supprimer",
-      outOfStock: "Rupture de stock",
-      updating: "Mise à jour...",
-      removeConfirm: "Êtes-vous sûr de vouloir supprimer ce produit ?",
-      categories: {
-        productos: "Produits",
-        comidas: "Cuisine",
-        boutique: "Boutique"
-      }
+    categories: {
+      productos: "Produits",
+      comidas: "Cuisine",
+      boutique: "Boutique"
     },
     summary: {
+      title: "Résumé de la Commande",
       subtotal: "Sous-total",
       shipping: "Expédition",
-      taxes: "Taxes",
+      taxes: "Taxes (15%)",
       total: "Total",
-      freeShipping: "Livraison gratuite",
-      shippingThreshold: "Livraison gratuite pour les commandes de 200$ et plus",
-      proceed: "Procéder au paiement",
-      continue: "Continuer les achats",
-      clear: "Vider le panier",
-      clearConfirm: "Êtes-vous sûr de vouloir vider votre panier ?",
-      itemsCount: "{count} articles",
-      itemsCount_one: "{count} article"
+      freeShipping: "Gratuit",
+      shippingThreshold: "Ajoutez {amount} de plus pour la livraison gratuite",
+      proceed: "Procéder au Paiement",
+      continue: "Continuer les Achats",
+      authRequired: "Connectez-vous pour continuer",
+      addressRequired: "Sélectionner une adresse"
     },
-    messages: {
-      added: "Produit ajouté au panier",
-      updated: "Quantité mise à jour",
-      removed: "Produit supprimé",
-      cleared: "Panier vidé",
-      error: "Erreur lors de la mise à jour du panier",
-      authRequired: "Vous devez vous connecter pour continuer",
-      addressRequired: "Veuillez sélectionner une adresse de livraison"
+    success: {
+      quantityUpdated: "Quantité mise à jour",
+      productRemoved: "Produit supprimé",
+      cartCleared: "Panier vidé"
+    },
+    errors: {
+      updateQuantity: "Erreur lors de la mise à jour de la quantité",
+      removeProduct: "Erreur lors de la suppression du produit",
+      clearCart: "Erreur lors du vidage du panier",
+      selectAddress: "Vous devez sélectionner une adresse",
+      emptyCart: "Votre panier est vide"
     },
     auth: {
       title: "Connectez-vous pour continuer",
@@ -268,16 +271,27 @@ export default {
   favorites: {
     title: "Mes Favoris",
     subtitle: "Produits que vous aimez",
+    headerTitle: "Vos favoris",
+    headerSubtitle: "Vous n'avez pas encore de favoris",
+    headerSubtitleWithCount: "Produits que vous aimez",
+    loading: {
+      title: "Chargement des favoris...",
+      description: "Nous préparons vos produits favoris"
+    },
     empty: {
       title: "Aucun favori pour le moment",
-      description: "Sauvegardez vos produits favoris pour les retrouver facilement",
+      description: "Découvrez nos produits incroyables et ajoutez-en à vos favoris",
       button: "Explorer les produits"
     },
     items: {
-      addToCart: "Ajouter au panier",
+      addToCart: "Ajouter",
       remove: "Retirer des favoris",
-      outOfStock: "Rupture de stock",
+      view: "Voir",
+      outOfStock: "Épuisé",
       price: "Prix",
+      stock: "Seulement",
+      noCategory: "Sans catégorie",
+      addedDate: "Ajouté le",
       categories: {
         productos: "Produits",
         comidas: "Cuisine",
@@ -285,20 +299,28 @@ export default {
       }
     },
     stats: {
-      total: "Total des favoris",
+      favorites: "Favoris",
       categories: "Catégories",
-      recent: "Récemment ajoutés"
+      available: "Disponibles",
+      product: "produit",
+      products: "produits"
+    },
+    buttons: {
+      back: "Retour",
+      explore: "Explorer"
     },
     messages: {
       added: "Ajouté aux favoris",
-      removed: "Retiré des favoris",
+      removed: "Produit retiré des favoris",
       addedToCart: "Produit ajouté au panier",
-      error: "Erreur lors de la mise à jour des favoris",
+      errorAdd: "Erreur lors de l'ajout au panier",
+      errorRemove: "Erreur lors de la suppression des favoris",
+      outOfStock: "Produit épuisé",
       authRequired: "Vous devez vous connecter pour voir les favoris"
     },
     auth: {
-      title: "Connectez-vous pour voir les favoris",
-      description: "Pour voir et sauvegarder vos produits favoris, vous devez vous connecter",
+      title: "Connectez-vous !",
+      description: "Pour voir et gérer vos produits favoris, vous devez vous connecter",
       login: "Se connecter",
       register: "Créer un compte"
     }
@@ -315,10 +337,20 @@ export default {
     noAddressesDesc: "Ajoutez votre première adresse pour faciliter vos achats futurs",
     addFirstAddress: "Ajouter première adresse",
     
+    // Sélecteur d'adresses
+    selector: {
+      title: "Adresse de Livraison",
+      add: "Ajouter",
+      deliveryInfo: "Livraisons à Montréal seulement",
+      deliveryNote: "Nous validons que l'adresse se trouve dans la région métropolitaine de Montréal",
+      montrealOnly: "Adresses de Montréal seulement",
+      validationNote: "Nous validons que la ville est Montréal et que le code postal est valide (H1A-H5B)"
+    },
+    
     // Formulaire
     form: {
-      street: "Adresse",
-      streetPlaceholder: "Ex: 123 Rue Principale",
+      street: "Adresse *",
+      streetPlaceholder: "Ex: 1234 Rue Sainte-Catherine",
       city: "Ville",
       cityPlaceholder: "Montréal",
       state: "Province",
@@ -365,6 +397,18 @@ export default {
       total: "Total des adresses",
       main: "Adresse principale",
       delivery: "Adresses de livraison"
+    },
+
+    // Actions
+    actions: {
+      edit: "Modifier",
+      delete: "Supprimer",
+      addressTitle: "Adresse"
+    },
+
+    // Villes
+    cities: {
+      montreal: "Montréal"
     }
   },
 
@@ -407,6 +451,13 @@ export default {
       manageAccount: "Gérer le compte",
       welcome: "Bonjour,",
       faq: "Questions fréquemment posées"
+    },
+    navigation: {
+      profile: "Profil",
+      favorites: "Favoris",
+      addresses: "Adresses",
+      orders: "Commandes", 
+      settings: "Paramètres"
     },
     stats: {
       favorites: "Produits favoris",
@@ -956,6 +1007,8 @@ export default {
       },
       pricing: {
         title: "4. Prix, taxes et paiements",
+        paragraph1: "Tous les prix sont affichés en dollars canadiens (CAD) et incluent les taxes applicables sauf indication contraire. Nous nous réservons le droit de modifier les prix à tout moment sans préavis préalable. Cependant, les commandes confirmées et payées ne seront pas affectées par les changements de prix.",
+        conditions: [
           "Le produit doit être dans son état original, inutilisé et avec toutes les étiquettes et emballages originaux.",
           "Une preuve d'achat ou confirmation de commande doit être incluse.",
           "Les articles personnalisés, périssables, d'hygiène personnelle ou marqués comme vente finale ne sont pas éligibles au retour, sauf en cas de défauts vérifiables."
@@ -986,7 +1039,8 @@ export default {
       },
       changes: {
         title: "10. Modifications des conditions",
-        paragraph1: "Nous nous réservons le droit, à notre seule discrétion, de modifier ou remplacer ces Conditions à tout moment. La version mise à jour sera effective dès qu'elle sera publiée sur notre Plateforme. Il est de
+        paragraph1: "Nous nous réservons le droit, à notre seule discrétion, de modifier ou remplacer ces Conditions à tout moment. La version mise à jour sera effective dès qu'elle sera publiée sur notre Plateforme.",
+        paragraph2: "Il est de votre responsabilité de vérifier périodiquement ces Conditions pour les changements.",
         paragraph3: "Pour des changements substantielles, nous ferons des efforts raisonnables pour vous notifier, soit par un avis proéminent sur notre Plateforme, par courriel à l'adresse associée à votre compte, ou par d'autres moyens."
       },
       contact: {

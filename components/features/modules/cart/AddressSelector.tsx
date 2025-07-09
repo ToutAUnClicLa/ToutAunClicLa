@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { validateMontrealAddress, formatCanadianPostalCode } from '@/lib/utils/montreal-validation';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface FormData {
   street: string;
@@ -31,6 +32,7 @@ const initialFormData: FormData = {
 
 export function AddressSelector() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { 
     addresses, 
     selectedAddress, 
@@ -138,7 +140,7 @@ export function AddressSelector() {
 
   // Manejar eliminación de dirección
   const handleDeleteAddress = async (addressId: string) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar esta dirección?')) {
+    if (window.confirm(t('addresses.deleteAddress') + '?')) {
       try {
         await deleteAddress(addressId);
       } catch (error) {
@@ -156,7 +158,7 @@ export function AddressSelector() {
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
           <MapPin className="h-5 w-5 text-indigo-600" />
-          Dirección de Envío
+          {t('addresses.selector.title')}
         </h3>
         <Button
           variant="outline"
@@ -165,7 +167,7 @@ export function AddressSelector() {
           className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Agregar
+          {t('addresses.selector.add')}
         </Button>
       </div>
 
@@ -180,14 +182,14 @@ export function AddressSelector() {
               <MapPinIcon className="h-6 w-6 text-gray-400" />
             </div>
             <h4 className="text-lg font-medium text-gray-900 mb-2">
-              No tienes direcciones guardadas
+              {t('addresses.noAddresses')}
             </h4>
             <p className="text-gray-600 mb-4">
-              Agrega una dirección en Montreal para continuar
+              {t('addresses.noAddressesDesc')}
             </p>
             <Button onClick={openCreateDialog} className="bg-indigo-600 hover:bg-indigo-700">
               <Plus className="h-4 w-4 mr-2" />
-              Agregar dirección
+              {t('addresses.addNew')}
             </Button>
           </CardContent>
         </Card>
@@ -264,10 +266,10 @@ export function AddressSelector() {
       <div className="bg-blue-50 p-3 rounded-lg">
         <div className="flex items-center gap-2 text-blue-800">
           <MapPin className="h-4 w-4" />
-          <p className="text-sm font-medium">Solo entregas en Montreal</p>
+          <p className="text-sm font-medium">{t('addresses.selector.deliveryInfo')}</p>
         </div>
         <p className="text-xs text-blue-600 mt-1">
-          Validamos que la dirección esté dentro del área metropolitana de Montreal
+          {t('addresses.selector.deliveryNote')}
         </p>
       </div>
 
@@ -276,53 +278,53 @@ export function AddressSelector() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {editingAddress ? 'Editar dirección' : 'Nueva dirección'}
+              {editingAddress ? t('addresses.editAddress') : t('addresses.addNew')}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="bg-blue-50 p-3 rounded-lg">
               <div className="flex items-center gap-2 text-blue-800">
                 <MapPin className="h-4 w-4" />
-                <p className="text-sm font-medium">Solo direcciones en Montreal</p>
+                <p className="text-sm font-medium">{t('addresses.selector.montrealOnly')}</p>
               </div>
               <p className="text-xs text-blue-600 mt-1">
-                Validamos que la ciudad sea Montreal y que el código postal sea válido (H1A-H5B)
+                {t('addresses.selector.validationNote')}
               </p>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="street">Dirección *</Label>
+              <Label htmlFor="street">{t('addresses.form.street')}</Label>
               <Input
                 id="street"
                 name="street"
                 value={formData.street}
                 onChange={handleInputChange}
-                placeholder="Ej: 1234 Rue Sainte-Catherine"
+                placeholder={t('addresses.form.streetPlaceholder')}
                 required
               />
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="city">Ciudad *</Label>
+                <Label htmlFor="city">{t('addresses.form.city')} *</Label>
                 <Input
                   id="city"
                   name="city"
                   value={formData.city}
                   onChange={handleInputChange}
-                  placeholder="Montreal"
+                  placeholder={t('addresses.form.cityPlaceholder')}
                   required
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="state">Provincia *</Label>
+                <Label htmlFor="state">{t('addresses.form.state')} *</Label>
                 <Input
                   id="state"
                   name="state"
                   value={formData.state}
                   onChange={handleInputChange}
-                  placeholder="Quebec"
+                  placeholder={t('addresses.form.statePlaceholder')}
                   required
                 />
               </div>
@@ -330,25 +332,25 @@ export function AddressSelector() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="zipCode">Código Postal *</Label>
+                <Label htmlFor="zipCode">{t('addresses.form.zipCode')} *</Label>
                 <Input
                   id="zipCode"
                   name="zipCode"
                   value={formData.zipCode}
                   onChange={handleInputChange}
-                  placeholder="H2X 1L4"
+                  placeholder={t('addresses.form.zipCodePlaceholder')}
                   required
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="country">País *</Label>
+                <Label htmlFor="country">{t('addresses.form.country')} *</Label>
                 <Input
                   id="country"
                   name="country"
                   value={formData.country}
                   onChange={handleInputChange}
-                  placeholder="Canada"
+                  placeholder={t('addresses.form.countryPlaceholder')}
                   required
                 />
               </div>
@@ -362,14 +364,14 @@ export function AddressSelector() {
                 onClick={() => setIsDialogOpen(false)}
                 disabled={isSubmitting}
               >
-                Cancelar
+                {t('addresses.form.cancel')}
               </Button>
               <Button 
                 type="submit" 
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Guardando...' : editingAddress ? 'Actualizar' : 'Crear'}
+                {isSubmitting ? t('addresses.form.saving') : editingAddress ? t('common.update') : t('common.create')}
               </Button>
             </div>
           </form>
