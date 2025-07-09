@@ -17,7 +17,7 @@ import { AddressSelector } from '@/components/features/modules/cart/AddressSelec
 import { toast } from 'sonner';
 import { CartItem } from '@/lib/services/cart';
 import { useTranslation } from '@/hooks/useTranslation';
-
+ 
 // Mapeo de categorías con estilos modernos
 const categoryMap = {
   productos: { 

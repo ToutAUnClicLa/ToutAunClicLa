@@ -1,4 +1,21 @@
 export default {
+  // Traductions communes
+  common: {
+    loading: "Chargement",
+    error: "Erreur",
+    success: "Succès",
+    save: "Enregistrer",
+    cancel: "Annuler",
+    delete: "Supprimer",
+    edit: "Modifier",
+    back: "Retour",
+    close: "Fermer",
+    confirm: "Confirmer",
+    yes: "Oui",
+    no: "Non",
+    update: "Mettre à jour",
+    create: "Créer"
+  },
   nav: {
     home: "Accueil",
     products: "Épicerie",
@@ -191,7 +208,306 @@ export default {
         subcategoria_id: "souvenirs"
       }
     ]
-  },  auth: {
+  },
+
+  // Panier d'achat
+  cart: {
+    title: "Panier d'Achat",
+    subtitle: "Produits sélectionnés",
+    empty: {
+      title: "Votre panier est vide",
+      description: "Ajoutez des produits pour commencer vos achats !",
+      button: "Explorer les produits"
+    },
+    items: {
+      quantity: "Quantité",
+      price: "Prix",
+      total: "Total",
+      remove: "Supprimer",
+      outOfStock: "Rupture de stock",
+      updating: "Mise à jour...",
+      removeConfirm: "Êtes-vous sûr de vouloir supprimer ce produit ?",
+      categories: {
+        productos: "Produits",
+        comidas: "Cuisine",
+        boutique: "Boutique"
+      }
+    },
+    summary: {
+      subtotal: "Sous-total",
+      shipping: "Expédition",
+      taxes: "Taxes",
+      total: "Total",
+      freeShipping: "Livraison gratuite",
+      shippingThreshold: "Livraison gratuite pour les commandes de 200$ et plus",
+      proceed: "Procéder au paiement",
+      continue: "Continuer les achats",
+      clear: "Vider le panier",
+      clearConfirm: "Êtes-vous sûr de vouloir vider votre panier ?",
+      itemsCount: "{count} articles",
+      itemsCount_one: "{count} article"
+    },
+    messages: {
+      added: "Produit ajouté au panier",
+      updated: "Quantité mise à jour",
+      removed: "Produit supprimé",
+      cleared: "Panier vidé",
+      error: "Erreur lors de la mise à jour du panier",
+      authRequired: "Vous devez vous connecter pour continuer",
+      addressRequired: "Veuillez sélectionner une adresse de livraison"
+    },
+    auth: {
+      title: "Connectez-vous pour continuer",
+      description: "Pour procéder à votre achat, vous devez vous connecter ou créer un compte",
+      login: "Se connecter",
+      register: "Créer un compte"
+    }
+  },
+
+  // Favoris
+  favorites: {
+    title: "Mes Favoris",
+    subtitle: "Produits que vous aimez",
+    empty: {
+      title: "Aucun favori pour le moment",
+      description: "Sauvegardez vos produits favoris pour les retrouver facilement",
+      button: "Explorer les produits"
+    },
+    items: {
+      addToCart: "Ajouter au panier",
+      remove: "Retirer des favoris",
+      outOfStock: "Rupture de stock",
+      price: "Prix",
+      categories: {
+        productos: "Produits",
+        comidas: "Cuisine",
+        boutique: "Boutique"
+      }
+    },
+    stats: {
+      total: "Total des favoris",
+      categories: "Catégories",
+      recent: "Récemment ajoutés"
+    },
+    messages: {
+      added: "Ajouté aux favoris",
+      removed: "Retiré des favoris",
+      addedToCart: "Produit ajouté au panier",
+      error: "Erreur lors de la mise à jour des favoris",
+      authRequired: "Vous devez vous connecter pour voir les favoris"
+    },
+    auth: {
+      title: "Connectez-vous pour voir les favoris",
+      description: "Pour voir et sauvegarder vos produits favoris, vous devez vous connecter",
+      login: "Se connecter",
+      register: "Créer un compte"
+    }
+  },
+
+  // Adresses
+  addresses: {
+    title: "Mes Adresses",
+    subtitle: "Gérez vos adresses de livraison",
+    addNew: "Nouvelle adresse",
+    editAddress: "Modifier l'adresse",
+    deleteAddress: "Supprimer l'adresse",
+    noAddresses: "Vous n'avez aucune adresse enregistrée",
+    noAddressesDesc: "Ajoutez votre première adresse pour faciliter vos achats futurs",
+    addFirstAddress: "Ajouter première adresse",
+    
+    // Formulaire
+    form: {
+      street: "Adresse",
+      streetPlaceholder: "Ex: 123 Rue Principale",
+      city: "Ville",
+      cityPlaceholder: "Montréal",
+      state: "Province",
+      statePlaceholder: "Québec",
+      zipCode: "Code postal",
+      zipCodePlaceholder: "H3X 3X3",
+      country: "Pays",
+      countryPlaceholder: "Canada",
+      save: "Enregistrer l'adresse",
+      saving: "Enregistrement...",
+      cancel: "Annuler"
+    },
+    
+    // Validation
+    validation: {
+      invalid: "Adresse non valide",
+      required: "Ce champ est requis",
+      montrealOnly: "Seules les adresses de Montréal sont autorisées",
+      validationInfo: "Nous validons que la ville est Montréal et que le code postal est valide"
+    },
+    
+    // Messages de succès
+    success: {
+      created: "Adresse créée",
+      createdDesc: "L'adresse a été créée avec succès",
+      updated: "Adresse mise à jour",
+      updatedDesc: "L'adresse a été mise à jour avec succès",
+      deleted: "Adresse supprimée",
+      deletedDesc: "L'adresse a été supprimée avec succès"
+    },
+    
+    // Messages d'erreur
+    errors: {
+      loadFailed: "Erreur lors du chargement des adresses",
+      loadFailedDesc: "Nous n'avons pas pu charger vos adresses",
+      saveFailed: "Erreur lors de l'enregistrement",
+      saveFailedDesc: "Nous n'avons pas pu enregistrer l'adresse",
+      deleteFailed: "Erreur lors de la suppression",
+      deleteFailedDesc: "Nous n'avons pas pu supprimer l'adresse"
+    },
+    
+    // Statistiques
+    stats: {
+      total: "Total des adresses",
+      main: "Adresse principale",
+      delivery: "Adresses de livraison"
+    }
+  },
+
+  // Vérification d'email (modal)
+  verification: {
+    title: "Vérifier l'Email",
+    subtitle: "Vérifiez votre compte pour continuer",
+    description: "Entrez le code à 6 chiffres envoyé à votre email",
+    form: {
+      codeLabel: "Code de vérification",
+      codePlaceholder: "123456",
+      verifyButton: "Vérifier",
+      verifying: "Vérification...",
+      resendButton: "Vous n'avez pas reçu le code ? Renvoyer",
+      resending: "Renvoi..."
+    },
+    messages: {
+      success: "Email vérifié avec succès !",
+      error: "Code de vérification invalide",
+      resent: "Code renvoyé à votre email",
+      resendError: "Erreur lors du renvoi du code",
+      expired: "Le code a expiré. Demandez-en un nouveau",
+      required: "Entrez le code à 6 chiffres",
+      invalidLength: "Le code doit contenir 6 chiffres"
+    }
+  },
+
+  // Section profil utilisateur
+  profile: {
+    general: {
+      title: "Mon Profil",
+      subtitle: "Gérez votre compte et vos préférences",
+      memberSince: "Membre depuis",
+      editProfile: "Modifier le profil",
+      verified: "Vérifié",
+      pendingVerification: "Vérification en attente",
+      needsHelp: "Besoin d'aide ?",
+      supportText: "Si vous avez des questions ou des problèmes, notre équipe de support est là pour vous aider.",
+      contactSupport: "Contacter le support",
+      manageAccount: "Gérer le compte",
+      welcome: "Bonjour,",
+      faq: "Questions fréquemment posées"
+    },
+    stats: {
+      favorites: "Produits favoris",
+      addresses: "Adresses sauvegardées",
+      orders: "Commandes passées"
+    },
+    sections: {
+      favorites: {
+        title: "Favoris",
+        description: "Produits que vous aimez"
+      },
+      addresses: {
+        title: "Adresses",
+        description: "Adresses de livraison"
+      },
+      orders: {
+        title: "Commandes",
+        description: "Historique des achats"
+      },
+      security: {
+        title: "Sécurité",
+        description: "Mot de passe et confidentialité"
+      },
+      settings: {
+        title: "Paramètres",
+        description: "Préférences et notifications"
+      }
+    },
+    security: {
+      title: "Sécurité",
+      subtitle: "Gérez la sécurité de votre compte",
+      accountInfo: {
+        title: "Informations du compte",
+        email: "Adresse email",
+        verificationStatus: "Statut de vérification",
+        verified: "Vérifié",
+        pending: "Vérification en attente"
+      },
+      passwordChange: {
+        title: "Changer le mot de passe",
+        currentPassword: "Mot de passe actuel",
+        newPassword: "Nouveau mot de passe",
+        confirmPassword: "Confirmer le nouveau mot de passe",
+        submitButton: "Changer le mot de passe",
+        updating: "Mise à jour...",
+        success: "Mot de passe mis à jour avec succès",
+        error: "Erreur lors du changement de mot de passe",
+        mismatch: "Les nouveaux mots de passe ne correspondent pas",
+        minLength: "Le nouveau mot de passe doit contenir au moins 6 caractères"
+      },
+      emailChange: {
+        title: "Changer l'adresse email",
+        newEmail: "Nouvelle adresse email",
+        confirmPassword: "Confirmez votre mot de passe",
+        submitButton: "Changer l'adresse email",
+        sending: "Envoi...",
+        success: "Code de vérification envoyé à votre nouveau email",
+        error: "Erreur lors du changement d'adresse email"
+      },
+      activeSessions: {
+        title: "Sessions actives",
+        currentSession: "Session actuelle",
+        lastActivity: "Dernière activité : Maintenant",
+        active: "Active",
+        closeAllSessions: "Fermer toutes les sessions"
+      }
+    },
+    settings: {
+      title: "Paramètres",
+      subtitle: "Personnalisez votre expérience",
+      language: {
+        title: "Langue",
+        description: "Sélectionnez votre langue préférée",
+        options: {
+          es: "Español",
+          en: "English",
+          fr: "Français"
+        }
+      },
+      notifications: {
+        title: "Notifications",
+        description: "Gérez vos préférences de notification",
+        email: "Notifications par email",
+        orderUpdates: "Mises à jour des commandes",
+        promotions: "Offres et promotions",
+        newsletter: "Bulletin d'information"
+      },
+      privacy: {
+        title: "Confidentialité",
+        description: "Contrôlez vos informations personnelles",
+        dataDownload: "Télécharger mes données",
+        dataDelete: "Supprimer mon compte",
+        cookiePreferences: "Préférences de cookies"
+      }
+    },
+    errors: {
+      loadingUserData: "Erreur lors du chargement des informations utilisateur"
+    }
+  },
+
+  auth: {
     // Titres des modales
     loginTitle: "Se Connecter",
     registerTitle: "Créer un Compte",
@@ -595,87 +911,7 @@ export default {
     }
   },
 
-  // Section profil utilisateur
-  profile: {
-    general: {
-      title: "Mon Profil",
-      subtitle: "Gérez votre compte et vos préférences",
-      memberSince: "Membre depuis",
-      editProfile: "Modifier le profil",
-      verified: "Vérifié",
-      pendingVerification: "Vérification en attente",
-      needsHelp: "Besoin d'aide?",
-      supportText: "Si vous avez des questions ou des problèmes, notre équipe de support est là pour vous aider.",
-      contactSupport: "Contacter le support",
-      manageAccount: "Gérer le compte"
-    },
-    stats: {
-      favorites: "Produits favoris",
-      addresses: "Adresses sauvegardées",
-      orders: "Commandes passées"
-    },
-    sections: {
-      favorites: {
-        title: "Favoris",
-        description: "Produits que vous aimez"
-      },
-      addresses: {
-        title: "Adresses",
-        description: "Adresses de livraison"
-      },
-      orders: {
-        title: "Commandes",
-        description: "Historique d'achats"
-      },
-      security: {
-        title: "Sécurité",
-        description: "Mot de passe et confidentialité"
-      },
-      settings: {
-        title: "Paramètres",
-        description: "Préférences et notifications"
-      }
-    },
-    security: {
-      title: "Sécurité",
-      subtitle: "Gérez la sécurité de votre compte",
-      accountInfo: {
-        title: "Informations du compte",
-        email: "Adresse e-mail",
-        verificationStatus: "Statut de vérification",
-        verified: "Vérifié",
-        pending: "En attente de vérification"
-      },
-      passwordChange: {
-        title: "Changer le mot de passe",
-        currentPassword: "Mot de passe actuel",
-        newPassword: "Nouveau mot de passe",
-        confirmPassword: "Confirmer le nouveau mot de passe",
-        submitButton: "Changer le mot de passe",
-        updating: "Mise à jour...",
-        success: "Mot de passe mis à jour avec succès",
-        error: "Erreur lors du changement de mot de passe",
-        mismatch: "Les nouveaux mots de passe ne correspondent pas",
-        minLength: "Le nouveau mot de passe doit contenir au moins 6 caractères"
-      },
-      emailChange: {
-        title: "Changer l'adresse e-mail",
-        newEmail: "Nouvelle adresse e-mail",
-        confirmPassword: "Confirmez votre mot de passe",
-        submitButton: "Changer l'adresse e-mail",
-        sending: "Envoi...",
-        success: "Un code de vérification a été envoyé à votre nouveau e-mail",
-        error: "Erreur lors du changement d'adresse e-mail"
-      },
-      activeSessions: {
-        title: "Sessions actives",
-        currentSession: "Session actuelle",
-        lastActivity: "Dernière activité : Maintenant",
-        active: "Active",
-        closeAllSessions: "Fermer toutes les sessions"
-      }
-    }
-  },
+
   
   // SEO et métadonnées
   seo: {
@@ -720,21 +956,6 @@ export default {
       },
       pricing: {
         title: "4. Prix, taxes et paiements",
-        paragraph1: "Tous les prix sont libellés en dollars canadiens (CAD) sauf indication contraire, et n'incluent pas les taxes applicables, frais d'expédition ou autres charges, qui seront divulgués pendant le processus d'achat avant la confirmation de commande.",
-        paragraph2: "Conformément à la législation fiscale canadienne, nous pouvons être tenus de percevoir et de remettre les taxes provinciales et fédérales, y compris la Taxe sur les produits et services (TPS), la Taxe de vente harmonisée (TVH) ou la Taxe de vente provinciale (TVP), selon votre localisation.",
-        paragraph3: "Nous nous réservons le droit de modifier les prix à tout moment sans préavis. Votre commande est sujette au prix en vigueur au moment où nous complétons votre transaction.",
-        paragraph4: "Nous acceptons divers méthodes de paiement telles que spécifiées sur notre Plateforme. En fournissant des informations de paiement, vous garantissez que vous êtes autorisé à utiliser la méthode de paiement sélectionnée et que ces informations sont exactes et complètes."
-      },
-      shipping: {
-        title: "5. Expédition et livraison",
-        paragraph1: "Nous expédions aux adresses au Canada et à des destinations internationales sélectionnées. Les délais de livraison sont des estimations basées sur les informations fournies par nos partenaires logistiques et peuvent varier selon votre localisation, conditions météorologiques, volume de commandes et autres facteurs externes.",
-        paragraph2: "Pour les expéditions internationales, vous êtes responsable de toute taxe d'importation, droits de douane et charges supplémentaires imposées par les autorités de votre pays. Ces charges ne sont pas sous notre contrôle et ne sont pas incluses dans le prix d'achat.",
-        paragraph3: "Le risque de perte et le titre de propriété des produits vous sont transférés au moment de la livraison. Il est de votre responsabilité d'inspecter les produits à la réception et de signaler tout dommage ou divergence dans les 48 heures suivant la livraison."
-      },
-      returns: {
-        title: "6. Politique de retours et remboursements",
-        paragraph1: "Conformément à la Loi canadienne sur la protection du consommateur et aux lois provinciales applicables, nous offrons une politique de retour qui permet de retourner la plupart des produits dans les 30 jours suivant la réception, à condition que les conditions suivantes soient remplies :",
-        list1: [
           "Le produit doit être dans son état original, inutilisé et avec toutes les étiquettes et emballages originaux.",
           "Une preuve d'achat ou confirmation de commande doit être incluse.",
           "Les articles personnalisés, périssables, d'hygiène personnelle ou marqués comme vente finale ne sont pas éligibles au retour, sauf en cas de défauts vérifiables."
@@ -765,8 +986,7 @@ export default {
       },
       changes: {
         title: "10. Modifications des conditions",
-        paragraph1: "Nous nous réservons le droit, à notre seule discrétion, de modifier ou remplacer ces Conditions à tout moment. La version mise à jour sera effective dès qu'elle sera publiée sur notre Plateforme. Il est de votre responsabilité de réviser périodiquement ces Conditions pour rester informé de tout changement.",
-        paragraph2: "L'utilisation continue de notre Plateforme après la publication de toute modification constitue l'acceptation de ces modifications. Si vous n'êtes pas d'accord avec les nouveaux termes, vous devez cesser d'utiliser notre Plateforme.",
+        paragraph1: "Nous nous réservons le droit, à notre seule discrétion, de modifier ou remplacer ces Conditions à tout moment. La version mise à jour sera effective dès qu'elle sera publiée sur notre Plateforme. Il est de
         paragraph3: "Pour des changements substantielles, nous ferons des efforts raisonnables pour vous notifier, soit par un avis proéminent sur notre Plateforme, par courriel à l'adresse associée à votre compte, ou par d'autres moyens."
       },
       contact: {

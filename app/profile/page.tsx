@@ -28,6 +28,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { getUserAddresses } from '@/lib/services/addresses';
 import { getFavoritesCount } from '@/lib/services/favorites';
 
+
 interface UserProfile {
   id: string;
   nombre: string;
@@ -41,11 +42,11 @@ interface Stats {
   orders: number;
 }
 
-const PROFILE_SECTIONS = [
+const getProfileSections = (t: any) => [
   {
     icon: Heart,
-    title: "Favoritos",
-    description: "Productos que te gustan",
+    title: t('profile.sections.favorites.title'),
+    description: t('profile.sections.favorites.description'),
     href: "/profile/favorites",
     color: "text-red-500",
     bgColor: "bg-red-50",
@@ -54,8 +55,8 @@ const PROFILE_SECTIONS = [
   },
   {
     icon: MapPin,
-    title: "Direcciones",
-    description: "Direcciones de entrega",
+    title: t('profile.sections.addresses.title'),
+    description: t('profile.sections.addresses.description'),
     href: "/profile/addresses",
     color: "text-blue-500",
     bgColor: "bg-blue-50",
@@ -64,8 +65,8 @@ const PROFILE_SECTIONS = [
   },
   {
     icon: ShoppingBag,
-    title: "Pedidos",
-    description: "Historial de compras",
+    title: t('profile.sections.orders.title'),
+    description: t('profile.sections.orders.description'),
     href: "/profile/orders",
     color: "text-green-500",
     bgColor: "bg-green-50",
@@ -74,8 +75,8 @@ const PROFILE_SECTIONS = [
   },
   {
     icon: Shield,
-    title: "Seguridad",
-    description: "Contraseña y privacidad",
+    title: t('profile.sections.security.title'),
+    description: t('profile.sections.security.description'),
     href: "/profile/security",
     color: "text-purple-500",
     bgColor: "bg-purple-50",
@@ -84,8 +85,8 @@ const PROFILE_SECTIONS = [
   },
   {
     icon: Settings,
-    title: "Configuración",
-    description: "Preferencias y notificaciones",
+    title: t('profile.sections.settings.title'),
+    description: t('profile.sections.settings.description'),
     href: "/profile/settings",
     color: "text-gray-500",
     bgColor: "bg-gray-50",
@@ -163,7 +164,7 @@ export default function ProfilePage() {
       
     } catch (error) {
       console.error('Error loading user data:', error);
-      toast.error('Error al cargar la información del usuario');
+      toast.error(t('profile.errors.loadingUserData'));
     } finally {
       setIsDataLoading(false);
     }
@@ -189,11 +190,12 @@ export default function ProfilePage() {
   }
 
   // Mapear secciones con stats
-  const sectionsWithStats = PROFILE_SECTIONS.map(section => ({
+  const profileSections = getProfileSections(t);
+  const sectionsWithStats = profileSections.map(section => ({
     ...section,
-    count: section.title === 'Favoritos' ? stats.favorites :
-           section.title === 'Direcciones' ? stats.addresses :
-           section.title === 'Pedidos' ? stats.orders :
+    count: section.title === t('profile.sections.favorites.title') ? stats.favorites :
+           section.title === t('profile.sections.addresses.title') ? stats.addresses :
+           section.title === t('profile.sections.orders.title') ? stats.orders :
            section.count
   }));
 
@@ -226,17 +228,17 @@ export default function ProfilePage() {
                     
                     <div className="flex-1 min-w-0">
                       <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white truncate">
-                        ¡Hola, {user.nombre.split(' ')[0]}! 👋
+                        {t('profile.general.welcome')} {user.nombre.split(' ')[0]}! 👋
                       </h1>
                       {user.verified ? (
                         <Badge className="bg-green-500/80 text-white border-green-400/50 text-xs sm:text-sm font-medium mt-1">
                           <CheckCircle className="h-3 w-3 mr-1" />
-                          Verificado
+                          {t('profile.general.verified')}
                         </Badge>
                       ) : (
                         <Badge className="bg-amber-500/80 text-white border-amber-400/50 text-xs sm:text-sm font-medium mt-1">
                           <Clock className="h-3 w-3 mr-1" />
-                          Pendiente
+                          {t('profile.general.pendingVerification')}
                         </Badge>
                       )}
                     </div>
@@ -250,7 +252,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 flex-shrink-0 opacity-80" />
-                      <span className="text-xs sm:text-sm font-medium">Desde {formatJoinDate(user.createdAt)}</span>
+                      <span className="text-xs sm:text-sm font-medium">{t('profile.general.memberSince')} {formatJoinDate(user.createdAt)}</span>
                     </div>
                   </div>
                 </div>
@@ -264,7 +266,7 @@ export default function ProfilePage() {
                     onClick={() => router.push('/profile/settings')}
                   >
                     <Edit className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Editar</span>
+                    <span className="hidden sm:inline">{t('profile.general.editProfile')}</span>
                   </Button>
                 </div>
               </div>
@@ -282,7 +284,7 @@ export default function ProfilePage() {
             <div className="p-1.5 sm:p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg">
               <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
-            Gestionar cuenta
+            {t('profile.general.manageAccount')}
           </h2>
           
           {/* Grid responsivo mejorado */}
@@ -351,10 +353,10 @@ export default function ProfilePage() {
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900">
-                    ¿Necesitas ayuda?
+                    {t('profile.general.needsHelp')}
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 max-w-xl mx-auto">
-                    Nuestro equipo está disponible para ayudarte con cualquier pregunta.
+                    {t('profile.general.supportText')}
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
@@ -362,13 +364,13 @@ export default function ProfilePage() {
                     variant="outline" 
                     className="border-blue-300 text-blue-700 hover:bg-blue-100 text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200"
                   >
-                    💬 Contactar soporte
+                    💬 {t('profile.general.contactSupport')}
                   </Button>
                   <Button 
                     variant="outline" 
                     className="border-purple-300 text-purple-700 hover:bg-purple-100 text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200"
                   >
-                    📖 Preguntas frecuentes
+                    📖 {t('profile.general.faq')}
                   </Button>
                 </div>
               </div>

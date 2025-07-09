@@ -17,6 +17,7 @@ import {
   Shield
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/common/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
 import { Badge } from '@/components/common/ui/badge';
@@ -74,6 +75,7 @@ const initialFormData: FormData = {
 export default function AddressesPage() {
   const router = useRouter();
   const { user, isLoading } = useAuth();
+  const { t } = useTranslation();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -91,8 +93,8 @@ export default function AddressesPage() {
       setAddresses(data);
     } catch (error: any) {
       console.error('Error loading addresses:', error);
-      toast.error('Error al cargar direcciones', {
-        description: error.message || 'No pudimos cargar tus direcciones'
+      toast.error(t('addresses.errors.loadFailed'), {
+        description: error.message || t('addresses.errors.loadFailedDesc')
       });
     } finally {
       setIsLoadingAddresses(false);
@@ -107,7 +109,7 @@ export default function AddressesPage() {
     const validation = validateMontrealAddress(data.city, data.zipCode);
     
     if (!validation.isValid) {
-      toast.error('Dirección no válida', {
+      toast.error(t('addresses.validation.invalid'), {
         description: validation.error
       });
       return false;
@@ -135,8 +137,8 @@ export default function AddressesPage() {
         };
         
         await updateAddress(editingAddress.id, updateData);
-        toast.success('Dirección actualizada', {
-          description: 'La dirección se ha actualizado correctamente'
+        toast.success(t('addresses.success.updated'), {
+          description: t('addresses.success.updatedDesc')
         });
       } else {
         const createData: CreateAddressData = {
@@ -148,8 +150,8 @@ export default function AddressesPage() {
         };
         
         await createAddress(createData);
-        toast.success('Dirección creada', {
-          description: 'La dirección se ha creado correctamente'
+        toast.success(t('addresses.success.created'), {
+          description: t('addresses.success.createdDesc')
         });
       }
       
@@ -159,8 +161,8 @@ export default function AddressesPage() {
       await loadAddresses();
     } catch (error: any) {
       console.error('Error submitting address:', error);
-      toast.error('Error al guardar', {
-        description: error.message || 'No pudimos guardar la dirección'
+      toast.error(t('addresses.errors.saveFailed'), {
+        description: error.message || t('addresses.errors.saveFailedDesc')
       });
     } finally {
       setIsSubmitting(false);
@@ -171,14 +173,14 @@ export default function AddressesPage() {
     setDeletingId(addressId);
     try {
       await deleteAddress(addressId);
-      toast.success('Dirección eliminada', {
-        description: 'La dirección se ha eliminado correctamente'
+      toast.success(t('addresses.success.deleted'), {
+        description: t('addresses.success.deletedDesc')
       });
       await loadAddresses();
     } catch (error: any) {
       console.error('Error deleting address:', error);
-      toast.error('Error al eliminar', {
-        description: error.message || 'No pudimos eliminar la dirección'
+      toast.error(t('addresses.errors.deleteFailed'), {
+        description: error.message || t('addresses.errors.deleteFailedDesc')
       });
     } finally {
       setDeletingId(null);
@@ -247,9 +249,9 @@ export default function AddressesPage() {
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold truncate">Mis Direcciones</h1>
+                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold truncate">{t('addresses.title')}</h1>
                     <Badge className="bg-white/20 text-white border-white/30 text-xs sm:text-sm mt-1">
-                      {addresses.length} {addresses.length === 1 ? 'dirección' : 'direcciones'}
+                      {addresses.length} {addresses.length === 1 ? t('addresses.stats.main') : t('addresses.stats.delivery')}
                     </Badge>
                   </div>
                   
@@ -261,7 +263,7 @@ export default function AddressesPage() {
                       onClick={() => router.back()}
                     >
                       <ArrowLeft className="h-4 w-4" />
-                      <span className="hidden sm:inline ml-2">Volver</span>
+                      <span className="hidden sm:inline ml-2">{t('common.back')}</span>
                     </Button>
                     <Button
                       size="sm"
@@ -269,14 +271,14 @@ export default function AddressesPage() {
                       onClick={openCreateDialog}
                     >
                       <Plus className="h-4 w-4" />
-                      <span className="hidden sm:inline ml-2">Agregar</span>
+                      <span className="hidden sm:inline ml-2">{t('addresses.addNew')}</span>
                     </Button>
                   </div>
                 </div>
                 
                 <div className="space-y-1 text-blue-100">
                   <p className="text-xs sm:text-sm">
-                    Solo se permiten direcciones en Montreal
+                    {t('addresses.validation.montrealOnly')}
                   </p>
                 </div>
               </div>
@@ -294,7 +296,7 @@ export default function AddressesPage() {
                 </div>
                 <div>
                   <p className="text-lg sm:text-xl font-bold text-gray-900">{addresses.length}</p>
-                  <p className="text-xs sm:text-sm text-gray-600">Direcciones</p>
+                  <p className="text-xs sm:text-sm text-gray-600">{t('addresses.stats.total')}</p>
                 </div>
               </div>
             </CardContent>
@@ -322,7 +324,7 @@ export default function AddressesPage() {
           <div className="flex items-center justify-center min-h-[300px]">
             <div className="text-center space-y-4">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="text-gray-600">Cargando direcciones...</p>
+              <p className="text-gray-600">{t('common.loading')}...</p>
             </div>
           </div>
         ) : addresses.length === 0 ? (
@@ -337,14 +339,14 @@ export default function AddressesPage() {
                 </div>
               </div>
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                No tienes direcciones guardadas
+                {t('addresses.noAddresses')}
               </h2>
               <p className="text-gray-500 text-center mb-6 max-w-md">
-                Agrega direcciones de entrega en Montreal para agilizar tus compras
+                {t('addresses.noAddressesDesc')}
               </p>
               <Button onClick={openCreateDialog} className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
                 <Plus className="h-4 w-4 mr-2" />
-                Agregar primera dirección
+                {t('addresses.addFirstAddress')}
               </Button>
             </CardContent>
           </Card>
@@ -423,28 +425,28 @@ export default function AddressesPage() {
           <DialogContent className="sm:max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-lg sm:text-xl">
-                {editingAddress ? 'Editar dirección' : 'Nueva dirección'}
+                {editingAddress ? t('addresses.editAddress') : t('addresses.addNew')}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="bg-blue-50 p-3 rounded-lg">
                 <div className="flex items-center gap-2 text-blue-800">
                   <Shield className="h-4 w-4 flex-shrink-0" />
-                  <p className="text-sm font-medium">Solo direcciones en Montreal</p>
+                  <p className="text-sm font-medium">{t('addresses.validation.montrealOnly')}</p>
                 </div>
                 <p className="text-xs text-blue-600 mt-1">
-                  Validamos que la ciudad sea Montreal y el código postal sea válido
+                  {t('addresses.validation.validationInfo')}
                 </p>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="street" className="text-sm font-medium">Dirección *</Label>
+                <Label htmlFor="street" className="text-sm font-medium">{t('addresses.form.street')} *</Label>
                 <Input
                   id="street"
                   name="street"
                   value={formData.street}
                   onChange={handleInputChange}
-                  placeholder="Ej: 1234 Rue Sainte-Catherine"
+                  placeholder={t('addresses.form.streetPlaceholder')}
                   className="h-10 text-sm"
                   required
                 />
@@ -452,26 +454,26 @@ export default function AddressesPage() {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="city" className="text-sm font-medium">Ciudad *</Label>
+                  <Label htmlFor="city" className="text-sm font-medium">{t('addresses.form.city')} *</Label>
                   <Input
                     id="city"
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
-                    placeholder="Montreal"
+                    placeholder={t('addresses.form.cityPlaceholder')}
                     className="h-10 text-sm"
                     required
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="state" className="text-sm font-medium">Provincia *</Label>
+                  <Label htmlFor="state" className="text-sm font-medium">{t('addresses.form.state')} *</Label>
                   <Input
                     id="state"
                     name="state"
                     value={formData.state}
                     onChange={handleInputChange}
-                    placeholder="Quebec"
+                    placeholder={t('addresses.form.statePlaceholder')}
                     className="h-10 text-sm"
                     required
                   />
@@ -480,26 +482,26 @@ export default function AddressesPage() {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="zipCode" className="text-sm font-medium">Código Postal *</Label>
+                  <Label htmlFor="zipCode" className="text-sm font-medium">{t('addresses.form.zipCode')} *</Label>
                   <Input
                     id="zipCode"
                     name="zipCode"
                     value={formData.zipCode}
                     onChange={handleInputChange}
-                    placeholder="H2X 1L4"
+                    placeholder={t('addresses.form.zipCodePlaceholder')}
                     className="h-10 text-sm"
                     required
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="country" className="text-sm font-medium">País *</Label>
+                  <Label htmlFor="country" className="text-sm font-medium">{t('addresses.form.country')} *</Label>
                   <Input
                     id="country"
                     name="country"
                     value={formData.country}
                     onChange={handleInputChange}
-                    placeholder="Canadá"
+                    placeholder={t('addresses.form.countryPlaceholder')}
                     className="h-10 text-sm"
                     required
                   />
@@ -514,7 +516,7 @@ export default function AddressesPage() {
                   onClick={() => setIsDialogOpen(false)}
                   disabled={isSubmitting}
                 >
-                  Cancelar
+                  {t('addresses.form.cancel')}
                 </Button>
                 <Button 
                   type="submit" 
@@ -524,10 +526,10 @@ export default function AddressesPage() {
                   {isSubmitting ? (
                     <>
                       <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                      Guardando...
+                      {t('addresses.form.saving')}
                     </>
                   ) : (
-                    editingAddress ? 'Actualizar' : 'Crear'
+                    editingAddress ? t('common.update') : t('common.create')
                   )}
                 </Button>
               </div>

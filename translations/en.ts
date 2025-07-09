@@ -1,4 +1,21 @@
 export default {
+  // Common translations
+  common: {
+    loading: "Loading",
+    error: "Error",
+    success: "Success",
+    save: "Save",
+    cancel: "Cancel",
+    delete: "Delete",
+    edit: "Edit",
+    back: "Back",
+    close: "Close",
+    confirm: "Confirm",
+    yes: "Yes",
+    no: "No",
+    update: "Update",
+    create: "Create"
+  },
   nav: {
     home: "Home",
     products: "Grocery",
@@ -191,7 +208,306 @@ export default {
         subcategoria_id: "souvenirs"
       }
     ]
-  },  auth: {
+  },
+
+  // Shopping cart
+  cart: {
+    title: "Shopping Cart",
+    subtitle: "Selected products",
+    empty: {
+      title: "Your cart is empty",
+      description: "Add some products to start shopping!",
+      button: "Explore products"
+    },
+    items: {
+      quantity: "Quantity",
+      price: "Price",
+      total: "Total",
+      remove: "Remove",
+      outOfStock: "Out of stock",
+      updating: "Updating...",
+      removeConfirm: "Are you sure you want to remove this product?",
+      categories: {
+        productos: "Products",
+        comidas: "Foods",
+        boutique: "Boutique"
+      }
+    },
+    summary: {
+      subtotal: "Subtotal",
+      shipping: "Shipping",
+      taxes: "Taxes",
+      total: "Total",
+      freeShipping: "Free shipping",
+      shippingThreshold: "Free shipping on orders $200+",
+      proceed: "Proceed to checkout",
+      continue: "Continue shopping",
+      clear: "Clear cart",
+      clearConfirm: "Are you sure you want to clear your cart?",
+      itemsCount: "{count} items",
+      itemsCount_one: "{count} item"
+    },
+    messages: {
+      added: "Product added to cart",
+      updated: "Quantity updated",
+      removed: "Product removed",
+      cleared: "Cart cleared",
+      error: "Error updating cart",
+      authRequired: "You must sign in to continue",
+      addressRequired: "Please select a shipping address"
+    },
+    auth: {
+      title: "Sign in to continue",
+      description: "To proceed with your purchase, you need to sign in or create an account",
+      login: "Sign in",
+      register: "Create account"
+    }
+  },
+
+  // Favorites
+  favorites: {
+    title: "My Favorites",
+    subtitle: "Products you love",
+    empty: {
+      title: "No favorites yet",
+      description: "Save your favorite products to find them easily",
+      button: "Explore products"
+    },
+    items: {
+      addToCart: "Add to cart",
+      remove: "Remove from favorites",
+      outOfStock: "Out of stock",
+      price: "Price",
+      categories: {
+        productos: "Products",
+        comidas: "Foods",
+        boutique: "Boutique"
+      }
+    },
+    stats: {
+      total: "Total favorites",
+      categories: "Categories",
+      recent: "Recently added"
+    },
+    messages: {
+      added: "Added to favorites",
+      removed: "Removed from favorites",
+      addedToCart: "Product added to cart",
+      error: "Error updating favorites",
+      authRequired: "You must sign in to view favorites"
+    },
+    auth: {
+      title: "Sign in to view favorites",
+      description: "To view and save your favorite products, you need to sign in",
+      login: "Sign in",
+      register: "Create account"
+    }
+  },
+
+  // Addresses
+  addresses: {
+    title: "My Addresses",
+    subtitle: "Manage your delivery addresses",
+    addNew: "New address",
+    editAddress: "Edit address",
+    deleteAddress: "Delete address",
+    noAddresses: "You have no saved addresses",
+    noAddressesDesc: "Add your first address to make future purchases easier",
+    addFirstAddress: "Add first address",
+    
+    // Form
+    form: {
+      street: "Street address",
+      streetPlaceholder: "e.g., 123 Main Street",
+      city: "City",
+      cityPlaceholder: "Montreal",
+      state: "Province",
+      statePlaceholder: "Quebec",
+      zipCode: "Postal code",
+      zipCodePlaceholder: "H3X 3X3",
+      country: "Country",
+      countryPlaceholder: "Canada",
+      save: "Save address",
+      saving: "Saving...",
+      cancel: "Cancel"
+    },
+    
+    // Validation
+    validation: {
+      invalid: "Invalid address",
+      required: "This field is required",
+      montrealOnly: "Only Montreal addresses are allowed",
+      validationInfo: "We validate that the city is Montreal and the postal code is valid"
+    },
+    
+    // Success messages
+    success: {
+      created: "Address created",
+      createdDesc: "The address has been created successfully",
+      updated: "Address updated",
+      updatedDesc: "The address has been updated successfully", 
+      deleted: "Address deleted",
+      deletedDesc: "The address has been deleted successfully"
+    },
+    
+    // Error messages
+    errors: {
+      loadFailed: "Error loading addresses",
+      loadFailedDesc: "We couldn't load your addresses",
+      saveFailed: "Error saving",
+      saveFailedDesc: "We couldn't save the address",
+      deleteFailed: "Error deleting",
+      deleteFailedDesc: "We couldn't delete the address"
+    },
+    
+    // Statistics
+    stats: {
+      total: "Total addresses",
+      main: "Main address",
+      delivery: "Delivery addresses"
+    }
+  },
+
+  // Email verification (modal)
+  verification: {
+    title: "Verify Email",
+    subtitle: "Verify your account to continue",
+    description: "Enter the 6-digit code sent to your email",
+    form: {
+      codeLabel: "Verification code",
+      codePlaceholder: "123456",
+      verifyButton: "Verify",
+      verifying: "Verifying...",
+      resendButton: "Didn't receive the code? Resend",
+      resending: "Resending..."
+    },
+    messages: {
+      success: "Email verified successfully!",
+      error: "Invalid verification code",
+      resent: "Code resent to your email",
+      resendError: "Error resending code",
+      expired: "Code has expired. Request a new one",
+      required: "Enter the 6-digit code",
+      invalidLength: "Code must be 6 digits"
+    }
+  },
+
+  // User profile section
+  profile: {
+    general: {
+      title: "My Profile",
+      subtitle: "Manage your account and preferences",
+      memberSince: "Member since",
+      editProfile: "Edit profile",
+      verified: "Verified",
+      pendingVerification: "Pending verification",
+      needsHelp: "Need help?",
+      supportText: "If you have any questions or issues, our support team is here to help you.",
+      contactSupport: "Contact support",
+      manageAccount: "Manage account",
+      welcome: "Hello,",
+      faq: "Frequently asked questions"
+    },
+    stats: {
+      favorites: "Favorite products",
+      addresses: "Saved addresses",
+      orders: "Orders placed"
+    },
+    sections: {
+      favorites: {
+        title: "Favorites",
+        description: "Products you love"
+      },
+      addresses: {
+        title: "Addresses",
+        description: "Delivery addresses"
+      },
+      orders: {
+        title: "Orders",
+        description: "Purchase history"
+      },
+      security: {
+        title: "Security",
+        description: "Password and privacy"
+      },
+      settings: {
+        title: "Settings",
+        description: "Preferences and notifications"
+      }
+    },
+    security: {
+      title: "Security",
+      subtitle: "Manage your account security",
+      accountInfo: {
+        title: "Account information",
+        email: "Email address",
+        verificationStatus: "Verification status",
+        verified: "Verified",
+        pending: "Pending verification"
+      },
+      passwordChange: {
+        title: "Change password",
+        currentPassword: "Current password",
+        newPassword: "New password",
+        confirmPassword: "Confirm new password",
+        submitButton: "Change password",
+        updating: "Updating...",
+        success: "Password updated successfully",
+        error: "Error changing password",
+        mismatch: "New passwords don't match",
+        minLength: "New password must be at least 6 characters"
+      },
+      emailChange: {
+        title: "Change email address",
+        newEmail: "New email address",
+        confirmPassword: "Confirm your password",
+        submitButton: "Change email address",
+        sending: "Sending...",
+        success: "Verification code sent to your new email",
+        error: "Error changing email address"
+      },
+      activeSessions: {
+        title: "Active sessions",
+        currentSession: "Current session",
+        lastActivity: "Last activity: Now",
+        active: "Active",
+        closeAllSessions: "Close all sessions"
+      }
+    },
+    settings: {
+      title: "Settings",
+      subtitle: "Customize your experience",
+      language: {
+        title: "Language",
+        description: "Select your preferred language",
+        options: {
+          es: "Español",
+          en: "English",
+          fr: "Français"
+        }
+      },
+      notifications: {
+        title: "Notifications",
+        description: "Manage your notification preferences",
+        email: "Email notifications",
+        orderUpdates: "Order updates",
+        promotions: "Offers and promotions",
+        newsletter: "Newsletter"
+      },
+      privacy: {
+        title: "Privacy",
+        description: "Control your personal information",
+        dataDownload: "Download my data",
+        dataDelete: "Delete my account",
+        cookiePreferences: "Cookie preferences"
+      }
+    },
+    errors: {
+      loadingUserData: "Error loading user information"
+    }
+  },
+
+  auth: {
     // Modal titles
     loginTitle: "Sign In",
     registerTitle: "Create Account",
@@ -595,88 +911,6 @@ export default {
     }
   },
 
-  // User profile section
-  profile: {
-    general: {
-      title: "My Profile",
-      subtitle: "Manage your account and preferences",
-      memberSince: "Member since",
-      editProfile: "Edit profile",
-      verified: "Verified",
-      pendingVerification: "Pending verification",
-      needsHelp: "Need help?",
-      supportText: "If you have any questions or problems, our support team is here to help you.",
-      contactSupport: "Contact support",
-      manageAccount: "Manage account"
-    },
-    stats: {
-      favorites: "Favorite products",
-      addresses: "Saved addresses",
-      orders: "Orders placed"
-    },
-    sections: {
-      favorites: {
-        title: "Favorites",
-        description: "Products you like"
-      },
-      addresses: {
-        title: "Addresses",
-        description: "Delivery addresses"
-      },
-      orders: {
-        title: "Orders",
-        description: "Purchase history"
-      },
-      security: {
-        title: "Security",
-        description: "Password and privacy"
-      },
-      settings: {
-        title: "Settings",
-        description: "Preferences and notifications"
-      }
-    },
-    security: {
-      title: "Security",
-      subtitle: "Manage your account security",
-      accountInfo: {
-        title: "Account information",
-        email: "Email address",
-        verificationStatus: "Verification status",
-        verified: "Verified",
-        pending: "Pending verification"
-      },
-      passwordChange: {
-        title: "Change password",
-        currentPassword: "Current password",
-        newPassword: "New password",
-        confirmPassword: "Confirm new password",
-        submitButton: "Change password",
-        updating: "Updating...",
-        success: "Password updated successfully",
-        error: "Error changing password",
-        mismatch: "New passwords don't match",
-        minLength: "New password must be at least 6 characters"
-      },
-      emailChange: {
-        title: "Change email address",
-        newEmail: "New email address",
-        confirmPassword: "Confirm your password",
-        submitButton: "Change email address",
-        sending: "Sending...",
-        success: "A verification code has been sent to your new email",
-        error: "Error changing email address"
-      },
-      activeSessions: {
-        title: "Active sessions",
-        currentSession: "Current session",
-        lastActivity: "Last activity: Now",
-        active: "Active",
-        closeAllSessions: "Close all sessions"
-      }
-    }
-  },
-  
   // SEO and metadata
   seo: {
     products: {

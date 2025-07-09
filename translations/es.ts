@@ -1,4 +1,21 @@
 export default {
+  // Traducciones comunes
+  common: {
+    loading: "Cargando",
+    error: "Error",
+    success: "Éxito",
+    save: "Guardar",
+    cancel: "Cancelar",
+    delete: "Eliminar",
+    edit: "Editar",
+    back: "Volver",
+    close: "Cerrar",
+    confirm: "Confirmar",
+    yes: "Sí",
+    no: "No",
+    update: "Actualizar",
+    create: "Crear"
+  },
   nav: {
     home: "Inicio",
     products: "Productos",
@@ -230,7 +247,7 @@ export default {
     // Labels de campos
     fullName: "Nombre completo",
     email: "Correo electrónico",
-    phone: "Teléfono (opcional)",
+    phone: "Teléfono",
     password: "Contraseña",
     confirmPassword: "Confirmar contraseña",
     
@@ -607,7 +624,9 @@ export default {
       needsHelp: "¿Necesitas ayuda?",
       supportText: "Si tienes alguna pregunta o problema, nuestro equipo de soporte está aquí para ayudarte.",
       contactSupport: "Contactar soporte",
-      manageAccount: "Gestionar cuenta"
+      manageAccount: "Gestionar cuenta",
+      welcome: "¡Hola,",
+      faq: "Preguntas frecuentes"
     },
     stats: {
       favorites: "Productos favoritos",
@@ -674,9 +693,219 @@ export default {
         active: "Activa",
         closeAllSessions: "Cerrar todas las sesiones"
       }
+    },
+    settings: {
+      title: "Configuración",
+      subtitle: "Personaliza tu experiencia",
+      language: {
+        title: "Idioma",
+        description: "Selecciona tu idioma preferido",
+        options: {
+          es: "Español",
+          en: "English",
+          fr: "Français"
+        }
+      },
+      notifications: {
+        title: "Notificaciones",
+        description: "Gestiona tus preferencias de notificación",
+        email: "Notificaciones por email",
+        orderUpdates: "Actualizaciones de pedidos",
+        promotions: "Ofertas y promociones",
+        newsletter: "Boletín informativo"
+      },
+      privacy: {
+        title: "Privacidad",
+        description: "Controla tu información personal",
+        dataDownload: "Descargar mis datos",
+        dataDelete: "Eliminar mi cuenta",
+        cookiePreferences: "Preferencias de cookies"
+      }
     }
   },
-  
+
+  // Carrito de compras
+  cart: {
+    title: "Carrito de Compras",
+    subtitle: "Productos seleccionados",
+    empty: {
+      title: "Tu carrito está vacío",
+      description: "¡Agrega algunos productos para comenzar tu compra!",
+      button: "Explorar productos"
+    },
+    items: {
+      quantity: "Cantidad",
+      price: "Precio",
+      total: "Total",
+      remove: "Eliminar",
+      outOfStock: "Sin stock",
+      updating: "Actualizando...",
+      removeConfirm: "¿Estás seguro de que quieres eliminar este producto?",
+      categories: {
+        productos: "Productos",
+        comidas: "Comidas",
+        boutique: "Boutique"
+      }
+    },
+    summary: {
+      subtotal: "Subtotal",
+      shipping: "Envío",
+      taxes: "Impuestos",
+      total: "Total",
+      freeShipping: "Envío gratis",
+      shippingThreshold: "Envío gratis en pedidos de $200 o más",
+      proceed: "Proceder al pago",
+      continue: "Continuar comprando",
+      clear: "Vaciar carrito",
+      clearConfirm: "¿Estás seguro de que quieres vaciar tu carrito?",
+      itemsCount: "{count} artículos",
+      itemsCount_one: "{count} artículo"
+    },
+    messages: {
+      added: "Producto agregado al carrito",
+      updated: "Cantidad actualizada",
+      removed: "Producto eliminado",
+      cleared: "Carrito vaciado",
+      error: "Error al actualizar el carrito",
+      authRequired: "Debes iniciar sesión para continuar",
+      addressRequired: "Selecciona una dirección de envío"
+    },
+    auth: {
+      title: "Inicia sesión para continuar",
+      description: "Para proceder con tu compra, necesitas iniciar sesión o crear una cuenta",
+      login: "Iniciar sesión",
+      register: "Crear cuenta"
+    }
+  },
+
+  // Favoritos
+  favorites: {
+    title: "Mis Favoritos",
+    subtitle: "Productos que te gustan",
+    empty: {
+      title: "No tienes favoritos aún",
+      description: "Guarda tus productos favoritos para encontrarlos fácilmente",
+      button: "Explorar productos"
+    },
+    items: {
+      addToCart: "Agregar al carrito",
+      remove: "Quitar de favoritos",
+      outOfStock: "Sin stock",
+      price: "Precio",
+      categories: {
+        productos: "Productos",
+        comidas: "Comidas",
+        boutique: "Boutique"
+      }
+    },
+    stats: {
+      total: "Total de favoritos",
+      categories: "Categorías",
+      recent: "Agregados recientemente"
+    },
+    messages: {
+      added: "Agregado a favoritos",
+      removed: "Eliminado de favoritos",
+      addedToCart: "Producto agregado al carrito",
+      error: "Error al actualizar favoritos",
+      authRequired: "Debes iniciar sesión para ver favoritos"
+    },
+    auth: {
+      title: "Inicia sesión para ver favoritos",
+      description: "Para ver y guardar tus productos favoritos, necesitas iniciar sesión",
+      login: "Iniciar sesión",
+      register: "Crear cuenta"
+    }
+  },
+
+  // Direcciones
+  addresses: {
+    title: "Mis Direcciones",
+    subtitle: "Gestiona tus direcciones de entrega",
+    addNew: "Nueva dirección",
+    editAddress: "Editar dirección",
+    deleteAddress: "Eliminar dirección",
+    noAddresses: "No tienes direcciones guardadas",
+    noAddressesDesc: "Agrega tu primera dirección para facilitar tus compras futuras",
+    addFirstAddress: "Agregar primera dirección",
+    
+    // Formulario
+    form: {
+      street: "Dirección",
+      streetPlaceholder: "Ej: 123 Calle Principal",
+      city: "Ciudad",
+      cityPlaceholder: "Montreal",
+      state: "Provincia",
+      statePlaceholder: "Quebec",
+      zipCode: "Código postal",
+      zipCodePlaceholder: "H3X 3X3",
+      country: "País",
+      countryPlaceholder: "Canadá",
+      save: "Guardar dirección",
+      saving: "Guardando...",
+      cancel: "Cancelar"
+    },
+    
+    // Validación
+    validation: {
+      invalid: "Dirección no válida",
+      required: "Este campo es requerido",
+      montrealOnly: "Solo se permiten direcciones en Montreal",
+      validationInfo: "Validamos que la ciudad sea Montreal y el código postal sea válido"
+    },
+    
+    // Mensajes de éxito
+    success: {
+      created: "Dirección creada",
+      createdDesc: "La dirección se ha creado correctamente",
+      updated: "Dirección actualizada", 
+      updatedDesc: "La dirección se ha actualizado correctamente",
+      deleted: "Dirección eliminada",
+      deletedDesc: "La dirección se ha eliminado correctamente"
+    },
+    
+    // Mensajes de error
+    errors: {
+      loadFailed: "Error al cargar direcciones",
+      loadFailedDesc: "No pudimos cargar tus direcciones",
+      saveFailed: "Error al guardar",
+      saveFailedDesc: "No pudimos guardar la dirección",
+      deleteFailed: "Error al eliminar",
+      deleteFailedDesc: "No pudimos eliminar la dirección"
+    },
+    
+    // Estadísticas
+    stats: {
+      total: "Total de direcciones",
+      main: "Dirección principal",
+      delivery: "Direcciones de entrega"
+    }
+  },
+
+  // Verificación de email (modal)
+  verification: {
+    title: "Verificar Email",
+    subtitle: "Verifica tu cuenta para continuar",
+    description: "Ingresa el código de 6 dígitos enviado a tu email",
+    form: {
+      codeLabel: "Código de verificación",
+      codePlaceholder: "123456",
+      verifyButton: "Verificar",
+      verifying: "Verificando...",
+      resendButton: "¿No recibiste el código? Reenviar",
+      resending: "Reenviando..."
+    },
+    messages: {
+      success: "¡Email verificado correctamente!",
+      error: "Código de verificación inválido",
+      resent: "Código reenviado a tu email",
+      resendError: "Error al reenviar el código",
+      expired: "El código ha expirado. Solicita uno nuevo",
+      required: "Ingresa el código de 6 dígitos",
+      invalidLength: "El código debe tener 6 dígitos"
+    }
+  },
+
   // SEO y metadatos
   seo: {
     products: {
