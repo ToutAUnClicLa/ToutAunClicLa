@@ -194,9 +194,6 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
                       <h3 className="font-bold text-base sm:text-lg leading-tight text-gray-900 group-hover:text-orange-600 transition-colors duration-300 line-clamp-1">
                         {restaurant.nombre}
                       </h3>
-                      <p className="text-xs sm:text-sm text-orange-600 font-medium mt-1 line-clamp-1">
-                        {t('catalog.restaurantList.cuisine')} {restaurantData.cuisineType}
-                      </p>
                     </div>
                   </div>
 
@@ -218,16 +215,6 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
 
                   {/* Rating y estado - Posición fija en la parte inferior */}
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
-                    {/* Rating */}
-                    <div className="flex items-center gap-1 sm:gap-1.5 bg-yellow-50 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full">
-                      <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 fill-current flex-shrink-0" />
-                      <span className="font-semibold text-gray-900 text-xs sm:text-sm">
-                        {restaurantData.rating}
-                      </span>
-                      <span className="text-gray-500 text-xs hidden sm:inline">
-                        ({restaurantData.reviewCount})
-                      </span>
-                    </div>
 
                     {/* Estado disponible */}
                     <div className="flex items-center gap-1 sm:gap-1.5">

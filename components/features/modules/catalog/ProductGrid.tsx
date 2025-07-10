@@ -93,6 +93,14 @@ export function ProductGrid({
   // Usar el hook de productos con los filtros actuales
   const { products, pagination, loading, error, refetch } = useProducts(filters);
   
+  // Debug logs
+  useEffect(() => {
+    console.log('Current filters:', filters);
+    console.log('Current pagination:', pagination);
+    console.log('Products count:', products.length);
+    console.log('Loading state:', loading);
+  }, [filters, pagination, products.length, loading]);
+  
   // Obtener subcategorías para filtros
   const { 
     subcategories, 
@@ -126,7 +134,10 @@ export function ProductGrid({
   };
 
   const handlePageChange = (page: number) => {
+    console.log('Changing to page:', page); // Debug log
     setFilters(prev => ({ ...prev, page }));
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleClearFilters = () => {
@@ -369,15 +380,20 @@ export function ProductGrid({
 
             {/* Paginación */}
             {pagination && pagination.totalPages > 1 && !loading && (
-              <Pagination
-                currentPage={pagination.currentPage}
-                totalPages={pagination.totalPages}
-                totalItems={pagination.totalItems}
-                itemsPerPage={pagination.itemsPerPage}
-                onPageChange={handlePageChange}
-                disabled={loading}
-                className="mt-8"
-              />
+              <div className="mt-8">
+                <div className="text-center text-sm text-gray-600 mb-4">
+                  Mostrando {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} - {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} de {pagination.totalItems} resultados
+                </div>
+                <Pagination
+                  currentPage={pagination.currentPage}
+                  totalPages={pagination.totalPages}
+                  totalItems={pagination.totalItems}
+                  itemsPerPage={pagination.itemsPerPage}
+                  onPageChange={handlePageChange}
+                  disabled={loading}
+                  className="justify-center"
+                />
+              </div>
             )}
           </div>
         </div>
