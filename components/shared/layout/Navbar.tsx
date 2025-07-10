@@ -63,6 +63,7 @@ const LINKS = [
 
 const PROFILE_MENU_ITEMS = [
   { icon: User, label: "nav.profile.myProfile", href: "/profile" },
+  { icon: Heart, label: "nav.profile.favorites", href: "/profile/favorites" },
   { icon: MapPin, label: "nav.profile.addresses", href: "/profile/addresses" },
   { icon: ShoppingBag, label: "nav.profile.myOrders", href: "/profile/orders" },
   { icon: Shield, label: "nav.profile.security", href: "/profile/security" },
@@ -556,10 +557,11 @@ export function Navbar() {
                   <motion.div
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    className="w-full"
                   >
                     <Button 
                       variant="outline" 
-                      className="h-20 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100 hover:border-indigo-200 relative overflow-hidden group"
+                      className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100 hover:border-indigo-200 relative overflow-hidden group"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         if (isAuthenticated) {
@@ -570,8 +572,8 @@ export function Navbar() {
                       }}
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                      <User className="h-5 w-5 text-indigo-600" />
-                      <span className="text-xs font-semibold text-gray-700">{t('navbar.mobile.myProfile')}</span>
+                      <User className="h-5 w-5 text-indigo-600 flex-shrink-0" />
+                      <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{t('navbar.mobile.myProfile')}</span>
                     </Button>
                   </motion.div>
 
@@ -579,10 +581,11 @@ export function Navbar() {
                   <motion.div
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    className="w-full"
                   >
                     <Button 
                       variant="outline" 
-                      className="h-20 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-100 hover:border-amber-200 relative overflow-hidden group"
+                      className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-100 hover:border-amber-200 relative overflow-hidden group"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         if (isAuthenticated) {
@@ -593,8 +596,8 @@ export function Navbar() {
                       }}
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                      <ShoppingBag className="h-5 w-5 text-amber-600" />
-                      <span className="text-xs font-semibold text-gray-700">{t('navbar.mobile.orders')}</span>
+                      <ShoppingBag className="h-5 w-5 text-amber-600 flex-shrink-0" />
+                      <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{t('navbar.mobile.orders')}</span>
                     </Button>
                   </motion.div>
 
@@ -602,10 +605,11 @@ export function Navbar() {
                   <motion.div
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    className="w-full"
                   >
                     <Button 
                       variant="outline" 
-                      className="h-20 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100 hover:border-blue-200 relative overflow-hidden group"
+                      className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100 hover:border-blue-200 relative overflow-hidden group"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         if (isAuthenticated) {
@@ -616,8 +620,8 @@ export function Navbar() {
                       }}
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                      <MapPin className="h-5 w-5 text-blue-600" />
-                      <span className="text-xs font-semibold text-gray-700">{t('navbar.mobile.addresses')}</span>
+                      <MapPin className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                      <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{t('navbar.mobile.addresses')}</span>
                     </Button>
                   </motion.div>
                 </div>
@@ -697,9 +701,7 @@ export function Navbar() {
                       </h3>
                     </div>
                     <div className="space-y-2">
-                      {PROFILE_MENU_ITEMS.filter(item => 
-                        !['nav.profile.myOrders', 'nav.profile.addresses'].includes(item.label)
-                      ).map((item, index) => (
+                      {PROFILE_MENU_ITEMS.map((item, index) => (
                         <motion.div
                           key={item.href}
                           initial={{ opacity: 0, x: -20 }}
@@ -732,7 +734,7 @@ export function Navbar() {
               )}
 
               {/* Espacio adicional para el scroll */}
-              <div className="h-20 w-full"></div>
+              <div className="h-5 w-full"></div>
             </div>
             
             {/* Footer fijo */}
