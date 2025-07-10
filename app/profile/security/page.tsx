@@ -263,6 +263,68 @@ export default function SecurityPage() {
             </Card>
           </motion.div>
 
+          {/* Información básica */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card className="shadow-lg border-0">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-indigo-600" />
+                  {t('profile.security.basicInfo.title')}
+                </CardTitle>
+                <p className="text-sm text-gray-600 mt-1">
+                  {t('profile.security.basicInfo.subtitle')}
+                </p>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleBasicInfoUpdate} className="space-y-4">
+                  <div>
+                    <Label htmlFor="nombre">
+                      {t('profile.security.basicInfo.name')}
+                    </Label>
+                    <Input
+                      id="nombre"
+                      type="text"
+                      value={basicInfoForm.nombre}
+                      onChange={(e) => setBasicInfoForm(prev => ({ ...prev, nombre: e.target.value }))}
+                      required
+                      className="mt-1"
+                      placeholder={t('profile.security.basicInfo.namePlaceholder')}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="telefono">
+                      {t('profile.security.basicInfo.phone')}
+                    </Label>
+                    <div className="relative mt-1">
+                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="telefono"
+                        type="tel"
+                        value={basicInfoForm.telefono}
+                        onChange={(e) => setBasicInfoForm(prev => ({ ...prev, telefono: e.target.value }))}
+                        className="pl-10"
+                        placeholder={t('profile.security.basicInfo.phonePlaceholder')}
+                      />
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    disabled={isLoading}
+                    className="w-full md:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                  >
+                    {isLoading ? t('common.loading') : t('profile.security.basicInfo.update')}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
+
           {/* Cambiar contraseña */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -379,69 +441,7 @@ export default function SecurityPage() {
               </CardContent>
             </Card>
           </motion.div>
-
-          {/* Información básica */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Card className="shadow-lg border-0">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-indigo-600" />
-                  {t('profile.security.basicInfo.title')}
-                </CardTitle>
-                <p className="text-sm text-gray-600 mt-1">
-                  {t('profile.security.basicInfo.subtitle')}
-                </p>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleBasicInfoUpdate} className="space-y-4">
-                  <div>
-                    <Label htmlFor="nombre">
-                      {t('profile.security.basicInfo.name')}
-                    </Label>
-                    <Input
-                      id="nombre"
-                      type="text"
-                      value={basicInfoForm.nombre}
-                      onChange={(e) => setBasicInfoForm(prev => ({ ...prev, nombre: e.target.value }))}
-                      required
-                      className="mt-1"
-                      placeholder={t('profile.security.basicInfo.namePlaceholder')}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="telefono">
-                      {t('profile.security.basicInfo.phone')}
-                    </Label>
-                    <div className="relative mt-1">
-                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="telefono"
-                        type="tel"
-                        value={basicInfoForm.telefono}
-                        onChange={(e) => setBasicInfoForm(prev => ({ ...prev, telefono: e.target.value }))}
-                        className="pl-10"
-                        placeholder={t('profile.security.basicInfo.phonePlaceholder')}
-                      />
-                    </div>
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    disabled={isLoading}
-                    className="w-full md:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-                  >
-                    {isLoading ? t('common.loading') : t('profile.security.basicInfo.update')}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </motion.div>
-
+          
           {/* Sesiones activas */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
