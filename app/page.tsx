@@ -272,7 +272,12 @@ export default function Home() {
                       <motion.div className="relative z-10" animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
                         <ChevronDown className="h-5 w-5 transform rotate-90" />
                       </motion.div>
-                      <motion.div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" initial={false} />
+                      <motion.div 
+                        className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out"
+                        initial={{ x: '-100%' }}
+                        whileHover={{ x: '0%' }}
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                      />
                     </motion.button>
                   </motion.div>
                 </motion.div>
