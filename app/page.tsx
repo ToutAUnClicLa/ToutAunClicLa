@@ -4,7 +4,9 @@ import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown, Package, Utensils, Store, Shirt, Watch, Gift } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { useTranslation } from '@/hooks/useTranslation';
+import AuthModal from '@/components/features/auth/AuthModal';
 
 // Types
 interface CategoryCardProps {
@@ -102,6 +104,17 @@ const Section = ({ title, description, icon: Icon, color, iconColor, children }:
 // Main component
 export default function Home() {
   const { t } = useTranslation();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgotPassword'>('register');
+
+  const openAuthModal = (mode: 'login' | 'register' | 'forgotPassword' = 'register') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
 
   const categories = [
     {
@@ -253,6 +266,7 @@ export default function Home() {
                       className="group relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 rounded-xl text-base sm:text-lg md:text-xl font-medium transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-indigo-500/30 flex items-center space-x-3 overflow-hidden"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
+                      onClick={() => openAuthModal('register')}
                     >
                       <span className="relative z-10">{t('landing.hero.cta') as string}</span>
                       <motion.div className="relative z-10" animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
@@ -502,6 +516,13 @@ export default function Home() {
           </Link>
         </motion.div>
       </Section>
+      
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={closeAuthModal} 
+        initialMode={authModalMode}
+      />
     </div>
   );
 }
