@@ -439,14 +439,14 @@ export function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            className="fixed inset-0 bg-white z-50 md:hidden flex flex-col"
+            className="fixed inset-0 bg-white z-50 md:hidden flex flex-col w-full overflow-hidden"
             initial={{ opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
           >
             {/* Header del menú móvil */}
-            <div className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 px-4 py-4">
+            <div className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 px-4 py-4 w-full">
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
               <div className="relative flex items-center justify-between">
                 {/* Título */}
@@ -473,9 +473,9 @@ export function Navbar() {
             </div>
             
             {/* Contenido principal con scroll suave */}
-            <div className="flex-1 overflow-y-auto overscroll-contain">
+            <div className="flex-1 overflow-y-auto overscroll-contain w-full">
               {/* Sección de usuario */}
-              <div className="px-4 py-5 bg-gradient-to-b from-gray-50 to-white">
+              <div className="px-4 py-5 bg-gradient-to-b from-gray-50 to-white w-full">
                 {isAuthenticated ? (
                   <motion.div 
                     className="relative p-4 bg-white rounded-2xl shadow-sm border border-gray-100"
@@ -544,7 +544,7 @@ export function Navbar() {
               </div>
               
               {/* Accesos rápidos mejorados */}
-              <div className="px-4 py-4">
+              <div className="px-4 py-4 w-full">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="h-6 w-1 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full"></div>
                   <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
@@ -623,10 +623,10 @@ export function Navbar() {
                 </div>
               </div>
               
-              <Separator className="mx-4" />
+              <div className="w-full border-t border-gray-200 my-2"></div>
               
               {/* Navegación principal */}
-              <div className="px-4 py-4">
+              <div className="px-4 py-4 w-full">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="h-6 w-1 bg-gradient-to-b from-green-500 to-blue-500 rounded-full"></div>
                   <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
@@ -687,9 +687,9 @@ export function Navbar() {
               {/* Mi cuenta (solo usuarios autenticados) */}
               {isAuthenticated && (
                 <>
-                  <Separator className="mx-4" />
+                  <div className="w-full border-t border-gray-200 my-2"></div>
                   
-                  <div className="px-4 py-4">
+                  <div className="px-4 py-4 w-full">
                     <div className="flex items-center gap-2 mb-4">
                       <div className="h-6 w-1 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
                       <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
@@ -732,16 +732,16 @@ export function Navbar() {
               )}
 
               {/* Espacio adicional para el scroll */}
-              <div className="h-20"></div>
+              <div className="h-20 w-full"></div>
             </div>
             
             {/* Footer fijo */}
-            <div className="border-t bg-gray-50/80 backdrop-blur-sm">
+            <div className="border-t bg-gray-50/80 backdrop-blur-sm w-full">
               
               {/* Cerrar sesión (solo usuarios autenticados) */}
               {isAuthenticated && (
                 <>
-                  <Separator />
+                  <div className="w-full border-t border-gray-200"></div>
                   <div className="px-4 py-3">
                     <Button 
                       variant="ghost" 
