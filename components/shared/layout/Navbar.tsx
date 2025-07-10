@@ -26,7 +26,9 @@ import {
   Layers,
   Globe,
   ChevronDown,
-  Shield
+  Shield,
+  AlertCircle,
+  CheckCircle
 } from "lucide-react";
 import { Button } from "@/components/common/ui/button";
 import { Input } from "@/components/common/ui/input";
@@ -433,7 +435,7 @@ export function Navbar() {
         </nav>
       </header>
 
-      {/* Nuevo Menú Móvil */}
+      {/* Menú Móvil Refactorizado */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -441,222 +443,325 @@ export function Navbar() {
             initial={{ opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 400 }}
           >
-            {/* Encabezado del menú móvil */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center">
-                    <Grid className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="text-white">
-                    <div className="text-lg font-bold">Menú</div>
-                    <div className="text-sm opacity-90">Navegación</div>
-                  </div>
+            {/* Header del menú móvil */}
+            <div className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 px-4 py-4">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+              <div className="relative flex items-center justify-between">
+                {/* Título */}
+                <div className="text-white">
+                  <div className="text-xl font-bold tracking-tight">{t('navbar.mobile.menu')}</div>
+                  <div className="text-sm opacity-90 font-medium">{t('navbar.mobile.navigation')}</div>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="text-white hover:bg-white/10 rounded-full"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                
+                {/* Botón cerrar */}
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
-                  <X className="h-6 w-6" />
-                </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="text-white hover:bg-white/20 rounded-full h-10 w-10 backdrop-blur-sm border border-white/20"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </motion.div>
               </div>
             </div>
             
-            {/* Contenido del menú móvil */}
-            <div className="flex-1 overflow-y-auto pb-safe">
-              {/* Información del usuario */}
-              <div className="px-4 py-5">
+            {/* Contenido principal con scroll suave */}
+            <div className="flex-1 overflow-y-auto overscroll-contain">
+              {/* Sección de usuario */}
+              <div className="px-4 py-5 bg-gradient-to-b from-gray-50 to-white">
                 {isAuthenticated ? (
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                    <Avatar className="h-12 w-12 border-2 border-indigo-200 shadow-sm">
-                      <AvatarImage src="" />
-                      <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-semibold">
-                        {getUserInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <h2 className="text-lg font-semibold text-gray-900 truncate">
-                        {user?.nombre || 'Usuario'}
-                      </h2>
-                      <p className="text-sm text-gray-500 truncate">{user?.email}</p>
-                      {!isUserVerified() && (
-                        <Badge variant="outline" className="mt-1 bg-amber-50 text-amber-600 border-amber-200">
-                          <span className="h-1.5 w-1.5 rounded-full bg-amber-500 mr-1"></span>
-                          Verificar cuenta
-                        </Badge>
-                      )}
+                  <motion.div 
+                    className="relative p-4 bg-white rounded-2xl shadow-sm border border-gray-100"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <Avatar className="h-14 w-14 border-3 border-white shadow-lg">
+                          <AvatarImage src="" />
+                          <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-lg">
+                            {getUserInitials()}
+                          </AvatarFallback>
+                        </Avatar>
+                        {!isUserVerified() && (
+                          <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-amber-500 rounded-full border-2 border-white flex items-center justify-center">
+                            <div className="h-2 w-2 bg-white rounded-full animate-pulse"></div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h2 className="text-lg font-bold text-gray-900 truncate">
+                          {user?.nombre || t('navbar.mobile.user')}
+                        </h2>
+                        <p className="text-sm text-gray-500 truncate mb-1">{user?.email}</p>
+                        {!isUserVerified() ? (
+                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            {t('navbar.mobile.verifyAccount')}
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-green-50 text-green-700 border-green-200 text-xs">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            {t('navbar.mobile.accountVerified')}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ) : (
-                  <div className="text-center p-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
-                    <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <User className="h-8 w-8 text-indigo-600" />
+                  <motion.div 
+                    className="text-center p-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 rounded-2xl border border-indigo-100"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                      <User className="h-10 w-10 text-indigo-600" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">¡Hola!</h3>
-                    <p className="text-sm text-gray-600 mb-4">Inicia sesión para acceder a todas las funciones</p>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{t('navbar.mobile.welcome')}</h3>
+                    <p className="text-sm text-gray-600 mb-5 leading-relaxed">
+                      {t('navbar.mobile.loginPrompt')}
+                    </p>
                     <Button 
-                      size="sm"
-                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         openAuthModal('login');
                       }}
                     >
-                      Iniciar sesión
+                      {t('navbar.mobile.login')}
                     </Button>
-                  </div>
+                  </motion.div>
                 )}
               </div>
               
-              <Separator className="my-2" />
-              
-              {/* Accesos rápidos - siempre visibles */}
-              <div className="px-4 py-3">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                  Accesos rápidos
-                </h3>
-                <div className="grid grid-cols-3 gap-2">
-                  <Button 
-                    variant="outline" 
-                    className="h-auto flex flex-col items-center py-4 px-2 gap-2"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      if (isAuthenticated) {
-                        router.push('/profile/orders');
-                      } else {
-                        openAuthModal('login');
-                      }
-                    }}
+              {/* Accesos rápidos mejorados */}
+              <div className="px-4 py-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="h-6 w-1 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full"></div>
+                  <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    {t('navbar.mobile.quickAccess')}
+                  </h3>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {/* Mi Perfil */}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <div className="p-2 bg-amber-50 rounded-full">
-                      <ShoppingBag className="h-5 w-5 text-amber-500" />
-                    </div>
-                    <span className="text-xs font-medium">Pedidos</span>
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="h-auto flex flex-col items-center py-4 px-2 gap-2"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      if (isAuthenticated) {
-                        router.push('/profile/addresses');
-                      } else {
-                        openAuthModal('login');
-                      }
-                    }}
+                    <Button 
+                      variant="outline" 
+                      className="h-20 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100 hover:border-indigo-200 relative overflow-hidden group"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        if (isAuthenticated) {
+                          router.push('/profile');
+                        } else {
+                          openAuthModal('login');
+                        }
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <User className="h-5 w-5 text-indigo-600" />
+                      <span className="text-xs font-semibold text-gray-700">{t('navbar.mobile.myProfile')}</span>
+                    </Button>
+                  </motion.div>
+
+                  {/* Pedidos */}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <div className="p-2 bg-indigo-50 rounded-full">
-                      <MapPin className="h-5 w-5 text-indigo-500" />
-                    </div>
-                    <span className="text-xs font-medium">Direcciones</span>
-                  </Button>
+                    <Button 
+                      variant="outline" 
+                      className="h-20 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-100 hover:border-amber-200 relative overflow-hidden group"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        if (isAuthenticated) {
+                          router.push('/profile/orders');
+                        } else {
+                          openAuthModal('login');
+                        }
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <ShoppingBag className="h-5 w-5 text-amber-600" />
+                      <span className="text-xs font-semibold text-gray-700">{t('navbar.mobile.orders')}</span>
+                    </Button>
+                  </motion.div>
+
+                  {/* Direcciones */}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button 
+                      variant="outline" 
+                      className="h-20 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100 hover:border-blue-200 relative overflow-hidden group"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        if (isAuthenticated) {
+                          router.push('/profile/addresses');
+                        } else {
+                          openAuthModal('login');
+                        }
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <MapPin className="h-5 w-5 text-blue-600" />
+                      <span className="text-xs font-semibold text-gray-700">{t('navbar.mobile.addresses')}</span>
+                    </Button>
+                  </motion.div>
                 </div>
               </div>
               
-              {/* Menú principal */}
-              <div className="px-4 py-3">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                  Explorar
-                </h3>
-                <div className="space-y-1">
-                  {LINKS.map((link) => {
+              <Separator className="mx-4" />
+              
+              {/* Navegación principal */}
+              <div className="px-4 py-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="h-6 w-1 bg-gradient-to-b from-green-500 to-blue-500 rounded-full"></div>
+                  <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    {t('navbar.mobile.exploreStore')}
+                  </h3>
+                </div>
+                <div className="space-y-2">
+                  {LINKS.map((link, index) => {
                     const isActive = pathname === link.href;
                     const LinkIcon = link.icon;
                     
                     return (
-                      <Button
+                      <motion.div
                         key={link.href}
-                        variant={isActive ? "secondary" : "ghost"}
-                        className={cn(
-                          "w-full justify-start text-base h-12 px-3",
-                          isActive ? "bg-indigo-50 text-indigo-700 border border-indigo-200" : "text-gray-700 hover:bg-gray-50"
-                        )}
-                        onClick={() => {
-                          setIsMobileMenuOpen(false);
-                          router.push(link.href);
-                        }}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
                       >
-                        <div className="flex items-center w-full">
-                          <div className={cn(
-                            "mr-3 p-2 rounded-lg", 
-                            isActive ? "bg-indigo-100" : "bg-gray-100"
-                          )}>
-                            <LinkIcon className={cn(
-                              "h-5 w-5", 
-                              isActive ? "text-indigo-600" : "text-gray-500"
-                            )} />
+                        <Button
+                          variant={isActive ? "secondary" : "ghost"}
+                          className={cn(
+                            "w-full justify-start h-14 px-4 rounded-xl transition-all duration-200",
+                            isActive 
+                              ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 border border-indigo-200 shadow-sm" 
+                              : "text-gray-700 hover:bg-gray-50 hover:shadow-sm"
+                          )}
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            router.push(link.href);
+                          }}
+                        >
+                          <div className="flex items-center w-full">
+                            <div className={cn(
+                              "mr-4 p-2.5 rounded-xl transition-colors",
+                              isActive 
+                                ? "bg-gradient-to-br from-indigo-100 to-purple-100" 
+                                : "bg-gray-100"
+                            )}>
+                              <LinkIcon className={cn(
+                                "h-5 w-5",
+                                isActive ? "text-indigo-600" : "text-gray-500"
+                              )} />
+                            </div>
+                            <span className="flex-1 text-left font-semibold">{t(link.label)}</span>
+                            {isActive && (
+                              <div className="h-2 w-2 bg-indigo-500 rounded-full"></div>
+                            )}
                           </div>
-                          <span className="flex-1 text-left">{t(link.label)}</span>
-                          <ChevronRight className="h-4 w-4 text-gray-400" />
-                        </div>
-                      </Button>
+                        </Button>
+                      </motion.div>
                     );
                   })}
                 </div>
               </div>
               
-              {/* Perfil y Configuración (Solo para usuarios autenticados) */}
+              {/* Mi cuenta (solo usuarios autenticados) */}
               {isAuthenticated && (
                 <>
-                  <Separator className="my-2" />
+                  <Separator className="mx-4" />
                   
-                  <div className="px-4 py-3">
-                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                      Mi cuenta
-                    </h3>
-                    <div className="space-y-1">
+                  <div className="px-4 py-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="h-6 w-1 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
+                      <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
+                        {t('navbar.mobile.myAccount')}
+                      </h3>
+                    </div>
+                    <div className="space-y-2">
                       {PROFILE_MENU_ITEMS.filter(item => 
-                        !['nav.profile.favorites', 'nav.profile.myOrders', 'nav.profile.addresses'].includes(item.label)
-                      ).map((item) => (
-                        <Button
+                        !['nav.profile.myOrders', 'nav.profile.addresses'].includes(item.label)
+                      ).map((item, index) => (
+                        <motion.div
                           key={item.href}
-                          variant="ghost"
-                          className="w-full justify-start text-base h-11 px-3 hover:bg-gray-50"
-                          onClick={() => {
-                            setIsMobileMenuOpen(false);
-                            router.push(item.href);
-                          }}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 * index }}
+                          whileHover={{ scale: 1.01 }}
+                          whileTap={{ scale: 0.99 }}
                         >
-                          <div className="flex items-center w-full">
-                            <div className="mr-3 p-2 rounded-lg bg-gray-100">
-                              <item.icon className="h-5 w-5 text-gray-500" />
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start h-12 px-4 rounded-xl hover:bg-gray-50 hover:shadow-sm transition-all duration-200"
+                            onClick={() => {
+                              setIsMobileMenuOpen(false);
+                              router.push(item.href);
+                            }}
+                          >
+                            <div className="flex items-center w-full">
+                              <div className="mr-4 p-2 rounded-xl bg-gray-100">
+                                <item.icon className="h-4 w-4 text-gray-600" />
+                              </div>
+                              <span className="flex-1 text-left font-medium text-gray-700">{t(item.label)}</span>
+                              <ChevronRight className="h-4 w-4 text-gray-400" />
                             </div>
-                            <span className="flex-1 text-left">{t(item.label)}</span>
-                            <ChevronRight className="h-4 w-4 text-gray-400" />
-                          </div>
-                        </Button>
+                          </Button>
+                        </motion.div>
                       ))}
                     </div>
                   </div>
                 </>
               )}
 
+              {/* Espacio adicional para el scroll */}
+              <div className="h-20"></div>
             </div>
             
-            {/* Pie del menú móvil */}
-            {isAuthenticated && (
-              <div className="px-4 py-4 border-t bg-gray-50">
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 h-12 px-3"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    handleSignOut();
-                  }}
-                >
-                  <div className="flex items-center w-full">
-                    <div className="mr-3 p-2 rounded-lg bg-red-100">
-                      <LogOut className="h-5 w-5 text-red-600" />
-                    </div>
-                    <span className="flex-1 text-left">Cerrar sesión</span>
+            {/* Footer fijo */}
+            <div className="border-t bg-gray-50/80 backdrop-blur-sm">
+              
+              {/* Cerrar sesión (solo usuarios autenticados) */}
+              {isAuthenticated && (
+                <>
+                  <Separator />
+                  <div className="px-4 py-3">
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 h-12 px-3 rounded-xl"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        handleSignOut();
+                      }}
+                    >
+                      <div className="flex items-center w-full">
+                        <div className="mr-3 p-2 rounded-xl bg-red-100">
+                          <LogOut className="h-4 w-4 text-red-600" />
+                        </div>
+                        <span className="flex-1 text-left font-semibold">{t('navbar.mobile.logout')}</span>
+                      </div>
+                    </Button>
                   </div>
-                </Button>
-              </div>
-            )}
+                </>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

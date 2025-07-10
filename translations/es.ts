@@ -343,6 +343,26 @@ export default {
     favorites: "Favoritos",
     orders: "Pedidos",
     addresses: "Direcciones",
+    
+    // Nuevas traducciones para el refactor móvil
+    mobile: {
+      menu: "Menú",
+      navigation: "Navegación",
+      user: "Usuario",
+      welcome: "¡Bienvenido!",
+      loginPrompt: "Inicia sesión para acceder a todas las funciones de tu cuenta",
+      login: "Iniciar Sesión",
+      verifyAccount: "Verificar cuenta",
+      accountVerified: "Cuenta verificada",
+      quickAccess: "Acceso Rápido",
+      myProfile: "Mi Perfil",
+      orders: "Pedidos",
+      addresses: "Direcciones",
+      exploreStore: "Explorar Tienda",
+      myAccount: "Mi Cuenta",
+      logout: "Cerrar Sesión"
+    },
+    
       // Mensajes de sistema
     logoutSuccess: "Sesión cerrada correctamente",
     logoutError: "Error al cerrar sesión",

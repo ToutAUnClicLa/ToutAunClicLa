@@ -761,6 +761,26 @@ export default {
     favorites: "Favorites",
     orders: "Orders",
     addresses: "Addresses",
+    
+    // New translations for mobile refactor
+    mobile: {
+      menu: "Menu",
+      navigation: "Navigation",
+      user: "User",
+      welcome: "Welcome!",
+      loginPrompt: "Sign in to access all your account features",
+      login: "Sign In",
+      verifyAccount: "Verify account",
+      accountVerified: "Account verified",
+      quickAccess: "Quick Access",
+      myProfile: "My Profile",
+      orders: "Orders",
+      addresses: "Addresses",
+      exploreStore: "Explore Store",
+      myAccount: "My Account",
+      logout: "Sign Out"
+    },
+    
       // System messages
     logoutSuccess: "Successfully signed out",
     logoutError: "Error signing out",

@@ -739,32 +739,34 @@ export default {
     showPassword: "Afficher le mot de passe",
     hidePassword: "Masquer le mot de passe"
   },
-    // Nouvelles traductions pour la navbar mobile
   navbar: {
-    welcome: "Bienvenue !",
-    accessYourAccount: "Accédez à votre compte pour commencer",
-    loginButton: "Se Connecter",
-    createAccountButton: "Créer un Compte",
-    logoutButton: "Se déconnecter",
-    
-    // États de vérification
-    pendingVerification: "Vérification en attente",
-    unverifiedAccount: "Compte non vérifié",
-    accountNeedsVerification: "Votre compte nécessite une vérification",
-    
-    // Sections du menu
-    mainMenu: "Menu Principal",
-    myAccount: "Mon Compte",
-    quickAccess: "Accès Rapide",
-    
-    // Liens rapides
-    favorites: "Favoris",
-    orders: "Commandes",
-    addresses: "Adresses",
-      // Messages système
-    logoutSuccess: "Déconnexion réussie",
-    logoutError: "Erreur lors de la déconnexion",
-    languageChanged: "Langue changée en"
+    mobile: {
+      // Header
+      menu: "Menu",
+      navigation: "Navigation",
+      
+      // User states
+      user: "Utilisateur",
+      welcome: "Bienvenue !",
+      loginPrompt: "Connectez-vous pour accéder à toutes les fonctionnalités",
+      login: "Se Connecter",
+      verifyAccount: "Vérifier le compte",
+      accountVerified: "Compte vérifié",
+      
+      // Quick access
+      quickAccess: "Accès Rapide",
+      myProfile: "Mon Profil",
+      orders: "Commandes", 
+      addresses: "Adresses",
+      exploreStore: "Explorer Boutique",
+      myAccount: "Mon Compte",
+      logout: "Se Déconnecter",
+      
+      // System messages
+      logoutSuccess: "Déconnexion réussie",
+      logoutError: "Erreur lors de la déconnexion",
+      languageChanged: "Langue changée en"
+    }
   },
   
   // Traductions pour le catalogue de produits
