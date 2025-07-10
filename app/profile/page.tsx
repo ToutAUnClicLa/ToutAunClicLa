@@ -363,6 +363,7 @@ export default function ProfilePage() {
                   <Button 
                     variant="outline" 
                     className="border-blue-300 text-blue-700 hover:bg-blue-100 text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200"
+                    onClick={() => window.location.href = 'mailto:serviceclient@toutaunclicla.com?subject=Solicitud de soporte&body=Hola, necesito ayuda con...'}
                   >
                     💬 {t('profile.general.contactSupport')}
                   </Button>
