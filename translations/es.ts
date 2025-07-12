@@ -391,6 +391,39 @@ export default {
       bestseller: "Más vendido",
       featured: "Destacado"
     },
+
+    // Precios
+    price: {
+      notAvailable: "Precio no disponible",
+      basePrice: "Precio base",
+      finalPrice: "Precio final",
+      includesTaxes: "Incluye impuestos",
+      plusTaxes: "Más impuestos"
+    },
+
+    // Impuestos
+    tax: {
+      nonTaxable: "Sin impuestos",
+      taxable: "Con impuestos",
+      basePrice: "Precio base",
+      tps: "TPS",
+      tvq: "TVQ",
+      total: "Total con impuestos"
+    },
+
+    // AddToCartButton
+    addToCartButton: {
+      addToCart: "Agregar al carrito",
+      outOfStock: "Sin stock",
+      productOutOfStock: "Producto sin stock",
+      onlyUnitsAvailable: "Solo hay {stock} unidades disponibles",
+      onlyUnitsLeft: "¡Solo quedan {stock} unidades!",
+      unitsAvailable: "{stock} unidades disponibles",
+      quantity: "Cantidad",
+      total: "Total",
+      addingToCart: "Agregando...",
+      errorAddingToCart: "Error al agregar al carrito"
+    },
     
     // ProductList
     productList: {
@@ -468,7 +501,7 @@ export default {
         addedToFavorites: "Agregado a favoritos",
         removedFromFavorites: "Eliminado de favoritos",
         errorAddingToCart: "Error al agregar al carrito",
-        errorTogglingFavorite: "Error al actualizar favoritos",
+        errorTogglingFavorite: "Error al gestionar favoritos",
         loginRequired: "Debes iniciar sesión para continuar"
       }
     },
@@ -612,7 +645,7 @@ export default {
       errorAddingToCart: "Error al agregar el producto al carrito",
       addedToFavorites: "Producto agregado a favoritos",
       removedFromFavorites: "Producto eliminado de favoritos",
-      errorTogglingFavorite: "Error al actualizar favoritos",
+      errorTogglingFavorite: "Error al gestionar favoritos",
       loginToAddToCart: "Inicia sesión para agregar productos al carrito",
       loginToAddToFavorites: "Inicia sesión para agregar productos a favoritos",
       errorLoadingProduct: "Error al cargar el producto",

@@ -88,3 +88,78 @@ export function getDiscountPercentage(originalPrice: number, currentPrice: numbe
   }
   return Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
 }
+
+/**
+ * Calcula el precio total con impuestos canadienses (TPS y TVQ)
+ * @param basePrice - Precio base del producto
+ * @param tps - Porcentaje de TPS (Goods and Services Tax)
+ * @param tvq - Porcentaje de TVQ (Quebec Sales Tax)
+ * @returns Objeto con precios detallados
+ */
+export function calculateCanadianTaxes(basePrice: number, tps?: number, tvq?: number) {
+  const tpsAmount = tps ? (basePrice * tps) / 100 : 0;
+  const tvqAmount = tvq ? (basePrice * tvq) / 100 : 0;
+  const totalPrice = basePrice + tpsAmount + tvqAmount;
+
+  return {
+    basePrice,
+    tpsAmount,
+    tvqAmount,
+    totalPrice,
+    hasTaxes: !!(tps || tvq)
+  };
+}
+
+/**
+ * Obtiene el estado de impuestos para un producto basado en su categoría
+ * @param categoryId - ID de la categoría del producto
+ * @param tps - Porcentaje de TPS
+ * @param tvq - Porcentaje de TVQ
+ * @returns Estado de impuestos del producto
+ */
+export function getTaxStatus(categoryId: number, tps?: number, tvq?: number): 'taxable' | 'non-taxable' | 'food-taxable' {
+  // Categoría 1: Productos generales
+  if (categoryId === 1) {
+    return (tps || tvq) ? 'taxable' : 'non-taxable';
+  }
+  
+  // Categoría 2: Comida
+  if (categoryId === 2) {
+    return 'food-taxable';
+  }
+  
+  // Otras categorías por defecto
+  return (tps || tvq) ? 'taxable' : 'non-taxable';
+}
+
+/**
+ * Obtiene todas las imágenes disponibles de un producto
+ * @param product - Objeto del producto
+ * @returns Array de URLs de imágenes válidas
+ */
+export function getProductImages(product: { 
+  imagen_principal?: string; 
+  imagen_secundaria?: string; 
+  imagen_terciaria?: string; 
+}): string[] {
+  const images: string[] = [];
+  
+  if (product.imagen_principal) {
+    images.push(getImageUrl(product.imagen_principal));
+  }
+  
+  if (product.imagen_secundaria) {
+    images.push(getImageUrl(product.imagen_secundaria));
+  }
+  
+  if (product.imagen_terciaria) {
+    images.push(getImageUrl(product.imagen_terciaria));
+  }
+  
+  // Si no hay imágenes, devolver al menos una imagen por defecto
+  if (images.length === 0) {
+    images.push(getImageUrl(''));
+  }
+  
+  return images;
+}

@@ -7,6 +7,7 @@ import { Button } from '@/components/common/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useTranslation } from '@/hooks/useTranslation';
 import AuthModal from '@/components/features/auth/AuthModal';
 
 interface AddToCartButtonProps {
@@ -31,6 +32,7 @@ export function AddToCartButton({
   size = 'md'
 }: AddToCartButtonProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { addToCart, isLoading: cartLoading } = useCart();
   const { 
     isFavorite, 
@@ -49,12 +51,12 @@ export function AddToCartButton({
     }
 
     if (stock === 0) {
-      toast.error('Producto sin stock');
+      toast.error(t('catalog.addToCartButton.productOutOfStock'));
       return;
     }
 
     if (quantity > stock) {
-      toast.error(`Solo hay ${stock} unidades disponibles`);
+      toast.error(t('catalog.addToCartButton.onlyUnitsAvailable').replace('{stock}', stock.toString()));
       return;
     }
 
@@ -68,6 +70,7 @@ export function AddToCartButton({
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
+      toast.error(t('catalog.addToCartButton.errorAddingToCart'));
     } finally {
       setIsAddingToCart(false);
     }
@@ -105,18 +108,18 @@ export function AddToCartButton({
         {/* Información de stock */}
         <div className="text-sm">
           {isOutOfStock ? (
-            <span className="text-red-600 font-medium">Sin stock</span>
+            <span className="text-red-600 font-medium">{t('catalog.addToCartButton.outOfStock')}</span>
           ) : isLowStock ? (
-            <span className="text-amber-600">¡Solo quedan {stock} unidades!</span>
+            <span className="text-amber-600">{t('catalog.addToCartButton.onlyUnitsLeft').replace('{stock}', stock.toString())}</span>
           ) : (
-            <span className="text-green-600">{stock} unidades disponibles</span>
+            <span className="text-green-600">{t('catalog.addToCartButton.unitsAvailable').replace('{stock}', stock.toString())}</span>
           )}
         </div>
 
         {/* Selector de cantidad */}
         {showQuantitySelector && !isOutOfStock && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Cantidad:</span>
+            <span className="text-sm text-gray-600">{t('catalog.addToCartButton.quantity')}:</span>
             <div className="flex items-center gap-1">
               <Button
                 variant="outline"
@@ -155,7 +158,7 @@ export function AddToCartButton({
             ) : (
               <>
                 <ShoppingCart className={iconSizes[size]} />
-                {isOutOfStock ? 'Sin stock' : 'Agregar al carrito'}
+                {isOutOfStock ? t('catalog.addToCartButton.outOfStock') : t('catalog.addToCartButton.addToCart')}
               </>
             )}
           </Button>
@@ -180,7 +183,7 @@ export function AddToCartButton({
         {/* Precio total */}
         {showQuantitySelector && quantity > 1 && (
           <div className="text-sm text-gray-600">
-            Total: <span className="font-medium text-gray-900">
+            {t('catalog.addToCartButton.total')}: <span className="font-medium text-gray-900">
               ${(price * quantity).toFixed(2)}
             </span>
           </div>

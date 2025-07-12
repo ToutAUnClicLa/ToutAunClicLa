@@ -13,7 +13,7 @@ import {ReviewList} from '@/components/features/modules/reviews/ReviewList';
 import { getProductDetail } from '@/lib/services/products';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toast } from 'sonner';
-import { cn, getImageUrl } from '@/lib/utils';
+import { cn, getImageUrl, getProductImages } from '@/lib/utils';
 import dynamic from 'next/dynamic';
 import { getFavoriteStatus, addToFavorites, removeFromFavorites } from '@/lib/services/favorites';
 import { addToCart } from '@/lib/services/cart';
@@ -21,6 +21,7 @@ import { useAuth } from '@/hooks/useAuth';
 import AuthModal from '@/components/features/auth/AuthModal';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
+import { ProductPriceDisplay } from '@/components/features/modules/catalog/ProductPriceDisplay';
 
 // Dynamically import heavy components
 const MotionImage = motion(Image);
@@ -90,10 +91,13 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
     }
   ], [t]);
 
-  const images = useMemo(() => [
-    getImageUrl(product.imagen_principal),
-    ...(product.imagenes_adicionales || []).map((img: string) => getImageUrl(img))
-  ], [product.imagen_principal, product.imagenes_adicionales]);
+  const images = useMemo(() => {
+    return getProductImages({
+      imagen_principal: product.imagen_principal,
+      imagen_secundaria: product.imagen_secundaria,
+      imagen_terciaria: product.imagen_terciaria
+    });
+  }, [product.imagen_principal, product.imagen_secundaria, product.imagen_terciaria]);
 
   // Verificar si el producto está en favoritos al cargar el componente
   const checkFavoriteStatus = useCallback(async () => {
@@ -162,14 +166,14 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
           animate={{ opacity: 1, x: 0 }}
           className="space-y-3"
         >
-          <div className="relative aspect-square rounded-lg overflow-hidden bg-white shadow">
+          <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-300 shadow">
             <AnimatePresence mode="wait">
               <MotionImage
                 key={selectedImage}
                 src={images[selectedImage]}
                 alt={product.nombre}
                 fill
-                className="object-cover"
+                className="object-contain"
                 priority
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -186,7 +190,7 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
                   key={index}
                   onClick={() => setSelectedImage(index)}
                   className={cn(
-                    "relative aspect-square rounded-md overflow-hidden bg-white",
+                    "relative aspect-square rounded-md overflow-hidden bg-gray-300",
                     selectedImage === index ? "ring-2 ring-offset-1 ring-indigo-600" : "opacity-70 hover:opacity-100"
                   )}
                 >
@@ -194,7 +198,7 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
                     src={image}
                     alt={`${product.nombre} - Vista ${index + 1}`}
                     fill
-                    className="object-cover"
+                    className="object-contain"
                   />
                 </button>
               ))}
@@ -258,16 +262,10 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
           </div>
 
           <div className="space-y-3">
-            <div className="flex items-baseline gap-2">
-              <p className="text-2xl sm:text-3xl font-bold text-gray-900">
-                ${product.precio.toFixed(2)}
-              </p>
-              {product.precio_anterior && (
-                <p className="text-sm text-gray-500 line-through">
-                  ${product.precio_anterior.toFixed(2)}
-                </p>
-              )}
-            </div>
+            <ProductPriceDisplay 
+              product={product} 
+              variant="detailed"
+            />
             <p className="text-sm text-gray-600 leading-relaxed">{product.descripcion}</p>
           </div>
 

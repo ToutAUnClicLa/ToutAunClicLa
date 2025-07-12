@@ -108,10 +108,14 @@ export interface Product {
   descuento_porcentaje?: number;
   stock: number;
   imagen_principal: string;
+  imagen_secundaria?: string;
+  imagen_terciaria?: string;
   imagenes?: string[];
   categoria_id: number;
   subcategoria_id?: number;
   provedor?: string;
+  TPS?: number;
+  TVQ?: number;
   activo?: boolean;
   fecha_creacion: string;
   fecha_actualizacion?: string;

@@ -809,6 +809,39 @@ export default {
       bestseller: "Bestseller",
       featured: "Featured"
     },
+
+    // Prices
+    price: {
+      notAvailable: "Price not available",
+      basePrice: "Base price",
+      finalPrice: "Final price",
+      includesTaxes: "Includes taxes",
+      plusTaxes: "Plus taxes"
+    },
+
+    // Taxes
+    tax: {
+      nonTaxable: "Tax-free",
+      taxable: "Taxable",
+      basePrice: "Base price",
+      tps: "GST",
+      tvq: "PST",
+      total: "Total with taxes"
+    },
+
+    // AddToCartButton
+    addToCartButton: {
+      addToCart: "Add to cart",
+      outOfStock: "Out of stock",
+      productOutOfStock: "Product out of stock",
+      onlyUnitsAvailable: "Only {stock} units available",
+      onlyUnitsLeft: "Only {stock} units left!",
+      unitsAvailable: "{stock} units available",
+      quantity: "Quantity",
+      total: "Total",
+      addingToCart: "Adding...",
+      errorAddingToCart: "Error adding to cart"
+    },
     
     // ProductList
     productList: {
@@ -887,7 +920,35 @@ export default {
         removedFromFavorites: "Removed from favorites",
         errorAddingToCart: "Error adding to cart",
         errorTogglingFavorite: "Error updating favorites",
-        loginRequired: "You must sign in to continue"
+        loginRequired: "You must sign in to continue",
+        outOfStock: "Product out of stock",
+        productNotFound: "Product not found"
+      },
+      
+      // Prices and taxes
+      price: {
+        notAvailable: "Not available",
+        basePrice: "Base price",
+        total: "Total",
+        savings: "You save",
+        originalPrice: "Original price"
+      },
+      
+      tax: {
+        nonTaxable: "Non-Taxable",
+        taxable: "Taxable",
+        taxIncluded: "Taxes included",
+        tps: "GST",
+        tvq: "QST"
+      },
+      
+      product: {
+        supplier: "Supplier",
+        category: "Category",
+        subcategory: "Subcategory",
+        stock: "Available",
+        lowStock: "Low stock",
+        outOfStock: "Out of stock"
       }
     },
 

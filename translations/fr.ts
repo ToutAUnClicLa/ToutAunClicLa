@@ -791,6 +791,39 @@ export default {
       bestseller: "Bestseller",
       featured: "En vedette"
     },
+
+    // Prix
+    price: {
+      notAvailable: "Prix non disponible",
+      basePrice: "Prix de base",
+      finalPrice: "Prix final",
+      includesTaxes: "Taxes incluses",
+      plusTaxes: "Plus taxes"
+    },
+
+    // Taxes
+    tax: {
+      nonTaxable: "Non taxable",
+      taxable: "Taxable",
+      basePrice: "Prix de base",
+      tps: "TPS",
+      tvq: "TVQ",
+      total: "Total avec taxes"
+    },
+
+    // AddToCartButton
+    addToCartButton: {
+      addToCart: "Ajouter au panier",
+      outOfStock: "Rupture de stock",
+      productOutOfStock: "Produit en rupture de stock",
+      onlyUnitsAvailable: "Seulement {stock} unités disponibles",
+      onlyUnitsLeft: "Il ne reste que {stock} unités!",
+      unitsAvailable: "{stock} unités disponibles",
+      quantity: "Quantité",
+      total: "Total",
+      addingToCart: "Ajout...",
+      errorAddingToCart: "Erreur lors de l'ajout au panier"
+    },
     
     // ProductList
     productList: {
@@ -869,7 +902,35 @@ export default {
         removedFromFavorites: "Retiré des favoris",
         errorAddingToCart: "Erreur lors de l'ajout au panier",
         errorTogglingFavorite: "Erreur lors de la mise à jour des favoris",
-        loginRequired: "Vous devez vous connecter pour continuer"
+        loginRequired: "Vous devez vous connecter pour continuer",
+        outOfStock: "Produit en rupture de stock",
+        productNotFound: "Produit non trouvé"
+      },
+      
+      // Prix et taxes
+      price: {
+        notAvailable: "Non disponible",
+        basePrice: "Prix de base",
+        total: "Total",
+        savings: "Vous économisez",
+        originalPrice: "Prix original"
+      },
+      
+      tax: {
+        nonTaxable: "Non taxable",
+        taxable: "Taxable",
+        taxIncluded: "Taxes incluses",
+        tps: "TPS",
+        tvq: "TVQ"
+      },
+      
+      product: {
+        supplier: "Fournisseur",
+        category: "Catégorie",
+        subcategory: "Sous-catégorie",
+        stock: "Disponible",
+        lowStock: "Stock faible",
+        outOfStock: "En rupture"
       }
     },
 

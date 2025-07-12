@@ -15,7 +15,8 @@ import AuthModal from '@/components/features/auth/AuthModal';
 import { Button } from '@/components/common/ui/button';
 import { Card, CardContent } from '@/components/common/ui/card';
 import { Badge } from '@/components/common/ui/badge';
-import { cn, getImageUrl, formatPrice, isValidPrice, getDiscountPercentage } from '@/lib/utils';
+import { cn, getImageUrl, formatPrice, isValidPrice, getDiscountPercentage, calculateCanadianTaxes, getTaxStatus } from '@/lib/utils';
+import { ProductPriceDisplay } from './ProductPriceDisplay';
 
 interface ProductCardProps {
   product: Product;
@@ -68,6 +69,10 @@ export function ProductCard({
       ? getDiscountPercentage(product.precio_anterior!, product.precio)
       : 0;
     const hasValidPrice = isValidPrice(product.precio);
+    
+    // Cálculo de impuestos canadienses
+    const taxCalculation = calculateCanadianTaxes(product.precio, product.TPS, product.TVQ);
+    const taxStatus = getTaxStatus(product.categoria_id, product.TPS, product.TVQ);
 
     return {
       productIdStr,
@@ -78,13 +83,18 @@ export function ProductCard({
       cartQuantity,
       hasDiscount,
       discountPercentage,
-      hasValidPrice
+      hasValidPrice,
+      taxCalculation,
+      taxStatus
     };
   }, [
     product.id, 
     product.stock, 
     product.precio, 
     product.precio_anterior,
+    product.categoria_id,
+    product.TPS,
+    product.TVQ,
     isFavorite,
     isInCart,
     getProductQuantity
@@ -170,7 +180,7 @@ export function ProductCard({
                     src={getImageUrl(product.imagen_principal)}
                     alt={product.nombre}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="object-contain group-hover:scale-100 transition-all duration-300 bg-gray-300"
                     onError={() => setImageError(true)}
                     sizes="(max-width: 640px) 50vw, 33vw"
                   />
@@ -218,19 +228,11 @@ export function ProductCard({
               <div className="p-2 sm:p-3">
                 <h3 className="font-medium text-xs sm:text-sm line-clamp-2 mb-2 min-h-[2rem] sm:min-h-[2.5rem]">{product.nombre}</h3>
                 <div className="flex items-center justify-between">
-                  <div className="flex flex-col">
-                    {productData.hasDiscount && (
-                      <span className="text-xs text-gray-500 line-through">
-                        {formatPrice(product.precio_anterior!)}
-                      </span>
-                    )}
-                    <span className={cn(
-                      "font-bold text-sm sm:text-base",
-                      product.precio > 0 ? "text-primary" : "text-gray-500"
-                    )}>
-                      {product.precio === 0 ? "No disponible" : formatPrice(product.precio)}
-                    </span>
-                  </div>
+                  <ProductPriceDisplay 
+                    product={product} 
+                    variant="compact" 
+                    className="flex-1"
+                  />
                   {productData.inCart && (
                     <Badge variant="outline" className="text-xs px-1 py-0">
                       {productData.cartQuantity}
@@ -262,12 +264,12 @@ export function ProductCard({
       >
         <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col">
           <Link href={getProductUrl()}>
-            <div className="relative aspect-square overflow-hidden bg-gray-100">
+            <div className="relative aspect-square overflow-hidden bg-gray-300">
               <Image
                 src={getImageUrl(product.imagen_principal)}
                 alt={product.nombre}
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                className="object-contain transition-all duration-300"
                 onError={() => setImageError(true)}
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               />
@@ -311,12 +313,14 @@ export function ProductCard({
               )}
 
               {/* Rating badge */}
-              {showRating && (product.averageRating || product.rating) && ((product.averageRating || 0) > 0 || (product.rating || 0) > 0) && (
+              {showRating && (
                 <div className="absolute top-1 sm:top-2 right-1 sm:right-2 bg-white/90 rounded-full px-1.5 sm:px-2 py-0.5 sm:py-1 flex items-center gap-1">
                   <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-yellow-400 fill-current" />
-                  <span className="text-[10px] sm:text-xs font-medium">
-                    {(product.averageRating || product.rating || 0).toFixed(1)}
-                  </span>
+                  {(product.averageRating || product.rating) && ((product.averageRating || 0) > 0 || (product.rating || 0) > 0) && (
+                    <span className="text-[10px] sm:text-xs font-medium">
+                      {(product.averageRating || product.rating || 0).toFixed(1)}
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -343,19 +347,11 @@ export function ProductCard({
             <div className="mt-auto space-y-2 sm:space-y-3">
               {/* Precio y estado del carrito */}
               <div className="flex items-center justify-between">
-                <div className="flex flex-col">
-                  {productData.hasDiscount && (
-                    <span className="text-xs sm:text-sm text-gray-500 line-through">
-                      {formatPrice(product.precio_anterior!)}
-                    </span>
-                  )}
-                  <span className={cn(
-                    "font-bold text-sm sm:text-lg lg:text-xl",
-                    product.precio > 0 ? "text-primary" : "text-gray-500"
-                  )}>
-                    {product.precio === 0 ? "No disponible" : formatPrice(product.precio)}
-                  </span>
-                </div>
+                <ProductPriceDisplay 
+                  product={product} 
+                  variant="default" 
+                  className="flex-1"
+                />
                 
                 {productData.inCart && (
                   <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 text-[10px] sm:text-xs px-1 sm:px-2">
