@@ -222,7 +222,6 @@ export function useCart(options: UseCartOptions = {}) {
       invalidateCache();
       await loadCartNow(true); // Forzar refresh
       notifyCartCountChange(); // Notificar cambio al contador
-      toast.success('Producto agregado al carrito');
       return true;
     } catch (err: any) {
       console.error('Error adding to cart:', err);

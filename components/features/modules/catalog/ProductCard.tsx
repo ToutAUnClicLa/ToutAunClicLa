@@ -91,19 +91,6 @@ export function ProductCard({
   ]);
 
   // Funciones auxiliares
-  const getRatingStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={cn(
-          "h-3 w-3",
-          i < Math.floor(rating)
-            ? 'text-yellow-400 fill-current'
-            : 'text-gray-300'
-        )}
-      />
-    ));
-  };
 
   const getProductUrl = () => {
     // Para todas las categorías, usar la estructura estándar: /categoria/productId
@@ -137,7 +124,7 @@ export function ProductCard({
       const success = await addToCart(product.id, 1);
       
       if (success) {
-        toast.success(t('catalog.messages.addedToCart') || 'Producto agregado al carrito');
+        toast.success(t('catalog.messages.addedToCart'));
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -350,15 +337,7 @@ export function ProductCard({
                 </p>
               )}
 
-              {/* Rating estrellas */}
-              {showRating && (product.averageRating || product.rating) && ((product.averageRating || 0) > 0 || (product.rating || 0) > 0) && (
-                <div className="hidden sm:flex items-center gap-1">
-                  {getRatingStars(product.averageRating || product.rating || 0)}
-                  <span className="text-xs text-gray-500 ml-1">
-                    ({product.reviewCount || product.estadisticas?.total_reviews || "Sin reseñas"})
-                  </span>
-                </div>
-              )}
+
             </div>
 
             <div className="mt-auto space-y-2 sm:space-y-3">

@@ -84,7 +84,7 @@ export function Footer() {
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-6" itemScope itemType="https://schema.org/WPFooter">
       <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About */}
           <div>
             <div className="flex items-center mb-4">
@@ -144,26 +144,6 @@ export function Footer() {
                       className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center"
                     >
                       <span className="mr-1">›</span> {cat.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-
-          {/* Gastronomía por Región */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-indigo-300">
-              {t('footer.gastronomy.title')}
-            </h3>            <nav>
-              <ul className="space-y-2">
-                {foodRegions.map((region, index) => (
-                  <li key={index}>
-                    <Link 
-                      href={region.url} 
-                      className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center"
-                    >
-                      <span className="mr-1">›</span> {region.name}
                     </Link>
                   </li>
                 ))}
