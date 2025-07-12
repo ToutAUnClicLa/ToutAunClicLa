@@ -34,7 +34,7 @@ export function ProductImageGallery({ product, className = "" }: ProductImageGal
   return (
     <div className={`relative ${className}`}>
       {/* Imagen principal */}
-      <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-300">
+      <div className="relative aspect-square overflow-hidden rounded-xl">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentImageIndex}
@@ -48,7 +48,7 @@ export function ProductImageGallery({ product, className = "" }: ProductImageGal
               src={images[currentImageIndex]}
               alt={`${product.nombre} - Imagen ${currentImageIndex + 1}`}
               fill
-              className="object-contain"
+              className="object-cover"
               sizes="(max-width: 768px) 100vw, 50vw"
               priority={currentImageIndex === 0}
             />
@@ -92,7 +92,7 @@ export function ProductImageGallery({ product, className = "" }: ProductImageGal
             <button
               key={index}
               onClick={() => setCurrentImageIndex(index)}
-              className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all bg-gray-300 ${
+              className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
                 index === currentImageIndex
                   ? 'border-primary'
                   : 'border-gray-200 hover:border-gray-300'
@@ -102,7 +102,7 @@ export function ProductImageGallery({ product, className = "" }: ProductImageGal
                 src={image}
                 alt={`${product.nombre} - Miniatura ${index + 1}`}
                 fill
-                className="object-contain"
+                className="object-cover"
                 sizes="64px"
               />
             </button>

@@ -180,7 +180,7 @@ export function ProductCard({
                     src={getImageUrl(product.imagen_principal)}
                     alt={product.nombre}
                     fill
-                    className="object-contain group-hover:scale-100 transition-all duration-300 bg-gray-300"
+                    className="object-cover group-hover:scale-105 transition-all duration-300"
                     onError={() => setImageError(true)}
                     sizes="(max-width: 640px) 50vw, 33vw"
                   />
@@ -264,12 +264,12 @@ export function ProductCard({
       >
         <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col">
           <Link href={getProductUrl()}>
-            <div className="relative aspect-square overflow-hidden bg-gray-300">
+            <div className="relative aspect-square overflow-hidden">
               <Image
                 src={getImageUrl(product.imagen_principal)}
                 alt={product.nombre}
                 fill
-                className="object-contain transition-all duration-300"
+                className="object-cover transition-all duration-300"
                 onError={() => setImageError(true)}
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               />

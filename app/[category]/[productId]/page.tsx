@@ -166,14 +166,14 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
           animate={{ opacity: 1, x: 0 }}
           className="space-y-3"
         >
-          <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-300 shadow">
+          <div className="relative aspect-square rounded-lg overflow-hidden shadow">
             <AnimatePresence mode="wait">
               <MotionImage
                 key={selectedImage}
                 src={images[selectedImage]}
                 alt={product.nombre}
                 fill
-                className="object-contain"
+                className="object-cover"
                 priority
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -190,7 +190,7 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
                   key={index}
                   onClick={() => setSelectedImage(index)}
                   className={cn(
-                    "relative aspect-square rounded-md overflow-hidden bg-gray-300",
+                    "relative aspect-square rounded-md overflow-hidden",
                     selectedImage === index ? "ring-2 ring-offset-1 ring-indigo-600" : "opacity-70 hover:opacity-100"
                   )}
                 >
@@ -198,7 +198,7 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
                     src={image}
                     alt={`${product.nombre} - Vista ${index + 1}`}
                     fill
-                    className="object-contain"
+                    className="object-cover"
                   />
                 </button>
               ))}
