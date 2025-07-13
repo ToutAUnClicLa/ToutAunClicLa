@@ -57,47 +57,37 @@ export function ProductPriceDisplay({ product, variant = 'default', className = 
         </div>
       )}
 
-      {/* Precio final (ya con impuestos incluidos si aplica) */}
+      {/* Precio base (siempre en azul) */}
       <div className="space-y-1">
-        <div className={`font-bold text-primary ${
+        <div className={`font-bold text-blue-600 ${
           variant === 'compact' ? 'text-sm' : 
           variant === 'detailed' ? 'text-2xl' : 'text-lg'
         }`}>
-          {formatPrice(finalPrice)}
+          {formatPrice(product.precio)}
         </div>
 
-        {/* Información de impuestos */}
-        <div className="space-y-1">
-          {priceData.taxStatus === 'non-taxable' && (
-            <Badge variant="outline" className="text-green-700 bg-green-50 border-green-200">
-              {t('catalog.tax.nonTaxable')}
-            </Badge>
-          )}
-          
-          {priceData.taxStatus === 'food-taxable' && (
-            <Badge variant="outline" className="text-blue-700 bg-blue-50 border-blue-200">
-              {t('catalog.tax.taxable')}
-            </Badge>
-          )}
-          
-          {priceData.taxStatus === 'taxable' && priceData.taxCalculation.hasTaxes && variant !== 'compact' && (
-            <div className="space-y-1 text-xs text-gray-600">
+        {/* Información de impuestos - solo para productos taxables */}
+        {priceData.taxStatus === 'taxable' && priceData.taxCalculation.hasTaxes && variant !== 'compact' && (
+          <div className="space-y-1 text-xs text-gray-600">
+            {product.TPS && (
               <div>
-                {t('catalog.tax.basePrice')}: {formatPrice(priceData.taxCalculation.basePrice)}
+                TPS ({product.TPS}%): +{formatPrice(priceData.taxCalculation.tpsAmount)}
               </div>
-              {product.TPS && (
-                <div>
-                  TPS ({product.TPS}%): +{formatPrice(priceData.taxCalculation.tpsAmount)}
-                </div>
-              )}
-              {product.TVQ && (
-                <div>
-                  TVQ ({product.TVQ}%): +{formatPrice(priceData.taxCalculation.tvqAmount)}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+            )}
+            {product.TVQ && (
+              <div>
+                TVQ ({product.TVQ}%): +{formatPrice(priceData.taxCalculation.tvqAmount)}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Badge para productos no taxables */}
+        {priceData.taxStatus === 'non-taxable' && variant !== 'compact' && (
+          <Badge variant="outline" className="text-green-700 bg-green-50 border-green-200 text-xs">
+            {t('catalog.tax.nonTaxable')}
+          </Badge>
+        )}
       </div>
     </div>
   );
