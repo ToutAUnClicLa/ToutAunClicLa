@@ -6,6 +6,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { ProductGrid } from '@/components/features/modules/catalog/ProductGrid';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
+import { getSubcategoryId } from '@/lib/constants/subcategories';
 
 const LoadingFallback = () => (
   <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 py-6">
@@ -66,7 +67,7 @@ function ProductosContent() {
         categoryId={1} 
         categoryName="productos" 
         title={t('catalog.productList.productsTitle')}
-        initialSubcategory={subcategoriaId ? parseInt(subcategoriaId) : null}
+        initialSubcategory={subcategoriaId ? getSubcategoryId(subcategoriaId) : null}
       />
     </>
   );

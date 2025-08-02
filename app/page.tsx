@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronDown, Package, Utensils, Store, Shirt, Watch, Gift } from "lucide-react";
+import { ArrowRight, ChevronDown, Package, Utensils, Store, Shirt, Watch, Gift, GlassWater } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -174,10 +174,26 @@ export default function Home() {
   }
 
   // Obtener categorías de productos de las traducciones
-  const productCategories = t<ProductCategory[]>('landing.productCategories').map(category => ({
-    ...category,
-    icon: <Package className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
-  }));
+  const productCategories = t<ProductCategory[]>('landing.productCategories').map(category => {
+    let icon;
+    switch (category.subcategoria_id) {
+      case 'harinas-masas':
+        icon = <Package className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />;
+        break;
+      case 'salsas-aderezos':
+        icon = <Package className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />;
+        break;
+      case 'paquetes-snacks':
+        icon = <Package className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />;
+        break;
+      case 'bebidas':
+        icon = <GlassWater className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />;
+        break;
+      default:
+        icon = <Package className="h-6 w-6 sm:h-8 sm:w-8 text-white drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />;
+    }
+    return { ...category, icon };
+  });
 
   // Obtener regiones de comida de las traducciones
   const foodRegions = t<FoodRegion[]>('landing.foodRegions');
@@ -317,7 +333,7 @@ export default function Home() {
         color="from-indigo-50 to-blue-50"
         iconColor="text-indigo-600"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {productCategories.map(category => (
             <Link key={category.id} href={`/productos?subcategoria=${category.subcategoria_id}`}>
               <motion.div

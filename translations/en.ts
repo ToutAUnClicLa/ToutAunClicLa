@@ -150,6 +150,15 @@ export default {
         color: "from-amber-600 to-yellow-600",
         viewText: "View packages and snacks",
         subcategoria_id: "paquetes-snacks"
+      },
+      {
+        id: 12,
+        name: "Beverages",
+        description: "Refresh yourself with our authentic beverages from the Americas",
+        image: "/bebidas.png",
+        color: "from-cyan-600 to-blue-600",
+        viewText: "Explore beverages",
+        subcategoria_id: "bebidas"
       }
     ],
     foodRegions: [
