@@ -347,6 +347,8 @@ export default function Home() {
                     alt={category.name}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-110 filter blur-[0.8px]"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    loading="lazy"
                   />
                   <div className={`absolute inset-0 bg-gradient-to-r ${category.color} opacity-10 transition-opacity duration-300 group-hover:opacity-20`} />
                   <div className="absolute inset-0 flex flex-col justify-center p-6 sm:p-8">
@@ -419,6 +421,8 @@ export default function Home() {
                     alt={region.name}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-110 filter blur-[0.8px]"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    loading="lazy"
                   />
                   <div className={`absolute inset-0 bg-gradient-to-r ${region.color} opacity-10 transition-opacity duration-300 group-hover:opacity-20`} />
                   <div className="absolute inset-0 flex flex-col justify-center p-6 sm:p-8">
@@ -488,6 +492,8 @@ export default function Home() {
                     alt={category.name}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-110 filter blur-[0.8px]"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    loading="lazy"
                   />
                   <div className={`absolute inset-0 bg-gradient-to-r ${category.color} opacity-10 transition-opacity duration-300 group-hover:opacity-20`} />
                   <div className="absolute inset-0 flex flex-col justify-center p-6 sm:p-8">

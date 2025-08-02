@@ -157,11 +157,11 @@ export function ProductGrid({
       {Array.from({ length: 8 }).map((_, i) => (
         <Card key={i} className="overflow-hidden">
           <Skeleton className="aspect-square w-full" />
-          <CardContent className="p-4 space-y-2">
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-3 w-1/2" />
-            <Skeleton className="h-6 w-1/4" />
-            <Skeleton className="h-9 w-full" />
+          <CardContent className="p-2 sm:p-4 space-y-2">
+            <Skeleton className="h-3 sm:h-4 w-3/4" />
+            <Skeleton className="h-2 sm:h-3 w-1/2" />
+            <Skeleton className="h-4 sm:h-6 w-1/4" />
+            <Skeleton className="h-6 sm:h-9 w-full" />
           </CardContent>
         </Card>
       ))}

@@ -15,7 +15,7 @@ import AuthModal from '@/components/features/auth/AuthModal';
 import { Button } from '@/components/common/ui/button';
 import { Card, CardContent } from '@/components/common/ui/card';
 import { Badge } from '@/components/common/ui/badge';
-import { cn, getImageUrl, formatPrice, isValidPrice, getDiscountPercentage, calculateCanadianTaxes, getTaxStatus } from '@/lib/utils';
+import { cn, getProductImageUrl, getBlurDataURL, formatPrice, isValidPrice, getDiscountPercentage, calculateCanadianTaxes, getTaxStatus } from '@/lib/utils';
 import { ProductPriceDisplay } from './ProductPriceDisplay';
 
 interface ProductCardProps {
@@ -177,12 +177,15 @@ export function ProductCard({
           <Link href={getProductUrl()}>
             <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all duration-300">
               <div className="relative aspect-square">                  <Image
-                    src={getImageUrl(product.imagen_principal)}
+                    src={getProductImageUrl(product.imagen_principal, 'small')}
                     alt={product.nombre}
                     fill
                     className="object-cover group-hover:scale-105 transition-all duration-300"
                     onError={() => setImageError(true)}
                     sizes="(max-width: 640px) 50vw, 33vw"
+                    placeholder="blur"
+                    blurDataURL={getBlurDataURL()}
+                    loading="lazy"
                   />
                 
                 {/* Badges */}
@@ -266,12 +269,15 @@ export function ProductCard({
           <Link href={getProductUrl()}>
             <div className="relative aspect-square overflow-hidden">
               <Image
-                src={getImageUrl(product.imagen_principal)}
+                src={getProductImageUrl(product.imagen_principal, 'medium')}
                 alt={product.nombre}
                 fill
                 className="object-cover transition-all duration-300"
                 onError={() => setImageError(true)}
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                placeholder="blur"
+                blurDataURL={getBlurDataURL()}
+                loading="lazy"
               />
               
               {/* Overlay para productos sin stock */}
