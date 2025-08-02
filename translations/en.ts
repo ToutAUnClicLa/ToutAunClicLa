@@ -892,11 +892,36 @@ export default {
       
       // Loading and empty states
       loading: "Loading products...",
+      searching: "Searching...",
       noProducts: "No products found",
       noProductsMessage: "No products match the selected filters.",
       tryDifferentFilters: "Try adjusting your filters or searching for something different.",
       loadMore: "Load more",
       showingResults: "Showing {count} of {total} products",
+      error: "Error loading products",
+      retry: "Try again",
+      
+      // Search
+      searchMinLength: "Type at least 2 characters to search",
+      searchResults: "{count} results found",
+      searchClear: "Clear search",
+      
+      // Notifications
+      notifications: {
+        filtersApplied: "Filters applied successfully",
+        filtersCleared: "Filters cleared",
+        searchCompleted: "Search completed",
+        noResultsFound: "No results found",
+        errorOccurred: "An error occurred while loading products"
+      },
+      
+      // Mobile filters
+      mobileFilters: {
+        title: "Filters",
+        apply: "Apply filters",
+        cancel: "Cancel",
+        reset: "Reset"
+      },
       
       // Benefits
       benefits: {

@@ -18,6 +18,7 @@ export { useProducts, useProductsByCategory, useProduct, useRestaurantMenu } fro
 export { useCategories, useSubcategories } from './useCategories';
 export { useTranslation } from './useTranslation';
 export { useCatalog } from './useCatalog';
+export { useOptimizedSearch } from './useOptimizedSearch';
 
 // Utilidades
 export { toast } from './use-toast';

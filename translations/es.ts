@@ -474,10 +474,35 @@ export default {
       
       // Estados de carga y vacío
       loading: "Cargando productos...",
+      searching: "Buscando...",
       noProducts: "No se encontraron productos",
       noProductsMessage: "No hay productos que coincidan con los filtros seleccionados.",
       tryDifferentFilters: "Intenta ajustar los filtros o buscar algo diferente.",
       loadMore: "Cargar más",
+      error: "Error al cargar productos",
+      retry: "Intentar de nuevo",
+      
+      // Búsqueda
+      searchMinLength: "Escribe al menos 2 caracteres para buscar",
+      searchResults: "{count} resultados encontrados",
+      searchClear: "Limpiar búsqueda",
+      
+      // Notificaciones
+      notifications: {
+        filtersApplied: "Filtros aplicados correctamente",
+        filtersCleared: "Filtros eliminados",
+        searchCompleted: "Búsqueda completada",
+        noResultsFound: "No se encontraron resultados",
+        errorOccurred: "Ocurrió un error al cargar los productos"
+      },
+      
+      // Filtros mobile
+      mobileFilters: {
+        title: "Filtros",
+        apply: "Aplicar filtros",
+        cancel: "Cancelar",
+        reset: "Restablecer"
+      },
       showingResults: "Mostrando {count} de {total} productos",
       
       // Beneficios

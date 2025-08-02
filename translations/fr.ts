@@ -874,11 +874,36 @@ export default {
       
       // États de chargement et vides
       loading: "Chargement des produits...",
+      searching: "Recherche...",
       noProducts: "Aucun produit trouvé",
       noProductsMessage: "Aucun produit ne correspond aux filtres sélectionnés.",
       tryDifferentFilters: "Essayez d'ajuster vos filtres ou de rechercher autre chose.",
       loadMore: "Charger plus",
       showingResults: "Affichage de {count} sur {total} produits",
+      error: "Erreur lors du chargement des produits",
+      retry: "Réessayer",
+      
+      // Recherche
+      searchMinLength: "Tapez au moins 2 caractères pour rechercher",
+      searchResults: "{count} résultats trouvés",
+      searchClear: "Effacer la recherche",
+      
+      // Notifications
+      notifications: {
+        filtersApplied: "Filtres appliqués avec succès",
+        filtersCleared: "Filtres effacés",
+        searchCompleted: "Recherche terminée",
+        noResultsFound: "Aucun résultat trouvé",
+        errorOccurred: "Une erreur est survenue lors du chargement des produits"
+      },
+      
+      // Filtres mobiles
+      mobileFilters: {
+        title: "Filtres",
+        apply: "Appliquer les filtres",
+        cancel: "Annuler",
+        reset: "Réinitialiser"
+      },
       
       // Avantages
       benefits: {
