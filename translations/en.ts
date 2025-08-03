@@ -694,6 +694,7 @@ export default {
     forgotPasswordButton: "Send link",
     continueWithGoogle: "Continue with Google",
     continueWithGoogleRegister: "Sign up with Google",
+    registerWithEmail: "Sign up with email",
     
     // Loading states
     loggingIn: "Signing in...",

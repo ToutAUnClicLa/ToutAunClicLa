@@ -694,6 +694,7 @@ export default {
     forgotPasswordButton: "Envoyer le lien",
     continueWithGoogle: "Continuer avec Google",
     continueWithGoogleRegister: "S'inscrire avec Google",
+    registerWithEmail: "S'inscrire avec email",
     
     // États de chargement
     loggingIn: "Connexion en cours...",

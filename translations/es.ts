@@ -276,6 +276,7 @@ export default {
     forgotPasswordButton: "Enviar enlace",
     continueWithGoogle: "Continuar con Google",
     continueWithGoogleRegister: "Registrarse con Google",
+    registerWithEmail: "Registrarse con correo electrónico",
     
     // Estados de carga
     loggingIn: "Iniciando sesión...",
