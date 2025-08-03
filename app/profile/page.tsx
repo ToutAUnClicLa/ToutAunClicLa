@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -42,59 +42,6 @@ interface Stats {
   orders: number;
 }
 
-const getProfileSections = (t: any) => [
-  {
-    icon: Heart,
-    title: t('profile.sections.favorites.title'),
-    description: t('profile.sections.favorites.description'),
-    href: "/profile/favorites",
-    color: "text-red-500",
-    bgColor: "bg-red-50",
-    borderColor: "border-red-200",
-    count: 0
-  },
-  {
-    icon: MapPin,
-    title: t('profile.sections.addresses.title'),
-    description: t('profile.sections.addresses.description'),
-    href: "/profile/addresses",
-    color: "text-blue-500",
-    bgColor: "bg-blue-50",
-    borderColor: "border-blue-200",
-    count: 0
-  },
-  {
-    icon: ShoppingBag,
-    title: t('profile.sections.orders.title'),
-    description: t('profile.sections.orders.description'),
-    href: "/profile/orders",
-    color: "text-green-500",
-    bgColor: "bg-green-50",
-    borderColor: "border-green-200",
-    count: 0
-  },
-  {
-    icon: Shield,
-    title: t('profile.sections.security.title'),
-    description: t('profile.sections.security.description'),
-    href: "/profile/security",
-    color: "text-purple-500",
-    bgColor: "bg-purple-50",
-    borderColor: "border-purple-200",
-    count: null
-  },
-  {
-    icon: Settings,
-    title: t('profile.sections.settings.title'),
-    description: t('profile.sections.settings.description'),
-    href: "/profile/settings",
-    color: "text-gray-500",
-    bgColor: "bg-gray-50",
-    borderColor: "border-gray-200",
-    count: null
-  },
-];
-
 export default function ProfilePage() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -112,6 +59,60 @@ export default function ProfilePage() {
     orders: 0,
   });
   const [isDataLoading, setIsDataLoading] = useState(true);
+
+  // Memorizar las secciones del perfil para evitar recreaciones innecesarias
+  const profileSections = useMemo(() => [
+    {
+      icon: Heart,
+      title: t('profile.sections.favorites.title'),
+      description: t('profile.sections.favorites.description'),
+      href: "/profile/favorites",
+      color: "text-red-500",
+      bgColor: "bg-red-50",
+      borderColor: "border-red-200",
+      count: stats.favorites
+    },
+    {
+      icon: MapPin,
+      title: t('profile.sections.addresses.title'),
+      description: t('profile.sections.addresses.description'),
+      href: "/profile/addresses",
+      color: "text-blue-500",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-200",
+      count: stats.addresses
+    },
+    {
+      icon: ShoppingBag,
+      title: t('profile.sections.orders.title'),
+      description: t('profile.sections.orders.description'),
+      href: "/profile/orders",
+      color: "text-green-500",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-200",
+      count: stats.orders
+    },
+    {
+      icon: Shield,
+      title: t('profile.sections.security.title'),
+      description: t('profile.sections.security.description'),
+      href: "/profile/security",
+      color: "text-purple-500",
+      bgColor: "bg-purple-50",
+      borderColor: "border-purple-200",
+      count: null
+    },
+    {
+      icon: Settings,
+      title: t('profile.sections.settings.title'),
+      description: t('profile.sections.settings.description'),
+      href: "/profile/settings",
+      color: "text-gray-500",
+      bgColor: "bg-gray-50",
+      borderColor: "border-gray-200",
+      count: null
+    },
+  ], [t, stats]);
 
   // Función para obtener las iniciales del usuario
   const getUserInitials = () => {
@@ -137,39 +138,6 @@ export default function ProfilePage() {
     }
   };
 
-  const loadUserData = useCallback(async () => {
-    if (!user) return;
-    
-    setIsDataLoading(true);
-    try {
-      // Ya tenemos los datos del usuario desde el hook useAuth
-      setProfile({
-        id: user.id,
-        nombre: user.nombre,
-        email: user.email,
-        fecha_creacion: user.createdAt,
-      });
-
-      // Cargar estadísticas reales
-      const [addressesData, favoritesCount] = await Promise.all([
-        getUserAddresses().catch(() => []),
-        getFavoritesCount().catch(() => 0)
-      ]);
-
-      setStats({
-        addresses: addressesData.length,
-        favorites: favoritesCount,
-        orders: 0, // TODO: Implementar cuando tengamos endpoint de pedidos
-      });
-      
-    } catch (error) {
-      console.error('Error loading user data:', error);
-      toast.error(t('profile.errors.loadingUserData'));
-    } finally {
-      setIsDataLoading(false);
-    }
-  }, [user, t]);
-
   useEffect(() => {
     if (!isLoading && !user) {
       router.push('/');
@@ -177,9 +145,41 @@ export default function ProfilePage() {
     }
 
     if (user) {
-      loadUserData();
+      // Cargar datos del usuario directamente aquí
+      const loadData = async () => {
+        setIsDataLoading(true);
+        try {
+          // Ya tenemos los datos del usuario desde el hook useAuth
+          setProfile({
+            id: user.id,
+            nombre: user.nombre,
+            email: user.email,
+            fecha_creacion: user.createdAt,
+          });
+
+          // Cargar estadísticas reales
+          const [addressesData, favoritesCount] = await Promise.all([
+            getUserAddresses().catch(() => []),
+            getFavoritesCount().catch(() => 0)
+          ]);
+
+          setStats({
+            addresses: addressesData.length,
+            favorites: favoritesCount,
+            orders: 0, // TODO: Implementar cuando tengamos endpoint de pedidos
+          });
+          
+        } catch (error) {
+          console.error('Error loading user data:', error);
+          toast.error('Error al cargar los datos del usuario');
+        } finally {
+          setIsDataLoading(false);
+        }
+      };
+
+      loadData();
     }
-  }, [user, isLoading, router, loadUserData]);
+  }, [user, isLoading, router]); // Removido 't' de las dependencias
 
   if (isLoading || !user) {
     return (
@@ -188,16 +188,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-
-  // Mapear secciones con stats
-  const profileSections = getProfileSections(t);
-  const sectionsWithStats = profileSections.map(section => ({
-    ...section,
-    count: section.title === t('profile.sections.favorites.title') ? stats.favorites :
-           section.title === t('profile.sections.addresses.title') ? stats.addresses :
-           section.title === t('profile.sections.orders.title') ? stats.orders :
-           section.count
-  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50/30">
@@ -289,7 +279,7 @@ export default function ProfilePage() {
           
           {/* Grid responsivo mejorado */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
-            {sectionsWithStats.map((section, index) => (
+            {profileSections.map((section, index) => (
               <motion.div
                 key={section.href}
                 initial={{ opacity: 0, y: 20 }}

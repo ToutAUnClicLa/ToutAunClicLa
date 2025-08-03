@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import es from '@/translations/es';
 import fr from '@/translations/fr';
@@ -14,7 +15,7 @@ type TranslationType = typeof translations.es;
 export function useTranslation() {
   const { currentLanguage } = useLanguage();
   
-  const t = <T = string>(key: string): T => {
+  const t = useCallback(<T = string>(key: string): T => {
     const keys = key.split('.');
     let value: any = translations[currentLanguage];
     
@@ -27,7 +28,7 @@ export function useTranslation() {
     }
     
     return value as T;
-  };
+  }, [currentLanguage]);
 
   return { t, locale: currentLanguage };
 }

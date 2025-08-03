@@ -52,15 +52,28 @@ export default function AuthModal({
       // Mantener el email del formulario actual para verificación
       const currentEmail = formData.email || localStorage.getItem('pending_verification_email') || '';
       setFormData(prev => ({
-        ...prev,
-        email: currentEmail,
-        // Limpiar otros campos pero mantener el email
         nombre: '',
+        email: currentEmail,
         telefono: '',
         password: '',
         confirmPassword: ''
       }));
+    }
+    // No resetear formData cuando el modo cambia a login/register para permitir que el usuario escriba
+    
+    setError(null);
+    setVerificationCode('');
+    setAcceptTerms(false);
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+  }, [mode]);
+
+  // Restablecer al abrir/cerrar modal
+  useEffect(() => {
+    if (isOpen) {
+      setMode(initialMode);
     } else {
+      // Resetear todo cuando se cierra el modal
       setFormData({
         nombre: '',
         email: '',
@@ -68,22 +81,12 @@ export default function AuthModal({
         password: '',
         confirmPassword: ''
       });
-    }
-    
-    setError(null);
-    setVerificationCode('');
-    setAcceptTerms(false);
-    setShowPassword(false);
-    setShowConfirmPassword(false);
-  }, [mode, formData.email]);
-
-  // Restablecer al abrir/cerrar modal
-  useEffect(() => {
-    if (isOpen) {
-      setMode(initialMode);
-    } else {
       setError(null);
       setIsLoading(false);
+      setVerificationCode('');
+      setAcceptTerms(false);
+      setShowPassword(false);
+      setShowConfirmPassword(false);
     }
   }, [isOpen, initialMode]);
 
