@@ -742,6 +742,45 @@ export default {
     resendVerification: "Souhaitez-vous que nous envoyions un nouvel e-mail de vérification ?",
     verificationSent: "Nouvel e-mail de vérification envoyé. Veuillez vérifier votre boîte de réception.",
     verificationError: "Erreur lors de l'envoi de l'e-mail de vérification",
+    verificationTitle: "Vérifier l'E-mail",
+    verificationDescription: "Vérifiez votre e-mail",
+    verificationCodeLabel: "Code de vérification",
+    verificationCodePlaceholder: "123456",
+    verificationInstructions: "Entrez le code à 6 chiffres envoyé à votre e-mail",
+    verifyButton: "Vérifier",
+    verifying: "Vérification en cours...",
+    resendCode: "Vous n'avez pas reçu le code ? Renvoyer",
+    codeResent: "Code renvoyé",
+    checkEmailForNewCode: "Vérifiez votre e-mail pour le nouveau code",
+    resendCodeError: "Erreur lors du renvoi du code",
+    emailNotFoundForVerification: "E-mail introuvable pour la vérification",
+    emailNotFoundForResend: "E-mail introuvable pour renvoyer le code",
+    enterSixDigitCode: "Entrez le code à 6 chiffres",
+    verificationSuccess: "E-mail vérifié !",
+    accountVerifiedCorrectly: "Votre compte a été vérifié avec succès",
+    invalidVerificationCode: "Code de vérification invalide",
+    accountRequiresVerification: "Votre compte nécessite une vérification. Nous vous avons envoyé un nouveau code à votre e-mail.",
+    
+    // En-têtes de modal
+    createFreeAccount: "Créez votre compte gratuit",
+    verifyYourEmail: "Vérifiez votre e-mail",
+    
+    // États du modal
+    processing: "Traitement en cours...",
+    orText: "ou",
+    optionalText: "(optionnel)",
+    
+    // Messages toast
+    welcomeMessage: "Bienvenue !",
+    loginSuccessDescription: "Vous vous êtes connecté avec succès",
+    registrationSuccess: "Inscription réussie !",
+    verificationCodeSent: "Nous vous avons envoyé un code de vérification à votre e-mail",
+    comingSoon: "Bientôt disponible",
+    googleLoginComingSoon: "La connexion Google sera bientôt disponible",
+    
+    // Erreurs spécifiques au modal
+    loginError: "Erreur lors de la connexion",
+    registrationError: "Erreur lors de l'inscription de l'utilisateur",
     
     // Labels Aria
     closeModal: "Fermer",

@@ -324,6 +324,45 @@ export default {
     resendVerification: "¿Deseas que enviemos un nuevo correo de verificación?",
     verificationSent: "Nuevo correo de verificación enviado. Por favor, revisa tu bandeja de entrada.",
     verificationError: "Error al enviar el correo de verificación",
+    verificationTitle: "Verificar Email",
+    verificationDescription: "Verifica tu email",
+    verificationCodeLabel: "Código de verificación",
+    verificationCodePlaceholder: "123456",
+    verificationInstructions: "Ingresa el código de 6 dígitos enviado a tu email",
+    verifyButton: "Verificar",
+    verifying: "Verificando...",
+    resendCode: "¿No recibiste el código? Reenviar",
+    codeResent: "Código reenviado",
+    checkEmailForNewCode: "Revisa tu email para el nuevo código",
+    resendCodeError: "Error al reenviar código",
+    emailNotFoundForVerification: "No se encontró el email para verificar",
+    emailNotFoundForResend: "No se encontró el email para reenviar el código",
+    enterSixDigitCode: "Ingresa el código de 6 dígitos",
+    verificationSuccess: "¡Email verificado!",
+    accountVerifiedCorrectly: "Tu cuenta ha sido verificada correctamente",
+    invalidVerificationCode: "Código de verificación inválido",
+    accountRequiresVerification: "Tu cuenta requiere verificación. Te enviamos un nuevo código a tu email.",
+    
+    // Modal headers
+    createFreeAccount: "Crea tu cuenta gratis",
+    verifyYourEmail: "Verifica tu email",
+    
+    // Estados del modal
+    processing: "Procesando...",
+    orText: "o",
+    optionalText: "(opcional)",
+    
+    // Toast mensajes
+    welcomeMessage: "¡Bienvenido!",
+    loginSuccessDescription: "Has iniciado sesión correctamente",
+    registrationSuccess: "¡Registro exitoso!",
+    verificationCodeSent: "Te enviamos un código de verificación a tu email",
+    comingSoon: "Próximamente",
+    googleLoginComingSoon: "El login con Google estará disponible pronto",
+    
+    // Errores específicos del modal
+    loginError: "Error al iniciar sesión",
+    registrationError: "Error al registrar usuario",
     
     // Aria labels
     closeModal: "Cerrar",

@@ -742,6 +742,45 @@ export default {
     resendVerification: "Would you like us to send a new verification email?",
     verificationSent: "New verification email sent. Please check your inbox.",
     verificationError: "Error sending verification email",
+    verificationTitle: "Verify Email",
+    verificationDescription: "Verify your email",
+    verificationCodeLabel: "Verification code",
+    verificationCodePlaceholder: "123456",
+    verificationInstructions: "Enter the 6-digit code sent to your email",
+    verifyButton: "Verify",
+    verifying: "Verifying...",
+    resendCode: "Didn't receive the code? Resend",
+    codeResent: "Code resent",
+    checkEmailForNewCode: "Check your email for the new code",
+    resendCodeError: "Error resending code",
+    emailNotFoundForVerification: "Email not found for verification",
+    emailNotFoundForResend: "Email not found to resend code",
+    enterSixDigitCode: "Enter the 6-digit code",
+    verificationSuccess: "Email verified!",
+    accountVerifiedCorrectly: "Your account has been verified successfully",
+    invalidVerificationCode: "Invalid verification code",
+    accountRequiresVerification: "Your account requires verification. We sent you a new code to your email.",
+    
+    // Modal headers
+    createFreeAccount: "Create your free account",
+    verifyYourEmail: "Verify your email",
+    
+    // Modal states
+    processing: "Processing...",
+    orText: "or",
+    optionalText: "(optional)",
+    
+    // Toast messages
+    welcomeMessage: "Welcome!",
+    loginSuccessDescription: "You have signed in successfully",
+    registrationSuccess: "Registration successful!",
+    verificationCodeSent: "We sent you a verification code to your email",
+    comingSoon: "Coming soon",
+    googleLoginComingSoon: "Google login will be available soon",
+    
+    // Modal specific errors
+    loginError: "Error signing in",
+    registrationError: "Error registering user",
     
     // Aria labels
     closeModal: "Close",
