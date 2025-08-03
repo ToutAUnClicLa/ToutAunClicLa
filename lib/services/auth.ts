@@ -20,8 +20,8 @@ const getHeaders = () => {
   return {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Origin': 'https://toutaunclicla.com',
-    'Referer': 'https://toutaunclicla.com',
+    'Origin': 'https://www.toutaunclicla.com',
+    'Referer': 'https://www.toutaunclicla.com',
   };
 };
 

@@ -26,7 +26,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 export const AUTH_CONFIG = {
   // URL donde Supabase redirigirá después del login de Google
   GOOGLE_REDIRECT_URL: process.env.NODE_ENV === 'production' 
-    ? 'https://toutaunclicla.com/auth/callback'
+    ? 'https://www.toutaunclicla.com/auth/callback'
     : 'http://localhost:3000/auth/callback',
   
   // URL del backend para sincronizar usuario
