@@ -275,6 +275,7 @@ export default {
     registerButton: "Crear cuenta",
     forgotPasswordButton: "Enviar enlace",
     continueWithGoogle: "Continuar con Google",
+    continueWithGoogleRegister: "Registrarse con Google",
     
     // Estados de carga
     loggingIn: "Iniciando sesión...",

@@ -676,7 +676,7 @@ export default {
     // Labels des champs
     fullName: "Nom complet",
     email: "Adresse e-mail",
-    phone: "Téléphone (optionnel)",
+    phone: "Téléphone",
     password: "Mot de passe",
     confirmPassword: "Confirmer le mot de passe",
     
@@ -693,6 +693,7 @@ export default {
     registerButton: "Créer un compte",
     forgotPasswordButton: "Envoyer le lien",
     continueWithGoogle: "Continuer avec Google",
+    continueWithGoogleRegister: "S'inscrire avec Google",
     
     // États de chargement
     loggingIn: "Connexion en cours...",

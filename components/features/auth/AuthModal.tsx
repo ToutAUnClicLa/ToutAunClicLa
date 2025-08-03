@@ -2,7 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, AlertCircle, User, Eye, EyeOff, Phone, X, Shield, CheckCircle, Sparkles } from 'lucide-react';
+import { 
+  Mail, 
+  Lock, 
+  AlertCircle, 
+  User, 
+  Eye, 
+  EyeOff, 
+  Phone, 
+  X, 
+  Shield, 
+  CheckCircle, 
+  Sparkles,
+  Loader2
+} from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
 import { Input } from '@/components/common/ui/input';
 import { Label } from '@/components/common/ui/label';
@@ -59,8 +72,6 @@ export default function AuthModal({
         confirmPassword: ''
       }));
     }
-    // No resetear formData cuando el modo cambia a login/register para permitir que el usuario escriba
-    
     setError(null);
     setVerificationCode('');
     setAcceptTerms(false);
@@ -202,20 +213,15 @@ export default function AuthModal({
       });
 
       onClose();
-
-      // Ejecutar callback de éxito si existe
       onLoginSuccess?.();
 
-      // Redirigir si hay URL especificada
       if (redirectUrl) {
         router.push(redirectUrl);
       }
     } catch (error: any) {
       console.error('Error en login:', error);
       
-      // Si el usuario no está verificado, mostrar modal de verificación
       if (error.message.includes('not verified') || error.message.includes('verificación') || error.message.includes('verify')) {
-        // Guardar el email para el proceso de verificación
         localStorage.setItem('pending_verification_email', formData.email.trim());
         setMode('verification');
         setError(t('auth.accountRequiresVerification'));
@@ -239,20 +245,14 @@ export default function AuthModal({
         description: t('auth.verificationCodeSent')
       });
 
-      // Guardar el email para el proceso de verificación
       localStorage.setItem('pending_verification_email', formData.email.trim());
-      
-      // Cambiar al modo de verificación
       setMode('verification');
       setError(null);
     } catch (error: any) {
       console.error('Error en registro:', error);
       
-      // Manejar error de usuario existente
       if (error.message.includes('already exists') || error.message.includes('ya existe')) {
         setError(t('auth.emailAlreadyExists'));
-        // Opcional: cambiar a modo login automáticamente
-        // setTimeout(() => setMode('login'), 3000);
         return;
       }
       
@@ -262,7 +262,6 @@ export default function AuthModal({
 
   const handleVerification = async () => {
     try {
-      // Usar el email del formulario o el almacenado
       const emailToVerify = formData.email.trim() || localStorage.getItem('pending_verification_email') || '';
       
       if (!emailToVerify) {
@@ -276,15 +275,10 @@ export default function AuthModal({
         description: t('auth.accountVerifiedCorrectly')
       });
 
-      // Limpiar email pendiente
       localStorage.removeItem('pending_verification_email');
-
       onClose();
-
-      // Ejecutar callback de éxito si existe
       onLoginSuccess?.();
 
-      // Redirigir si hay URL especificada
       if (redirectUrl) {
         router.push(redirectUrl);
       }
@@ -316,13 +310,6 @@ export default function AuthModal({
     }
   };
 
-  const handleGoogleLogin = async () => {
-    // TODO: Implementar login con Google
-    toast.info(t('auth.comingSoon'), {
-      description: t('auth.googleLoginComingSoon')
-    });
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -331,59 +318,89 @@ export default function AuthModal({
     }));
   };
 
-  const dialogTitle = 
-    mode === 'login' ? t('auth.loginTitle') : 
-    mode === 'register' ? t('auth.registerTitle') : 
-    mode === 'verification' ? t('auth.verificationTitle') :
-    t('auth.forgotPasswordTitle');
+  const handleGoogleLogin = async () => {
+    // TODO: Implementar login con Google
+    toast.info(t('auth.comingSoon'), {
+      description: mode === 'register' 
+        ? t('auth.googleRegisterComingSoon') 
+        : t('auth.googleLoginComingSoon')
+    });
+  };
+
+  const getModalTitle = () => {
+    switch (mode) {
+      case 'login':
+        return t('auth.loginTitle');
+      case 'register':
+        return t('auth.registerTitle');
+      case 'verification':
+        return t('auth.verificationTitle');
+      default:
+        return t('auth.forgotPasswordTitle');
+    }
+  };
+
+  const getModalDescription = () => {
+    switch (mode) {
+      case 'login':
+        return t('auth.loginDescription');
+      case 'register':
+        return t('auth.createFreeAccount');
+      case 'verification':
+        return t('auth.verifyYourEmail');
+      default:
+        return '';
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[460px] max-w-[90vw] max-h-[95vh] p-0 overflow-hidden bg-white border-0 shadow-2xl">
-        {/* Header con gradiente - ultra compacto */}
-        <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 px-3 sm:px-4 py-2.5 sm:py-3 text-white">
+      <DialogContent className="sm:max-w-[480px] max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-white border-0 shadow-2xl rounded-2xl sm:rounded-3xl">
+        {/* Header con gradiente moderno */}
+        <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 px-4 sm:px-6 py-4 sm:py-5 text-white rounded-t-2xl sm:rounded-t-3xl">
           {/* Decoraciones de fondo */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
-          <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full blur-2xl"></div>
-          <div className="absolute bottom-0 left-0 w-14 h-14 bg-white/5 rounded-full blur-xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-pink-600/20 rounded-t-2xl sm:rounded-t-3xl"></div>
+          <div className="absolute top-2 right-2 w-20 h-20 bg-white/5 rounded-full blur-2xl"></div>
+          <div className="absolute bottom-2 left-2 w-16 h-16 bg-white/5 rounded-full blur-xl"></div>
           
           <div className="relative">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <div className="p-1 bg-white/10 rounded-md backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
                   {mode === 'verification' ? (
-                    <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+                    <Shield className="h-5 w-5 text-white" />
                   ) : mode === 'register' ? (
-                    <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+                    <Sparkles className="h-5 w-5 text-white" />
                   ) : (
-                    <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+                    <User className="h-5 w-5 text-white" />
                   )}
                 </div>
-                <DialogTitle className="text-base sm:text-lg font-bold text-white">
-                  {dialogTitle}
-                </DialogTitle>
+                <div>
+                  <DialogTitle className="text-xl sm:text-2xl font-bold text-white">
+                    {getModalTitle()}
+                  </DialogTitle>
+                </div>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="h-6 w-6 sm:h-7 sm:w-7 p-0 text-white hover:bg-white/10 backdrop-blur-sm"
+                className="h-8 w-8 p-0 text-white hover:bg-white/10 backdrop-blur-sm rounded-xl transition-all duration-200"
               >
-                <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                <X className="h-4 w-4" />
               </Button>
             </div>
             
-            <p className="text-blue-100 mt-0.5 text-xs sm:text-sm">
-              {mode === 'login' && t('auth.loginDescription')}
-              {mode === 'register' && t('auth.createFreeAccount')}
-              {mode === 'verification' && t('auth.verifyYourEmail')}
+            <p className="text-indigo-100 text-sm sm:text-base leading-relaxed">
+              {getModalDescription()}
             </p>
           </div>
         </div>
 
-        {/* Contenido del formulario - con scroll si es necesario */}
-        <div className="px-3 sm:px-4 py-2 sm:py-3 max-h-[calc(95vh-80px)] overflow-y-auto">
-          <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-2.5">
+        {/* Contenido del formulario */}
+        <div className="px-4 sm:px-6 py-4 sm:py-5 max-h-[calc(95vh-120px)] overflow-y-auto">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Error message */}
             <AnimatePresence mode="wait">
               {error && (
                 <motion.div
@@ -391,328 +408,357 @@ export default function AuthModal({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="flex items-center gap-2 p-2 sm:p-2.5 text-xs sm:text-sm text-red-700 bg-red-50 rounded-lg border border-red-200"
+                  className="flex items-center gap-3 p-3 text-sm text-red-700 bg-red-50 rounded-xl border border-red-200"
                 >
-                  <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
                   <span className="font-medium">{error}</span>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {mode === 'verification' ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-3 sm:space-y-3.5"
-              >
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-1.5 sm:mb-2">
-                    <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                  </div>
-                  <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
-                    {t('auth.verificationInstructions')}
-                  </p>
-                </div>
-                
-                <div className="space-y-1">
-                  <Label htmlFor="verification-code" className="text-xs sm:text-sm font-medium text-gray-700">
-                    {t('auth.verificationCodeLabel')}
-                  </Label>
-                  <Input
-                    id="verification-code"
-                    type="text"
-                    value={verificationCode}
-                    onChange={(e) => setVerificationCode(e.target.value)}
-                    placeholder={t('auth.verificationCodePlaceholder')}
-                    maxLength={6}
-                    className="text-center text-base sm:text-lg tracking-widest font-mono h-8 sm:h-10 bg-gray-50 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-lg"
-                    autoFocus
-                  />
-                </div>
-
-                <Button 
-                  type="submit" 
-                  className="w-full h-8 sm:h-9 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm" 
-                  disabled={isLoading || verificationCode.length !== 6}
+            <AnimatePresence mode="wait">
+              {mode === 'verification' ? (
+                <motion.div
+                  key="verification"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-5"
                 >
-                  {isLoading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent"></div>
-                      {t('auth.verifying')}
+                  {/* Verification content */}
+                  <div className="text-center space-y-4">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl shadow-lg">
+                      <Mail className="h-10 w-10 text-white" />
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-3.5 w-3.5" />
-                      {t('auth.verifyButton')}
-                    </div>
-                  )}
-                </Button>
-
-                <div className="text-center">
-                  <Button
-                    type="button"
-                    variant="link"
-                    onClick={handleResendCode}
-                    disabled={isLoading}
-                    className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 font-medium"
-                  >
-                    {t('auth.resendCode')}
-                  </Button>
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-2 sm:space-y-2.5"
-              >
-                {/* Botón de Google */}
-                <div className="space-y-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleGoogleLogin}
-                    className="w-full h-8 sm:h-9 bg-white border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 text-gray-700 font-medium rounded-lg transition-all duration-200 text-xs sm:text-sm"
-                  >
-                    <div className="flex items-center gap-2">
-                      <svg className="h-3.5 w-3.5" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                      </svg>
-                      {t('auth.continueWithGoogle')}
-                    </div>
-                  </Button>
-
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200"></div>
-                    </div>
-                    <div className="relative flex justify-center text-xs">
-                      <span className="bg-white px-2 text-gray-500">{t('auth.orText')}</span>
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-bold text-gray-900">{t('auth.checkYourEmail')}</h3>
+                      <p className="text-gray-600 leading-relaxed max-w-sm mx-auto">
+                        {t('auth.verificationInstructions')}
+                      </p>
                     </div>
                   </div>
-                </div>
-
-                {/* Email field */}
-                <div className="space-y-1">
-                  <Label htmlFor="email" className="text-xs sm:text-sm font-medium text-gray-700">
-                    {t('auth.email')}
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3.5 w-3.5" />
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="verification-code" className="text-sm font-semibold text-gray-700">
+                      {t('auth.verificationCodeLabel')}
+                    </Label>
                     <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder={t('auth.emailPlaceholder')}
-                      className="pl-9 h-8 sm:h-9 bg-gray-50 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-lg transition-all duration-200 text-xs sm:text-sm"
-                      required
-                      autoFocus={mode === 'login' || mode === 'register'}
+                      id="verification-code"
+                      type="text"
+                      value={verificationCode}
+                      onChange={(e) => setVerificationCode(e.target.value)}
+                      placeholder="000000"
+                      maxLength={6}
+                      className="text-center text-2xl tracking-wider font-mono h-14 bg-gray-50 border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl transition-all duration-200"
+                      autoFocus
                     />
                   </div>
-                </div>
 
-                {/* Campos adicionales para registro */}
-                {mode === 'register' && (
-                  <>
-                    <div className="space-y-1">
-                      <Label htmlFor="nombre" className="text-xs sm:text-sm font-medium text-gray-700">
-                        {t('auth.fullName')}
+                  <Button 
+                    type="submit" 
+                    className="w-full h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-base" 
+                    disabled={isLoading || verificationCode.length !== 6}
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        {t('auth.verifying')}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5" />
+                        {t('auth.verifyButton')}
+                      </div>
+                    )}
+                  </Button>
+
+                  <div className="text-center">
+                    <Button
+                      type="button"
+                      variant="link"
+                      onClick={handleResendCode}
+                      disabled={isLoading}
+                      className="text-sm text-gray-600 hover:text-indigo-600 font-medium"
+                    >
+                      {t('auth.resendCode')}
+                    </Button>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key={mode}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-4"
+                >
+                  {/* Google Login/Register Button */}
+                  <div className="space-y-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleGoogleLogin}
+                      className="w-full h-12 bg-white border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-md text-gray-700 font-semibold rounded-xl transition-all duration-200 text-base shadow-sm group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <svg className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" viewBox="0 0 24 24">
+                          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        <span className="transition-colors duration-200">
+                          {mode === 'register' 
+                            ? t('auth.continueWithGoogleRegister') 
+                            : t('auth.continueWithGoogle')
+                          }
+                        </span>
+                      </div>
+                    </Button>
+
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200"></div>
+                      </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="bg-white px-4 text-gray-500 font-medium">{t('auth.orText')}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Email field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
+                      {t('auth.email')}
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder={t('auth.emailPlaceholder')}
+                        className="pl-11 h-12 bg-gray-50 border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl transition-all duration-200"
+                        required
+                        autoFocus={mode === 'login' || mode === 'register'}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Register specific fields */}
+                  {mode === 'register' && (
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor="nombre" className="text-sm font-semibold text-gray-700">
+                          {t('auth.fullName')}
+                        </Label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                          <Input
+                            id="nombre"
+                            name="nombre"
+                            type="text"
+                            value={formData.nombre}
+                            onChange={handleInputChange}
+                            placeholder={t('auth.fullNamePlaceholder')}
+                            className="pl-11 h-12 bg-gray-50 border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl transition-all duration-200"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="telefono" className="text-sm font-semibold text-gray-700">
+                          {t('auth.phone')}
+                        </Label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                          <Input
+                            id="telefono"
+                            name="telefono"
+                            type="tel"
+                            value={formData.telefono}
+                            onChange={handleInputChange}
+                            placeholder={t('auth.phonePlaceholder')}
+                            className="pl-11 h-12 bg-gray-50 border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl transition-all duration-200"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Password field */}
+                  {(mode === 'login' || mode === 'register') && (
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
+                        {t('auth.password')}
                       </Label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3.5 w-3.5" />
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                         <Input
-                          id="nombre"
-                          name="nombre"
-                          type="text"
-                          value={formData.nombre}
+                          id="password"
+                          name="password"
+                          type={showPassword ? 'text' : 'password'}
+                          value={formData.password}
                           onChange={handleInputChange}
-                          placeholder={t('auth.fullNamePlaceholder')}
-                          className="pl-9 h-8 sm:h-9 bg-gray-50 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-lg transition-all duration-200 text-xs sm:text-sm"
+                          placeholder={t('auth.passwordPlaceholder')}
+                          className="pl-11 pr-11 h-12 bg-gray-50 border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl transition-all duration-200"
                           required
                         />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100 rounded-lg"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-gray-400" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-gray-400" />
+                          )}
+                        </Button>
                       </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <Label htmlFor="telefono" className="text-xs sm:text-sm font-medium text-gray-700">
-                        {t('auth.phone')} <span className="text-gray-400 text-xs">{t('auth.optionalText')}</span>
-                      </Label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3.5 w-3.5" />
-                        <Input
-                          id="telefono"
-                          name="telefono"
-                          type="tel"
-                          value={formData.telefono}
-                          onChange={handleInputChange}
-                          placeholder={t('auth.phonePlaceholder')}
-                          className="pl-9 h-8 sm:h-9 bg-gray-50 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-lg transition-all duration-200 text-xs sm:text-sm"
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {/* Password field */}
-                {(mode === 'login' || mode === 'register') && (
-                  <div className="space-y-1">
-                    <Label htmlFor="password" className="text-xs sm:text-sm font-medium text-gray-700">
-                      {t('auth.password')}
-                    </Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3.5 w-3.5" />
-                      <Input
-                        id="password"
-                        name="password"
-                        type={showPassword ? 'text' : 'password'}
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        placeholder={t('auth.passwordPlaceholder')}
-                        className="pl-9 pr-9 h-8 sm:h-9 bg-gray-50 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-lg transition-all duration-200 text-xs sm:text-sm"
-                        required
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-1 top-1/2 -translate-y-1/2 h-5 w-5 p-0 hover:bg-gray-100 rounded-md"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-3 w-3 text-gray-400" />
-                        ) : (
-                          <Eye className="h-3 w-3 text-gray-400" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Confirm password field for register */}
-                {mode === 'register' && (
-                  <div className="space-y-1">
-                    <Label htmlFor="confirmPassword" className="text-xs sm:text-sm font-medium text-gray-700">
-                      {t('auth.confirmPassword')}
-                    </Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3.5 w-3.5" />
-                      <Input
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        value={formData.confirmPassword}
-                        onChange={handleInputChange}
-                        placeholder={t('auth.confirmPasswordPlaceholder')}
-                        className="pl-9 pr-9 h-8 sm:h-9 bg-gray-50 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-lg transition-all duration-200 text-xs sm:text-sm"
-                        required
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-1 top-1/2 -translate-y-1/2 h-5 w-5 p-0 hover:bg-gray-100 rounded-md"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-3 w-3 text-gray-400" />
-                        ) : (
-                          <Eye className="h-3 w-3 text-gray-400" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Terms acceptance for register - ultra compacto */}
-                {mode === 'register' && (
-                  <div className="flex items-start space-x-2 p-1.5 sm:p-2 bg-gray-50 rounded-lg">
-                    <input
-                      type="checkbox"
-                      id="acceptTerms"
-                      checked={acceptTerms}
-                      onChange={(e) => setAcceptTerms(e.target.checked)}
-                      className="mt-0.5 h-3.5 w-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-1"
-                    />
-                    <Label htmlFor="acceptTerms" className="text-xs text-gray-600 leading-tight">
-                      {t('auth.acceptTerms')}{' '}
-                      <a href="/terminos" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
-                        {t('auth.termsAndConditions')}
-                      </a>{' '}
-                      {t('auth.and')}{' '}
-                      <a href="/politicas" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
-                        {t('auth.privacyPolicy')}
-                      </a>
-                    </Label>
-                  </div>
-                )}
-
-                {/* Submit button */}
-                <Button 
-                  type="submit" 
-                  className="w-full h-8 sm:h-9 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm mt-2" 
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent"></div>
-                      {t('auth.processing')}
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      {mode === 'login' ? (
-                        <>
-                          <User className="h-3.5 w-3.5" />
-                          {t('auth.loginButton')}
-                        </>
-                      ) : mode === 'register' ? (
-                        <>
-                          <Sparkles className="h-3.5 w-3.5" />
-                          {t('auth.registerButton')}
-                        </>
-                      ) : (
-                        t('auth.forgotPasswordButton')
-                      )}
                     </div>
                   )}
-                </Button>
 
-                {/* Mode switching */}
-                <div className="text-center pt-1 border-t border-gray-100">
-                  {mode === 'login' ? (
-                    <p className="text-xs sm:text-sm text-gray-600">
-                      {t('auth.noAccount')}{' '}
+                  {/* Confirm password for register */}
+                  {mode === 'register' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-700">
+                        {t('auth.confirmPassword')}
+                      </Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                        <Input
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          value={formData.confirmPassword}
+                          onChange={handleInputChange}
+                          placeholder={t('auth.confirmPasswordPlaceholder')}
+                          className="pl-11 pr-11 h-12 bg-gray-50 border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl transition-all duration-200"
+                          required
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100 rounded-lg"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="h-4 w-4 text-gray-400" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-gray-400" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Terms acceptance for register */}
+                  {mode === 'register' && (
+                    <div className="flex items-start space-x-3 p-4 bg-gradient-to-r from-gray-50 to-indigo-50/30 rounded-xl border border-gray-200">
+                      <input
+                        type="checkbox"
+                        id="acceptTerms"
+                        checked={acceptTerms}
+                        onChange={(e) => setAcceptTerms(e.target.checked)}
+                        className="mt-1 h-4 w-4 rounded-md border-gray-300 text-indigo-600 focus:ring-indigo-500 focus:ring-2"
+                      />
+                      <Label htmlFor="acceptTerms" className="text-sm text-gray-700 leading-relaxed">
+                        {t('auth.acceptTerms')}{' '}
+                        <a href="/terminos" className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline transition-colors duration-200">
+                          {t('auth.termsAndConditions')}
+                        </a>{' '}
+                        {t('auth.and')}{' '}
+                        <a href="/politicas" className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline transition-colors duration-200">
+                          {t('auth.privacyPolicy')}
+                        </a>
+                      </Label>
+                    </div>
+                  )}
+
+                  {/* Submit button */}
+                  <Button 
+                    type="submit" 
+                    className="w-full h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-base mt-6" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        {t('auth.processing')}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        {mode === 'login' ? (
+                          <>
+                            <User className="h-5 w-5" />
+                            {t('auth.loginButton')}
+                          </>
+                        ) : mode === 'register' ? (
+                          <>
+                            <Sparkles className="h-5 w-5" />
+                            {t('auth.registerButton')}
+                          </>
+                        ) : (
+                          t('auth.forgotPasswordButton')
+                        )}
+                      </div>
+                    )}
+                  </Button>
+
+                  {/* Mode switching */}
+                  <div className="text-center pt-4 border-t border-gray-100">
+                    {mode === 'login' ? (
+                      <p className="text-sm text-gray-600">
+                        {t('auth.noAccount')}{' '}
+                        <Button
+                          type="button"
+                          variant="link"
+                          onClick={() => setMode('register')}
+                          className="p-0 h-auto text-indigo-600 hover:text-indigo-700 font-semibold hover:underline transition-colors duration-200"
+                        >
+                          {t('auth.signUp')}
+                        </Button>
+                      </p>
+                    ) : mode === 'register' ? (
+                      <p className="text-sm text-gray-600">
+                        {t('auth.alreadyHaveAccount')}{' '}
+                        <Button
+                          type="button"
+                          variant="link"
+                          onClick={() => setMode('login')}
+                          className="p-0 h-auto text-indigo-600 hover:text-indigo-700 font-semibold hover:underline transition-colors duration-200"
+                        >
+                          {t('auth.loginButton')}
+                        </Button>
+                      </p>
+                    ) : null}
+                  </div>
+
+                  {/* Forgot password for login */}
+                  {mode === 'login' && (
+                    <div className="text-center">
                       <Button
                         type="button"
                         variant="link"
-                        onClick={() => setMode('register')}
-                        className="p-0 h-auto text-blue-600 hover:text-blue-700 font-medium hover:underline text-xs sm:text-sm"
+                        onClick={() => setMode('forgotPassword')}
+                        className="text-sm text-gray-500 hover:text-indigo-600 font-medium transition-colors duration-200"
                       >
-                        {t('auth.signUp')}
+                        {t('auth.forgotPassword')}
                       </Button>
-                    </p>
-                  ) : mode === 'register' ? (
-                    <p className="text-xs sm:text-sm text-gray-600">
-                      {t('auth.alreadyHaveAccount')}{' '}
-                      <Button
-                        type="button"
-                        variant="link"
-                        onClick={() => setMode('login')}
-                        className="p-0 h-auto text-blue-600 hover:text-blue-700 font-medium hover:underline text-xs sm:text-sm"
-                      >
-                        {t('auth.signIn')}
-                      </Button>
-                    </p>
-                  ) : null}
-                </div>
-              </motion.div>
-            )}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </form>
         </div>
       </DialogContent>

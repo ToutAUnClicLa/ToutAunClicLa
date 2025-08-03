@@ -676,7 +676,7 @@ export default {
     // Field labels
     fullName: "Full name",
     email: "Email address",
-    phone: "Phone (optional)",
+    phone: "Phone",
     password: "Password",
     confirmPassword: "Confirm password",
     
@@ -693,6 +693,7 @@ export default {
     registerButton: "Create account",
     forgotPasswordButton: "Send link",
     continueWithGoogle: "Continue with Google",
+    continueWithGoogleRegister: "Sign up with Google",
     
     // Loading states
     loggingIn: "Signing in...",
