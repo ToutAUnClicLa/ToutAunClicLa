@@ -42,7 +42,7 @@ export default function AuthModal({
 }: AuthModalProps) {
   const router = useRouter();
   const { t } = useTranslation();
-  const { login, register, verifyEmail, resendVerification } = useAuth();
+  const { login, register, verifyEmail, resendVerification, initiateGoogleAuth } = useAuth();
   
   const [mode, setMode] = useState(initialMode);
   const [isLoading, setIsLoading] = useState(false);
@@ -79,7 +79,7 @@ export default function AuthModal({
     setShowPassword(false);
     setShowConfirmPassword(false);
     setShowEmailForm(false);
-  }, [mode]);
+  }, [mode, formData.email]);
 
   // Restablecer al abrir/cerrar modal
   useEffect(() => {
@@ -322,12 +322,22 @@ export default function AuthModal({
   };
 
   const handleGoogleLogin = async () => {
-    // TODO: Implementar login con Google
-    toast.info(t('auth.comingSoon'), {
-      description: mode === 'register' 
-        ? t('auth.googleRegisterComingSoon') 
-        : t('auth.googleLoginComingSoon')
-    });
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      // Usar el contexto de autenticación para iniciar Google OAuth
+      await initiateGoogleAuth();
+      
+      // La redirección se maneja automáticamente en initiateGoogleAuth
+      // No llegamos a este punto porque el usuario es redirigido
+    } catch (error: any) {
+      console.error('Error en Google Auth:', error);
+      setError(error.message || t('auth.googleAuthError'));
+      toast.error(error.message || t('auth.googleAuthError'));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getModalTitle = () => {
@@ -357,7 +367,7 @@ export default function AuthModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={mode === 'verification' ? undefined : onClose}>
       <DialogContent className="sm:max-w-[420px] max-w-[92vw] max-h-[92vh] sm:max-h-[90vh] p-0 overflow-hidden bg-white border-0 shadow-2xl rounded-xl sm:rounded-2xl">
         {/* Header con gradiente moderno */}
         <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 px-3 sm:px-4 py-3 sm:py-4 text-white rounded-t-xl sm:rounded-t-2xl">
@@ -384,14 +394,17 @@ export default function AuthModal({
                   </DialogTitle>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClose}
-                className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-white hover:bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl transition-all duration-200"
-              >
-                <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              </Button>
+              {/* Solo mostrar botón de cerrar si NO está en modo verification */}
+              {mode !== 'verification' && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onClose}
+                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-white hover:bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl transition-all duration-200"
+                >
+                  <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                </Button>
+              )}
             </div>
             
             <p className="text-indigo-100 text-xs sm:text-sm leading-relaxed">

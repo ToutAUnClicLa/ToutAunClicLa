@@ -369,11 +369,33 @@ export default {
     // Aria labels
     closeModal: "Cerrar",
     showPassword: "Mostrar contraseña",
-    hidePassword: "Ocultar contraseña"
+    hidePassword: "Ocultar contraseña",
+    
+    // Callback page
+    callback: {
+      processing: "Procesando...",
+      success: "¡Éxito!",
+      error: "Error",
+      processingAuth: "Procesando autenticación...",
+      verifyingGoogle: "Verificando tu autenticación con Google...",
+      welcomeUser: "¡Bienvenido ",
+      authSuccess: "Autenticación completada exitosamente",
+      authError: "Error al procesar la autenticación",
+      redirecting: "Redirigiendo automáticamente...",
+      redirectingError: "Redirigiendo al inicio en unos segundos...",
+      goToHome: "Ir al inicio ahora",
+      takingSeconds: "Esto solo tomará unos segundos...",
+      googleAuthProcessing: "Procesando inicio de sesión con Google...",
+      creatingAccount: "Creando tu cuenta...",
+      updatingProfile: "Actualizando tu perfil...",
+      almostDone: "Ya casi terminamos...",
+      authenticationComplete: "Autenticación completada",
+      redirectingToDashboard: "Te estamos redirigiendo a tu cuenta"
+    }
   },
     // Nuevas traducciones para el navbar móvil
   navbar: {
-    welcome: "¡Bienvenido!",
+    welcome: "¡Bienvenid@!",
     accessYourAccount: "Accede a tu cuenta para comenzar",
     loginButton: "Iniciar Sesión",
     createAccountButton: "Crear Cuenta",

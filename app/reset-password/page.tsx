@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import { toast } from 'sonner';
 import { Button } from '@/components/common/ui/button';
 import { Input } from '@/components/common/ui/input';
@@ -124,10 +125,12 @@ export default function ResetPasswordPage() {
       <div className="flex flex-col items-center justify-center bg-gray-50">
         <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg">
           <div className="flex justify-center">
-            <img 
+            <Image 
               src="/logoaunclic.svg" 
               alt="Logo"
-              className="h-16 w-16 filter drop-shadow-md"
+              width={64}
+              height={64}
+              className="filter drop-shadow-md"
             />
           </div>
           
@@ -149,10 +152,12 @@ export default function ResetPasswordPage() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
         <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
           <div className="flex justify-center">
-            <img 
+            <Image 
               src="/logoaunclic.svg" 
               alt="Logo"
-              className="h-16 w-16 filter drop-shadow-md"
+              width={64}
+              height={64}
+              className="filter drop-shadow-md"
             />
           </div>
           
@@ -188,10 +193,12 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
         <div className="flex justify-center">
-          <img 
+          <Image 
             src="/logoaunclic.svg" 
             alt="Logo"
-            className="h-16 w-16 filter drop-shadow-md"
+            width={64}
+            height={64}
+            className="filter drop-shadow-md"
           />
         </div>
         

@@ -20,6 +20,10 @@ interface AuthContextType {
   checkVerificationStatus: (email: string) => Promise<{ verified: boolean; email: string }>;
   refreshAuth: () => Promise<void>;
   
+  // Google Auth
+  initiateGoogleAuth: () => Promise<void>;
+  handleGoogleCallback: () => Promise<authService.AuthResponse>;
+  
   // Utilidades
   clearError: () => void;
   requireAuth: (action: () => void, message?: string) => boolean;
@@ -114,7 +118,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAuthenticated(true);
       
       console.log('Login exitoso para:', response.user.email);
-      toast.success(`¡Bienvenido ${response.user.nombre}!`);
       
       return response;
     } catch (error: any) {
@@ -152,7 +155,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // No establecemos el usuario hasta que se verifique el email
       console.log('Registro exitoso para:', data.email);
-      toast.success('Cuenta creada. Revisa tu email para verificar tu cuenta');
       
       return response;
     } catch (error: any) {
@@ -187,7 +189,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       setIsAuthenticated(false);
       setError(null);
-      toast.success('Sesión cerrada correctamente');
     } catch (error: any) {
       console.error('Error en logout:', error);
       // Incluso si hay error, limpiamos el estado local
@@ -209,7 +210,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAuthenticated(true);
       
       console.log('Email verificado exitosamente para:', email);
-      toast.success(`¡Bienvenido ${response.user.nombre}! Email verificado correctamente`);
       
       return response;
     } catch (error: any) {
@@ -262,6 +262,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const initiateGoogleAuth = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const { url } = await authService.initiateGoogleAuth();
+      // Redirigir a Google OAuth
+      window.location.href = url;
+    } catch (error: any) {
+      console.error('Error iniciando autenticación con Google:', error);
+      const errorMessage = error.message || 'Error al iniciar autenticación con Google';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      setIsLoading(false);
+      throw error;
+    }
+  }, []);
+
+  const handleGoogleCallback = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await authService.handleGoogleCallback();
+      setUser(response.user);
+      setIsAuthenticated(true);
+      
+      console.log('Google Auth exitoso para:', response.user.email);
+      // Eliminar el toast de aquí para evitar duplicados
+      // El toast se mostrará en la página de callback
+      
+      return response;
+    } catch (error: any) {
+      console.error('Error en callback de Google:', error);
+      
+      let errorMessage = 'Error al procesar autenticación con Google';
+      
+      if (error.message.includes('Invalid token') || error.message.includes('session')) {
+        errorMessage = 'Sesión de Google inválida o expirada';
+      } else if (error.message.includes('User not found')) {
+        errorMessage = 'Error al crear tu cuenta con Google';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const value = {
     // Estado
     user,
@@ -277,6 +330,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     resendVerification,
     checkVerificationStatus,
     refreshAuth,
+    
+    // Google Auth
+    initiateGoogleAuth,
+    handleGoogleCallback,
     
     // Utilidades
     clearError,

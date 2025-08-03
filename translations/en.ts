@@ -787,7 +787,29 @@ export default {
     // Aria labels
     closeModal: "Close",
     showPassword: "Show password",
-    hidePassword: "Hide password"
+    hidePassword: "Hide password",
+    
+    // Callback page
+    callback: {
+      processing: "Processing...",
+      success: "Success!",
+      error: "Error",
+      processingAuth: "Processing authentication...",
+      verifyingGoogle: "Verifying your Google authentication...",
+      welcomeUser: "Welcome ",
+      authSuccess: "Authentication completed successfully",
+      authError: "Error processing authentication",
+      redirecting: "Redirecting automatically...",
+      redirectingError: "Redirecting to home in a few seconds...",
+      goToHome: "Go to home now",
+      takingSeconds: "This will only take a few seconds...",
+      googleAuthProcessing: "Processing Google sign-in...",
+      creatingAccount: "Creating your account...",
+      updatingProfile: "Updating your profile...",
+      almostDone: "Almost done...",
+      authenticationComplete: "Authentication complete",
+      redirectingToDashboard: "We're redirecting you to your account"
+    }
   },
     // New translations for mobile navbar
   navbar: {

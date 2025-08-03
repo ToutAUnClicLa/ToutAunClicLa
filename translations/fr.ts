@@ -787,9 +787,34 @@ export default {
     // Labels Aria
     closeModal: "Fermer",
     showPassword: "Afficher le mot de passe",
-    hidePassword: "Masquer le mot de passe"
+    hidePassword: "Masquer le mot de passe",
+    
+    // Page de callback
+    callback: {
+      processing: "Traitement...",
+      success: "Succès !",
+      error: "Erreur",
+      processingAuth: "Traitement de l'authentification...",
+      verifyingGoogle: "Vérification de votre authentification Google...",
+      welcomeUser: "Bienvenue ",
+      authSuccess: "Authentification réussie",
+      authError: "Erreur lors du traitement de l'authentification",
+      redirecting: "Redirection automatique...",
+      redirectingError: "Redirection vers l'accueil dans quelques secondes...",
+      goToHome: "Aller à l'accueil maintenant",
+      takingSeconds: "Cela ne prendra que quelques secondes...",
+      googleAuthProcessing: "Traitement de la connexion Google...",
+      creatingAccount: "Création de votre compte...",
+      updatingProfile: "Mise à jour de votre profil...",
+      almostDone: "Presque terminé...",
+      authenticationComplete: "Authentification terminée",
+      redirectingToDashboard: "Nous vous redirigeons vers votre compte"
+    }
   },
   navbar: {
+    logoutButton: "Se Déconnecter",
+    languageChanged: "Langue changée en ",
+    logoutSuccess: "Déconnexion réussie !",
     mobile: {
       // Header
       menu: "Menu",

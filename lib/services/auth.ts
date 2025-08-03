@@ -372,3 +372,162 @@ export function getPendingVerificationEmail(): string | null {
 export function clearPendingVerificationEmail(): void {
   localStorage.removeItem(AUTH_CONFIG.PENDING_EMAIL_KEY);
 }
+
+// ===== GOOGLE AUTHENTICATION =====
+
+/**
+ * Iniciar autenticación con Google usando Supabase
+ * Este método redirige directamente a Google OAuth a través de Supabase
+ */
+export async function initiateGoogleAuth(): Promise<{ url: string }> {
+  const { supabase, AUTH_CONFIG } = await import('@/lib/config/supabase');
+  
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: AUTH_CONFIG.GOOGLE_REDIRECT_URL,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        }
+      }
+    });
+
+    if (error) {
+      console.error('Error iniciando autenticación con Google:', error);
+      throw new Error(`Error al iniciar autenticación con Google: ${error.message}`);
+    }
+
+    if (data.url) {
+      return { url: data.url };
+    } else {
+      throw new Error('No se pudo obtener la URL de autenticación de Google');
+    }
+  } catch (error: any) {
+    console.error('Error en initiateGoogleAuth:', error);
+    throw error;
+  }
+}
+
+/**
+ * Manejar el callback de Google OAuth usando Supabase
+ * Esta función se ejecuta en la página de callback después de la redirección de Google
+ */
+export async function handleGoogleCallback(): Promise<AuthResponse> {
+  const { supabase } = await import('@/lib/config/supabase');
+  
+  try {
+    // Verificar si hay un código en la URL (desde Google)
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    
+    if (code) {
+      // Intercambiar el código por una sesión
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+      
+      if (error) {
+        console.error('Error intercambiando código:', error);
+        throw new Error(`Error procesando autenticación: ${error.message}`);
+      }
+      
+      if (data.session && data.user) {
+        return await syncUserWithBackend(data.session, data.user);
+      }
+    }
+    
+    // Si no hay código, intentar obtener la sesión actual
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError) {
+      console.error('Error obteniendo sesión:', sessionError);
+      throw new Error(`Error de sesión: ${sessionError.message}`);
+    }
+
+    if (!session || !session.user) {
+      throw new Error('No se pudo obtener la sesión de autenticación');
+    }
+
+    return await syncUserWithBackend(session, session.user);
+  } catch (error: any) {
+    console.error('Error en callback de Google:', error);
+    throw error;
+  }
+}
+
+/**
+ * Sincronizar usuario de Supabase con nuestro backend
+ */
+async function syncUserWithBackend(session: any, supabaseUser: any): Promise<AuthResponse> {
+  try {
+    console.log('Sincronizando usuario con backend:', supabaseUser.email);
+
+    // Enviar solo los tokens que el backend necesita
+    // El backend se encargará de obtener los datos del usuario desde Supabase
+    const response = await fetch(`${AUTH_BASE_URL}/google`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Error del backend:', data);
+      throw new Error(data.message || 'Error sincronizando usuario con backend');
+    }
+
+    // Guardar el JWT personalizado
+    TokenManager.saveToken(data.token);
+
+    console.log('Usuario sincronizado exitosamente:', data.user.email);
+
+    return {
+      message: data.message,
+      user: data.user,
+      token: data.token,
+      verificationRequired: false
+    };
+  } catch (error: any) {
+    console.error('Error sincronizando con backend:', error);
+    throw error;
+  }
+}
+
+/**
+ * Verificar si el usuario está autenticado con Supabase
+ */
+export async function checkSupabaseAuth(): Promise<{ session: any; user: any } | null> {
+  try {
+    const { supabase } = await import('@/lib/config/supabase');
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    if (error || !session || !session.user) {
+      return null;
+    }
+    
+    return { session, user: session.user };
+  } catch (error) {
+    console.error('Error verificando auth de Supabase:', error);
+    return null;
+  }
+}
+
+/**
+ * Cerrar sesión de Supabase
+ */
+export async function signOutFromSupabase(): Promise<void> {
+  try {
+    const { supabase } = await import('@/lib/config/supabase');
+    const { error } = await supabase.auth.signOut();
+    
+    if (error) {
+      console.error('Error cerrando sesión en Supabase:', error);
+    }
+  } catch (error) {
+    console.error('Error en signOutFromSupabase:', error);
+  }
+}
