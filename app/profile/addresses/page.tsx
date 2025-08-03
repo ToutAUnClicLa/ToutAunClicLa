@@ -99,7 +99,7 @@ export default function AddressesPage() {
     } finally {
       setIsLoadingAddresses(false);
     }
-  }, [user]);
+  }, [user, t]);
 
   useEffect(() => {
     loadAddresses();

@@ -115,7 +115,7 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
     if (product?.id && user?.id) {
       checkFavoriteStatus();
     }
-  }, [product?.id, user?.id]); // Remover checkFavoriteStatus de las dependencias
+  }, [product?.id, user?.id, checkFavoriteStatus]);
 
   const handleAddToCart = async () => {
     if (!user) {

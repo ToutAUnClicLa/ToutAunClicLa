@@ -168,7 +168,7 @@ export default function ProfilePage() {
     } finally {
       setIsDataLoading(false);
     }
-  }, [user]);
+  }, [user, t]);
 
   useEffect(() => {
     if (!isLoading && !user) {

@@ -615,7 +615,7 @@ export function ProductGrid({
                         loading && "opacity-50"
                       )}
                     >
-                      🔍 "{searchValue}"
+                      🔍 &ldquo;{searchValue}&rdquo;
                       <button
                         onClick={() => !loading && updateSearchValue('')}
                         className="hover:bg-gray-200 rounded-full p-0.5 transition-colors"
@@ -732,7 +732,7 @@ export function ProductGrid({
                       📊 Mostrando {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} - {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} de {pagination.totalItems} resultado{pagination.totalItems !== 1 ? 's' : ''}
                       {searchValue && (
                         <span className="text-blue-600 font-medium">
-                          para "{searchValue}"
+                          para &ldquo;{searchValue}&rdquo;
                         </span>
                       )}
                     </>

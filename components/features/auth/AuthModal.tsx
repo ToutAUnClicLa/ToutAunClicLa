@@ -75,7 +75,7 @@ export default function AuthModal({
     setAcceptTerms(false);
     setShowPassword(false);
     setShowConfirmPassword(false);
-  }, [mode]);
+  }, [mode, formData.email]);
 
   // Restablecer al abrir/cerrar modal
   useEffect(() => {
