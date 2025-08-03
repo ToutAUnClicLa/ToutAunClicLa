@@ -30,7 +30,7 @@ export const AUTH_CONFIG = {
     : 'http://localhost:3000/auth/callback',
   
   // URL del backend para sincronizar usuario
-  BACKEND_URL: process.env.NEXT_BACKEND_URL,
+  BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
   
   // URL base de Supabase para OAuth (se usa internamente)
   SUPABASE_AUTH_URL: SUPABASE_URL ? `${SUPABASE_URL}/auth/v1` : undefined
