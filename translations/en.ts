@@ -248,7 +248,7 @@ export default {
       title: "Order Summary",
       subtotal: "Subtotal",
       shipping: "Shipping",
-      taxes: "Taxes (15%)",
+      taxes: "TVQ + TPS (5% + 9.975%)",
       total: "Total",
       freeShipping: "Free",
       shippingThreshold: "Add {amount} more for free shipping",

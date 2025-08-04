@@ -248,7 +248,7 @@ export default {
       title: "Résumé de la Commande",
       subtotal: "Sous-total",
       shipping: "Expédition",
-      taxes: "Taxes (15%)",
+      taxes: "TVQ + TPS (5% + 9.975%)",
       total: "Total",
       freeShipping: "Gratuit",
       shippingThreshold: "Ajoutez {amount} de plus pour la livraison gratuite",
