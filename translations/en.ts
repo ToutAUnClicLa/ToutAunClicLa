@@ -884,7 +884,7 @@ export default {
 
     // Prices
     price: {
-      notAvailable: "Price not available",
+      notAvailable: "Coming soon",
       basePrice: "Base price",
       finalPrice: "Final price",
       includesTaxes: "Includes taxes",

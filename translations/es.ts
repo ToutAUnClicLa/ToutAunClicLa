@@ -90,7 +90,7 @@ export default {
     hero: {
       title: "Descubre América Latina",
       subtitle: "Productos auténticos y experiencias únicas",
-      description: "Nuestra tienda exclusiva estará disponible muy pronto, trayendo los productos más auténticos de todas las Américas.",
+      description: "Nuestra tienda en linea de productos exclusivos estará pronto a tu alcance, trayendo los productos más auténticos de todas las Américas.",
       cta: "Registrate para acceso anticipado"
     },
     categories: {
@@ -466,7 +466,7 @@ export default {
 
     // Precios
     price: {
-      notAvailable: "Precio no disponible",
+      notAvailable: "Muy pronto",
       basePrice: "Precio base",
       finalPrice: "Precio final",
       includesTaxes: "Incluye impuestos",

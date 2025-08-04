@@ -869,7 +869,7 @@ export default {
 
     // Prix
     price: {
-      notAvailable: "Prix non disponible",
+      notAvailable: "Bientôt",
       basePrice: "Prix de base",
       finalPrice: "Prix final",
       includesTaxes: "Taxes incluses",
