@@ -29,6 +29,7 @@ interface SectionProps {
   color: string;
   iconColor: string;
   children: React.ReactNode;
+  id?: string;
 }
 
 // Components
@@ -76,9 +77,9 @@ const MobileCategoryCard = ({ icon: Icon, title, gradient }: MobileCategoryCardP
   );
 };
 
-const Section = ({ title, description, icon: Icon, color, iconColor, children }: SectionProps) => {
+const Section = ({ title, description, icon: Icon, color, iconColor, children, id }: SectionProps) => {
   return (
-    <section className={`py-12 sm:py-16 md:py-20 bg-gradient-to-br ${color}`}>
+    <section id={id} className={`py-12 sm:py-16 md:py-20 bg-gradient-to-br ${color}`}>
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -116,27 +117,39 @@ export default function Home() {
     setIsAuthModalOpen(false);
   };
 
+  // Función para scroll suave a las secciones
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+      });
+    }
+  };
+
   const categories = [
     {
       icon: Package,
       title: t('landing.categories.products.title'),
       description: t('landing.categories.products.description'),
       gradient: "from-indigo-600/20 to-blue-600/20",
-      href: "/productos"
+      sectionId: "productos"
     },
     {
       icon: Utensils,
       title: t('landing.categories.foods.title'),
       description: t('landing.categories.foods.description'),
       gradient: "from-amber-500/20 to-orange-500/20",
-      href: "/comidas"
+      sectionId: "comidas"
     },
     {
       icon: Store,
       title: t('landing.categories.boutique.title'),
       description: t('landing.categories.boutique.description'),
       gradient: "from-purple-500/20 to-pink-500/20",
-      href: "/boutique"
+      sectionId: "boutique"
     }
   ];
 
@@ -302,9 +315,9 @@ export default function Home() {
                 <motion.div className="hidden md:block" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
                   <div className="grid grid-cols-1 gap-4 sm:gap-5 max-w-md mx-auto">
                     {categories.map((cat, i) => (
-                      <Link key={i} href={cat.href}>
+                      <div key={i} onClick={() => scrollToSection(cat.sectionId)} className="cursor-pointer">
                         <CategoryCard key={i} icon={cat.icon} title={cat.title} description={cat.description} gradient={cat.gradient} />
-                      </Link>
+                      </div>
                     ))}
                   </div>
                 </motion.div>
@@ -313,9 +326,9 @@ export default function Home() {
                 <motion.div className="md:hidden w-full mt-6 sm:mt-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
                   <div className="grid grid-cols-3 gap-2 sm:gap-3">
                     {categories.map((cat, i) => (
-                      <Link key={i} href={cat.href}>
+                      <div key={i} onClick={() => scrollToSection(cat.sectionId)} className="cursor-pointer">
                         <MobileCategoryCard key={i} icon={cat.icon} title={cat.title} gradient={cat.gradient} />
-                      </Link>
+                      </div>
                     ))}
                   </div>
                 </motion.div>
@@ -327,6 +340,7 @@ export default function Home() {
 
       {/* Products Section */}
       <Section
+        id="productos"
         title={t('landing.sections.products.title')}
         description={t('landing.sections.products.description')}
         icon={Package}
@@ -401,6 +415,7 @@ export default function Home() {
 
       {/* Food Section */}
       <Section
+        id="comidas"
         title={t('landing.sections.foods.title')}
         description={t('landing.sections.foods.description')}
         icon={Utensils}
@@ -472,6 +487,7 @@ export default function Home() {
 
       {/* Boutique Section */}
       <Section
+        id="boutique"
         title={t('landing.sections.boutique.title')}
         description={t('landing.sections.boutique.description')}
         icon={Store}
