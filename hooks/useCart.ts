@@ -207,7 +207,6 @@ export function useCart(options: UseCartOptions = {}) {
   // Agregar producto al carrito (optimizado)
   const addToCart = useCallback(async (productId: number, quantity: number = 1): Promise<boolean> => {
     if (!isAuthenticated || !user) {
-      toast.error('Debes iniciar sesión para agregar productos al carrito');
       return false;
     }
 
@@ -243,7 +242,6 @@ export function useCart(options: UseCartOptions = {}) {
   // Actualizar cantidad (optimizado)
   const updateQuantity = useCallback(async (itemId: string, quantity: number): Promise<boolean> => {
     if (!isAuthenticated || !user) {
-      toast.error('Debes iniciar sesión para actualizar el carrito');
       return false;
     }
 
@@ -271,7 +269,6 @@ export function useCart(options: UseCartOptions = {}) {
     } catch (err: any) {
       console.error('Error updating cart quantity:', err);
       setError('Error al actualizar cantidad');
-      toast.error(err.message || 'Error al actualizar cantidad');
       
       // Recargar para restaurar estado correcto
       await loadCartNow(true);
@@ -282,7 +279,6 @@ export function useCart(options: UseCartOptions = {}) {
   // Remover producto (optimizado)
   const removeFromCart = useCallback(async (itemId: string): Promise<boolean> => {
     if (!isAuthenticated || !user) {
-      toast.error('Debes iniciar sesión para modificar el carrito');
       return false;
     }
 
@@ -298,12 +294,10 @@ export function useCart(options: UseCartOptions = {}) {
       invalidateCache();
       await loadCartNow(true);
       notifyCartCountChange(); // Notificar cambio al contador
-      toast.success('Producto eliminado del carrito');
       return true;
     } catch (err: any) {
       console.error('Error removing from cart:', err);
       setError('Error al eliminar producto del carrito');
-      toast.error(err.message || 'Error al eliminar producto del carrito');
       
       // Recargar para restaurar estado correcto
       await loadCartNow(true);
@@ -337,7 +331,6 @@ export function useCart(options: UseCartOptions = {}) {
       invalidateCache();
       notifyCartCountChange(); // Notificar cambio al contador
       
-      toast.success(`Carrito limpiado (${result.itemsRemoved} productos eliminados)`);
       return true;
     } catch (err: any) {
       console.error('Error clearing cart:', err);

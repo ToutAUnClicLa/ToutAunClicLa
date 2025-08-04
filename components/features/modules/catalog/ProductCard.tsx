@@ -125,7 +125,7 @@ export function ProductCard({
     }
 
     if (productData.isOutOfStock) {
-      toast.error(t('catalog.messages.outOfStock') || 'Producto sin stock');
+      toast.error(t('catalog.productDetail.outOfStock') || 'Producto sin stock');
       return;
     }
 
@@ -134,11 +134,11 @@ export function ProductCard({
       const success = await addToCart(product.id, 1);
       
       if (success) {
-        toast.success(t('catalog.messages.addedToCart'));
+        toast.success(t('catalog.productDetail.addedToCart'));
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
-      toast.error(t('catalog.messages.errorAddingToCart') || 'Error al agregar al carrito');
+      toast.error(t('catalog.productDetail.errorAddingToCart') || 'Error al agregar al carrito');
     } finally {
       setIsAddingToCart(false);
     }
