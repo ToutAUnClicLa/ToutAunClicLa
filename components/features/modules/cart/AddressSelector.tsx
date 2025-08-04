@@ -149,20 +149,19 @@ export function AddressSelector() {
     }
   };
 
-  // Seleccionar dirección y establecerla como principal
+  // Seleccionar dirección (automáticamente se establece como principal)
   const handleSelectAddress = async (address: any) => {
     try {
-      // Primero seleccionamos la dirección
-      selectAddress(address);
+      // El hook selectAddress automáticamente la establece como principal
+      await selectAddress(address);
       
-      // Luego la establecemos como principal si no lo es ya
+      // Solo mostrar mensaje si cambió la dirección principal
       if (!address.isPrimary) {
-        await setPrimaryAddress(address.id);
         toast.success(t('addresses.success.primarySet'));
       }
     } catch (error) {
-      // Si falla establecer como principal, mantenemos la selección
-      console.error('Error setting primary address:', error);
+      console.error('Error selecting address:', error);
+      toast.error(t('addresses.errors.selectFailed'));
     }
   };
 
@@ -223,7 +222,7 @@ export function AddressSelector() {
               >
                 <Card 
                   className={`transition-all duration-200 cursor-pointer hover:shadow-md ${
-                    selectedAddress?.id === address.id 
+                    address.isPrimary
                       ? 'ring-2 ring-indigo-500 bg-indigo-50' 
                       : 'hover:bg-gray-50'
                   }`}
@@ -233,12 +232,17 @@ export function AddressSelector() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          {selectedAddress?.id === address.id && (
+                          {address.isPrimary && (
                             <Check className="h-4 w-4 text-indigo-600" />
                           )}
                           <h4 className="font-medium text-gray-900">
                             {address.street}
                           </h4>
+                          {address.isPrimary && (
+                            <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full font-medium">
+                              {t('addresses.actions.primary')}
+                            </span>
+                          )}
                         </div>
                         <p className="text-sm text-gray-600">
                           {address.city}, {address.state} {address.zipCode}

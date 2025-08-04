@@ -406,7 +406,8 @@ export default {
       deleteFailed: "Error deleting",
       deleteFailedDesc: "We couldn't delete the address",
       primaryFailed: "Error setting primary address",
-      primaryFailedDesc: "We couldn't set the address as primary"
+      primaryFailedDesc: "We couldn't set the address as primary",
+      selectFailed: "Error selecting address"
     },
     
     // Statistics

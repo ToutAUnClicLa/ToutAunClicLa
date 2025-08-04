@@ -1137,7 +1137,8 @@ export default {
       deleteFailed: "Error al eliminar",
       deleteFailedDesc: "No pudimos eliminar la dirección",
       primaryFailed: "Error al establecer dirección principal",
-      primaryFailedDesc: "No pudimos establecer la dirección como principal"
+      primaryFailedDesc: "No pudimos establecer la dirección como principal",
+      selectFailed: "Error al seleccionar dirección"
     },
     
     // Estadísticas

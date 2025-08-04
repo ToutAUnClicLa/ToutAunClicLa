@@ -31,10 +31,76 @@ export function useAddresses() {
   const [primaryAddress, setPrimaryAddress] = useState<Address | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Cargar direcciones
   const loadAddresses = useCallback(async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || isLoading) return;
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const userAddresses = await addressService.getUserAddresses();
+      setAddresses(userAddresses);
+      
+      // Encontrar la dirección principal
+      const primary = userAddresses.find(addr => addr.isPrimary) || null;
+      
+      // Caso 1: Ya hay una dirección principal
+      if (primary) {
+        setPrimaryAddress(primary);
+        setSelectedAddress(primary);
+      } 
+      // Caso 2: Solo hay una dirección y no es principal
+      else if (userAddresses.length === 1) {
+        try {
+          await addressService.setPrimaryAddress(userAddresses[0].id);
+          const updatedAddress = { ...userAddresses[0], isPrimary: true };
+          setAddresses([updatedAddress]);
+          setPrimaryAddress(updatedAddress);
+          setSelectedAddress(updatedAddress);
+        } catch (err) {
+          console.error('Error al establecer dirección principal automáticamente:', err);
+          setPrimaryAddress(null);
+          setSelectedAddress(userAddresses[0]);
+        }
+      } 
+      // Caso 3: Múltiples direcciones pero ninguna principal
+      else if (userAddresses.length > 1) {
+        try {
+          await addressService.setPrimaryAddress(userAddresses[0].id);
+          const updatedAddresses = userAddresses.map(addr => ({
+            ...addr,
+            isPrimary: addr.id === userAddresses[0].id
+          }));
+          const newPrimary = updatedAddresses[0];
+          setAddresses(updatedAddresses);
+          setPrimaryAddress(newPrimary);
+          setSelectedAddress(newPrimary);
+        } catch (err) {
+          console.error('Error al establecer dirección principal:', err);
+          setPrimaryAddress(null);
+          setSelectedAddress(userAddresses[0]);
+        }
+      } 
+      // Caso 4: No hay direcciones
+      else {
+        setPrimaryAddress(null);
+        setSelectedAddress(null);
+      }
+    } catch (err: any) {
+      console.error('Error al cargar direcciones:', err);
+      setError(err.message || 'Error al cargar direcciones');
+    } finally {
+      setIsLoading(false);
+      setHasInitialized(true);
+    }
+  }, [isAuthenticated]); // SOLUCIÓN: quitar selectedAddress de las dependencias
+
+  // Función para refrescar direcciones manualmente
+  const refreshAddresses = useCallback(async () => {
+    if (!isAuthenticated || isLoading) return;
     
     setIsLoading(true);
     setError(null);
@@ -47,35 +113,21 @@ export function useAddresses() {
       const primary = userAddresses.find(addr => addr.isPrimary) || null;
       setPrimaryAddress(primary);
       
-      // Si solo hay una dirección y no es principal, establecerla automáticamente como principal
-      if (userAddresses.length === 1 && !primary) {
-        try {
-          await addressService.setPrimaryAddress(userAddresses[0].id);
-          // Actualizar el estado local
-          const updatedAddress = { ...userAddresses[0], isPrimary: true };
-          setAddresses([updatedAddress]);
-          setPrimaryAddress(updatedAddress);
-          setSelectedAddress(updatedAddress);
-        } catch (err) {
-          console.error('Error al establecer dirección principal automáticamente:', err);
-          // Si falla, continuar normalmente
-          if (userAddresses.length > 0 && !selectedAddress) {
-            setSelectedAddress(userAddresses[0]);
-          }
-        }
+      // Sincronizar seleccionada con principal
+      if (primary) {
+        setSelectedAddress(primary);
+      } else if (userAddresses.length > 0) {
+        setSelectedAddress(userAddresses[0]);
       } else {
-        // Si hay direcciones y no hay una seleccionada, seleccionar la principal o la primera
-        if (userAddresses.length > 0 && !selectedAddress) {
-          setSelectedAddress(primary || userAddresses[0]);
-        }
+        setSelectedAddress(null);
       }
     } catch (err: any) {
-      console.error('Error al cargar direcciones:', err);
-      setError(err.message || 'Error al cargar direcciones');
+      console.error('Error al refrescar direcciones:', err);
+      setError(err.message || 'Error al refrescar direcciones');
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated, selectedAddress]);
+  }, [isAuthenticated]);
 
   // Crear nueva dirección
   const createAddress = useCallback(async (addressData: CreateAddressData) => {
@@ -91,8 +143,10 @@ export function useAddresses() {
       }
       
       const newAddress = await addressService.createAddress(addressData);
-      setAddresses(prev => [...prev, newAddress]);
-      setSelectedAddress(newAddress); // Seleccionar la nueva dirección
+      
+      // Refrescar las direcciones para obtener el estado actualizado
+      await refreshAddresses();
+      
       toast.success('Dirección agregada correctamente');
       return newAddress;
     } catch (err: any) {
@@ -104,7 +158,7 @@ export function useAddresses() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [refreshAddresses]);
 
   // Actualizar dirección
   const updateAddress = useCallback(async (addressId: string, addressData: CreateAddressData) => {
@@ -149,12 +203,45 @@ export function useAddresses() {
     
     try {
       await addressService.deleteAddress(addressId);
-      setAddresses(prev => prev.filter(addr => addr.id !== addressId));
       
-      // Si la dirección eliminada era la seleccionada, seleccionar otra
-      if (selectedAddress?.id === addressId) {
-        const remainingAddresses = addresses.filter(addr => addr.id !== addressId);
-        setSelectedAddress(remainingAddresses.length > 0 ? remainingAddresses[0] : null);
+      // Obtener las direcciones restantes
+      const remainingAddresses = addresses.filter(addr => addr.id !== addressId);
+      setAddresses(remainingAddresses);
+      
+      // Si eliminamos la dirección principal o solo queda una dirección
+      const wasDeleted = selectedAddress?.id === addressId || primaryAddress?.id === addressId;
+      
+      if (remainingAddresses.length === 1) {
+        // Si solo queda una dirección, establecerla como principal automáticamente
+        try {
+          await addressService.setPrimaryAddress(remainingAddresses[0].id);
+          const updatedAddress = { ...remainingAddresses[0], isPrimary: true };
+          setAddresses([updatedAddress]);
+          setPrimaryAddress(updatedAddress);
+          setSelectedAddress(updatedAddress);
+        } catch (err) {
+          console.error('Error al establecer dirección principal:', err);
+          setSelectedAddress(remainingAddresses[0]);
+        }
+      } else if (remainingAddresses.length > 1 && wasDeleted) {
+        // Si había múltiples direcciones y eliminamos la principal, establecer la primera como principal
+        try {
+          await addressService.setPrimaryAddress(remainingAddresses[0].id);
+          const updatedAddresses = remainingAddresses.map(addr => ({
+            ...addr,
+            isPrimary: addr.id === remainingAddresses[0].id
+          }));
+          setAddresses(updatedAddresses);
+          setPrimaryAddress(updatedAddresses[0]);
+          setSelectedAddress(updatedAddresses[0]);
+        } catch (err) {
+          console.error('Error al establecer nueva dirección principal:', err);
+          setSelectedAddress(remainingAddresses[0]);
+        }
+      } else if (remainingAddresses.length === 0) {
+        // No quedan direcciones
+        setSelectedAddress(null);
+        setPrimaryAddress(null);
       }
       
       toast.success('Dirección eliminada correctamente');
@@ -167,11 +254,34 @@ export function useAddresses() {
     } finally {
       setIsLoading(false);
     }
-  }, [addresses, selectedAddress]);
+  }, [addresses, selectedAddress, primaryAddress]);
 
-  // Seleccionar dirección
-  const selectAddress = useCallback((address: Address) => {
+  // Seleccionar dirección - SIEMPRE la hace principal automáticamente
+  const selectAddress = useCallback(async (address: Address) => {
     setSelectedAddress(address);
+    
+    // Si la dirección seleccionada no es la principal, establecerla como principal
+    if (!address.isPrimary) {
+      try {
+        await addressService.setPrimaryAddress(address.id);
+        
+        // Actualizar el estado local inmediatamente
+        setAddresses(prev => prev.map(addr => ({
+          ...addr,
+          isPrimary: addr.id === address.id
+        })));
+        
+        // Actualizar la dirección principal
+        setPrimaryAddress({ ...address, isPrimary: true });
+        
+        // Actualizar la dirección seleccionada con el flag isPrimary
+        setSelectedAddress({ ...address, isPrimary: true });
+        
+      } catch (err) {
+        console.error('Error al establecer dirección como principal:', err);
+        // Mantener la selección aunque falle establecer como principal
+      }
+    }
   }, []);
 
   // Establecer dirección principal
@@ -211,8 +321,16 @@ export function useAddresses() {
 
   // Cargar direcciones al montar el componente
   useEffect(() => {
-    loadAddresses();
-  }, [loadAddresses]);
+    if (isAuthenticated && !hasInitialized) {
+      loadAddresses();
+    } else if (!isAuthenticated) {
+      // Reset cuando el usuario se desautentica
+      setAddresses([]);
+      setSelectedAddress(null);
+      setPrimaryAddress(null);
+      setHasInitialized(false);
+    }
+  }, [isAuthenticated, hasInitialized]); // Solo cuando cambie autenticación y no se haya inicializado
 
   return {
     addresses,
@@ -223,6 +341,7 @@ export function useAddresses() {
     
     // Acciones
     loadAddresses,
+    refreshAddresses,
     createAddress,
     updateAddress,
     deleteAddress,

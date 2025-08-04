@@ -406,7 +406,8 @@ export default {
       deleteFailed: "Erreur lors de la suppression",
       deleteFailedDesc: "Nous n'avons pas pu supprimer l'adresse",
       primaryFailed: "Erreur lors de la définition de l'adresse principale",
-      primaryFailedDesc: "Nous n'avons pas pu définir l'adresse comme principale"
+      primaryFailedDesc: "Nous n'avons pas pu définir l'adresse comme principale",
+      selectFailed: "Erreur lors de la sélection de l'adresse"
     },
     
     // Statistiques
