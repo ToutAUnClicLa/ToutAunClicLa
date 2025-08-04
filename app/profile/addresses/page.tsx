@@ -34,6 +34,7 @@ import {
   createAddress,
   updateAddress,
   deleteAddress,
+  setPrimaryAddress,
   Address,
   CreateAddressData,
   UpdateAddressData
@@ -184,6 +185,21 @@ export default function AddressesPage() {
       });
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleSetPrimary = async (addressId: string) => {
+    try {
+      await setPrimaryAddress(addressId);
+      toast.success(t('addresses.success.primarySet'), {
+        description: t('addresses.success.primarySetDesc')
+      });
+      await loadAddresses();
+    } catch (error: any) {
+      console.error('Error setting primary address:', error);
+      toast.error(t('addresses.errors.primaryFailed'), {
+        description: error.message || t('addresses.errors.primaryFailedDesc')
+      });
     }
   };
 
@@ -373,9 +389,16 @@ export default function AddressesPage() {
                             <Home className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1">
-                              {t('addresses.actions.addressTitle')} {address.id.slice(-6)}
-                            </h3>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
+                                {t('addresses.actions.addressTitle')} {address.id.slice(-6)}
+                              </h3>
+                              {address.isPrimary && (
+                                <Badge className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1">
+                                  Principal
+                                </Badge>
+                              )}
+                            </div>
                             <div className="space-y-1 text-xs sm:text-sm text-gray-600">
                               <p className="font-medium text-gray-900 break-words">{address.street}</p>
                               <p className="break-words">
@@ -387,6 +410,16 @@ export default function AddressesPage() {
                         </div>
                         
                         <div className="flex gap-2 sm:gap-3 sm:flex-col sm:w-auto w-full">
+                          {!address.isPrimary && (
+                            <Button 
+                              variant="outline" 
+                              className="flex-1 sm:flex-none text-xs sm:text-sm h-8 sm:h-9 sm:w-24 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
+                              onClick={() => handleSetPrimary(address.id)}
+                            >
+                              <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                              Principal
+                            </Button>
+                          )}
                           <Button 
                             variant="outline" 
                             className="flex-1 sm:flex-none text-xs sm:text-sm h-8 sm:h-9 sm:w-20"

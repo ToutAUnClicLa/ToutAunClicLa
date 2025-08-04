@@ -343,6 +343,7 @@ export default {
     addNew: "New address",
     editAddress: "Edit address",
     deleteAddress: "Delete address",
+    confirmDelete: "Are you sure you want to delete this address?",
     noAddresses: "You have no saved addresses",
     noAddressesDesc: "Add your first address to make future purchases easier",
     addFirstAddress: "Add first address",
@@ -378,7 +379,9 @@ export default {
     validation: {
       invalid: "Invalid address",
       required: "This field is required",
-      montrealOnly: "Only Montreal addresses are allowed",
+      streetRequired: "Address is required",
+      countryRequired: "Country is required",
+      montrealOnly: "Only Montreal addresses allowed",
       validationInfo: "We validate that the city is Montreal and the postal code is valid"
     },
     
@@ -389,7 +392,9 @@ export default {
       updated: "Address updated",
       updatedDesc: "The address has been updated successfully", 
       deleted: "Address deleted",
-      deletedDesc: "The address has been deleted successfully"
+      deletedDesc: "The address has been deleted successfully",
+      primarySet: "Primary address set",
+      primarySetDesc: "The address has been marked as primary"
     },
     
     // Error messages
@@ -399,7 +404,9 @@ export default {
       saveFailed: "Error saving",
       saveFailedDesc: "We couldn't save the address",
       deleteFailed: "Error deleting",
-      deleteFailedDesc: "We couldn't delete the address"
+      deleteFailedDesc: "We couldn't delete the address",
+      primaryFailed: "Error setting primary address",
+      primaryFailedDesc: "We couldn't set the address as primary"
     },
     
     // Statistics
@@ -413,7 +420,9 @@ export default {
     actions: {
       edit: "Edit",
       delete: "Delete",
-      addressTitle: "Address"
+      addressTitle: "Address",
+      setPrimary: "Set as primary",
+      primary: "Primary"
     },
 
     // Cities

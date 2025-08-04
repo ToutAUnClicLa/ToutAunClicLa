@@ -343,6 +343,7 @@ export default {
     addNew: "Nouvelle adresse",
     editAddress: "Modifier l'adresse",
     deleteAddress: "Supprimer l'adresse",
+    confirmDelete: "Êtes-vous sûr de vouloir supprimer cette adresse?",
     noAddresses: "Vous n'avez aucune adresse enregistrée",
     noAddressesDesc: "Ajoutez votre première adresse pour faciliter vos achats futurs",
     addFirstAddress: "Ajouter première adresse",
@@ -378,6 +379,8 @@ export default {
     validation: {
       invalid: "Adresse non valide",
       required: "Ce champ est requis",
+      streetRequired: "L'adresse est requise",
+      countryRequired: "Le pays est requis",
       montrealOnly: "Seules les adresses de Montréal sont autorisées",
       validationInfo: "Nous validons que la ville est Montréal et que le code postal est valide"
     },
@@ -389,7 +392,9 @@ export default {
       updated: "Adresse mise à jour",
       updatedDesc: "L'adresse a été mise à jour avec succès",
       deleted: "Adresse supprimée",
-      deletedDesc: "L'adresse a été supprimée avec succès"
+      deletedDesc: "L'adresse a été supprimée avec succès",
+      primarySet: "Adresse principale définie",
+      primarySetDesc: "L'adresse a été marquée comme principale"
     },
     
     // Messages d'erreur
@@ -399,7 +404,9 @@ export default {
       saveFailed: "Erreur lors de l'enregistrement",
       saveFailedDesc: "Nous n'avons pas pu enregistrer l'adresse",
       deleteFailed: "Erreur lors de la suppression",
-      deleteFailedDesc: "Nous n'avons pas pu supprimer l'adresse"
+      deleteFailedDesc: "Nous n'avons pas pu supprimer l'adresse",
+      primaryFailed: "Erreur lors de la définition de l'adresse principale",
+      primaryFailedDesc: "Nous n'avons pas pu définir l'adresse comme principale"
     },
     
     // Statistiques
@@ -413,7 +420,9 @@ export default {
     actions: {
       edit: "Modifier",
       delete: "Supprimer",
-      addressTitle: "Adresse"
+      addressTitle: "Adresse",
+      setPrimary: "Définir comme principal",
+      primary: "Principal"
     },
 
     // Villes

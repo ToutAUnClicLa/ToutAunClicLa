@@ -7,6 +7,7 @@ export interface Address {
   state: string;
   zipCode: string;
   country: string;
+  isPrimary?: boolean;
 }
 
 export interface CreateAddressData {
@@ -44,7 +45,8 @@ function transformFromBackendFormat(data: any): Address {
     city: data.ciudad,
     state: data.estado,
     zipCode: data.codigo_postal,
-    country: data.pais
+    country: data.pais,
+    isPrimary: data.isPrimary || false
   };
 }
 
@@ -176,6 +178,36 @@ export async function deleteAddress(addressId: string): Promise<void> {
     }
   } catch (error: any) {
     console.error('Error al eliminar dirección:', error);
+    throw error;
+  }
+}
+
+/**
+ * Establecer una dirección como principal
+ */
+export async function setPrimaryAddress(addressId: string): Promise<void> {
+  try {
+    const token = localStorage.getItem('auth_token');
+    
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users/primary-address`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ addressId }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+    }
+  } catch (error: any) {
+    console.error('Error al establecer dirección principal:', error);
     throw error;
   }
 }

@@ -36,11 +36,13 @@ export function AddressSelector() {
   const { 
     addresses, 
     selectedAddress, 
+    primaryAddress,
     isLoading, 
     selectAddress, 
     createAddress,
     updateAddress,
-    deleteAddress 
+    deleteAddress,
+    setPrimaryAddress
   } = useAddresses();
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -53,20 +55,19 @@ export function AddressSelector() {
     const validation = validateMontrealAddress(data.city, data.zipCode);
     
     if (!validation.isValid) {
-      toast.error('Dirección no válida', {
+      toast.error(t('addresses.validation.invalid'), {
         description: validation.error
       });
       return false;
     }
     
-    // Validaciones adicionales
     if (!data.street.trim()) {
-      toast.error('La dirección es requerida');
+      toast.error(t('addresses.validation.streetRequired'));
       return false;
     }
     
     if (!data.country.trim()) {
-      toast.error('El país es requerido');
+      toast.error(t('addresses.validation.countryRequired'));
       return false;
     }
     
@@ -123,7 +124,6 @@ export function AddressSelector() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     
-    // Formatear código postal automáticamente
     if (name === 'zipCode') {
       const formattedValue = formatCanadianPostalCode(value);
       setFormData(prev => ({
@@ -140,12 +140,29 @@ export function AddressSelector() {
 
   // Manejar eliminación de dirección
   const handleDeleteAddress = async (addressId: string) => {
-    if (window.confirm(t('addresses.deleteAddress') + '?')) {
+    if (window.confirm(t('addresses.confirmDelete'))) {
       try {
         await deleteAddress(addressId);
       } catch (error) {
         // El error ya se maneja en el hook
       }
+    }
+  };
+
+  // Seleccionar dirección y establecerla como principal
+  const handleSelectAddress = async (address: any) => {
+    try {
+      // Primero seleccionamos la dirección
+      selectAddress(address);
+      
+      // Luego la establecemos como principal si no lo es ya
+      if (!address.isPrimary) {
+        await setPrimaryAddress(address.id);
+        toast.success(t('addresses.success.primarySet'));
+      }
+    } catch (error) {
+      // Si falla establecer como principal, mantenemos la selección
+      console.error('Error setting primary address:', error);
     }
   };
 
@@ -210,7 +227,7 @@ export function AddressSelector() {
                       ? 'ring-2 ring-indigo-500 bg-indigo-50' 
                       : 'hover:bg-gray-50'
                   }`}
-                  onClick={() => selectAddress(address)}
+                  onClick={() => handleSelectAddress(address)}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between">
@@ -237,7 +254,8 @@ export function AddressSelector() {
                             e.stopPropagation();
                             openEditDialog(address);
                           }}
-                          className="h-8 w-8 p-0 hover:bg-white"
+                          className="text-gray-500 hover:text-gray-700"
+                          title={t('addresses.actions.edit')}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -248,7 +266,8 @@ export function AddressSelector() {
                             e.stopPropagation();
                             handleDeleteAddress(address.id);
                           }}
-                          className="h-8 w-8 p-0 hover:bg-white text-red-500 hover:text-red-700"
+                          className="text-red-500 hover:text-red-700"
+                          title={t('addresses.actions.delete')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -278,17 +297,16 @@ export function AddressSelector() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {editingAddress ? t('addresses.editAddress') : t('addresses.addNew')}
+              {editingAddress ? t('addresses.editAddress') : t('addresses.addAddress')}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="bg-blue-50 p-3 rounded-lg">
-              <div className="flex items-center gap-2 text-blue-800">
-                <MapPin className="h-4 w-4" />
-                <p className="text-sm font-medium">{t('addresses.selector.montrealOnly')}</p>
-              </div>
-              <p className="text-xs text-blue-600 mt-1">
-                {t('addresses.selector.validationNote')}
+              <p className="text-sm text-blue-800 font-medium">
+                {t('addresses.form.deliveryArea')}
+              </p>
+              <p className="text-xs text-blue-600">
+                {t('addresses.form.deliveryAreaNote')}
               </p>
             </div>
             
@@ -306,7 +324,7 @@ export function AddressSelector() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="city">{t('addresses.form.city')} *</Label>
+                <Label htmlFor="city">{t('addresses.form.city')}</Label>
                 <Input
                   id="city"
                   name="city"
@@ -318,7 +336,7 @@ export function AddressSelector() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="state">{t('addresses.form.state')} *</Label>
+                <Label htmlFor="state">{t('addresses.form.state')}</Label>
                 <Input
                   id="state"
                   name="state"
@@ -332,7 +350,7 @@ export function AddressSelector() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="zipCode">{t('addresses.form.zipCode')} *</Label>
+                <Label htmlFor="zipCode">{t('addresses.form.zipCode')}</Label>
                 <Input
                   id="zipCode"
                   name="zipCode"
@@ -344,7 +362,7 @@ export function AddressSelector() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="country">{t('addresses.form.country')} *</Label>
+                <Label htmlFor="country">{t('addresses.form.country')}</Label>
                 <Input
                   id="country"
                   name="country"
@@ -357,21 +375,20 @@ export function AddressSelector() {
             </div>
             
             <div className="flex gap-3 pt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="flex-1"
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => setIsDialogOpen(false)}
-                disabled={isSubmitting}
+                className="flex-1"
               >
                 {t('addresses.form.cancel')}
               </Button>
-              <Button 
-                type="submit" 
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+              <Button
+                type="submit"
                 disabled={isSubmitting}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
               >
-                {isSubmitting ? t('addresses.form.saving') : editingAddress ? t('common.update') : t('common.create')}
+                {isSubmitting ? t('addresses.form.saving') : (editingAddress ? t('common.update') : t('common.create'))}
               </Button>
             </div>
           </form>

@@ -13,6 +13,7 @@ export interface Address {
   state: string;
   zipCode: string;
   country: string;
+  isPrimary?: boolean;
 }
 
 export interface CreateAddressData {
@@ -27,6 +28,7 @@ export function useAddresses() {
   const { isAuthenticated } = useAuth();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [primaryAddress, setPrimaryAddress] = useState<Address | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,9 +43,31 @@ export function useAddresses() {
       const userAddresses = await addressService.getUserAddresses();
       setAddresses(userAddresses);
       
-      // Si hay direcciones y no hay una seleccionada, seleccionar la primera
-      if (userAddresses.length > 0 && !selectedAddress) {
-        setSelectedAddress(userAddresses[0]);
+      // Encontrar la dirección principal
+      const primary = userAddresses.find(addr => addr.isPrimary) || null;
+      setPrimaryAddress(primary);
+      
+      // Si solo hay una dirección y no es principal, establecerla automáticamente como principal
+      if (userAddresses.length === 1 && !primary) {
+        try {
+          await addressService.setPrimaryAddress(userAddresses[0].id);
+          // Actualizar el estado local
+          const updatedAddress = { ...userAddresses[0], isPrimary: true };
+          setAddresses([updatedAddress]);
+          setPrimaryAddress(updatedAddress);
+          setSelectedAddress(updatedAddress);
+        } catch (err) {
+          console.error('Error al establecer dirección principal automáticamente:', err);
+          // Si falla, continuar normalmente
+          if (userAddresses.length > 0 && !selectedAddress) {
+            setSelectedAddress(userAddresses[0]);
+          }
+        }
+      } else {
+        // Si hay direcciones y no hay una seleccionada, seleccionar la principal o la primera
+        if (userAddresses.length > 0 && !selectedAddress) {
+          setSelectedAddress(primary || userAddresses[0]);
+        }
       }
     } catch (err: any) {
       console.error('Error al cargar direcciones:', err);
@@ -150,6 +174,36 @@ export function useAddresses() {
     setSelectedAddress(address);
   }, []);
 
+  // Establecer dirección principal
+  const setPrimaryAddressFunc = useCallback(async (addressId: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      await addressService.setPrimaryAddress(addressId);
+      
+      // Actualizar el estado local
+      setAddresses(prev => prev.map(addr => ({
+        ...addr,
+        isPrimary: addr.id === addressId
+      })));
+      
+      const newPrimary = addresses.find(addr => addr.id === addressId) || null;
+      setPrimaryAddress(newPrimary);
+      
+      toast.success('Dirección principal actualizada correctamente');
+      return newPrimary;
+    } catch (err: any) {
+      console.error('Error al establecer dirección principal:', err);
+      const errorMessage = err.message || 'Error al establecer dirección principal';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [addresses]);
+
   // Limpiar dirección seleccionada
   const clearSelectedAddress = useCallback(() => {
     setSelectedAddress(null);
@@ -163,6 +217,7 @@ export function useAddresses() {
   return {
     addresses,
     selectedAddress,
+    primaryAddress,
     isLoading,
     error,
     
@@ -172,6 +227,7 @@ export function useAddresses() {
     updateAddress,
     deleteAddress,
     selectAddress,
+    setPrimaryAddress: setPrimaryAddressFunc,
     clearSelectedAddress,
     
     // Utilidades

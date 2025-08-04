@@ -83,7 +83,7 @@ export default function CartPage() {
     refreshCart 
   } = useCart();
   
-  const { selectedAddress, hasAddresses } = useAddresses();
+  const { selectedAddress, primaryAddress, hasAddresses } = useAddresses();
   
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());

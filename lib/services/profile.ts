@@ -8,6 +8,7 @@ export interface UserProfile {
   verified: boolean;
   createdAt: string;
   avatarUrl?: string;
+  primaryAddressId?: string;
 }
 
 export interface UpdateProfileData {

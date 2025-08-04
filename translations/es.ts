@@ -1074,6 +1074,7 @@ export default {
     addNew: "Nueva dirección",
     editAddress: "Editar dirección",
     deleteAddress: "Eliminar dirección",
+    confirmDelete: "¿Estás seguro de que quieres eliminar esta dirección?",
     noAddresses: "No tienes direcciones guardadas",
     noAddressesDesc: "Agrega tu primera dirección para facilitar tus compras futuras",
     addFirstAddress: "Agregar primera dirección",
@@ -1109,6 +1110,8 @@ export default {
     validation: {
       invalid: "Dirección no válida",
       required: "Este campo es requerido",
+      streetRequired: "La dirección es requerida",
+      countryRequired: "El país es requerido",
       montrealOnly: "Solo se permiten direcciones en Montreal",
       validationInfo: "Validamos que la ciudad sea Montreal y el código postal sea válido"
     },
@@ -1120,7 +1123,9 @@ export default {
       updated: "Dirección actualizada", 
       updatedDesc: "La dirección se ha actualizada correctamente",
       deleted: "Dirección eliminada",
-      deletedDesc: "La dirección se ha eliminado correctamente"
+      deletedDesc: "La dirección se ha eliminado correctamente",
+      primarySet: "Dirección principal establecida",
+      primarySetDesc: "La dirección se ha marcado como principal"
     },
     
     // Mensajes de error
@@ -1130,7 +1135,9 @@ export default {
       saveFailed: "Error al guardar",
       saveFailedDesc: "No pudimos guardar la dirección",
       deleteFailed: "Error al eliminar",
-      deleteFailedDesc: "No pudimos eliminar la dirección"
+      deleteFailedDesc: "No pudimos eliminar la dirección",
+      primaryFailed: "Error al establecer dirección principal",
+      primaryFailedDesc: "No pudimos establecer la dirección como principal"
     },
     
     // Estadísticas
@@ -1144,7 +1151,9 @@ export default {
     actions: {
       edit: "Editar",
       delete: "Eliminar", 
-      addressTitle: "Dirección"
+      addressTitle: "Dirección",
+      setPrimary: "Establecer como principal",
+      primary: "Principal"
     },
 
     // Ciudades
