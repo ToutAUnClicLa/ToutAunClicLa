@@ -97,11 +97,6 @@ export function Pagination({
 
   return (
     <div className={cn("flex flex-col sm:flex-row items-center justify-between gap-4", className)}>
-      {showInfo && totalItems && itemsPerPage && (
-        <div className={cn("text-gray-600", sizeClasses[size])}>
-          Mostrando {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)} - {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems} resultados
-        </div>
-      )}
       
       <div className="flex items-center gap-1">
         <Button
