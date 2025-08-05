@@ -80,11 +80,6 @@ export function ProductPriceDisplay({ product, variant = 'default', className = 
                 {t('catalog.tax.tvq')} ({product.TVQ}%): +{formatPrice(priceData.taxCalculation.tvqAmount)}
               </div>
             )}
-            {product.consigne && (
-              <div>
-                {t('catalog.tax.consigne')}: +{formatPrice(priceData.taxCalculation.consigneAmount)}
-              </div>
-            )}
           </div>
         )}
 
@@ -93,6 +88,13 @@ export function ProductPriceDisplay({ product, variant = 'default', className = 
           <Badge variant="outline" className="text-green-700 bg-green-50 border-green-200 text-xs">
             {t('catalog.tax.nonTaxable')}
           </Badge>
+        )}
+
+        {/* Consigne - mostrar siempre si existe, independiente de si es taxable o no */}
+        {product.consigne && variant !== 'compact' && (
+          <div className="text-xs text-gray-600">
+            {t('catalog.tax.consigne')}: +{formatPrice(priceData.taxCalculation.consigneAmount)}
+          </div>
         )}
       </div>
     </div>

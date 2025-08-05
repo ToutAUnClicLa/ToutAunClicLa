@@ -221,7 +221,7 @@ export default function CartPage() {
     const tvqAmount = item.productos.TVQ ? (item.productos.precio * item.productos.TVQ / 100) * item.cantidad : 0;
     const consigneAmount = item.productos.consigne ? item.productos.consigne * item.cantidad : 0;
     
-    // Verificar si tiene impuestos o consigne
+    // Verificar si tiene impuestos (TPS/TVQ) - el consigne es independiente
     const hasTaxes = (item.productos.TPS && item.productos.TPS > 0) || (item.productos.TVQ && item.productos.TVQ > 0);
     const hasConsigne = item.productos.consigne && item.productos.consigne > 0;
     
@@ -284,29 +284,30 @@ export default function CartPage() {
                     
                     {/* Badges de impuestos */}
                     <div className="flex flex-wrap gap-1 sm:gap-2">
-                      {item.productos.TPS && item.productos.TPS > 0 && (
+                      {(item.productos.TPS && item.productos.TPS > 0) ? (
                         <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
                           TPS {item.productos.TPS}%
                         </Badge>
-                      )}
-                      {item.productos.TVQ && item.productos.TVQ > 0 && (
+                      ) : null}
+                      {(item.productos.TVQ && item.productos.TVQ > 0) ? (
                         <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
                           TVQ {item.productos.TVQ}%
                         </Badge>
-                      )}
+                      ) : null}
 
-                      {/* Non Taxable badge si no tiene TPS ni TVQ */}
-                      {(!item.productos.TPS || item.productos.TPS === 0) && (!item.productos.TVQ || item.productos.TVQ === 0) && (
+                      {/* Non Taxable badge si no tiene TPS ni TVQ (independiente del consigne) */}
+                      {((!item.productos.TPS || item.productos.TPS === 0) && (!item.productos.TVQ || item.productos.TVQ === 0)) ? (
                         <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
                           {t('cart.summary.nonTaxable')}
                         </Badge>
-                      )}
+                      ) : null}
                       
-                      {item.productos.consigne && item.productos.consigne > 0 && (
+                      {/* Consigne badge - independiente de si es taxable o no */}
+                      {(item.productos.consigne && item.productos.consigne > 0) ? (
                         <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200">
                           Consigne {formatPrice(item.productos.consigne)}
                         </Badge>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                   
