@@ -342,6 +342,7 @@ export default {
     title: "Mes Adresses",
     subtitle: "Gérez vos adresses de livraison",
     addNew: "Nouvelle adresse",
+    addAddress: "Ajouter une adresse",
     editAddress: "Modifier l'adresse",
     deleteAddress: "Supprimer l'adresse",
     confirmDelete: "Êtes-vous sûr de vouloir supprimer cette adresse?",
@@ -371,6 +372,8 @@ export default {
       zipCodePlaceholder: "H3X 3X3",
       country: "Pays",
       countryPlaceholder: "Canada",
+      deliveryArea: "Zone de livraison",
+      deliveryAreaNote: "Livraisons seulement dans la région métropolitaine de Montréal",
       save: "Enregistrer l'adresse",
       saving: "Enregistrement...",
       cancel: "Annuler"

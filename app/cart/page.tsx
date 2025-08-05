@@ -294,15 +294,17 @@ export default function CartPage() {
                           TVQ {item.productos.TVQ}%
                         </Badge>
                       )}
-                      {item.productos.consigne && item.productos.consigne > 0 && (
-                        <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200">
-                          Consigne {formatPrice(item.productos.consigne)}
-                        </Badge>
-                      )}
+
                       {/* Non Taxable badge si no tiene TPS ni TVQ */}
                       {(!item.productos.TPS || item.productos.TPS === 0) && (!item.productos.TVQ || item.productos.TVQ === 0) && (
                         <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
                           {t('cart.summary.nonTaxable')}
+                        </Badge>
+                      )}
+                      
+                      {item.productos.consigne && item.productos.consigne > 0 && (
+                        <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200">
+                          Consigne {formatPrice(item.productos.consigne)}
                         </Badge>
                       )}
                     </div>

@@ -342,6 +342,7 @@ export default {
     title: "My Addresses",
     subtitle: "Manage your delivery addresses",
     addNew: "New address",
+    addAddress: "Add address",
     editAddress: "Edit address",
     deleteAddress: "Delete address",
     confirmDelete: "Are you sure you want to delete this address?",
@@ -371,6 +372,8 @@ export default {
       zipCodePlaceholder: "H3X 3X3",
       country: "Country",
       countryPlaceholder: "Canada",
+      deliveryArea: "Delivery area",
+      deliveryAreaNote: "Deliveries only in Montreal metropolitan area",
       save: "Save address",
       saving: "Saving...",
       cancel: "Cancel"

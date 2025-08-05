@@ -1074,6 +1074,7 @@ export default {
     title: "Mis Direcciones",
     subtitle: "Gestiona tus direcciones de entrega",
     addNew: "Nueva dirección",
+    addAddress: "Agregar dirección",
     editAddress: "Editar dirección",
     deleteAddress: "Eliminar dirección",
     confirmDelete: "¿Estás seguro de que quieres eliminar esta dirección?",
@@ -1103,6 +1104,8 @@ export default {
       zipCodePlaceholder: "H3X 3X3",
       country: "País",
       countryPlaceholder: "Canadá",
+      deliveryArea: "Área de entrega",
+      deliveryAreaNote: "Solo entregas en el área metropolitana de Montreal",
       save: "Guardar dirección",
       saving: "Guardando...",
       cancel: "Cancelar"
