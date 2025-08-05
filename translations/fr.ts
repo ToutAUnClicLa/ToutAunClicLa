@@ -867,6 +867,7 @@ export default {
       addToFavorites: "Ajouter aux favoris",
       removeFromFavorites: "Retirer des favoris",
       outOfStock: "En rupture de stock",
+      limitedStockUnits: "Seulement {stock} restant!",
       rating: "Note",
       reviews: "avis",
       quickView: "Aperçu rapide",
@@ -903,7 +904,7 @@ export default {
 
     // AddToCartButton
     addToCartButton: {
-      addToCart: "Ajouter au panier",
+      addToCart: "Ajouter",
       outOfStock: "Rupture de stock",
       productOutOfStock: "Produit en rupture de stock",
       onlyUnitsAvailable: "Seulement {stock} unités disponibles",
@@ -912,6 +913,18 @@ export default {
       quantity: "Quantité",
       total: "Total",
       addingToCart: "Ajout...",
+      errorAddingToCart: "Erreur lors de l'ajout au panier",
+      addedToCart: "Ajouté au panier",
+      alreadyInCart: "Déjà dans le panier",
+      inCart: "Dans le panier"
+    },
+
+    // Messages
+    messages: {
+      addedToFavorites: "Ajouté aux favoris",
+      removedFromFavorites: "Retiré des favoris",
+      errorTogglingFavorite: "Erreur lors de la gestion des favoris",
+      addedToCart: "Produit ajouté au panier",
       errorAddingToCart: "Erreur lors de l'ajout au panier"
     },
     

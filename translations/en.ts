@@ -877,11 +877,12 @@ export default {
   catalog: {
     // ProductCard
     productCard: {
-      addToCart: "Add to cart",
+      addToCart: "Add",
       addingToCart: "Adding...",
       addToFavorites: "Add to favorites",
       removeFromFavorites: "Remove from favorites",
       outOfStock: "Out of stock",
+      limitedStockUnits: "Only {stock} left!",
       rating: "Rating",
       reviews: "reviews",
       quickView: "Quick view",
@@ -918,7 +919,7 @@ export default {
 
     // AddToCartButton
     addToCartButton: {
-      addToCart: "Add to cart",
+      addToCart: "Add",
       outOfStock: "Out of stock",
       productOutOfStock: "Product out of stock",
       onlyUnitsAvailable: "Only {stock} units available",
@@ -927,6 +928,18 @@ export default {
       quantity: "Quantity",
       total: "Total",
       addingToCart: "Adding...",
+      errorAddingToCart: "Error adding to cart",
+      addedToCart: "Added to cart",
+      alreadyInCart: "Already in cart",
+      inCart: "In cart"
+    },
+
+    // Messages
+    messages: {
+      addedToFavorites: "Added to favorites",
+      removedFromFavorites: "Removed from favorites",
+      errorTogglingFavorite: "Error managing favorites",
+      addedToCart: "Product added to cart",
       errorAddingToCart: "Error adding to cart"
     },
     

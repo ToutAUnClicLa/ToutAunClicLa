@@ -445,11 +445,12 @@ export default {
   catalog: {
     // ProductCard
     productCard: {
-      addToCart: "Agregar al carrito",
+      addToCart: "Agregar",
       addingToCart: "Agregando...",
       addToFavorites: "Agregar a favoritos",
       removeFromFavorites: "Eliminar de favoritos",
       outOfStock: "Agotado",
+      limitedStockUnits: "¡Solo {stock}!",
       rating: "Calificación",
       reviews: "reseñas",
       quickView: "Vista rápida",
@@ -486,7 +487,7 @@ export default {
 
     // AddToCartButton
     addToCartButton: {
-      addToCart: "Agregar al carrito",
+      addToCart: "Agregar",
       outOfStock: "Sin stock",
       productOutOfStock: "Producto sin stock",
       onlyUnitsAvailable: "Solo hay {stock} unidades disponibles",
@@ -495,6 +496,18 @@ export default {
       quantity: "Cantidad",
       total: "Total",
       addingToCart: "Agregando...",
+      errorAddingToCart: "Error al agregar al carrito",
+      addedToCart: "Agregado al carrito",
+      alreadyInCart: "Ya está en el carrito",
+      inCart: "En el carrito"
+    },
+
+    // Messages
+    messages: {
+      addedToFavorites: "Agregado a favoritos",
+      removedFromFavorites: "Eliminado de favoritos",
+      errorTogglingFavorite: "Error al gestionar favoritos",
+      addedToCart: "Producto agregado al carrito",
       errorAddingToCart: "Error al agregar al carrito"
     },
     
@@ -669,7 +682,7 @@ export default {
       returns: "Devoluciones",
       
       // Acciones
-      addToCart: "Agregar al carrito",
+      addToCart: "Agregar",
       buyNow: "Comprar ahora",
       addToFavorites: "Agregar a favoritos",
       removeFromFavorites: "Eliminar de favoritos",

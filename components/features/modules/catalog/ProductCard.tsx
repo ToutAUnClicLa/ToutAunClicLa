@@ -127,7 +127,7 @@ export function ProductCard({
     }
 
     if (productData.isOutOfStock) {
-      toast.error(t('catalog.productDetail.outOfStock') || 'Producto sin stock');
+      toast.error(t('catalog.addToCartButton.productOutOfStock'));
       return;
     }
 
@@ -136,13 +136,13 @@ export function ProductCard({
       const success = await addToCart(product.id, quantity);
       
       if (success) {
-        toast.success(t('catalog.productDetail.addedToCart'));
+        toast.success(t('catalog.addToCartButton.addedToCart'));
         // Reset quantity to 1 after successful add
         setQuantityToAdd(1);
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
-      toast.error(t('catalog.productDetail.errorAddingToCart') || 'Error al agregar al carrito');
+      toast.error(t('catalog.addToCartButton.errorAddingToCart'));
     } finally {
       setIsAddingToCart(false);
     }
@@ -161,12 +161,12 @@ export function ProductCard({
       await toggleFavorite(productData.productIdStr);
       toast.success(
         productData.isProductFavorite 
-          ? t('catalog.messages.removedFromFavorites') || 'Eliminado de favoritos'
-          : t('catalog.messages.addedToFavorites') || 'Agregado a favoritos'
+          ? t('catalog.messages.removedFromFavorites')
+          : t('catalog.messages.addedToFavorites')
       );
     } catch (error) {
       console.error('Error toggling favorite:', error);
-      toast.error(t('catalog.messages.errorTogglingFavorite') || 'Error al gestionar favoritos');
+      toast.error(t('catalog.messages.errorTogglingFavorite'));
     }
   };
 
@@ -197,12 +197,12 @@ export function ProductCard({
                   <div className="absolute top-1 left-1 sm:top-2 sm:left-2 flex flex-col gap-1">
                     {productData.isOutOfStock && (
                       <Badge variant="destructive" className="text-xs px-1 py-0">
-                        Sin stock
+                        {t('catalog.productCard.outOfStock')}
                       </Badge>
                     )}
                     {productData.isLowStock && !productData.isOutOfStock && (
                       <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200 text-xs px-1 py-0">
-                        ¡Solo {product.stock}!
+                        {t('catalog.productCard.limitedStockUnits').replace('{stock}', product.stock.toString())}
                       </Badge>
                     )}
                     {productData.hasDiscount && (
@@ -288,7 +288,7 @@ export function ProductCard({
               {productData.isOutOfStock && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                   <span className="bg-white px-3 py-1 rounded-md text-sm font-medium text-gray-900">
-                    Sin stock
+                    {t('catalog.productCard.outOfStock')}
                   </span>
                 </div>
               )}
@@ -298,7 +298,7 @@ export function ProductCard({
                 <div className="absolute top-1 sm:top-2 left-1 sm:left-2 flex flex-col gap-1">
                   {productData.isLowStock && !productData.isOutOfStock && (
                     <Badge className="bg-amber-500 text-white text-[10px] sm:text-xs px-1 sm:px-2 py-0.5">
-                      ¡Solo {product.stock}!
+                      {t('catalog.productCard.limitedStockUnits').replace('{stock}', product.stock.toString())}
                     </Badge>
                   )}
                   
@@ -373,7 +373,7 @@ export function ProductCard({
               {/* Selector de cantidad */}
               {!productData.isOutOfStock && product.precio > 0 && (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs sm:text-sm text-gray-600">Cantidad:</span>
+                  <span className="text-xs sm:text-sm text-gray-600">{t('catalog.addToCartButton.quantity')}:</span>
                   <div className="flex items-center border rounded-lg">
                     <Button
                       variant="ghost"
@@ -419,18 +419,18 @@ export function ProductCard({
                   {isAddingToCart ? (
                     <div className="flex items-center gap-1 sm:gap-2">
                       <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span className="hidden sm:inline">Agregando...</span>
+                      <span className="hidden sm:inline">{t('catalog.addToCartButton.addingToCart')}</span>
                       <span className="sm:hidden">...</span>
                     </div>
                   ) : productData.isOutOfStock ? (
-                    <span className="text-xs sm:text-sm">Sin stock</span>
+                    <span className="text-xs sm:text-sm">{t('catalog.addToCartButton.outOfStock')}</span>
                   ) : product.precio === 0 ? (
-                    <span className="text-xs sm:text-sm">No disponible</span>
+                    <span className="text-xs sm:text-sm">{t('catalog.price.notAvailable')}</span>
                   ) : (
                     <div className="flex items-center gap-1 sm:gap-2">
                       <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
                       <span className="hidden sm:inline">
-                        Agregar {quantityToAdd > 1 ? `(${quantityToAdd})` : ''}
+                        {t('catalog.addToCartButton.addToCart')} {quantityToAdd > 1 ? `(${quantityToAdd})` : ''}
                       </span>
                       <span className="sm:hidden">
                         +{quantityToAdd}

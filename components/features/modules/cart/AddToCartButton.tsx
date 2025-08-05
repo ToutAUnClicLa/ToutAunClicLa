@@ -65,6 +65,7 @@ export function AddToCartButton({
       const success = await addToCart(productId, quantity);
       
       if (success) {
+        toast.success(t('catalog.addToCartButton.addedToCart'));
         // Resetear cantidad después de agregar exitosamente
         setQuantity(1);
       }
