@@ -290,13 +290,19 @@ export default function CartPage() {
                         </Badge>
                       )}
                       {item.productos.TVQ && item.productos.TVQ > 0 && (
-                        <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                        <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
                           TVQ {item.productos.TVQ}%
                         </Badge>
                       )}
                       {item.productos.consigne && item.productos.consigne > 0 && (
                         <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200">
                           Consigne {formatPrice(item.productos.consigne)}
+                        </Badge>
+                      )}
+                      {/* Non Taxable badge si no tiene TPS ni TVQ */}
+                      {(!item.productos.TPS || item.productos.TPS === 0) && (!item.productos.TVQ || item.productos.TVQ === 0) && (
+                        <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                          {t('cart.summary.nonTaxable')}
                         </Badge>
                       )}
                     </div>
@@ -553,13 +559,6 @@ export default function CartPage() {
                       <div className="flex justify-between items-center">
                         <span className="text-sm sm:text-base text-gray-600">Consigne</span>
                         <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(totalConsigne)}</span>
-                      </div>
-                    )}
-                    
-                    {/* Non Taxable - mostrar solo si no hay TPS, TVQ ni Consigne */}
-                    {totalTPS === 0 && totalTVQ === 0 && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.nonTaxable')}</span>
                       </div>
                     )}
                     
