@@ -1014,6 +1014,14 @@ export default {
         reset: "Reset"
       },
       
+      // Pagination
+      pagination: {
+        loadingResults: "Loading results...",
+        showingResults: "📊 Showing {start} - {end} of {total} result{plural}",
+        searchResultsFor: "for \"{search}\"",
+        clearAll: "🗑️ Clear all"
+      },
+      
       // Benefits
       benefits: {
         fastDelivery: {

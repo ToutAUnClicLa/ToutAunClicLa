@@ -582,6 +582,14 @@ export default {
       },
       showingResults: "Mostrando {count} de {total} productos",
       
+      // Paginación
+      pagination: {
+        loadingResults: "Cargando resultados...",
+        showingResults: "📊 Mostrando {start} - {end} de {total} resultado{plural}",
+        searchResultsFor: "para \"{search}\"",
+        clearAll: "🗑️ Limpiar todo"
+      },
+      
       // Beneficios
       benefits: {
         fastDelivery: {

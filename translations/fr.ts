@@ -999,6 +999,14 @@ export default {
         reset: "Réinitialiser"
       },
       
+      // Pagination
+      pagination: {
+        loadingResults: "Chargement des résultats...",
+        showingResults: "📊 Affichage de {start} - {end} sur {total} résultat{plural}",
+        searchResultsFor: "pour \"{search}\"",
+        clearAll: "🗑️ Tout effacer"
+      },
+      
       // Avantages
       benefits: {
         fastDelivery: {
