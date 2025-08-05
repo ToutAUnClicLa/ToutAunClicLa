@@ -979,7 +979,7 @@ export default {
       title: "Resumen del Pedido",
       subtotal: "Subtotal",
       shipping: "Envío",
-      taxes: "TVQ + TPS (5% + 9.975%)",
+      taxes: "TPS + TVQ (5% + 9.975%)",
       total: "Total",
       freeShipping: "Gratis",
       shippingThreshold: "Agrega {amount} más para envío gratis",
@@ -1083,7 +1083,7 @@ export default {
     selector: {
       title: "Dirección de Envío",
       add: "Agregar",
-      deliveryInfo: "Solo entregas en Montreal",
+      deliveryInfo: "Solo entregas en el área metropolitana de Montreal",
       deliveryNote: "Validamos que la dirección esté dentro del área metropolitana de Montreal",
       montrealOnly: "Solo direcciones en Montreal",
       validationNote: "Validamos que la ciudad sea Montreal y que el código postal sea válido (H1A-H5B)"

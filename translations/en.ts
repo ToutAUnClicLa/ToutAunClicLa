@@ -352,7 +352,7 @@ export default {
     selector: {
       title: "Shipping Address",
       add: "Add",
-      deliveryInfo: "Montreal deliveries only",
+      deliveryInfo: "The address is within Montreal metropolitan area",
       deliveryNote: "We validate that the address is within Montreal metropolitan area",
       montrealOnly: "Montreal addresses only",
       validationNote: "We validate that the city is Montreal and the postal code is valid (H1A-H5B)"

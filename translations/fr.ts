@@ -352,7 +352,7 @@ export default {
     selector: {
       title: "Adresse de Livraison",
       add: "Ajouter",
-      deliveryInfo: "Livraisons à Montréal seulement",
+      deliveryInfo: "Livraisons dans la région métropolitaine de Montréal",
       deliveryNote: "Nous validons que l'adresse se trouve dans la région métropolitaine de Montréal",
       montrealOnly: "Adresses de Montréal seulement",
       validationNote: "Nous validons que la ville est Montréal et que le code postal est valide (H1A-H5B)"
