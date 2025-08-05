@@ -39,14 +39,27 @@ const getHeaders = () => {
 export interface CartProduct {
   id: number;
   nombre: string;
+  descripcion: string;
   precio: number;
   imagen_principal: string;
+  imagen_secundaria?: string;
+  imagen_terciaria?: string;
   stock: number;
   TPS?: number;
   TVQ?: number;
   consigne?: number;
+  provedor?: string;
+  categoria_id: number;
+  subcategoria_id?: number;
   categorias?: {
+    id: number;
     nombre: string;
+  };
+  subcategorias?: {
+    id: number;
+    nombre: string;
+    Imagen?: string;
+    Descripcion?: string;
   };
 }
 
@@ -63,10 +76,14 @@ export interface CartSummary {
   totalItems: number;
   totalQuantity: number;
   subtotal: number;
+  subtotalWithTaxes?: number;
+  subtotalWithConsigne?: number;
   totalTPS?: number;
   totalTVQ?: number;
   totalConsigne?: number;
   totalTaxes?: number;
+  shippingCost?: number;
+  shippingThreshold?: number;
   total: number;
 }
 

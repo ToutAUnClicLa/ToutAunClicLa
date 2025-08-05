@@ -80,7 +80,8 @@ export default function CartPage() {
     removeFromCart,
     clearCart,
     isEmpty,
-    refreshCart 
+    refreshCart,
+    summary 
   } = useCart();
   
   const { selectedAddress, primaryAddress, hasAddresses } = useAddresses();
@@ -88,16 +89,19 @@ export default function CartPage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
   
-  // Cálculos de totales mejorados - recalcular desde los items
-  const calculatedSubtotal = useMemo(() => {
-    return items.reduce((sum, item) => sum + (item.cantidad * item.productos.precio), 0);
-  }, [items]);
-
-  const taxRate = 0.15; // 15% de impuestos
-  const shippingThreshold = 200; // Envío gratis a partir de $50
-  const shippingCost = calculatedSubtotal >= shippingThreshold ? 0 : 8.99;
-  const taxes = calculatedSubtotal * taxRate;
-  const finalTotal = calculatedSubtotal + taxes + shippingCost;
+  // Usar los cálculos del backend del resumen
+  const calculatedSubtotal = summary?.subtotal || 0;
+  const shippingCost = summary?.shippingCost || 0;
+  const shippingThreshold = summary?.shippingThreshold || 200;
+  const finalTotal = summary?.total || 0;
+  
+  // Cálculos detallados de impuestos del backend
+  const subtotalWithTaxes = summary?.subtotalWithTaxes || 0;
+  const subtotalWithConsigne = summary?.subtotalWithConsigne || 0;
+  const totalTPS = summary?.totalTPS || 0;
+  const totalTVQ = summary?.totalTVQ || 0;
+  const totalConsigne = summary?.totalConsigne || 0;
+  const totalTaxes = summary?.totalTaxes || 0;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-US', {
@@ -212,6 +216,15 @@ export default function CartPage() {
     const isItemLoading = loadingItems.has(item.id);
     const itemTotal = item.cantidad * item.productos.precio;
     
+    // Calcular impuestos para este producto
+    const tpsAmount = item.productos.TPS ? (item.productos.precio * item.productos.TPS / 100) * item.cantidad : 0;
+    const tvqAmount = item.productos.TVQ ? (item.productos.precio * item.productos.TVQ / 100) * item.cantidad : 0;
+    const consigneAmount = item.productos.consigne ? item.productos.consigne * item.cantidad : 0;
+    
+    // Verificar si tiene impuestos o consigne
+    const hasTaxes = (item.productos.TPS && item.productos.TPS > 0) || (item.productos.TVQ && item.productos.TVQ > 0);
+    const hasConsigne = item.productos.consigne && item.productos.consigne > 0;
+    
     return (
       <motion.div
         key={item.id}
@@ -244,16 +257,48 @@ export default function CartPage() {
                     <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 mb-1 line-clamp-2">
                       {item.productos.nombre}
                     </h3>
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
-                      {item.productos.categorias?.nombre || t('cart.noCategory')}
-                    </p>
-                    <div className="flex items-center gap-2 sm:gap-4">
+                    
+                    {/* Descripción del producto */}
+                    {item.productos.descripcion && (
+                      <p className="text-xs sm:text-sm text-gray-500 mb-2 line-clamp-2">
+                        {item.productos.descripcion}
+                      </p>
+                    )}
+                    
+                    {/* Información de categoría */}
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className="text-xs sm:text-sm text-gray-600">
+                        {item.productos.categorias?.nombre || t('cart.noCategory')}
+                      </span>
+                    </div>
+                    
+                    {/* Precio base */}
+                    <div className="flex items-center gap-2 sm:gap-4 mb-2">
                       <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
                         {formatPrice(item.productos.precio)}
                       </span>
                       <span className="text-xs sm:text-sm text-gray-500">
                         {t('cart.perUnit')}
                       </span>
+                    </div>
+                    
+                    {/* Badges de impuestos */}
+                    <div className="flex flex-wrap gap-1 sm:gap-2">
+                      {item.productos.TPS && item.productos.TPS > 0 && (
+                        <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                          TPS {item.productos.TPS}%
+                        </Badge>
+                      )}
+                      {item.productos.TVQ && item.productos.TVQ > 0 && (
+                        <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                          TVQ {item.productos.TVQ}%
+                        </Badge>
+                      )}
+                      {item.productos.consigne && item.productos.consigne > 0 && (
+                        <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700 border-orange-200">
+                          Consigne {formatPrice(item.productos.consigne)}
+                        </Badge>
+                      )}
                     </div>
                   </div>
                   
@@ -301,12 +346,28 @@ export default function CartPage() {
                   </div>
                   
                   <div className="text-right">
+                    {/* Total del item */}
                     <p className="text-sm sm:text-base md:text-lg font-bold text-gray-900">
                       {formatPrice(itemTotal)}
                     </p>
                     <p className="text-xs sm:text-sm text-gray-500 hidden sm:block">
                       {item.cantidad} × {formatPrice(item.productos.precio)}
                     </p>
+                    
+                    {/* Mostrar impuestos y consigne si aplican */}
+                    {(hasTaxes || hasConsigne) && (
+                      <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+                        {tpsAmount > 0 && (
+                          <div>+{formatPrice(tpsAmount)} TPS</div>
+                        )}
+                        {tvqAmount > 0 && (
+                          <div>+{formatPrice(tvqAmount)} TVQ</div>
+                        )}
+                        {consigneAmount > 0 && (
+                          <div>+{formatPrice(consigneAmount)} Consigne</div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -457,26 +518,54 @@ export default function CartPage() {
                   </div>
                   
                   <div className="space-y-3 sm:space-y-4">
+                    {/* Subtotal */}
                     <div className="flex justify-between items-center">
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.subtotal')}</span>
                       <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(calculatedSubtotal)}</span>
                     </div>
+                    
+                    {/* Envío */}
                     <div className="flex justify-between items-center">
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.shipping')}</span>
                       <span className="text-sm sm:text-base font-medium text-gray-900">
                         {shippingCost === 0 ? t('cart.summary.freeShipping') : formatPrice(shippingCost)}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.taxes')}</span>
-                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(taxes)}</span>
-                    </div>
+                    
+                    {/* TPS */}
+                    {totalTPS > 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm sm:text-base text-gray-600">TPS</span>
+                        <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(totalTPS)}</span>
+                      </div>
+                    )}
+                    
+                    {/* TVQ */}
+                    {totalTVQ > 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm sm:text-base text-gray-600">TVQ</span>
+                        <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(totalTVQ)}</span>
+                      </div>
+                    )}
+                    
+                    {/* Consigne */}
+                    {totalConsigne > 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm sm:text-base text-gray-600">Consigne</span>
+                        <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(totalConsigne)}</span>
+                      </div>
+                    )}
+                    
+                    {/* Aviso de umbral de envío gratis */}
                     {calculatedSubtotal < shippingThreshold && (
                       <div className="text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 sm:p-3 rounded-lg">
                         {t('cart.summary.shippingThreshold').replace('{amount}', formatPrice(shippingThreshold - calculatedSubtotal))}
                       </div>
                     )}
+                    
                     <Separator />
+                    
+                    {/* Total */}
                     <div className="flex justify-between items-center">
                       <span className="text-base sm:text-lg font-semibold text-gray-900">{t('cart.summary.total')}</span>
                       <span className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">{formatPrice(finalTotal)}</span>
