@@ -69,23 +69,26 @@ export function getDiscountPercentage(originalPrice: number, currentPrice: numbe
 }
 
 /**
- * Calcula el precio total con impuestos canadienses (TPS y TVQ)
+ * Calcula el precio total con impuestos canadienses (TPS, TVQ y Consigne)
  * @param basePrice - Precio base del producto
  * @param tps - Porcentaje de TPS (Goods and Services Tax)
  * @param tvq - Porcentaje de TVQ (Quebec Sales Tax)
+ * @param consigne - Cantidad fija de Consigne (Deposit/Handling Fee)
  * @returns Objeto con precios detallados
  */
-export function calculateCanadianTaxes(basePrice: number, tps?: number, tvq?: number) {
+export function calculateCanadianTaxes(basePrice: number, tps?: number, tvq?: number, consigne?: number) {
   const tpsAmount = tps ? (basePrice * tps) / 100 : 0;
   const tvqAmount = tvq ? (basePrice * tvq) / 100 : 0;
-  const totalPrice = basePrice + tpsAmount + tvqAmount;
+  const consigneAmount = consigne || 0;
+  const totalPrice = basePrice + tpsAmount + tvqAmount + consigneAmount;
 
   return {
     basePrice,
     tpsAmount,
     tvqAmount,
+    consigneAmount,
     totalPrice,
-    hasTaxes: !!(tps || tvq)
+    hasTaxes: !!(tps || tvq || consigne)
   };
 }
 
@@ -94,12 +97,13 @@ export function calculateCanadianTaxes(basePrice: number, tps?: number, tvq?: nu
  * @param categoryId - ID de la categoría del producto
  * @param tps - Porcentaje de TPS
  * @param tvq - Porcentaje de TVQ
+ * @param consigne - Cantidad fija de Consigne
  * @returns Estado de impuestos del producto
  */
-export function getTaxStatus(categoryId: number, tps?: number, tvq?: number): 'taxable' | 'non-taxable' | 'food-taxable' {
+export function getTaxStatus(categoryId: number, tps?: number, tvq?: number, consigne?: number): 'taxable' | 'non-taxable' | 'food-taxable' {
   // Categoría 1: Productos generales
   if (categoryId === 1) {
-    return (tps || tvq) ? 'taxable' : 'non-taxable';
+    return (tps || tvq || consigne) ? 'taxable' : 'non-taxable';
   }
   
   // Categoría 2: Comida
@@ -108,7 +112,7 @@ export function getTaxStatus(categoryId: number, tps?: number, tvq?: number): 't
   }
   
   // Otras categorías por defecto
-  return (tps || tvq) ? 'taxable' : 'non-taxable';
+  return (tps || tvq || consigne) ? 'taxable' : 'non-taxable';
 }
 
 /**

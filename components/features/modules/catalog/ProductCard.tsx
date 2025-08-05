@@ -71,8 +71,8 @@ export function ProductCard({
     const hasValidPrice = isValidPrice(product.precio);
     
     // Cálculo de impuestos canadienses
-    const taxCalculation = calculateCanadianTaxes(product.precio, product.TPS, product.TVQ);
-    const taxStatus = getTaxStatus(product.categoria_id, product.TPS, product.TVQ);
+    const taxCalculation = calculateCanadianTaxes(product.precio, product.TPS, product.TVQ, product.consigne);
+    const taxStatus = getTaxStatus(product.categoria_id, product.TPS, product.TVQ, product.consigne);
 
     return {
       productIdStr,
@@ -95,6 +95,7 @@ export function ProductCard({
     product.categoria_id,
     product.TPS,
     product.TVQ,
+    product.consigne,
     isFavorite,
     isInCart,
     getProductQuantity

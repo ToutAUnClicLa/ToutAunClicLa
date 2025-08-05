@@ -116,6 +116,7 @@ export interface Product {
   provedor?: string;
   TPS?: number;
   TVQ?: number;
+  consigne?: number;
   activo?: boolean;
   fecha_creacion: string;
   fecha_actualizacion?: string;

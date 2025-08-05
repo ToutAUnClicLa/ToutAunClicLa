@@ -893,6 +893,7 @@ export default {
       basePrice: "Prix de base",
       tps: "TPS",
       tvq: "TVQ",
+      consigne: "Consigne",
       total: "Total avec taxes"
     },
 

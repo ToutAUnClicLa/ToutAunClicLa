@@ -42,6 +42,9 @@ export interface CartProduct {
   precio: number;
   imagen_principal: string;
   stock: number;
+  TPS?: number;
+  TVQ?: number;
+  consigne?: number;
   categorias?: {
     nombre: string;
   };
@@ -60,6 +63,10 @@ export interface CartSummary {
   totalItems: number;
   totalQuantity: number;
   subtotal: number;
+  totalTPS?: number;
+  totalTVQ?: number;
+  totalConsigne?: number;
+  totalTaxes?: number;
   total: number;
 }
 

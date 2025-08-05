@@ -11,6 +11,7 @@ interface Product {
   categoria_id: number;
   TPS?: number;
   TVQ?: number;
+  consigne?: number;
   provedor?: string;
 }
 
@@ -25,15 +26,15 @@ export function ProductPriceDisplay({ product, variant = 'default', className = 
   
   const priceData = useMemo(() => {
     const hasDiscount = product.precio_anterior && product.precio_anterior > product.precio;
-    const taxCalculation = calculateCanadianTaxes(product.precio, product.TPS, product.TVQ);
-    const taxStatus = getTaxStatus(product.categoria_id, product.TPS, product.TVQ);
+    const taxCalculation = calculateCanadianTaxes(product.precio, product.TPS, product.TVQ, product.consigne);
+    const taxStatus = getTaxStatus(product.categoria_id, product.TPS, product.TVQ, product.consigne);
 
     return {
       hasDiscount,
       taxCalculation,
       taxStatus
     };
-  }, [product.precio, product.precio_anterior, product.categoria_id, product.TPS, product.TVQ]);
+  }, [product.precio, product.precio_anterior, product.categoria_id, product.TPS, product.TVQ, product.consigne]);
 
   if (product.precio === 0) {
     return (
@@ -71,12 +72,17 @@ export function ProductPriceDisplay({ product, variant = 'default', className = 
           <div className="space-y-1 text-xs text-gray-600">
             {product.TPS && (
               <div>
-                TPS ({product.TPS}%): +{formatPrice(priceData.taxCalculation.tpsAmount)}
+                {t('catalog.tax.tps')} ({product.TPS}%): +{formatPrice(priceData.taxCalculation.tpsAmount)}
               </div>
             )}
             {product.TVQ && (
               <div>
-                TVQ ({product.TVQ}%): +{formatPrice(priceData.taxCalculation.tvqAmount)}
+                {t('catalog.tax.tvq')} ({product.TVQ}%): +{formatPrice(priceData.taxCalculation.tvqAmount)}
+              </div>
+            )}
+            {product.consigne && (
+              <div>
+                {t('catalog.tax.consigne')}: +{formatPrice(priceData.taxCalculation.consigneAmount)}
               </div>
             )}
           </div>

@@ -908,6 +908,7 @@ export default {
       basePrice: "Base price",
       tps: "GST",
       tvq: "PST",
+      consigne: "Deposit",
       total: "Total with taxes"
     },
 
