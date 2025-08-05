@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Star, Heart, ShoppingBag } from 'lucide-react';
+import { ShoppingCart, Star, Heart, ShoppingBag, Minus, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -55,6 +55,7 @@ export function ProductCard({
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [quantityToAdd, setQuantityToAdd] = useState(1);
 
   // Estados derivados del producto - memoizados para evitar re-cálculos
   const productData = useMemo(() => {
@@ -116,7 +117,7 @@ export function ProductCard({
     }
   };
 
-  const handleAddToCart = async (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent, quantity = quantityToAdd) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -132,10 +133,12 @@ export function ProductCard({
 
     try {
       setIsAddingToCart(true);
-      const success = await addToCart(product.id, 1);
+      const success = await addToCart(product.id, quantity);
       
       if (success) {
         toast.success(t('catalog.productDetail.addedToCart'));
+        // Reset quantity to 1 after successful add
+        setQuantityToAdd(1);
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -367,6 +370,44 @@ export function ProductCard({
                 )}
               </div>
 
+              {/* Selector de cantidad */}
+              {!productData.isOutOfStock && product.precio > 0 && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs sm:text-sm text-gray-600">Cantidad:</span>
+                  <div className="flex items-center border rounded-lg">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setQuantityToAdd(Math.max(1, quantityToAdd - 1));
+                      }}
+                      disabled={quantityToAdd <= 1}
+                      className="h-6 w-6 sm:h-8 sm:w-8 p-0 rounded-r-none"
+                    >
+                      <Minus className="h-3 w-3" />
+                    </Button>
+                    <span className="px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium min-w-[2rem] text-center">
+                      {quantityToAdd}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setQuantityToAdd(Math.min(product.stock, quantityToAdd + 1));
+                      }}
+                      disabled={quantityToAdd >= product.stock}
+                      className="h-6 w-6 sm:h-8 sm:w-8 p-0 rounded-l-none"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {/* Botones de acción */}
               <div className="flex gap-1 sm:gap-2">
                 <Button
@@ -381,11 +422,6 @@ export function ProductCard({
                       <span className="hidden sm:inline">Agregando...</span>
                       <span className="sm:hidden">...</span>
                     </div>
-                  ) : productData.inCart ? (
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4" />
-                      <span className="hidden sm:inline">En carrito</span>
-                    </div>
                   ) : productData.isOutOfStock ? (
                     <span className="text-xs sm:text-sm">Sin stock</span>
                   ) : product.precio === 0 ? (
@@ -393,7 +429,12 @@ export function ProductCard({
                   ) : (
                     <div className="flex items-center gap-1 sm:gap-2">
                       <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
-                      <span className="hidden sm:inline">Agregar</span>
+                      <span className="hidden sm:inline">
+                        Agregar {quantityToAdd > 1 ? `(${quantityToAdd})` : ''}
+                      </span>
+                      <span className="sm:hidden">
+                        +{quantityToAdd}
+                      </span>
                     </div>
                   )}
                 </Button>

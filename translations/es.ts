@@ -983,6 +983,7 @@ export default {
       taxes: "TPS + TVQ (5% + 9.975%)",
       total: "Total",
       freeShipping: "Gratis",
+      nonTaxable: "No gravable",
       shippingThreshold: "Agrega {amount} más para envío gratis",
       proceed: "Proceder al Pago",
       continue: "Continuar Comprando",

@@ -556,6 +556,13 @@ export default function CartPage() {
                       </div>
                     )}
                     
+                    {/* Non Taxable - mostrar solo si no hay TPS, TVQ ni Consigne */}
+                    {totalTPS === 0 && totalTVQ === 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.nonTaxable')}</span>
+                      </div>
+                    )}
+                    
                     {/* Aviso de umbral de envío gratis */}
                     {calculatedSubtotal < shippingThreshold && (
                       <div className="text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 sm:p-3 rounded-lg">
