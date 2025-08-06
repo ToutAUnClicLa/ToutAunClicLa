@@ -486,7 +486,7 @@ export default {
 
     // AddToCartButton
     addToCartButton: {
-      addToCart: "Agregar al carrito",
+      addToCart: "Agregar",
       outOfStock: "Sin stock",
       productOutOfStock: "Producto sin stock",
       onlyUnitsAvailable: "Solo hay {stock} unidades disponibles",
