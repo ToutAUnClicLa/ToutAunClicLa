@@ -193,12 +193,12 @@ export default {
     boutiqueCategories: [
       {
         id: 1,
-        name: "Clothing and Accessories",
+        name: "Clothing",
         description: "Dress with the best traditional American garments and accessories",
         image: "/ropaBoutique.png",
         color: "from-purple-600 to-indigo-600",
         viewText: "Explore collection",
-        subcategoria_id: "ropa-accesorios"
+        subcategoria_id: "ropa"
       },
       {
         id: 2,
@@ -207,7 +207,7 @@ export default {
         image: "/accesoriosBoutique.png",
         color: "from-pink-600 to-rose-600",
         viewText: "Discover decoration",
-        subcategoria_id: "accesorios-decorativos"
+        subcategoria_id: "accesorios"
       },
       {
         id: 3,

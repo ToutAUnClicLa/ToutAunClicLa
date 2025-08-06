@@ -639,7 +639,7 @@ export function ProductGrid({
                         loading && "opacity-50 cursor-not-allowed"
                       )}
                     >
-                      {t('catalog.productList.pagination.clearAll')}
+                      🗑️ Limpiar todo
                     </Button>
                   )}
                 </motion.div>
@@ -725,18 +725,14 @@ export function ProductGrid({
                   {loading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                      {t('catalog.productList.pagination.loadingResults')}
+                      Cargando resultados...
                     </>
                   ) : (
                     <>
-                      {t('catalog.productList.pagination.showingResults')
-                        .replace('{start}', ((pagination.currentPage - 1) * pagination.itemsPerPage + 1).toString())
-                        .replace('{end}', Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems).toString())
-                        .replace('{total}', pagination.totalItems.toString())
-                        .replace('{plural}', pagination.totalItems !== 1 ? 's' : '')}
+                      📊 Mostrando {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} - {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} de {pagination.totalItems} resultado{pagination.totalItems !== 1 ? 's' : ''}
                       {searchValue && (
                         <span className="text-blue-600 font-medium">
-                          {t('catalog.productList.pagination.searchResultsFor').replace('{search}', searchValue)}
+                          para &ldquo;{searchValue}&rdquo;
                         </span>
                       )}
                     </>

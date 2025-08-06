@@ -7,7 +7,6 @@ import { ProductGrid } from '@/components/features/modules/catalog/ProductGrid';
 import { FoodCatalog } from '@/components/features/modules/catalog/FoodCatalog';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
-import { getSubcategoryId } from '@/lib/constants/subcategories';
 
 const LoadingFallback = () => (
   <div className="min-h-screen bg-white py-6">
@@ -70,6 +69,7 @@ function ComidasContent() {
       <StructuredData type="organization" />
       <FoodCatalog
         categoryId={2}
+        initialSubcategory={subcategoriaId ? parseInt(subcategoriaId) : null}
       />
     </>
   );

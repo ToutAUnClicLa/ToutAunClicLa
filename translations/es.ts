@@ -194,12 +194,12 @@ export default {
     boutiqueCategories: [
       {
         id: 1,
-        name: "Ropa y Accesorios",
-        description: "Viste con las mejores prendas y accesorios tradicionales americanos",
+        name: "Ropa",
+        description: "Viste con las mejores prendas tradicionales americanas",
         image: "/ropaBoutique.png",
         color: "from-purple-600 to-indigo-600",
         viewText: "Explorar colección",
-        subcategoria_id: "ropa-accesorios"
+        subcategoria_id: "ropa"
       },
       {
         id: 2,
@@ -208,7 +208,7 @@ export default {
         image: "/accesoriosBoutique.png",
         color: "from-pink-600 to-rose-600",
         viewText: "Descubrir decoración",
-        subcategoria_id: "accesorios-decorativos"
+        subcategoria_id: "accesorios"
       },
       {
         id: 3,
@@ -445,12 +445,11 @@ export default {
   catalog: {
     // ProductCard
     productCard: {
-      addToCart: "Agregar",
+      addToCart: "Agregar al carrito",
       addingToCart: "Agregando...",
       addToFavorites: "Agregar a favoritos",
       removeFromFavorites: "Eliminar de favoritos",
       outOfStock: "Agotado",
-      limitedStockUnits: "¡Solo {stock}!",
       rating: "Calificación",
       reviews: "reseñas",
       quickView: "Vista rápida",
@@ -487,7 +486,7 @@ export default {
 
     // AddToCartButton
     addToCartButton: {
-      addToCart: "Agregar",
+      addToCart: "Agregar al carrito",
       outOfStock: "Sin stock",
       productOutOfStock: "Producto sin stock",
       onlyUnitsAvailable: "Solo hay {stock} unidades disponibles",
@@ -496,18 +495,6 @@ export default {
       quantity: "Cantidad",
       total: "Total",
       addingToCart: "Agregando...",
-      errorAddingToCart: "Error al agregar al carrito",
-      addedToCart: "Agregado al carrito",
-      alreadyInCart: "Ya está en el carrito",
-      inCart: "En el carrito"
-    },
-
-    // Messages
-    messages: {
-      addedToFavorites: "Agregado a favoritos",
-      removedFromFavorites: "Eliminado de favoritos",
-      errorTogglingFavorite: "Error al gestionar favoritos",
-      addedToCart: "Producto agregado al carrito",
       errorAddingToCart: "Error al agregar al carrito"
     },
     
@@ -581,14 +568,6 @@ export default {
         reset: "Restablecer"
       },
       showingResults: "Mostrando {count} de {total} productos",
-      
-      // Paginación
-      pagination: {
-        loadingResults: "Cargando resultados...",
-        showingResults: "📊 Mostrando {start} - {end} de {total} resultado{plural}",
-        searchResultsFor: "para \"{search}\"",
-        clearAll: "🗑️ Limpiar todo"
-      },
       
       // Beneficios
       benefits: {
@@ -690,7 +669,7 @@ export default {
       returns: "Devoluciones",
       
       // Acciones
-      addToCart: "Agregar",
+      addToCart: "Agregar al carrito",
       buyNow: "Comprar ahora",
       addToFavorites: "Agregar a favoritos",
       removeFromFavorites: "Eliminar de favoritos",
@@ -1004,7 +983,6 @@ export default {
       taxes: "TPS + TVQ (5% + 9.975%)",
       total: "Total",
       freeShipping: "Gratis",
-      nonTaxable: "Sin impuestos",
       shippingThreshold: "Agrega {amount} más para envío gratis",
       proceed: "Proceder al Pago",
       continue: "Continuar Comprando",
@@ -1095,7 +1073,6 @@ export default {
     title: "Mis Direcciones",
     subtitle: "Gestiona tus direcciones de entrega",
     addNew: "Nueva dirección",
-    addAddress: "Agregar dirección",
     editAddress: "Editar dirección",
     deleteAddress: "Eliminar dirección",
     confirmDelete: "¿Estás seguro de que quieres eliminar esta dirección?",
@@ -1125,8 +1102,6 @@ export default {
       zipCodePlaceholder: "H3X 3X3",
       country: "País",
       countryPlaceholder: "Canadá",
-      deliveryArea: "Área de entrega",
-      deliveryAreaNote: "Solo entregas en el área metropolitana de Montreal",
       save: "Guardar dirección",
       saving: "Guardando...",
       cancel: "Cancelar"

@@ -12,13 +12,13 @@ export const SUBCATEGORY_MAPPING: Record<string, number> = {
   
   // Comidas (categoría 2)
   'norte-america': 5,
-  'centro-america-caribe': 6,
-  'sur-america': 7,
+  'centro-america-caribe': 5,
+  'sur-america': 5,
   
   // Boutique (categoría 3)
-  'ropa-accesorios': 8,
-  'accesorios-decorativos': 9,
-  'souvenirs': 10
+  'ropa': 7,
+  'accesorios': 8,
+  'souvenirs': 9
 };
 
 export const REVERSE_SUBCATEGORY_MAPPING: Record<number, string> = Object.fromEntries(

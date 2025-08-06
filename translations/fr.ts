@@ -193,12 +193,12 @@ export default {
     boutiqueCategories: [
       {
         id: 1,
-        name: "Vêtements et Accessoires",
-        description: "Habillez-vous avec les meilleurs vêtements et accessoires traditionnels américains",
+        name: "Vêtements",
+        description: "Habillez-vous avec les meilleurs vêtements traditionnels américains",
         image: "/ropaBoutique.png",
         color: "from-purple-600 to-indigo-600",
         viewText: "Explorer la collection",
-        subcategoria_id: "ropa-accesorios"
+        subcategoria_id: "ropa"
       },
       {
         id: 2,
@@ -207,7 +207,7 @@ export default {
         image: "/accesoriosBoutique.png",
         color: "from-pink-600 to-rose-600",
         viewText: "Découvrir la décoration",
-        subcategoria_id: "accesorios-decorativos"
+        subcategoria_id: "accesorios"
       },
       {
         id: 3,
