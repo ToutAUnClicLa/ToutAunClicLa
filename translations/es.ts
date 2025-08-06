@@ -458,7 +458,7 @@ export default {
       discountedPrice: "Precio con descuento",
       savings: "Ahorras",
       freeShipping: "Envío gratis",
-      limitedStock: "Stock limitado",
+      limitedStockUnits: "Queda 1 unidad!",
       newProduct: "Nuevo",
       bestseller: "Más vendido",
       featured: "Destacado"
