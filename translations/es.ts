@@ -193,15 +193,6 @@ export default {
     ],
     boutiqueCategories: [
       {
-        id: 1,
-        name: "Ropa",
-        description: "Viste con las mejores prendas tradicionales americanas",
-        image: "/ropaBoutique.png",
-        color: "from-purple-600 to-indigo-600",
-        viewText: "Explorar colección",
-        subcategoria_id: "ropa"
-      },
-      {
         id: 2,
         name: "Accesorios Decorativos",
         description: "Decora tu hogar con auténticas piezas artesanales americanas",
@@ -218,7 +209,16 @@ export default {
         color: "from-amber-600 to-orange-600",
         viewText: "Ver souvenirs",
         subcategoria_id: "souvenirs"
-      }
+      },
+           {
+        id: 1,
+        name: "Ropa",
+        description: "Viste con las mejores prendas tradicionales americanas",
+        image: "/ropaBoutique.png",
+        color: "from-purple-600 to-indigo-600",
+        viewText: "Explorar colección",
+        subcategoria_id: "ropa"
+      },
     ]  },  auth: {
     // Títulos de modales
     loginTitle: "Iniciar Sesión",
