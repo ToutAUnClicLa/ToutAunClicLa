@@ -192,15 +192,6 @@ export default {
     ],
     boutiqueCategories: [
       {
-        id: 1,
-        name: "Clothing",
-        description: "Dress with the best traditional American garments and accessories",
-        image: "/ropaBoutique.png",
-        color: "from-purple-600 to-indigo-600",
-        viewText: "Explore collection",
-        subcategoria_id: "ropa"
-      },
-      {
         id: 2,
         name: "Decorative Accessories",
         description: "Decorate your home with authentic American craft pieces",
@@ -217,6 +208,15 @@ export default {
         color: "from-amber-600 to-orange-600",
         viewText: "View souvenirs",
         subcategoria_id: "souvenirs"
+      },
+            {
+        id: 1,
+        name: "Clothing",
+        description: "Dress with the best traditional American garments and accessories",
+        image: "/ropaBoutique.png",
+        color: "from-purple-600 to-indigo-600",
+        viewText: "Explore collection",
+        subcategoria_id: "ropa"
       }
     ]
   },
