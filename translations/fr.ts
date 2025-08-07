@@ -249,6 +249,7 @@ export default {
       subtotal: "Sous-total",
       shipping: "Expédition",
       taxes: "TVQ + TPS (5% + 9.975%)",
+      consigne: "Consigne",
       total: "Total",
       freeShipping: "Gratuit",
       nonTaxable: "Non Taxable",

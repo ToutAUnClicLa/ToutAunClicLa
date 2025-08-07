@@ -88,16 +88,31 @@ export default function CartPage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
   
-  // Cálculos de totales mejorados - recalcular desde los items
+  // Cálculos de totales mejorados - recalcular desde los items con impuestos reales
   const calculatedSubtotal = useMemo(() => {
     return items.reduce((sum, item) => sum + (item.cantidad * item.productos.precio), 0);
   }, [items]);
 
-  const taxRate = 0.15; // 15% de impuestos
-  const shippingThreshold = 200; // Envío gratis a partir de $50
+  // Cálculo de impuestos reales basado en TPS y TVQ de cada producto
+  const calculatedTaxes = useMemo(() => {
+    return items.reduce((sum, item) => {
+      const tpsAmount = item.productos.TPS ? item.productos.TPS * item.cantidad : 0;
+      const tvqAmount = item.productos.TVQ ? item.productos.TVQ * item.cantidad : 0;
+      return sum + tpsAmount + tvqAmount;
+    }, 0);
+  }, [items]);
+
+  // Cálculo de consigne total
+  const calculatedConsigne = useMemo(() => {
+    return items.reduce((sum, item) => {
+      const consigneAmount = item.productos.consigne ? item.productos.consigne * item.cantidad : 0;
+      return sum + consigneAmount;
+    }, 0);
+  }, [items]);
+
+  const shippingThreshold = 200; // Envío gratis a partir de $200
   const shippingCost = calculatedSubtotal >= shippingThreshold ? 0 : 8.99;
-  const taxes = calculatedSubtotal * taxRate;
-  const finalTotal = calculatedSubtotal + taxes + shippingCost;
+  const finalTotal = calculatedSubtotal + calculatedTaxes + calculatedConsigne + shippingCost;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-US', {
@@ -207,6 +222,68 @@ export default function CartPage() {
     router.push('/checkout');
   };
 
+  // Función para renderizar badges de impuestos
+  const renderTaxBadges = (item: CartItem) => {
+    const badges = [];
+    
+    // Determinar si es taxable basado en si tiene TPS o TVQ
+    const isTaxable = (item.productos.TPS && item.productos.TPS > 0) || 
+                      (item.productos.TVQ && item.productos.TVQ > 0);
+    
+    // Badge de Non Taxable (si no tiene TPS ni TVQ)
+    if (!isTaxable) {
+      badges.push(
+        <Badge 
+          key="non-taxable"
+          className="bg-green-100 text-green-700 border-green-200 text-xs"
+        >
+          Non Taxable
+        </Badge>
+      );
+    }
+    
+    // Badge de TPS (si tiene TPS)
+    if (item.productos.TPS && item.productos.TPS > 0) {
+      const tpsAmount = item.productos.TPS * item.cantidad;
+      badges.push(
+        <Badge 
+          key="tps"
+          className="bg-blue-100 text-blue-700 border-blue-200 text-xs"
+        >
+          TPS: {formatPrice(tpsAmount)}
+        </Badge>
+      );
+    }
+    
+    // Badge de TVQ (si tiene TVQ)
+    if (item.productos.TVQ && item.productos.TVQ > 0) {
+      const tvqAmount = item.productos.TVQ * item.cantidad;
+      badges.push(
+        <Badge 
+          key="tvq"
+          className="bg-purple-100 text-purple-700 border-purple-200 text-xs"
+        >
+          TVQ: {formatPrice(tvqAmount)}
+        </Badge>
+      );
+    }
+    
+    // Badge de Consigne (si tiene consigne)
+    if (item.productos.consigne && item.productos.consigne > 0) {
+      const consigneAmount = item.productos.consigne * item.cantidad;
+      badges.push(
+        <Badge 
+          key="consigne"
+          className="bg-amber-100 text-amber-700 border-amber-200 text-xs"
+        >
+          Consigne: {formatPrice(consigneAmount)}
+        </Badge>
+      );
+    }
+    
+    return badges;
+  };
+
   // Renderizar item del carrito con diseño responsive
   const renderCartItem = (item: CartItem) => {
     const isItemLoading = loadingItems.has(item.id);
@@ -247,6 +324,12 @@ export default function CartPage() {
                     <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
                       {item.productos.categorias?.nombre || t('cart.noCategory')}
                     </p>
+                    
+                    {/* Badges de impuestos */}
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {renderTaxBadges(item)}
+                    </div>
+                    
                     <div className="flex items-center gap-2 sm:gap-4">
                       <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
                         {formatPrice(item.productos.precio)}
@@ -469,8 +552,14 @@ export default function CartPage() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.taxes')}</span>
-                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(taxes)}</span>
+                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(calculatedTaxes)}</span>
                     </div>
+                    {calculatedConsigne > 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.consigne')}</span>
+                        <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(calculatedConsigne)}</span>
+                      </div>
+                    )}
                     {calculatedSubtotal < shippingThreshold && (
                       <div className="text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 sm:p-3 rounded-lg">
                         {t('cart.summary.shippingThreshold').replace('{amount}', formatPrice(shippingThreshold - calculatedSubtotal))}

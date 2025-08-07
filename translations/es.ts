@@ -495,7 +495,8 @@ export default {
       quantity: "Cantidad",
       total: "Total",
       addingToCart: "Agregando...",
-      errorAddingToCart: "Error al agregar al carrito"
+      errorAddingToCart: "Error al agregar al carrito",
+      addedToCart: "Agregado al carrito"
     },
     
     // ProductList
@@ -981,6 +982,7 @@ export default {
       subtotal: "Subtotal",
       shipping: "Envío",
       taxes: "TPS + TVQ (5% + 9.975%)",
+      consigne: "Consigna",
       total: "Total",
       freeShipping: "Gratis",
       shippingThreshold: "Agrega {amount} más para envío gratis",
