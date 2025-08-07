@@ -93,11 +93,12 @@ export default function CartPage() {
     return items.reduce((sum, item) => sum + (item.cantidad * item.productos.precio), 0);
   }, [items]);
 
-  // Cálculo de impuestos reales basado en TPS y TVQ de cada producto
+  // Cálculo de impuestos reales basado en TPS y TVQ como porcentajes del precio
   const calculatedTaxes = useMemo(() => {
     return items.reduce((sum, item) => {
-      const tpsAmount = item.productos.TPS ? item.productos.TPS * item.cantidad : 0;
-      const tvqAmount = item.productos.TVQ ? item.productos.TVQ * item.cantidad : 0;
+      const basePrice = item.productos.precio * item.cantidad;
+      const tpsAmount = item.productos.TPS ? (basePrice * item.productos.TPS / 100) : 0;
+      const tvqAmount = item.productos.TVQ ? (basePrice * item.productos.TVQ / 100) : 0;
       return sum + tpsAmount + tvqAmount;
     }, 0);
   }, [items]);
@@ -242,33 +243,31 @@ export default function CartPage() {
       );
     }
     
-    // Badge de TPS (si tiene TPS)
+    // Badge de TPS (si tiene TPS) - mostrar porcentaje
     if (item.productos.TPS && item.productos.TPS > 0) {
-      const tpsAmount = item.productos.TPS * item.cantidad;
       badges.push(
         <Badge 
           key="tps"
           className="bg-blue-100 text-blue-700 border-blue-200 text-xs"
         >
-          TPS: {formatPrice(tpsAmount)}
+          +TPS: {item.productos.TPS}%
         </Badge>
       );
     }
     
-    // Badge de TVQ (si tiene TVQ)
+    // Badge de TVQ (si tiene TVQ) - mostrar porcentaje
     if (item.productos.TVQ && item.productos.TVQ > 0) {
-      const tvqAmount = item.productos.TVQ * item.cantidad;
       badges.push(
         <Badge 
           key="tvq"
           className="bg-purple-100 text-purple-700 border-purple-200 text-xs"
         >
-          TVQ: {formatPrice(tvqAmount)}
+          +TVQ: {item.productos.TVQ}%
         </Badge>
       );
     }
     
-    // Badge de Consigne (si tiene consigne)
+    // Badge de Consigne (si tiene consigne) - este sí se muestra en dólares
     if (item.productos.consigne && item.productos.consigne > 0) {
       const consigneAmount = item.productos.consigne * item.cantidad;
       badges.push(
@@ -276,7 +275,7 @@ export default function CartPage() {
           key="consigne"
           className="bg-amber-100 text-amber-700 border-amber-200 text-xs"
         >
-          Consigne: {formatPrice(consigneAmount)}
+          +Consigne: {formatPrice(consigneAmount)}
         </Badge>
       );
     }
@@ -325,18 +324,18 @@ export default function CartPage() {
                       {item.productos.categorias?.nombre || t('cart.noCategory')}
                     </p>
                     
-                    {/* Badges de impuestos */}
-                    <div className="flex flex-wrap gap-1 mb-2">
-                      {renderTaxBadges(item)}
-                    </div>
-                    
-                    <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4 mb-2">
                       <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
                         {formatPrice(item.productos.precio)}
                       </span>
                       <span className="text-xs sm:text-sm text-gray-500">
                         {t('cart.perUnit')}
                       </span>
+                    </div>
+                    
+                    {/* Badges de impuestos - debajo del precio */}
+                    <div className="flex flex-wrap gap-1">
+                      {renderTaxBadges(item)}
                     </div>
                   </div>
                   
@@ -554,12 +553,10 @@ export default function CartPage() {
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.taxes')}</span>
                       <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(calculatedTaxes)}</span>
                     </div>
-                    {calculatedConsigne > 0 && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.consigne')}</span>
-                        <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(calculatedConsigne)}</span>
-                      </div>
-                    )}
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.consigne')}</span>
+                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(calculatedConsigne)}</span>
+                    </div>
                     {calculatedSubtotal < shippingThreshold && (
                       <div className="text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 sm:p-3 rounded-lg">
                         {t('cart.summary.shippingThreshold').replace('{amount}', formatPrice(shippingThreshold - calculatedSubtotal))}
