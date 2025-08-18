@@ -16,9 +16,9 @@ export const SUBCATEGORY_MAPPING: Record<string, number> = {
   'sur-america': 7,
   
   // Boutique (categoría 3)
-  'ropa': 8,
-  'accesorios': 9,
-  'souvenirs': 10
+  'ropa': 7,
+  'accesorios': 8,
+  'souvenirs': 9
 };
 
 export const REVERSE_SUBCATEGORY_MAPPING: Record<number, string> = Object.fromEntries(
