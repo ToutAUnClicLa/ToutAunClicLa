@@ -13,16 +13,97 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useCart } from '@/hooks/useCart';
 import type { DeliveryOptions } from '@/lib/services/cart';
 
+// Funciones de seguridad para sanitizar input
+const sanitizeInput = (input: string): string => {
+  if (!input) return '';
+  
+  // Eliminar caracteres potencialmente peligrosos
+  let sanitized = input
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Eliminar tags script
+    .replace(/<[^>]*>/g, '') // Eliminar todos los tags HTML
+    .replace(/javascript:/gi, '') // Eliminar javascript:
+    .replace(/vbscript:/gi, '') // Eliminar vbscript:
+    .replace(/on\w+\s*=/gi, '') // Eliminar event handlers (onclick, onload, etc.)
+    .replace(/data:/gi, '') // Eliminar data URLs
+    .replace(/expression\s*\(/gi, '') // Eliminar CSS expressions
+    .replace(/url\s*\(/gi, '') // Eliminar CSS url()
+    .replace(/import\s+/gi, '') // Eliminar import statements
+    .replace(/exec\s*\(/gi, '') // Eliminar exec calls
+    .replace(/eval\s*\(/gi, '') // Eliminar eval calls
+    .replace(/document\./gi, '') // Eliminar acceso a document
+    .replace(/window\./gi, '') // Eliminar acceso a window
+    .replace(/\$\{.*?\}/g, '') // Eliminar template literals
+    .replace(/`.*?`/g, '') // Eliminar backticks
+    .replace(/\|\|/g, '') // Eliminar OR operators
+    .replace(/&&/g, '') // Eliminar AND operators
+    .replace(/[<>'"&]/g, (match) => { // Escapar caracteres especiales
+      const escapeMap: { [key: string]: string } = {
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        '&': '&amp;'
+      };
+      return escapeMap[match] || match;
+    });
+
+  // Limitar a caracteres seguros (letras, números, espacios, puntuación básica)
+  sanitized = sanitized.replace(/[^\w\s\.\,\!\?\-\(\)\:]/g, '');
+  
+  // Truncar si es muy largo
+  if (sanitized.length > 500) {
+    sanitized = sanitized.substring(0, 500);
+  }
+  
+  return sanitized.trim();
+};
+
+// Validar que el contenido no contenga patrones sospechosos
+const validateSecureInput = (input: string): boolean => {
+  if (!input) return true;
+  
+  const suspiciousPatterns = [
+    /select\s+.*from/i, // SQL injection patterns
+    /union\s+select/i,
+    /insert\s+into/i,
+    /delete\s+from/i,
+    /update\s+.*set/i,
+    /drop\s+table/i,
+    /create\s+table/i,
+    /alter\s+table/i,
+    /exec\s*\(/i,
+    /execute\s*\(/i,
+    /script\s*>/i,
+    /javascript\s*:/i,
+    /vbscript\s*:/i,
+    /data\s*:/i,
+    /base64/i,
+    /\bxss\b/i,
+    /<.*>/,
+    /\$\{.*\}/,
+    /`.*`/,
+    /eval\s*\(/i,
+    /function\s*\(/i,
+    /var\s+\w+\s*=/i,
+    /let\s+\w+\s*=/i,
+    /const\s+\w+\s*=/i
+  ];
+  
+  return !suspiciousPatterns.some(pattern => pattern.test(input));
+};
+
 interface DeliveryOptionsComponentProps {
   onOptionsChange?: (options: DeliveryOptions & { isValid: boolean }) => void;
   disabled?: boolean;
   className?: string;
+  showAddressNote?: boolean;
 }
 
 export default function DeliveryOptionsComponent({ 
   onOptionsChange, 
   disabled = false,
-  className = '' 
+  className = '',
+  showAddressNote = false
 }: DeliveryOptionsComponentProps) {
   const { t } = useTranslation();
   const { updateDeliveryOptions } = useCart();
@@ -41,6 +122,7 @@ export default function DeliveryOptionsComponent({
     method?: string;
     notes?: string;
   }>({});
+  const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
 
   // Generar opciones de tiempo (12:00 PM - 10:00 PM) con validación de tiempo actual + 1 hora
   const generateTimeOptions = () => {
@@ -138,8 +220,21 @@ export default function DeliveryOptionsComponent({
       newErrors.method = t('cart.delivery.validation.methodRequired');
     }
 
-    if (options.notasEntrega && options.notasEntrega.length > 500) {
-      newErrors.notes = t('cart.delivery.validation.notesTooLong');
+    if (options.notasEntrega) {
+      // Validación de longitud
+      if (options.notasEntrega.length > 500) {
+        newErrors.notes = t('cart.delivery.validation.notesTooLong');
+      }
+      
+      // Validación de seguridad
+      if (!validateSecureInput(options.notasEntrega)) {
+        newErrors.notes = t('cart.delivery.validation.notesUnsafe');
+      }
+      
+      // Verificar que no contenga solo espacios
+      if (options.notasEntrega.trim().length === 0 && options.notasEntrega.length > 0) {
+        newErrors.notes = t('cart.delivery.validation.notesEmpty');
+      }
     }
 
     setErrors(newErrors);
@@ -148,12 +243,37 @@ export default function DeliveryOptionsComponent({
 
   // Manejar cambios en las opciones
   const handleOptionChange = (field: keyof DeliveryOptions, value: string) => {
-    const newOptions = { ...deliveryOptions, [field]: value };
-    setDeliveryOptions(newOptions);
-    setHasChanges(true);
+    let sanitizedValue = value;
     
-    const isValid = validateOptions(newOptions);
-    onOptionsChange?.({ ...newOptions, isValid });
+    // Sanitizar específicamente el campo de notas
+    if (field === 'notasEntrega') {
+      sanitizedValue = sanitizeInput(value);
+      
+      // Limpiar timer anterior si existe
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+      
+      const newOptions = { ...deliveryOptions, [field]: sanitizedValue };
+      setDeliveryOptions(newOptions);
+      setHasChanges(true);
+      
+      // Debounce para validación de notas (más costosa)
+      const timer = setTimeout(() => {
+        const isValid = validateOptions(newOptions);
+        onOptionsChange?.({ ...newOptions, isValid });
+      }, 300); // 300ms de debounce
+      
+      setDebounceTimer(timer);
+    } else {
+      // Para otros campos, validar inmediatamente
+      const newOptions = { ...deliveryOptions, [field]: sanitizedValue };
+      setDeliveryOptions(newOptions);
+      setHasChanges(true);
+      
+      const isValid = validateOptions(newOptions);
+      onOptionsChange?.({ ...newOptions, isValid });
+    }
   };
 
   // Aplicar cambios al carrito
@@ -199,8 +319,15 @@ export default function DeliveryOptionsComponent({
     };
 
     const interval = setInterval(updateTimeOptions, 60000); // Actualizar cada minuto
-    return () => clearInterval(interval);
-  }, [deliveryOptions, onOptionsChange]);
+    
+    return () => {
+      clearInterval(interval);
+      // Limpiar timer de debounce si existe
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+    };
+  }, [deliveryOptions, onOptionsChange, debounceTimer]);
 
   return (
     <Card className={`w-full ${className || 'border-gray-200 shadow-sm'}`}>
@@ -214,6 +341,14 @@ export default function DeliveryOptionsComponent({
         <p className="text-sm text-gray-600 mt-1">
           {t('cart.delivery.subtitle')}
         </p>
+        {showAddressNote && (
+          <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-xs text-amber-700 flex items-center gap-1">
+              <span>ℹ️</span>
+              {t('cart.delivery.addressNote')}
+            </p>
+          </div>
+        )}
       </CardHeader>
       
       <CardContent className="space-y-4 sm:space-y-6">
@@ -328,6 +463,11 @@ export default function DeliveryOptionsComponent({
             className={`min-h-20 resize-none ${errors.notes ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'}`}
             maxLength={500}
             disabled={disabled}
+            autoComplete="off"
+            spellCheck="false"
+            data-gramm="false"
+            data-gramm_editor="false"
+            data-enable-grammarly="false"
           />
           {errors.notes && (
             <motion.p 
@@ -343,15 +483,22 @@ export default function DeliveryOptionsComponent({
             <p className="text-xs text-gray-500">
               {t('cart.delivery.notesHelper')}
             </p>
-            <span className={`text-xs ${
-              (deliveryOptions.notasEntrega?.length || 0) > 450 
-                ? 'text-red-500' 
-                : (deliveryOptions.notasEntrega?.length || 0) > 400 
-                  ? 'text-amber-500' 
-                  : 'text-gray-400'
-            }`}>
-              {deliveryOptions.notasEntrega?.length || 0}/500
-            </span>
+            <div className="flex items-center gap-2">
+              {deliveryOptions.notasEntrega && deliveryOptions.notasEntrega !== (deliveryOptions.notasEntrega || '').replace(/[^\w\s\.\,\!\?\-\(\)\:]/g, '') && (
+                <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">
+                  ⚠ Contenido filtrado
+                </span>
+              )}
+              <span className={`text-xs ${
+                (deliveryOptions.notasEntrega?.length || 0) > 450 
+                  ? 'text-red-500' 
+                  : (deliveryOptions.notasEntrega?.length || 0) > 400 
+                    ? 'text-amber-500' 
+                    : 'text-gray-400'
+              }`}>
+                {deliveryOptions.notasEntrega?.length || 0}/500
+              </span>
+            </div>
           </div>
         </div>
 

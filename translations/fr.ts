@@ -269,6 +269,7 @@ export default {
     delivery: {
       title: "Options de Livraison",
       subtitle: "Configurez les détails de votre livraison",
+      addressNote: "Vous pouvez configurer vos options de livraison maintenant. Une adresse sera requise pour procéder au paiement.",
       timeLabel: "Heure de livraison préférée",
       timePlaceholder: "Sélectionner une heure",
       timeHelper: "Livraisons disponibles de 12h00 à 22h00",
@@ -296,7 +297,9 @@ export default {
         methodRequired: "Vous devez sélectionner une méthode de livraison",
         timeInvalid: "L'heure doit être entre 12h00 et 22h00",
         timeTooEarly: "L'heure de livraison doit être au moins 1 heure à partir de maintenant. Heure minimum disponible: {time}",
-        notesTooLong: "Les notes ne peuvent pas dépasser 500 caractères"
+        notesTooLong: "Les notes ne peuvent pas dépasser 500 caractères",
+        notesUnsafe: "Les notes contiennent du contenu non autorisé pour des raisons de sécurité",
+        notesEmpty: "Les notes ne peuvent pas être vides ou contenir uniquement des espaces"
       },
       success: "Options de livraison mises à jour",
       error: "Erreur lors de la mise à jour des options de livraison"

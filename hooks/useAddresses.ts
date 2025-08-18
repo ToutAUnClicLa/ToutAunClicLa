@@ -144,8 +144,22 @@ export function useAddresses() {
       
       const newAddress = await addressService.createAddress(addressData);
       
-      // Refrescar las direcciones para obtener el estado actualizado
-      await refreshAddresses();
+      // Actualizar inmediatamente el estado local antes de refrescar
+      setAddresses(prev => {
+        const newAddresses = [...prev, newAddress];
+        
+        // Si es la primera dirección, establecerla como principal y seleccionada inmediatamente
+        if (prev.length === 0) {
+          setSelectedAddress(newAddress);
+          setPrimaryAddress(newAddress);
+        }
+        
+        return newAddresses;
+      });
+      
+      // Refrescar las direcciones para obtener el estado actualizado del servidor
+      // NOTA: No await aquí para que el estado local se actualice inmediatamente
+      refreshAddresses().catch(console.error);
       
       toast.success('Dirección agregada correctamente');
       return newAddress;

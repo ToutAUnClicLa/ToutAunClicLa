@@ -1001,6 +1001,7 @@ export default {
     delivery: {
       title: "Opciones de Entrega",
       subtitle: "Configura los detalles de tu entrega",
+      addressNote: "Puedes configurar tus opciones de entrega ahora. Se requerirá una dirección para proceder al checkout.",
       timeLabel: "Hora de entrega preferida",
       timePlaceholder: "Selecciona una hora",
       timeHelper: "Entregas disponibles de 12:00 PM a 10:00 PM",
@@ -1028,7 +1029,9 @@ export default {
         methodRequired: "Debes seleccionar un método de entrega",
         timeInvalid: "La hora debe estar entre 12:00 PM y 10:00 PM",
         timeTooEarly: "La hora de entrega debe ser al menos 1 hora después de ahora. Hora mínima disponible: {time}",
-        notesTooLong: "Las notas no pueden exceder 500 caracteres"
+        notesTooLong: "Las notas no pueden exceder 500 caracteres",
+        notesUnsafe: "Las notas contienen contenido no permitido por razones de seguridad",
+        notesEmpty: "Las notas no pueden estar vacías o contener solo espacios"
       },
       success: "Opciones de entrega actualizadas",
       error: "Error al actualizar opciones de entrega"

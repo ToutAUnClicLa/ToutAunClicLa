@@ -85,7 +85,7 @@ export default function CartPage() {
     refreshCart 
   } = useCart();
   
-  const { selectedAddress, primaryAddress, hasAddresses } = useAddresses();
+  const { selectedAddress, primaryAddress, hasAddresses, addresses } = useAddresses();
   
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
@@ -96,6 +96,9 @@ export default function CartPage() {
     aplicarATodos: true,
     isValid: true
   });
+  
+  // Estado para manejar la habilitación inmediata de opciones de entrega
+  const [hasValidAddress, setHasValidAddress] = useState(false);
   
   // Cálculos de totales mejorados - recalcular desde los items con impuestos reales
   const calculatedSubtotal = useMemo(() => {
@@ -137,6 +140,17 @@ export default function CartPage() {
       refreshCart();
     }
   }, [isAuthenticated, refreshCart]);
+
+  // Efecto para actualizar el estado de dirección válida
+  useEffect(() => {
+    const addressValid = isAuthenticated && (
+      selectedAddress !== null || 
+      hasAddresses || 
+      (addresses && addresses.length > 0)
+    );
+    
+    setHasValidAddress(addressValid);
+  }, [isAuthenticated, selectedAddress, hasAddresses, addresses]);
 
   // Mostrar modal de autenticación si no está autenticado
   useEffect(() => {
@@ -218,7 +232,7 @@ export default function CartPage() {
       return;
     }
 
-    if (!selectedAddress) {
+    if (!hasValidAddress || !selectedAddress) {
       toast.error(t('cart.errors.selectAddress'));
       return;
     }
@@ -603,8 +617,9 @@ export default function CartPage() {
                   <div className="mt-4 sm:mt-6">
                     <DeliveryOptions 
                       onOptionsChange={setDeliveryOptions}
-                      disabled={!isAuthenticated || !selectedAddress}
+                      disabled={false}
                       className="border-0 shadow-none bg-transparent p-0"
+                      showAddressNote={!hasValidAddress}
                     />
                   </div>
                   
@@ -613,11 +628,11 @@ export default function CartPage() {
                       size="lg" 
                       className="w-full bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base h-10 sm:h-12"
                       onClick={handleCheckout}
-                      disabled={!isAuthenticated || !selectedAddress || !deliveryOptions.isValid}
+                      disabled={!isAuthenticated || !deliveryOptions.isValid}
                     >
                       {!isAuthenticated ? t('cart.summary.authRequired') : 
-                       !selectedAddress ? t('cart.summary.addressRequired') : 
                        !deliveryOptions.isValid ? t('cart.delivery.error') : 
+                       !hasValidAddress ? t('cart.summary.addressRequired') : 
                        t('cart.summary.proceed')}
                     </Button>
                     <Button 

@@ -269,6 +269,7 @@ export default {
     delivery: {
       title: "Delivery Options",
       subtitle: "Configure your delivery details",
+      addressNote: "You can configure your delivery options now. An address will be required to proceed to checkout.",
       timeLabel: "Preferred delivery time",
       timePlaceholder: "Select a time",
       timeHelper: "Deliveries available from 12:00 PM to 10:00 PM",
@@ -296,7 +297,9 @@ export default {
         methodRequired: "You must select a delivery method",
         timeInvalid: "Time must be between 12:00 PM and 10:00 PM",
         timeTooEarly: "Delivery time must be at least 1 hour from now. Minimum available time: {time}",
-        notesTooLong: "Notes cannot exceed 500 characters"
+        notesTooLong: "Notes cannot exceed 500 characters",
+        notesUnsafe: "Notes contain content not allowed for security reasons",
+        notesEmpty: "Notes cannot be empty or contain only spaces"
       },
       success: "Delivery options updated",
       error: "Error updating delivery options"

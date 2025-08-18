@@ -200,9 +200,6 @@ export function AddressSelector() {
             <h4 className="text-lg font-medium text-gray-900 mb-2">
               {t('addresses.noAddresses')}
             </h4>
-            <p className="text-gray-600 mb-4">
-              {t('addresses.noAddressesDesc')}
-            </p>
             <Button onClick={openCreateDialog} className="bg-indigo-600 hover:bg-indigo-700">
               <Plus className="h-4 w-4 mr-2" />
               {t('addresses.addNew')}
