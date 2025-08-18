@@ -67,7 +67,6 @@ const getCompanyLinks = (t: any) => [
   { name: t('footer.company.blog'), url: "/blog" },
   { name: t('footer.company.terms'), url: "/terminos" },
   { name: t('footer.company.privacy'), url: "/politicas" },
-  { name: t('footer.company.shipping'), url: "/envios" },
   { name: t('footer.company.faq'), url: "/faq" }
 ];
 

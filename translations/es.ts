@@ -1287,19 +1287,36 @@ export default {
       },
       shipping: {
         title: "5. Envíos y Entregas",
-        paragraph1: "Realizamos envíos a direcciones dentro de Canadá y a destinos internacionales seleccionados. Los tiempos de entrega son estimados basados en la información proporcionada por nuestros socios logísticos y pueden variar según su ubicación, condiciones climáticas, volumen de pedidos, y otros factores externos.",
-        paragraph2: "Para envíos internacionales, usted es responsable de cualquier impuesto de importación, aranceles aduaneros, y cargos adicionales impuestos por las autoridades de su país. Estos cargos no están bajo nuestro control y no están incluidos en el precio de compra.",
+        paragraph1: "Realizamos envíos a direcciones dentro del área metropolitana de Montreal y algunas zonas seleccionadas de Quebec. Los tiempos de entrega son estimados basados en la información proporcionada por nuestros socios logísticos y pueden variar según su ubicación, condiciones climáticas, volumen de pedidos, y otros factores externos.",
+        paragraph2: "Todos los precios mostrados incluyen los impuestos aplicables según la legislación fiscal de Quebec. Los costos de envío se calculan automáticamente durante el proceso de compra según la distancia y el peso del pedido.",
         paragraph3: "El riesgo de pérdida y título de propiedad de los productos pasa a usted en el momento de la entrega. Es su responsabilidad inspeccionar los productos a la recepción y notificar cualquier daño o discrepancia dentro de las 48 horas siguientes a la entrega."
+      },
+      delivery: {
+        title: "5.1. Política de Entrega a Domicilio",
+        paragraph1: "Para entregas a domicilio dentro del área metropolitana de Montreal, aplicamos el siguiente protocolo de entrega:",
+        paragraph2: "Cuando el cliente selecciona la opción 'Entrega en mano' durante el proceso de compra, nuestro repartidor seguirá este procedimiento:",
+        list1: [
+          "El repartidor tocará el timbre o llamará a la puerta de la dirección indicada por el cliente.",
+          "Si no hay respuesta inmediata, el repartidor llamará al número de teléfono proporcionado por el cliente durante el registro.",
+          "Si después de 5 minutos no se obtiene respuesta por ninguno de los medios anteriores, el repartidor procederá automáticamente a:",
+          "• Dejar el pedido de manera segura en la puerta, si se trata de una residencia privada unifamiliar, o",
+          "• Entregar el pedido en la recepción, portería o servicio de conserjería, si se trata de un edificio con este servicio disponible."
+        ],
+        paragraph3: "Al seleccionar la opción de entrega a domicilio y confirmar su pedido, el cliente acepta expresamente esta política de entrega y exime a Tout à un clic là de cualquier responsabilidad por pérdida, robo o daño del producto una vez que se haya aplicado este protocolo de entrega.",
+        paragraph4: "Para garantizar la recepción directa de su pedido, recomendamos encarecidamente: proporcionar un número de teléfono actualizado y funcional, estar disponible durante la ventana de entrega especificada, y considerar seleccionar una dirección donde haya alguien disponible para recibir el pedido."
       },
       returns: {
         title: "6. Política de Devoluciones y Reembolsos",
-        paragraph1: "De conformidad con la Ley de Protección al Consumidor de Canadá y las leyes provinciales aplicables, ofrecemos una política de devolución que permite devolver la mayoría de los productos dentro de los 30 días siguientes a la recepción, siempre que se cumplan las siguientes condiciones:",
+        paragraph1: "De conformidad con la Ley de Protección al Consumidor de Canadá y las leyes provinciales aplicables, ofrecemos una política de devolución que permite devolver la mayoría de los productos dentro de los 7 días siguientes a la recepción, siempre que se cumplan las siguientes condiciones:",
         list1: [
           "El producto debe estar en su estado original, sin usar y con todas las etiquetas y embalajes originales.",
           "Debe incluirse el comprobante de compra o confirmación de pedido.",
-          "Los artículos personalizados, perecederos, de higiene personal o marcados como ventas finales no son elegibles para devolución, salvo en caso de defectos comprobables."
+          "Los artículos personalizados, perecederos, de higiene personal o marcados como ventas finales no son elegibles para devolución, salvo en caso de defectos comprobables.",
+          "Las devoluciones deben ser enviadas directamente a nuestras oficinas ubicadas en 620 Rue Saint-Thomas, Longueuil, QC J4H 3A7.",
+          "Las entregas de devoluciones deben realizarse dentro del horario de oficina: lunes a viernes de 9:00 AM a 5:00 PM.",
+          "Los costos de envío de la devolución corren por cuenta del consumidor, excepto en casos de productos defectuosos o errores de envío atribuibles a nuestra responsabilidad."
         ],
-        paragraph2: "Los reembolsos se procesarán utilizando el mismo método de pago utilizado para la compra original dentro de los 14 días hábiles siguientes a la recepción y verificación de los artículos devueltos. Los gastos de envío originales y de devolución generalmente no son reembolsables, excepto en casos de productos defectuosos o errores de envío atribuibles a nuestra responsabilidad."
+        paragraph2: "Los reembolsos se procesarán utilizando el mismo método de pago utilizado para la compra original dentro de los 14 días hábiles siguientes a la recepción y verificación de los artículos devueltos en nuestras oficinas. Los gastos de envío originales no son reembolsables, excepto en casos de productos defectuosos o errores de envío atribuibles a nuestra responsabilidad."
       },
       intellectualProperty: {
         title: "7. Propiedad Intelectual",

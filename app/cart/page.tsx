@@ -14,7 +14,7 @@ import { useCart } from '@/hooks/useCart';
 import { useAddresses } from '@/hooks/useAddresses';
 import AuthModal from '@/components/features/auth/AuthModal';
 import { AddressSelector } from '@/components/features/modules/cart/AddressSelector';
-import DeliveryOptions from '@/components/cart/DeliveryOptions';
+import DeliveryOptions from '@/components/features/modules/cart/DeliveryOptions';
 import { toast } from 'sonner';
 import { CartItem } from '@/lib/services/cart';
 import type { DeliveryOptions as DeliveryOptionsType } from '@/lib/services/cart';

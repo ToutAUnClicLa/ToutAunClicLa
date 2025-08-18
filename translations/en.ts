@@ -1348,15 +1348,32 @@ export default {
         paragraph2: "For international shipments, you are responsible for any import taxes, customs duties, and additional charges imposed by your country's authorities. These charges are not under our control and are not included in the purchase price.",
         paragraph3: "Risk of loss and title to products pass to you at the time of delivery. It is your responsibility to inspect products upon receipt and notify any damage or discrepancy within 48 hours of delivery."
       },
+      delivery: {
+        title: "5.1. Home Delivery Policy",
+        paragraph1: "For home deliveries within the Montreal metropolitan area, we apply the following delivery protocol:",
+        paragraph2: "When the customer selects the 'Hand delivery' option and our delivery person arrives at the specified address:",
+        list1: [
+          "The delivery person will ring the doorbell or knock on the door at the indicated address.",
+          "If there is no immediate response, the delivery person will call the phone number provided by the customer.",
+          "If after 5 minutes no response is obtained by any means, the delivery person will proceed to:",
+          "Leave the order at the door securely, if it is a private residence, or",
+          "Deliver the order to the reception or concierge, if it is a building with this service."
+        ],
+        paragraph3: "By placing an order with home delivery, the customer accepts this policy and releases Tout à un clic là from any liability for loss or damage to the product once this delivery protocol has been applied.",
+        paragraph4: "We strongly recommend providing an updated phone number and being available during the specified delivery window to ensure direct receipt of your order."
+      },
       returns: {
         title: "6. Returns and Refunds Policy",
-        paragraph1: "In accordance with the Canadian Consumer Protection Act and applicable provincial laws, we offer a return policy that allows you to return most products within 30 days of receipt, provided the following conditions are met:",
+        paragraph1: "In accordance with the Canadian Consumer Protection Act and applicable provincial laws, we offer a return policy that allows you to return most products within 7 days of receipt, provided the following conditions are met:",
         list1: [
           "The product must be in its original condition, unused, and with all original tags and packaging.",
           "Proof of purchase or order confirmation must be included.",
-          "Customized, perishable, personal hygiene items, or items marked as final sale are not eligible for return, except in case of verifiable defects."
+          "Customized, perishable, personal hygiene items, or items marked as final sale are not eligible for return, except in case of verifiable defects.",
+          "Returns must be sent directly to our offices located at 620 Rue Saint-Thomas, Longueuil, QC J4H 3A7.",
+          "Return deliveries must be made during business hours: Monday to Friday from 9:00 AM to 5:00 PM.",
+          "Return shipping costs are the responsibility of the consumer, except in cases of defective products or shipping errors attributable to our responsibility."
         ],
-        paragraph2: "Refunds will be processed using the same payment method used for the original purchase within 14 business days of receiving and verifying returned items. Original shipping and return costs are generally non-refundable, except in cases of defective products or shipping errors attributable to our responsibility."
+        paragraph2: "Refunds will be processed using the same payment method used for the original purchase within 14 business days of receiving and verifying returned items at our offices. Original shipping costs are non-refundable, except in cases of defective products or shipping errors attributable to our responsibility."
       },
       intellectualProperty: {
         title: "7. Intellectual Property",

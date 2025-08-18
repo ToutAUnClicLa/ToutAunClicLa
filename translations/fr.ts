@@ -1325,12 +1325,41 @@ export default {
       pricing: {
         title: "4. Prix, taxes et paiements",
         paragraph1: "Tous les prix sont affichés en dollars canadiens (CAD) et incluent les taxes applicables sauf indication contraire. Nous nous réservons le droit de modifier les prix à tout moment sans préavis préalable. Cependant, les commandes confirmées et payées ne seront pas affectées par les changements de prix.",
-        conditions: [
+        paragraph2: "Conformément à la législation fiscale canadienne, nous pouvons être tenus de percevoir et de remettre les taxes provinciales et fédérales, y compris la taxe sur les produits et services (TPS), la taxe de vente harmonisée (TVH) ou la taxe de vente provinciale (TVP), selon votre localisation.",
+        paragraph3: "Nous acceptons divers modes de paiement tels que spécifiés sur notre Plateforme. En fournissant des informations de paiement, vous garantissez être autorisé à utiliser le mode de paiement sélectionné et que ces informations sont exactes et complètes."
+      },
+      shipping: {
+        title: "5. Expédition et Livraison",
+        paragraph1: "Nous livrons aux adresses au Canada et à certaines destinations internationales sélectionnées. Les délais de livraison sont des estimations basées sur les informations fournies par nos partenaires logistiques et peuvent varier selon votre emplacement, les conditions météorologiques, le volume de commandes et d'autres facteurs externes.",
+        paragraph2: "Pour les expéditions internationales, vous êtes responsable de tous impôts d'importation, droits de douane et frais supplémentaires imposés par les autorités de votre pays. Ces frais ne sont pas sous notre contrôle et ne sont pas inclus dans le prix d'achat.",
+        paragraph3: "Le risque de perte et le titre de propriété des produits vous sont transférés au moment de la livraison. Il est de votre responsabilité d'inspecter les produits à la réception et de signaler tout dommage ou divergence dans les 48 heures suivant la livraison."
+      },
+      delivery: {
+        title: "5.1. Politique de Livraison à Domicile",
+        paragraph1: "Pour les livraisons à domicile dans la région métropolitaine de Montréal, nous appliquons le protocole de livraison suivant :",
+        paragraph2: "Lorsque le client sélectionne l'option 'Remise en main propre' et que notre livreur arrive à l'adresse spécifiée :",
+        list1: [
+          "Le livreur sonnera à la porte ou frappera à la porte de l'adresse indiquée.",
+          "S'il n'y a pas de réponse immédiate, le livreur appellera le numéro de téléphone fourni par le client.",
+          "Si après 5 minutes aucune réponse n'est obtenue par aucun moyen, le livreur procédera à :",
+          "Laisser la commande à la porte de manière sécurisée, s'il s'agit d'une résidence privée, ou",
+          "Remettre la commande à la réception ou au concierge, s'il s'agit d'un immeuble avec ce service."
+        ],
+        paragraph3: "En passant une commande avec livraison à domicile, le client accepte cette politique et dégage Tout à un clic là de toute responsabilité pour la perte ou les dommages du produit une fois ce protocole de livraison appliqué.",
+        paragraph4: "Nous recommandons fortement de fournir un numéro de téléphone à jour et d'être disponible pendant la fenêtre de livraison spécifiée pour garantir la réception directe de votre commande."
+      },
+      returns: {
+        title: "6. Politique de Retours et Remboursements",
+        paragraph1: "Conformément à la Loi canadienne de protection du consommateur et aux lois provinciales applicables, nous offrons une politique de retour qui permet de retourner la plupart des produits dans les 7 jours suivant la réception, à condition que les conditions suivantes soient remplies :",
+        list1: [
           "Le produit doit être dans son état original, inutilisé et avec toutes les étiquettes et emballages originaux.",
           "Une preuve d'achat ou confirmation de commande doit être incluse.",
-          "Les articles personnalisés, périssables, d'hygiène personnelle ou marqués comme vente finale ne sont pas éligibles au retour, sauf en cas de défauts vérifiables."
+          "Les articles personnalisés, périssables, d'hygiène personnelle ou marqués comme vente finale ne sont pas éligibles au retour, sauf en cas de défauts vérifiables.",
+          "Les retours doivent être envoyés directement à nos bureaux situés au 620 Rue Saint-Thomas, Longueuil, QC J4H 3A7.",
+          "Les livraisons de retours doivent être effectuées pendant les heures de bureau : du lundi au vendredi de 9h00 à 17h00.",
+          "Les frais d'expédition de retour sont à la charge du consommateur, sauf en cas de produits défectueux ou d'erreurs d'expédition attribuables à notre responsabilité."
         ],
-        paragraph2: "Les remboursements seront traités en utilisant la même méthode de paiement utilisée pour l'achat original dans les 14 jours ouvrables suivant la réception et vérification des articles retournés. Les frais d'expédition originaux et de retour ne sont généralement pas remboursables, sauf en cas de produits défectueux ou d'erreurs d'expédition attribuables à notre responsabilité."
+        paragraph2: "Les remboursements seront traités en utilisant la même méthode de paiement utilisée pour l'achat original dans les 14 jours ouvrables suivant la réception et vérification des articles retournés dans nos bureaux. Les frais d'expédition originaux ne sont pas remboursables, sauf en cas de produits défectueux ou d'erreurs d'expédition attribuables à notre responsabilité."
       },
       intellectualProperty: {
         title: "7. Propriété intellectuelle",

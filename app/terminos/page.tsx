@@ -54,8 +54,20 @@ export default function TerminosPage() {
         <section className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
           <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">{t('terms.sections.shipping.title')}</h2>
           <p className="mb-3">{t('terms.sections.shipping.paragraph1')}</p>
-          <p className="mb-3">{t('terms.sections.shipping.paragraph2')}</p>
           <p className="mb-3">{t('terms.sections.shipping.paragraph3')}</p>
+        </section>
+
+        <section className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">{t('terms.sections.delivery.title')}</h2>
+          <p className="mb-3">{t('terms.sections.delivery.paragraph1')}</p>
+          <p className="mb-3">{t('terms.sections.delivery.paragraph2')}</p>
+          <ul className="list-disc pl-6 space-y-2 mb-3">
+            {(t('terms.sections.delivery.list1') as string[]).map((item: string, index: number) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+          <p className="mb-3">{t('terms.sections.delivery.paragraph3')}</p>
+          <p className="mb-3">{t('terms.sections.delivery.paragraph4')}</p>
         </section>
 
         <section className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">

@@ -338,9 +338,6 @@ export default function DeliveryOptionsComponent({
           </div>
           {t('cart.delivery.title')}
         </CardTitle>
-        <p className="text-sm text-gray-600 mt-1">
-          {t('cart.delivery.subtitle')}
-        </p>
         {showAddressNote && (
           <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
             <p className="text-xs text-amber-700 flex items-center gap-1">
