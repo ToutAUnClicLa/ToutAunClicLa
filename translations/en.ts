@@ -89,7 +89,7 @@ export default {
     hero: {
       title: "Discover Latin America",
       subtitle: "Authentic products and unique experiences",
-      description: "Our exclusive store will be available very soon, bringing the most authentic products from all the Americas.",
+      description: "Our exclusive online store will be available on August 28th, bringing the most authentic products from all the Americas.",
       cta: "Register for early access"
     },
     categories: {

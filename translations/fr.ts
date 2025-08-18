@@ -89,7 +89,7 @@ export default {
     hero: {
       title: "Découvrez l'Amérique Latine",
       subtitle: "Produits authentiques et expériences uniques",
-      description: "Notre boutique exclusive sera bientôt disponible, apportant les produits les plus authentiques de toutes les Amériques.",
+      description: "Notre boutique en ligne exclusive sera disponible le 28 août, apportant les produits les plus authentiques de toutes les Amériques.",
       cta: "S'inscrire pour l'accès anticipé"
     },
     categories: {

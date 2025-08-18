@@ -90,8 +90,8 @@ export default {
     hero: {
       title: "Descubre América Latina",
       subtitle: "Productos auténticos y experiencias únicas",
-      description: "Nuestra tienda en linea de productos exclusivos estará pronto a tu alcance, trayendo los productos más auténticos de todas las Américas.",
-      cta: "Registrate para acceso anticipado"
+      description: "Nuestra tienda en línea de productos exclusivos estará disponible el 28 de Agosto, trayendo los productos más auténticos de todas las Américas.",
+      cta: "Registrate"
     },
     categories: {
       products: {

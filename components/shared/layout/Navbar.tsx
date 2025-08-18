@@ -36,9 +36,8 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/comm
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import Image from "next/image";
-import { CartButton } from "@/components/features/modules/cart/CartButton";
-import { getFavoritesCount } from "@/lib/services/favorites";
 import { useAuth } from "@/hooks/useAuth";
+import { useCartCount } from "@/hooks/useCartCount";
 import AuthModal from "@/components/features/auth/AuthModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/common/ui/avatar";
 import { Badge } from "@/components/common/ui/badge";
@@ -85,40 +84,12 @@ export function Navbar() {
   
   const { currentLanguage, setLanguage, availableLanguages } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [favoritesCount, setFavoritesCount] = useState(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgotPassword'>('login');
   const { t } = useTranslation();
-
-  // Optimización: Solo cargar favoritos cuando el usuario esté autenticado y verificado
-  useEffect(() => {
-    let isMounted = true;
-    
-    const loadFavoritesCount = async () => {
-      if (!isAuthenticated || !user?.verified) {
-        setFavoritesCount(0);
-        return;
-      }
-      
-      try {
-        const count = await getFavoritesCount();
-        if (isMounted) {
-          setFavoritesCount(count);
-        }
-      } catch (error) {
-        console.error('Error loading favorites count:', error);
-        if (isMounted) {
-          setFavoritesCount(0);
-        }
-      }
-    };
-
-    loadFavoritesCount();
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [isAuthenticated, user?.verified]);
+  
+  // Hook optimizado para contador del carrito
+  const { count: cartCount } = useCartCount();
 
   // Memoizar las funciones para evitar re-renders innecesarios
   const handleProfileNavigation = (href: string) => {
@@ -264,29 +235,36 @@ export function Navbar() {
                 </DropdownMenu>
               </div>
 
-              {/* Botón de favoritos - siempre visible */}
+              {/* Botón de favoritos - solo para usuarios autenticados */}
+              {isAuthenticated && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative"
+                  title="Mis favoritos"
+                  onClick={() => router.push('/profile/favorites')}
+                >
+                  <Heart className="h-5 w-5 text-gray-600 hover:text-red-500 transition-colors duration-200" />
+                </Button>
+              )}
+
+              {/* Botón de carrito con contador optimizado */}
               <Button
                 variant="ghost"
                 size="icon"
                 className="relative"
-                title={isAuthenticated ? "Mis favoritos" : "Inicia sesión para ver favoritos"}
-                onClick={() => {
-                  if (isAuthenticated) {
-                    router.push('/profile/favorites');
-                  } else {
-                    openAuthModal('login');
-                  }
-                }}
+                title={`Carrito de compras${cartCount > 0 ? ` (${cartCount} productos)` : ''}`}
+                onClick={() => router.push('/cart')}
               >
-                <Heart className="h-5 w-5 text-gray-600 hover:text-red-500 transition-colors duration-200" />
-                {isAuthenticated && favoritesCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center animate-pulse">
-                    {favoritesCount}
-                  </span>
+                <ShoppingCart className="h-5 w-5 text-gray-600 hover:text-indigo-600 transition-colors duration-200" />
+                {cartCount > 0 && (
+                  <Badge 
+                    className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold shadow-lg animate-pulse"
+                  >
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </Badge>
                 )}
               </Button>
-
-              <CartButton />
 
               {/* Language Selector - Mobile (visible only on mobile) */}
               <div className="md:hidden">
