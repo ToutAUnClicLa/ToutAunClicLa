@@ -173,7 +173,10 @@ export function AddressSelector() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <MapPin className="h-5 w-5 text-indigo-600" />
+            <div className="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+              <MapPin className="h-5 w-5 text-indigo-600" />
+            </div>
+
           {t('addresses.selector.title')}
         </h3>
         <Button

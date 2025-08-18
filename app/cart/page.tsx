@@ -573,8 +573,10 @@ export default function CartPage() {
               <div className="lg:col-span-1">
                 <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 sticky top-20 sm:top-24">
                   <div className="flex items-center gap-2 mb-4 sm:mb-6">
-                    <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900">{t('cart.summary.title')}</h3>
+                    <div className="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                      <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                    </div>
+                    <h3 className="text-base sm:text-xl font-semibold text-gray-900">{t('cart.summary.title')}</h3>
                   </div>
                   
                   <div className="space-y-3 sm:space-y-4">

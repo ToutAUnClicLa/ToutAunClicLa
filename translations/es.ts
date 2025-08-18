@@ -91,7 +91,7 @@ export default {
       title: "Descubre América Latina",
       subtitle: "Productos auténticos y experiencias únicas",
       description: "Nuestra tienda en línea de productos exclusivos estará disponible el 28 de Agosto, trayendo los productos más auténticos de todas las Américas.",
-      cta: "Registrate"
+      cta: "Registrate Para Acceso Anticipado"
     },
     categories: {
       products: {
