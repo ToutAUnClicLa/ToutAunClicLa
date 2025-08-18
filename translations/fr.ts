@@ -165,7 +165,6 @@ export default {
       id: 1,
       name: "Cuisine Panaméricaine",
       description: "Découvrez nos restaurants partenaires qui vous apportent la cuisine authentique de tout le continent américain, préparée avec des recettes traditionnelles et des saveurs uniques.",
-      image: "/surAmerica.png",
       color: "from-amber-600 to-yellow-600",
       viewText: "Explorer restaurants"
     },

@@ -165,7 +165,6 @@ export default {
       id: 1,
       name: "Pan-American Cuisine",
       description: "Discover our partner restaurants that bring you authentic food from across the American continent, prepared with traditional recipes and unique flavors.",
-      image: "/surAmerica.png",
       color: "from-amber-600 to-yellow-600",
       viewText: "Explore restaurants"
     },

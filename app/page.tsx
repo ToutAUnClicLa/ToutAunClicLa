@@ -513,10 +513,10 @@ export default function Home() {
             >
               <div className="absolute inset-0 w-full h-full overflow-hidden">
                 <Image
-                  src={panamericanFood.image}
+                  src="/comidasPanamericanasDesktop.png"
                   alt={panamericanFood.name}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110 filter blur-[0.8px]"
+                  className="object-cover  transition-transform duration-500 group-hover:scale-110 filter blur-[1.5px]"
                   sizes="100vw"
                   loading="lazy"
                 />
