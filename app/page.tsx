@@ -233,6 +233,15 @@ export default function Home() {
     icon?: React.ReactNode;
   }
 
+  interface PanamericanFood {
+    id: number;
+    name: string;
+    description: string;
+    image: string;
+    color: string;
+    viewText: string;
+  }
+
   // Obtener categorías de productos de las traducciones
   const productCategories = t<ProductCategory[]>('landing.productCategories').map(category => {
     let icon;
@@ -255,8 +264,8 @@ export default function Home() {
     return { ...category, icon };
   });
 
-  // Obtener regiones de comida de las traducciones
-  const foodRegions = t<FoodRegion[]>('landing.foodRegions');
+  // Obtener banner de comida panamericana de las traducciones
+  const panamericanFood = t<PanamericanFood>('landing.panamericanFood');
 
   // Obtener categorías de boutique de las traducciones
   const boutiqueCategories = t<BoutiqueCategory[]>('landing.boutiqueCategories').map(category => {
@@ -495,48 +504,46 @@ export default function Home() {
         color="from-amber-50 to-orange-50"
         iconColor="text-amber-600"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {foodRegions.map(region => (
-            <Link key={region.id} href={`/comidas?subcategoria=${region.subcategoria_id}`}>
-              <motion.div
-                className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer group h-52 sm:h-56 md:h-80"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <div className="absolute inset-0 w-full h-full overflow-hidden">
-                  <Image
-                    src={region.image}
-                    alt={region.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110 filter blur-[0.8px]"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    loading="lazy"
-                  />
-                  <div className={`absolute inset-0 bg-gradient-to-r ${region.color} opacity-10 transition-opacity duration-300 group-hover:opacity-20`} />
-                  <div className="absolute inset-0 flex flex-col justify-center p-6 sm:p-8">
-                    <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 sm:mb-4 drop-shadow-lg" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
-                      {region.name}
-                    </h3>
-                    <p className="text-sm sm:text-base text-white mb-4 sm:mb-6 max-w-2xl drop-shadow-lg" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
-                      {region.description}
-                    </p>
-                    <div className="inline-flex items-center text-white mt-auto bg-black/15 px-3 py-2 rounded-lg">
-                      <span className="text-sm sm:text-base font-medium drop-shadow-md" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>
-                        {region.viewText}
-                      </span>
-                      <motion.div
-                        className="ml-2"
-                        initial={{ x: 0 }}
-                        whileHover={{ x: 5 }}
-                      >
-                        <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                      </motion.div>
-                    </div>
+        <div className="w-full">
+          <Link href="/comidas">
+            <motion.div
+              className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer group h-64 sm:h-64 md:h-80 w-full"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="absolute inset-0 w-full h-full overflow-hidden">
+                <Image
+                  src={panamericanFood.image}
+                  alt={panamericanFood.name}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110 filter blur-[0.8px]"
+                  sizes="100vw"
+                  loading="lazy"
+                />
+                <div className={`absolute inset-0 bg-gradient-to-r ${panamericanFood.color} opacity-10 transition-opacity duration-300 group-hover:opacity-20`} />
+                <div className="absolute inset-0 flex flex-col justify-center items-center p-6 sm:p-8 text-center">
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 drop-shadow-lg" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
+                    {panamericanFood.name}
+                  </h3>
+                  <p className="text-sm sm:text-base md:text-lg text-white mb-6 sm:mb-8 max-w-4xl drop-shadow-lg leading-relaxed" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}>
+                    {panamericanFood.description}
+                  </p>
+                  <div className="inline-flex items-center text-white bg-black/15 px-6 py-3 rounded-lg">
+                    <span className="text-base sm:text-lg font-medium drop-shadow-md" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>
+                      {panamericanFood.viewText}
+                    </span>
+                    <motion.div
+                      className="ml-3"
+                      initial={{ x: 0 }}
+                      whileHover={{ x: 5 }}
+                    >
+                      <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6" />
+                    </motion.div>
                   </div>
                 </div>
-              </motion.div>
-            </Link>
-          ))}
+              </div>
+            </motion.div>
+          </Link>
         </div>
         <motion.div
           className="mt-10 sm:mt-16 text-center"

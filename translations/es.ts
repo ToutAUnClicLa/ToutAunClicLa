@@ -162,6 +162,14 @@ export default {
         subcategoria_id: "bebidas"
       }
     ],
+    panamericanFood: {
+      id: 1,
+      name: "Comidas Panamericanas",
+      description: "Descubre nuestros restaurantes aliados que te traen la auténtica comida de todo el continente americano, preparada con recetas tradicionales y sabores únicos.",
+      image: "/surAmerica.png",
+      color: "from-amber-600 to-yellow-600",
+      viewText: "Explorar restaurantes"
+    },
     foodRegions: [
       {
         id: 1,
