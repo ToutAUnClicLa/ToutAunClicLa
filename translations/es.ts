@@ -998,6 +998,41 @@ export default {
       authRequired: "Inicia sesión para continuar",
       addressRequired: "Selecciona una dirección"
     },
+    delivery: {
+      title: "Opciones de Entrega",
+      subtitle: "Configura los detalles de tu entrega",
+      timeLabel: "Hora de entrega preferida",
+      timePlaceholder: "Selecciona una hora",
+      timeHelper: "Entregas disponibles de 12:00 PM a 10:00 PM",
+      methodLabel: "Método de entrega",
+      methodHelper: "¿Cómo prefieres recibir tu pedido?",
+      notesLabel: "Notas para el repartidor",
+      notesPlaceholder: "Ej: Tocar el timbre, apartamento 3B, llamar al llegar...",
+      notesHelper: "Instrucciones especiales para la entrega (opcional)",
+      methods: {
+        puerta: {
+          title: "Dejar en puerta",
+          description: "El pedido se dejará en la puerta"
+        },
+        manos: {
+          title: "Entregar en mano",
+          description: "Entrega directa al cliente"
+        },
+        recepcion: {
+          title: "Dejar en recepción",
+          description: "El pedido se dejará en recepción/portería"
+        }
+      },
+      validation: {
+        timeRequired: "Debes seleccionar una hora de entrega",
+        methodRequired: "Debes seleccionar un método de entrega",
+        timeInvalid: "La hora debe estar entre 12:00 PM y 10:00 PM",
+        timeTooEarly: "La hora de entrega debe ser al menos 1 hora después de ahora. Hora mínima disponible: {time}",
+        notesTooLong: "Las notas no pueden exceder 500 caracteres"
+      },
+      success: "Opciones de entrega actualizadas",
+      error: "Error al actualizar opciones de entrega"
+    },
     success: {
       quantityUpdated: "Cantidad actualizada",
       productRemoved: "Producto eliminado",
@@ -1008,7 +1043,9 @@ export default {
       removeProduct: "Error al eliminar producto",
       clearCart: "Error al vaciar carrito",
       selectAddress: "Debes seleccionar una dirección",
-      emptyCart: "Tu carrito está vacío"
+      emptyCart: "Tu carrito está vacío",
+      deliveryTimeRequired: "Debes seleccionar una hora de entrega",
+      deliveryMethodRequired: "Debes seleccionar un método de entrega"
     },
     auth: {
       title: "Inicia sesión para continuar",

@@ -266,6 +266,41 @@ export default {
       authRequired: "Connectez-vous pour continuer",
       addressRequired: "Sélectionner une adresse"
     },
+    delivery: {
+      title: "Options de Livraison",
+      subtitle: "Configurez les détails de votre livraison",
+      timeLabel: "Heure de livraison préférée",
+      timePlaceholder: "Sélectionner une heure",
+      timeHelper: "Livraisons disponibles de 12h00 à 22h00",
+      methodLabel: "Méthode de livraison",
+      methodHelper: "Comment souhaitez-vous recevoir votre commande ?",
+      notesLabel: "Notes pour le livreur",
+      notesPlaceholder: "Ex: Sonner, appartement 3B, appeler à l'arrivée...",
+      notesHelper: "Instructions spéciales de livraison (optionnel)",
+      methods: {
+        puerta: {
+          title: "Laisser à la porte",
+          description: "La commande sera laissée à la porte"
+        },
+        manos: {
+          title: "Remise en main propre",
+          description: "Livraison directe au client"
+        },
+        recepcion: {
+          title: "Laisser à la réception",
+          description: "La commande sera laissée à la réception/accueil"
+        }
+      },
+      validation: {
+        timeRequired: "Vous devez sélectionner une heure de livraison",
+        methodRequired: "Vous devez sélectionner une méthode de livraison",
+        timeInvalid: "L'heure doit être entre 12h00 et 22h00",
+        timeTooEarly: "L'heure de livraison doit être au moins 1 heure à partir de maintenant. Heure minimum disponible: {time}",
+        notesTooLong: "Les notes ne peuvent pas dépasser 500 caractères"
+      },
+      success: "Options de livraison mises à jour",
+      error: "Erreur lors de la mise à jour des options de livraison"
+    },
     success: {
       quantityUpdated: "Quantité mise à jour",
       productRemoved: "Produit supprimé",
@@ -276,7 +311,9 @@ export default {
       removeProduct: "Erreur lors de la suppression du produit",
       clearCart: "Erreur lors du vidage du panier",
       selectAddress: "Vous devez sélectionner une adresse",
-      emptyCart: "Votre panier est vide"
+      emptyCart: "Votre panier est vide",
+      deliveryTimeRequired: "Vous devez sélectionner une heure de livraison",
+      deliveryMethodRequired: "Vous devez sélectionner une méthode de livraison"
     },
     auth: {
       title: "Connectez-vous pour continuer",

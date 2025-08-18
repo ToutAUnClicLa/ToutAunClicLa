@@ -6,7 +6,8 @@ import {
   cartService,
   type CartItem,
   type CartSummary,
-  type Coupon
+  type Coupon,
+  type DeliveryOptions
 } from '@/lib/services/cart';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -368,6 +369,39 @@ export function useCart(options: UseCartOptions = {}) {
     }
   }, [isAuthenticated, user, invalidateCache]);
 
+  // Actualizar opciones de entrega (nuevo)
+  const updateDeliveryOptions = useCallback(async (options: DeliveryOptions): Promise<boolean> => {
+    if (!isAuthenticated || !user) {
+      toast.error('Debes iniciar sesión para configurar opciones de entrega');
+      return false;
+    }
+
+    try {
+      setError(null);
+      
+      const result = await cartService.updateDeliveryOptions(options);
+      
+      // Invalidar cache y recargar para reflejar cambios
+      invalidateCache();
+      await loadCartNow(true);
+      
+      toast.success('Opciones de entrega actualizadas');
+      return true;
+    } catch (err: any) {
+      console.error('Error updating delivery options:', err);
+      setError('Error al actualizar opciones de entrega');
+      
+      if (err.message?.includes('hora de entrega')) {
+        toast.error('La hora de entrega debe estar entre 12:00 PM y 10:00 PM');
+      } else if (err.message?.includes('método de entrega')) {
+        toast.error('Método de entrega inválido');
+      } else {
+        toast.error(err.message || 'Error al actualizar opciones de entrega');
+      }
+      return false;
+    }
+  }, [isAuthenticated, user, invalidateCache, loadCartNow]);
+
   // Función pública para refrescar carrito
   const refreshCart = useCallback(async () => {
     await loadCartNow(true);
@@ -462,6 +496,7 @@ export function useCart(options: UseCartOptions = {}) {
     removeFromCart,
     clearCart,
     applyCoupon,
+    updateDeliveryOptions,
     refreshCart,
     
     // Utilidades memoizadas

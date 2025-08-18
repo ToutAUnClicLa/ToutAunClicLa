@@ -266,6 +266,41 @@ export default {
       authRequired: "Sign in to continue",
       addressRequired: "Select an address"
     },
+    delivery: {
+      title: "Delivery Options",
+      subtitle: "Configure your delivery details",
+      timeLabel: "Preferred delivery time",
+      timePlaceholder: "Select a time",
+      timeHelper: "Deliveries available from 12:00 PM to 10:00 PM",
+      methodLabel: "Delivery method",
+      methodHelper: "How would you like to receive your order?",
+      notesLabel: "Notes for the delivery person",
+      notesPlaceholder: "E.g: Ring the bell, apartment 3B, call upon arrival...",
+      notesHelper: "Special delivery instructions (optional)",
+      methods: {
+        puerta: {
+          title: "Leave at door",
+          description: "The order will be left at the door"
+        },
+        manos: {
+          title: "Hand delivery",
+          description: "Direct delivery to customer"
+        },
+        recepcion: {
+          title: "Leave at reception",
+          description: "The order will be left at reception/front desk"
+        }
+      },
+      validation: {
+        timeRequired: "You must select a delivery time",
+        methodRequired: "You must select a delivery method",
+        timeInvalid: "Time must be between 12:00 PM and 10:00 PM",
+        timeTooEarly: "Delivery time must be at least 1 hour from now. Minimum available time: {time}",
+        notesTooLong: "Notes cannot exceed 500 characters"
+      },
+      success: "Delivery options updated",
+      error: "Error updating delivery options"
+    },
     success: {
       quantityUpdated: "Quantity updated",
       productRemoved: "Product removed",
@@ -276,7 +311,9 @@ export default {
       removeProduct: "Error removing product",
       clearCart: "Error clearing cart",
       selectAddress: "You must select an address",
-      emptyCart: "Your cart is empty"
+      emptyCart: "Your cart is empty",
+      deliveryTimeRequired: "You must select a delivery time",
+      deliveryMethodRequired: "You must select a delivery method"
     },
     auth: {
       title: "Sign in to continue",

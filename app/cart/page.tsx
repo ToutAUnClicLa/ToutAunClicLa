@@ -14,8 +14,10 @@ import { useCart } from '@/hooks/useCart';
 import { useAddresses } from '@/hooks/useAddresses';
 import AuthModal from '@/components/features/auth/AuthModal';
 import { AddressSelector } from '@/components/features/modules/cart/AddressSelector';
+import DeliveryOptions from '@/components/cart/DeliveryOptions';
 import { toast } from 'sonner';
 import { CartItem } from '@/lib/services/cart';
+import type { DeliveryOptions as DeliveryOptionsType } from '@/lib/services/cart';
 import { useTranslation } from '@/hooks/useTranslation';
  
 // Mapeo de categorías con estilos modernos
@@ -87,6 +89,13 @@ export default function CartPage() {
   
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
+  const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOptionsType & { isValid: boolean }>({
+    horaEntregaPreferida: '18:00',
+    metodoEntrega: 'puerta',
+    notasEntrega: '',
+    aplicarATodos: true,
+    isValid: true
+  });
   
   // Cálculos de totales mejorados - recalcular desde los items con impuestos reales
   const calculatedSubtotal = useMemo(() => {
@@ -216,6 +225,22 @@ export default function CartPage() {
 
     if (isEmpty) {
       toast.error(t('cart.errors.emptyCart'));
+      return;
+    }
+
+    // Validar opciones de entrega
+    if (!deliveryOptions.horaEntregaPreferida) {
+      toast.error(t('cart.errors.deliveryTimeRequired'));
+      return;
+    }
+
+    if (!deliveryOptions.metodoEntrega) {
+      toast.error(t('cart.errors.deliveryMethodRequired'));
+      return;
+    }
+
+    if (!deliveryOptions.isValid) {
+      toast.error(t('cart.delivery.error'));
       return;
     }
 
@@ -574,15 +599,25 @@ export default function CartPage() {
                     <AddressSelector />
                   </div>
                   
-                  <div className="space-y-2 sm:space-y-3 mt-4 sm:mt-6">
+                  {/* Opciones de entrega - ahora integradas en el resumen */}
+                  <div className="mt-4 sm:mt-6">
+                    <DeliveryOptions 
+                      onOptionsChange={setDeliveryOptions}
+                      disabled={!isAuthenticated || !selectedAddress}
+                      className="border-0 shadow-none bg-transparent p-0"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2 sm:space-y-3 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
                     <Button 
                       size="lg" 
                       className="w-full bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base h-10 sm:h-12"
                       onClick={handleCheckout}
-                      disabled={!isAuthenticated || !selectedAddress}
+                      disabled={!isAuthenticated || !selectedAddress || !deliveryOptions.isValid}
                     >
                       {!isAuthenticated ? t('cart.summary.authRequired') : 
                        !selectedAddress ? t('cart.summary.addressRequired') : 
+                       !deliveryOptions.isValid ? t('cart.delivery.error') : 
                        t('cart.summary.proceed')}
                     </Button>
                     <Button 

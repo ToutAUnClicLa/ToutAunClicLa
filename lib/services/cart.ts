@@ -111,6 +111,13 @@ export interface Coupon {
   descripcion: string;
 }
 
+export interface DeliveryOptions {
+  horaEntregaPreferida: string;  // "HH:MM" format (12:00-22:00)
+  metodoEntrega: 'puerta' | 'manos' | 'recepcion';
+  notasEntrega?: string | null;
+  aplicarATodos?: boolean;
+}
+
 export interface CartWithCouponResponse extends CartResponse {
   coupon?: Coupon;
   summary: CartSummary & {
@@ -324,6 +331,42 @@ export async function applyCoupon(couponCode: string): Promise<{
 }
 
 /**
+ * Actualizar opciones de entrega para el carrito
+ */
+export async function updateDeliveryOptions(options: DeliveryOptions): Promise<{
+  message: string;
+  updatedItems: number;
+  deliveryOptions: DeliveryOptions;
+}> {
+  try {
+    const response = await fetch(`${CART_BASE_URL}/delivery-options`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(options),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (response.status === 400) {
+        if (data.message?.includes('delivery time')) {
+          throw new Error('La hora de entrega debe estar entre 12:00 PM y 10:00 PM');
+        }
+        if (data.message?.includes('delivery method')) {
+          throw new Error('Método de entrega inválido');
+        }
+      }
+      throw new Error(data.message || data.error || 'Error al actualizar opciones de entrega');
+    }
+
+    return data;
+  } catch (error: any) {
+    console.error('Error en updateDeliveryOptions:', error);
+    throw error;
+  }
+}
+
+/**
  * Obtener conteo total de items en el carrito
  */
 export async function getCartCount(): Promise<number> {
@@ -368,6 +411,7 @@ export const cartService = {
   removeFromCart,
   clearCart,
   applyCoupon,
+  updateDeliveryOptions,
   getCartCount,
   getCartSummary,
 };
