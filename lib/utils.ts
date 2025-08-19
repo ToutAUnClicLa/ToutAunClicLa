@@ -101,19 +101,17 @@ export function calculateCanadianTaxes(basePrice: number, tps?: number, tvq?: nu
  * @returns Estado de impuestos del producto
  */
 export function getTaxStatus(categoryId: number, tps?: number, tvq?: number, consigne?: number): 'taxable' | 'non-taxable' | 'food-taxable' {
-  // Categoría 1: Productos generales
-  if (categoryId === 1) {
-    // Un producto es taxable solo si tiene TPS o TVQ (consigne es independiente)
-    return (tps || tvq) ? 'taxable' : 'non-taxable';
-  }
+  // Para todas las categorías, aplicar la misma lógica
+  // Un producto es taxable si tiene TPS o TVQ (consigne es independiente)
+  const hasTaxes = !!(tps || tvq);
   
-  // Categoría 2: Comida
+  // Categoría 2: Comida - pero sigue la misma lógica de impuestos
   if (categoryId === 2) {
-    return 'food-taxable';
+    return hasTaxes ? 'food-taxable' : 'non-taxable';
   }
   
-  // Otras categorías por defecto - solo TPS/TVQ determinan si es taxable
-  return (tps || tvq) ? 'taxable' : 'non-taxable';
+  // Todas las demás categorías (incluyendo productos generales)
+  return hasTaxes ? 'taxable' : 'non-taxable';
 }
 
 /**

@@ -67,27 +67,31 @@ export function ProductPriceDisplay({ product, variant = 'default', className = 
           {formatPrice(product.precio)}
         </div>
 
-        {/* Información de impuestos - solo para productos taxables */}
-        {priceData.taxStatus === 'taxable' && priceData.taxCalculation.hasTaxes && variant !== 'compact' && (
-          <div className="space-y-1 text-xs text-gray-600">
-            {product.TPS && (
-              <div>
-                {t('catalog.tax.tps')} ({product.TPS}%): +{formatPrice(priceData.taxCalculation.tpsAmount)}
+        {/* Información de impuestos - para todas las categorías */}
+        {variant !== 'compact' && (
+          <>
+            {priceData.taxCalculation.hasTaxes ? (
+              <div className="space-y-1 text-xs text-gray-600">
+                {product.TPS && (
+                  <div>
+                    {t('catalog.tax.tps')} ({product.TPS}%): +{formatPrice(priceData.taxCalculation.tpsAmount)}
+                  </div>
+                )}
+                {product.TVQ && (
+                  <div>
+                    {t('catalog.tax.tvq')} ({product.TVQ}%): +{formatPrice(priceData.taxCalculation.tvqAmount)}
+                  </div>
+                )}
               </div>
+            ) : (
+              // Badge para productos sin impuestos (sin TPS ni TVQ)
+              !product.TPS && !product.TVQ && (
+                <Badge variant="outline" className="text-green-700 bg-green-50 border-green-200 text-xs">
+                  {t('catalog.tax.nonTaxable')}
+                </Badge>
+              )
             )}
-            {product.TVQ && (
-              <div>
-                {t('catalog.tax.tvq')} ({product.TVQ}%): +{formatPrice(priceData.taxCalculation.tvqAmount)}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Badge para productos no taxables */}
-        {priceData.taxStatus === 'non-taxable' && variant !== 'compact' && (
-          <Badge variant="outline" className="text-green-700 bg-green-50 border-green-200 text-xs">
-            {t('catalog.tax.nonTaxable')}
-          </Badge>
+          </>
         )}
 
         {/* Consigne - mostrar siempre si existe, independiente de si es taxable o no */}
