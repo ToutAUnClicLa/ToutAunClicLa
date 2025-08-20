@@ -89,6 +89,7 @@ export default function CartPage() {
   
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOptionsType & { isValid: boolean }>({
     horaEntregaPreferida: '18:00',
     metodoEntrega: 'puerta',
@@ -226,7 +227,7 @@ export default function CartPage() {
   };
 
   // Función para proceder al checkout
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!isAuthenticated) {
       setShowAuthModal(true);
       return;
@@ -258,8 +259,68 @@ export default function CartPage() {
       return;
     }
 
-    // Proceder al checkout
-    router.push('/checkout');
+    try {
+      setCheckoutLoading(true);
+      
+      // Llamar directamente al backend para crear checkout session
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        toast.error('Sesión expirada. Por favor inicia sesión nuevamente');
+        setShowAuthModal(true);
+        return;
+      }
+
+      console.log('🛒 Iniciando checkout directo con Stripe...');
+      
+      const successUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.toutaunclicla.com'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
+      const cancelUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.toutaunclicla.com'}/checkout/cancel`;
+      
+      console.log('🔗 Success URL:', successUrl);
+      console.log('🔗 Cancel URL:', cancelUrl);
+      console.log('🌐 NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
+      
+      const payload = {
+        shipping_address_id: selectedAddress.id,
+        success_url: successUrl,
+        cancel_url: cancelUrl
+      };
+      
+      console.log('📦 Payload completo:', JSON.stringify(payload, null, 2));
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/stripe/checkout/create-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      
+      console.log('🔍 Response status:', response.status);
+      console.log('🔍 Response data:', data);
+      
+      if (!response.ok) {
+        console.error('❌ Backend error details:', {
+          status: response.status,
+          statusText: response.statusText,
+          data: data
+        });
+        throw new Error(data.message || data.error || 'Error creando sesión de checkout');
+      }
+
+      console.log('✅ Checkout session creada:', data.sessionId);
+      console.log('🔗 Redirigiendo a Stripe Checkout:', data.url);
+      
+      // Redirigir DIRECTAMENTE a Stripe Checkout
+      window.location.href = data.url;
+      
+    } catch (error: any) {
+      console.error('❌ Error en checkout:', error);
+      toast.error(error.message || 'Error procesando el pago. Intenta nuevamente.');
+      setCheckoutLoading(false);
+    }
   };
 
   // Función para renderizar badges de impuestos
@@ -629,12 +690,28 @@ export default function CartPage() {
                     <Button 
                       size="lg" 
                       className="w-full bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base h-10 sm:h-12"
-                      onClick={handleCheckout}
-                      disabled={!isAuthenticated || !deliveryOptions.isValid}
+                      onClick={() => {
+                        console.log('🔍 Button clicked - Debug info:', {
+                          isAuthenticated,
+                          hasValidAddress,
+                          deliveryOptionsValid: deliveryOptions.isValid,
+                          selectedAddress,
+                          addressesCount: addresses?.length || 0,
+                          deliveryOptions
+                        })
+                        handleCheckout()
+                      }}
+                      disabled={!isAuthenticated || !deliveryOptions.isValid || !hasValidAddress || isEmpty || checkoutLoading}
                     >
-                      {!isAuthenticated ? t('cart.summary.authRequired') : 
-                       !deliveryOptions.isValid ? t('cart.delivery.error') : 
+                      {checkoutLoading ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Redirigiendo a Stripe...
+                        </span>
+                      ) : !isAuthenticated ? t('cart.summary.authRequired') : 
+                       isEmpty ? 'Carrito vacío' :
                        !hasValidAddress ? t('cart.summary.addressRequired') : 
+                       !deliveryOptions.isValid ? t('cart.delivery.error') : 
                        t('cart.summary.proceed')}
                     </Button>
                     <Button 

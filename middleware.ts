@@ -18,7 +18,6 @@ export async function middleware(req: NextRequest) {
 
   // Lista de rutas que requieren autenticación estricta del lado del servidor
   const strictProtectedRoutes = [
-    '/checkout',
     '/profile/orders',
     '/profile/notifications',
   ];
