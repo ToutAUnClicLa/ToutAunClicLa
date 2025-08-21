@@ -195,10 +195,6 @@ export default function SuccessPage() {
               
               <div className="space-y-3">
                 <div className="flex justify-between py-2 border-b">
-                  <span className="text-gray-600">ID de Sesión:</span>
-                  <span className="text-xs font-mono">{orderData.sessionId}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
                   <span className="text-gray-600">Estado del Pago:</span>
                   <span className="text-green-600 font-semibold">
                     {orderData.payment_status === 'paid' ? 'Pagado' : orderData.payment_status}
@@ -226,7 +222,7 @@ export default function SuccessPage() {
             <div className="text-center p-4">
               <div className="text-2xl mb-2">📦</div>
               <h4 className="font-semibold mb-1">Preparación del Envío</h4>
-              <p className="text-sm text-gray-600">Procesaremos tu pedido en 1-2 días hábiles</p>
+              <p className="text-sm text-gray-600">Procesaremos tu pedido en aproximadamente 1 hora</p>
             </div>
             <div className="text-center p-4">
               <div className="text-2xl mb-2">🚚</div>
@@ -238,14 +234,14 @@ export default function SuccessPage() {
 
         <div className="grid md:grid-cols-3 gap-4">
           <Button 
-            onClick={() => router.push(`/orders/${order?.id}`)}
+            onClick={() => router.push(`/profile/orders/${order?.id}`)}
             className="w-full bg-blue-600 hover:bg-blue-700"
           >
             Ver Detalles del Pedido
           </Button>
           <Button 
             variant="outline"
-            onClick={() => router.push('/orders')}
+            onClick={() => router.push('/profile/orders')}
             className="w-full"
           >
             Ver Todos Mis Pedidos
@@ -261,9 +257,9 @@ export default function SuccessPage() {
 
         <div className="text-center mt-8 p-4 bg-gray-50 rounded-lg">
           <p className="text-sm text-gray-600 mb-2">¿Tienes preguntas sobre tu pedido?</p>
-          <Button variant="link" onClick={() => router.push('/support')}>
-            Contactar Soporte
-          </Button>
+          <p className="text-sm text-gray-800">
+            <strong>Contactar soporte:</strong> serviceclient@toutaunclicla.com
+          </p>
         </div>
       </div>
     </div>

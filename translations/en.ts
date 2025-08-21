@@ -550,6 +550,10 @@ export default {
         title: "Orders",
         description: "Purchase history"
       },
+      orderDetail: {
+        title: "Order Detail",
+        description: "Complete order information"
+      },
       security: {
         title: "Security",
         description: "Password and privacy"
@@ -622,6 +626,72 @@ export default {
           confirmText: "You must type 'DELETE' to continue",
           generic: "Error deleting account"
         }
+      }
+    },
+    orderDetail: {
+      title: "Order Detail",
+      loading: "Loading order details...",
+      notFound: "Order not found",
+      notFoundDesc: "The requested order does not exist or you don't have access to it.",
+      error: "Error loading order",
+      backToOrders: "Back to My Orders",
+      copyOrderNumber: "Copy order number",
+      orderNumberCopied: "Order number copied to clipboard",
+      status: {
+        title: "Shipping Status",
+        progress: "Shipping progress"
+      },
+      tracking: {
+        orderPlaced: "Order Placed",
+        paymentConfirmed: "Payment Confirmed",
+        processing: "Processing",
+        shipped: "Shipped",
+        delivered: "Delivered"
+      },
+      actions: {
+        downloadInvoice: "Download Invoice",
+        trackShipment: "Track Shipment",
+        contactSupport: "Contact Support",
+        share: "Share",
+        cancelOrder: "Cancel Order",
+        buyAgain: "Buy Again",
+        liveChat: "Live Chat",
+        sendEmail: "Send Email",
+        rateOrder: "Rate Order"
+      },
+      sections: {
+        products: "Ordered Products",
+        pricing: "Price Breakdown",
+        shipping: "Shipping Information",
+        payment: "Payment Information",
+        notes: "Order Notes",
+        availableActions: "Available Actions"
+      },
+      pricing: {
+        subtotal: "Subtotal",
+        taxes: "Taxes",
+        tps: "GST (5%)",
+        tvq: "QST (9.975%)",
+        totalTaxes: "Total Taxes",
+        shipping: "Shipping",
+        freeShipping: "Free",
+        discount: "Discount",
+        finalTotal: "Final Total"
+      },
+      payment: {
+        method: "Method",
+        paymentDate: "Payment Date",
+        refundProcessed: "Refund Processed",
+        refundAmount: "Amount",
+        refundDate: "Date"
+      },
+      help: {
+        title: "Need help with your order?",
+        comingSoon: "Coming soon",
+        trackingComingSoon: "Tracking system coming soon",
+        invoiceComingSoon: "Invoice download coming soon",
+        cancelComingSoon: "Cancellation coming soon",
+        redirectingSupport: "Redirecting to customer support..."
       }
     },
     settings: {

@@ -550,6 +550,10 @@ export default {
         title: "Commandes",
         description: "Historique des achats"
       },
+      orderDetail: {
+        title: "Détail de la Commande",
+        description: "Informations complètes de la commande"
+      },
       security: {
         title: "Sécurité",
         description: "Mot de passe et confidentialité"
@@ -622,6 +626,72 @@ export default {
           confirmText: "Vous devez taper 'SUPPRIMER' pour continuer",
           generic: "Erreur lors de la suppression du compte"
         }
+      }
+    },
+    orderDetail: {
+      title: "Détail de la Commande",
+      loading: "Chargement des détails de la commande...",
+      notFound: "Commande non trouvée",
+      notFoundDesc: "La commande demandée n'existe pas ou vous n'y avez pas accès.",
+      error: "Erreur lors du chargement de la commande",
+      backToOrders: "Retour à Mes Commandes",
+      copyOrderNumber: "Copier le numéro de commande",
+      orderNumberCopied: "Numéro de commande copié dans le presse-papiers",
+      status: {
+        title: "État de la Livraison",
+        progress: "Progression de la livraison"
+      },
+      tracking: {
+        orderPlaced: "Commande Passée",
+        paymentConfirmed: "Paiement Confirmé",
+        processing: "En cours de traitement",
+        shipped: "Expédiée",
+        delivered: "Livrée"
+      },
+      actions: {
+        downloadInvoice: "Télécharger la Facture",
+        trackShipment: "Suivre l'Expédition",
+        contactSupport: "Contacter le Support",
+        share: "Partager",
+        cancelOrder: "Annuler la Commande",
+        buyAgain: "Acheter à Nouveau",
+        liveChat: "Chat en Direct",
+        sendEmail: "Envoyer un Email",
+        rateOrder: "Évaluer la Commande"
+      },
+      sections: {
+        products: "Produits Commandés",
+        pricing: "Détail des Prix",
+        shipping: "Informations de Livraison",
+        payment: "Informations de Paiement",
+        notes: "Notes de Commande",
+        availableActions: "Actions Disponibles"
+      },
+      pricing: {
+        subtotal: "Sous-total",
+        taxes: "Taxes",
+        tps: "TPS (5%)",
+        tvq: "TVQ (9.975%)",
+        totalTaxes: "Total des Taxes",
+        shipping: "Livraison",
+        freeShipping: "Gratuite",
+        discount: "Remise",
+        finalTotal: "Total Final"
+      },
+      payment: {
+        method: "Méthode",
+        paymentDate: "Date de Paiement",
+        refundProcessed: "Remboursement Traité",
+        refundAmount: "Montant",
+        refundDate: "Date"
+      },
+      help: {
+        title: "Besoin d'aide avec votre commande?",
+        comingSoon: "Bientôt disponible",
+        trackingComingSoon: "Système de suivi bientôt disponible",
+        invoiceComingSoon: "Téléchargement de facture bientôt disponible",
+        cancelComingSoon: "Annulation bientôt disponible",
+        redirectingSupport: "Redirection vers le support client..."
       }
     },
     settings: {

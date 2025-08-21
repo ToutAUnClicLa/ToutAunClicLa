@@ -815,6 +815,10 @@ export default {
         title: "Pedidos",
         description: "Historial de compras"
       },
+      orderDetail: {
+        title: "Detalle del Pedido",
+        description: "Información completa del pedido"
+      },
       security: {
         title: "Seguridad",
         description: "Contraseña y privacidad"
@@ -887,6 +891,163 @@ export default {
           confirmText: "Debes escribir 'ELIMINAR' para continuar",
           generic: "Error al eliminar la cuenta"
         }
+      }
+    },
+    orderDetail: {
+      title: "Detalle del Pedido",
+      loading: "Cargando detalles del pedido...",
+      notFound: "Pedido no encontrado",
+      notFoundDesc: "El pedido solicitado no existe o no tienes acceso a él.",
+      error: "Error al cargar el pedido",
+      backToOrders: "Volver a Mis Pedidos",
+      copyOrderNumber: "Copiar número de pedido",
+      orderNumberCopied: "Número de pedido copiado al portapapeles",
+      status: {
+        title: "Estado del Envío",
+        progress: "Progreso del envío"
+      },
+      tracking: {
+        orderPlaced: "Pedido Realizado",
+        paymentConfirmed: "Pago Confirmado", 
+        processing: "Procesando",
+        shipped: "Enviado",
+        delivered: "Entregado"
+      },
+      actions: {
+        downloadInvoice: "Descargar Factura",
+        trackShipment: "Rastrear Envío",
+        contactSupport: "Contactar Soporte",
+        share: "Compartir",
+        cancelOrder: "Cancelar Pedido",
+        buyAgain: "Comprar de Nuevo",
+        liveChat: "Chat en Vivo",
+        sendEmail: "Enviar Email",
+        rateOrder: "Calificar Pedido"
+      },
+      sections: {
+        products: "Productos Pedidos",
+        pricing: "Resumen de Precios",
+        shipping: "Información de Envío",
+        payment: "Información de Pago",
+        notes: "Notas del Pedido",
+        availableActions: "Acciones Disponibles"
+      },
+      pricing: {
+        subtotal: "Subtotal",
+        taxes: "Impuestos",
+        tps: "TPS (5%)",
+        tvq: "TVQ (9.975%)",
+        totalTaxes: "Total Impuestos",
+        shipping: "Envío",
+        freeShipping: "Gratis",
+        discount: "Descuento",
+        finalTotal: "Total Final"
+      },
+      payment: {
+        method: "Método",
+        paymentDate: "Fecha de Pago",
+        refundProcessed: "Reembolso Procesado",
+        refundAmount: "Monto",
+        refundDate: "Fecha"
+      },
+      help: {
+        title: "¿Necesitas ayuda con tu pedido?",
+        comingSoon: "Próximamente disponible",
+        trackingComingSoon: "Sistema de rastreo próximamente disponible",
+        invoiceComingSoon: "Descarga de factura próximamente disponible",
+        cancelComingSoon: "Cancelación próximamente disponible",
+        redirectingSupport: "Redirigiendo a soporte al cliente..."
+      }
+    },
+    orders: {
+      title: "Mis Pedidos",
+      subtitle: "Historial completo de tus compras",
+      loading: "Cargando pedidos...",
+      stats: {
+        totalOrders: "Total de Pedidos",
+        totalSpent: "Total Gastado",
+        averageOrderValue: "Promedio",
+        recentOrdersCount: "Recientes"
+      },
+      filters: {
+        search: "Buscar por número de pedido o producto...",
+        filterByStatus: "Filtrar por estado",
+        allStatuses: "Todos los estados",
+        refresh: "Actualizar"
+      },
+      statuses: {
+        pendiente: "Pendiente",
+        pagado: "Pagado", 
+        procesando: "Procesando",
+        enviado: "Enviado",
+        entregado: "Entregado",
+        cancelado: "Cancelado"
+      },
+      empty: {
+        title: "No hay pedidos aún",
+        titleWithSearch: "No se encontraron pedidos",
+        description: "Cuando realices tu primera compra, aparecerá aquí",
+        descriptionWithSearch: "Intenta cambiar los términos de búsqueda",
+        exploreProducts: "Explorar Productos"
+      },
+      orderCard: {
+        products: "productos",
+        shippingTo: "Envío a:",
+        viewDetails: "Ver Detalles",
+        trackShipment: "Rastrear Envío",
+        download: "Descargar",
+        moreProducts: "+{count} productos más"
+      },
+      pagination: {
+        loadMore: "Cargar más pedidos",
+        loading: "Cargando..."
+      },
+      quickLinks: {
+        title: "Enlaces rápidos",
+        keepShopping: "Seguir Comprando",
+        myAddresses: "Mis Direcciones",
+        support: "Soporte"
+      },
+      messages: {
+        trackingNotAvailable: "Función de rastreo próximamente",
+        downloadNotAvailable: "Descarga próximamente"
+      }
+    },
+    checkoutSuccess: {
+      title: "¡Pago Exitoso!",
+      subtitle: "Tu pedido ha sido confirmado",
+      orderNumber: "Pedido #{number}",
+      confirmedOn: "Confirmado el",
+      orderDetails: {
+        totalPaid: "Total Pagado:",
+        orderStatus: "Estado del Pedido:",
+        confirmationEmail: "Email de Confirmación:",
+        paymentStatus: "Estado del Pago:",
+        currency: "Moneda:"
+      },
+      nextSteps: {
+        title: "¿Qué sigue ahora?",
+        emailConfirmation: {
+          title: "Confirmación por Email",
+          description: "Recibirás un email con los detalles de tu pedido"
+        },
+        orderPreparation: {
+          title: "Preparación del Envío", 
+          description: "Procesaremos tu pedido en aproximadamente 1 hora"
+        },
+        shippingDelivery: {
+          title: "Envío y Entrega",
+          description: "Te notificaremos cuando sea enviado"
+        }
+      },
+      actions: {
+        viewOrderDetails: "Ver Detalles del Pedido",
+        viewAllOrders: "Ver Todos Mis Pedidos", 
+        continueShopping: "Continuar Comprando"
+      },
+      support: {
+        question: "¿Tienes preguntas sobre tu pedido?",
+        contactInfo: "Contactar soporte:"
       }
     },
     settings: {

@@ -17,11 +17,10 @@ import {
   Download,
   RefreshCcw,
   ChevronRight,
-  TrendingUp,
-  Clock,
   CheckCircle,
   Truck,
   AlertCircle,
+  Clock,
   Search
 } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
@@ -163,10 +162,10 @@ export default function OrdersPage() {
                     </div>
                     <div>
                       <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
-                        Mis Pedidos
+                        {t('profile.sections.orders.title')}
                       </h1>
                       <p className="text-emerald-100 text-sm sm:text-base opacity-90">
-                        Historial completo de tus compras
+                        {t('profile.sections.orders.description')}
                       </p>
                     </div>
                   </div>
@@ -177,7 +176,7 @@ export default function OrdersPage() {
                     className="bg-white/10 border border-white/20 text-white hover:bg-white/20 backdrop-blur-sm h-8 sm:h-9 px-2 sm:px-3"
                   >
                     <ArrowLeft className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Volver</span>
+                    <span className="hidden sm:inline">{t('common.back')}</span>
                   </Button>
                 </div>
               </div>
@@ -193,37 +192,13 @@ export default function OrdersPage() {
             transition={{ delay: 0.1 }}
             className="mb-6"
           >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <Card className="p-4 text-center">
                 <div className="flex items-center justify-center mb-2">
                   <ShoppingBag className="h-8 w-8 text-emerald-600" />
                 </div>
                 <div className="text-2xl font-bold text-gray-900">{stats.totalOrders}</div>
-                <div className="text-sm text-gray-600">Total Pedidos</div>
-              </Card>
-              
-              <Card className="p-4 text-center">
-                <div className="flex items-center justify-center mb-2">
-                  <CreditCard className="h-8 w-8 text-blue-600" />
-                </div>
-                <div className="text-2xl font-bold text-gray-900">${stats.totalSpent.toFixed(2)}</div>
-                <div className="text-sm text-gray-600">Total Gastado</div>
-              </Card>
-              
-              <Card className="p-4 text-center">
-                <div className="flex items-center justify-center mb-2">
-                  <TrendingUp className="h-8 w-8 text-purple-600" />
-                </div>
-                <div className="text-2xl font-bold text-gray-900">${stats.averageOrderValue.toFixed(2)}</div>
-                <div className="text-sm text-gray-600">Promedio</div>
-              </Card>
-              
-              <Card className="p-4 text-center">
-                <div className="flex items-center justify-center mb-2">
-                  <Clock className="h-8 w-8 text-orange-600" />
-                </div>
-                <div className="text-2xl font-bold text-gray-900">{stats.recentOrdersCount}</div>
-                <div className="text-sm text-gray-600">Recientes</div>
+                <div className="text-sm text-gray-600">Total de Pedidos</div>
               </Card>
             </div>
           </motion.div>
