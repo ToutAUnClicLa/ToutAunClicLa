@@ -1,46 +1,110 @@
-const API_BASE_URL = 'https://backendtoutaunclicla-production.up.railway.app/api/v1';
+import { getAuthToken } from './auth';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+// ============================================================================
+// TIPOS E INTERFACES ACTUALIZADOS SEGÚN LA DOCUMENTACIÓN API
+// ============================================================================
+
+export interface OrderItem {
+  id: number;
+  name: string;
+  description?: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  category: string;
+  subcategory?: string;
+  images: string[];
+  sku: string;
+}
+
+export interface OrderItemPreview {
+  id: number;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  image: string;
+}
+
+export interface OrderPricing {
+  subtotal: number;
+  taxes: {
+    tps: number;
+    tvq: number;
+    total: number;
+  };
+  shipping: number;
+  discount: number;
+  couponCode?: string;
+  finalTotal: number;
+}
+
+export interface OrderShipping {
+  recipientName: string;
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  phone: string;
+}
+
+export interface OrderSummary {
+  totalItems: number;
+  productCount: number;
+}
+
+export interface OrderPaymentInfo {
+  method: string;
+  stripeSessionId?: string;
+  stripePaymentIntentId?: string;
+  paymentDate: string;
+  refundInfo?: {
+    isRefunded: boolean;
+    refundAmount: number;
+    refundDate?: string;
+  };
+}
+
+export interface OrderTracking {
+  orderPlaced?: string;
+  paymentConfirmed?: string;
+  processing?: string;
+  shipped?: string;
+  delivered?: string;
+}
 
 export interface Order {
-  id: string;
-  usuario_id: string;
-  direccion_envio_id: string;
+  id: number;
+  orderNumber: string;
+  status: 'pendiente' | 'pagado' | 'procesando' | 'enviado' | 'entregado' | 'cancelado' | 'reembolsado' | 'parcialmente_reembolsado';
   total: number;
-  estado: 'pendiente' | 'procesando' | 'enviado' | 'entregado' | 'cancelado';
-  fecha_pedido: string;
-  stripe_payment_intent_id: string;
-  detalles_pedido: OrderDetail[];
-  direcciones_envio: {
-    id: string;
-    direccion: string;
-    ciudad: string;
-    codigo_postal: string;
-    pais: string;
-    nombre: string;
-    telefono?: string;
+  orderDate: string;
+  pricing: OrderPricing;
+  summary: OrderSummary;
+  shipping: OrderShipping;
+  itemsPreview: OrderItemPreview[];
+  paymentInfo: OrderPaymentInfo;
+  tracking?: OrderTracking;
+  emails?: {
+    confirmationSent: boolean;
+    shippingSent: boolean;
   };
+  notes?: string;
 }
 
-export interface OrderDetail {
-  id: string;
-  pedido_id: string;
-  producto_id: number;
-  quantity: number;
-  price: number;
-  productos: {
-    nombre: string;
-    precio: number;
-    imagen_principal: string;
-    descripcion?: string;
-  };
+export interface OrderDetail extends Order {
+  items: OrderItem[];
 }
 
-export interface CreateOrderData {
-  direccion_envio_id: string;
-  detalles_pedido: {
-    producto_id: number;
-    quantity: number;
-    price: number;
-  }[];
+export interface OrderStats {
+  totalOrders: number;
+  totalSpent: number;
+  ordersByStatus: Record<string, number>;
+  recentOrdersCount: number;
+  averageOrderValue: number;
+  lastOrderDate?: string;
 }
 
 export interface OrdersResponse {
@@ -48,225 +112,277 @@ export interface OrdersResponse {
   pagination: {
     currentPage: number;
     totalPages: number;
-    totalItems: number;
-    itemsPerPage: number;
+    totalOrders: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+    nextPage?: number;
+    previousPage?: number;
   };
 }
 
+// ============================================================================
+// FUNCIONES DEL SERVICIO ACTUALIZADAS
+// ============================================================================
+
 /**
- * Obtener mis órdenes
+ * Obtiene el historial de pedidos del usuario
  */
-export async function getMyOrders(
-  page: number = 1, 
-  limit: number = 10, 
+export const getUserOrders = async (
+  page: number = 1,
+  limit: number = 10,
   status?: string
-): Promise<OrdersResponse> {
-  try {
-    const token = localStorage.getItem('auth_token');
-    
-    if (!token) {
-      throw new Error('Usuario no autenticado');
-    }
+): Promise<OrdersResponse> => {
+  const token = getAuthToken();
+  
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
 
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-    });
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+    ...(status && { status })
+  });
 
-    if (status) {
-      params.append('status', status);
-    }
-
-    const response = await fetch(`${API_BASE_URL}/orders/my-orders?${params}`, {
+  const response = await fetch(
+    `${API_BASE_URL}/orders/my-orders?${queryParams}`,
+    {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error al obtener órdenes');
+        'Content-Type': 'application/json'
+      }
     }
+  );
 
-    return await response.json();
-  } catch (error: any) {
-    console.error('Error al obtener mis órdenes:', error);
-    throw error;
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Error fetching orders');
   }
-}
+
+  const data = await response.json();
+  
+  if (!data.success) {
+    throw new Error(data.message || 'Failed to fetch orders');
+  }
+
+  return data.data;
+};
 
 /**
- * Obtener detalles de una orden específica
+ * Obtiene estadísticas resumidas de pedidos del usuario
  */
-export async function getOrderDetails(orderId: string): Promise<Order> {
-  try {
-    const token = localStorage.getItem('auth_token');
-    
-    if (!token) {
-      throw new Error('Usuario no autenticado');
-    }
+export const getUserOrderStats = async (): Promise<OrderStats> => {
+  const token = getAuthToken();
+  
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
 
-    const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+  const response = await fetch(
+    `${API_BASE_URL}/orders/stats/summary`,
+    {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error al obtener detalles de la orden');
+        'Content-Type': 'application/json'
+      }
     }
+  );
 
-    const data = await response.json();
-    return data.order;
-  } catch (error: any) {
-    console.error('Error al obtener detalles de orden:', error);
-    throw error;
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Error fetching order stats');
   }
-}
+
+  const data = await response.json();
+  
+  if (!data.success) {
+    throw new Error(data.message || 'Failed to fetch order stats');
+  }
+
+  return data.data;
+};
 
 /**
- * Crear una nueva orden
+ * Obtiene los detalles completos de un pedido específico
  */
-export async function createOrder(orderData: CreateOrderData): Promise<Order> {
-  try {
-    const token = localStorage.getItem('auth_token');
-    
-    if (!token) {
-      throw new Error('Usuario no autenticado');
-    }
-
-    const response = await fetch(`${API_BASE_URL}/orders`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(orderData),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error al crear orden');
-    }
-
-    const data = await response.json();
-    return data.order;
-  } catch (error: any) {
-    console.error('Error al crear orden:', error);
-    throw error;
+export const getOrderDetails = async (orderId: number): Promise<OrderDetail> => {
+  const token = getAuthToken();
+  
+  if (!token) {
+    throw new Error('No authentication token found');
   }
-}
 
-/**
- * Actualizar estado de una orden (solo para admins)
- */
-export async function updateOrderStatus(orderId: string, estado: Order['estado']): Promise<Order> {
-  try {
-    const token = localStorage.getItem('auth_token');
-    
-    if (!token) {
-      throw new Error('Usuario no autenticado');
-    }
-
-    const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ estado }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error al actualizar estado de la orden');
-    }
-
-    const data = await response.json();
-    return data.order;
-  } catch (error: any) {
-    console.error('Error al actualizar estado de orden:', error);
-    throw error;
-  }
-}
-
-/**
- * Cancelar una orden
- */
-export async function cancelOrder(orderId: string): Promise<Order> {
-  try {
-    const token = localStorage.getItem('auth_token');
-    
-    if (!token) {
-      throw new Error('Usuario no autenticado');
-    }
-
-    const response = await fetch(`${API_BASE_URL}/orders/${orderId}/cancel`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error al cancelar orden');
-    }
-
-    const data = await response.json();
-    return data.order;
-  } catch (error: any) {
-    console.error('Error al cancelar orden:', error);
-    throw error;
-  }
-}
-
-/**
- * Obtener todas las órdenes (solo admins)
- */
-export async function getAllOrders(
-  page: number = 1, 
-  limit: number = 10, 
-  status?: string
-): Promise<OrdersResponse> {
-  try {
-    const token = localStorage.getItem('auth_token');
-    
-    if (!token) {
-      throw new Error('Usuario no autenticado');
-    }
-
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-    });
-
-    if (status) {
-      params.append('status', status);
-    }
-
-    const response = await fetch(`${API_BASE_URL}/orders?${params}`, {
+  const response = await fetch(
+    `${API_BASE_URL}/orders/${orderId}`,
+    {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error al obtener todas las órdenes');
+        'Content-Type': 'application/json'
+      }
     }
+  );
 
-    return await response.json();
-  } catch (error: any) {
-    console.error('Error al obtener todas las órdenes:', error);
-    throw error;
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Error fetching order details');
   }
-}
+
+  const data = await response.json();
+  
+  if (!data.success) {
+    throw new Error(data.message || 'Failed to fetch order details');
+  }
+
+  return data.data.order;
+};
+
+/**
+ * Obtiene el estado de una sesión de checkout de Stripe
+ */
+export const getCheckoutSessionStatus = async (sessionId: string) => {
+  const token = getAuthToken();
+  
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/stripe/checkout/session-status/${sessionId}`,
+    {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Error fetching checkout session status');
+  }
+
+  const data = await response.json();
+  return data;
+};
+
+// ============================================================================
+// UTILIDADES Y HELPERS
+// ============================================================================
+
+/**
+ * Obtiene el texto localizado para el estado de un pedido
+ */
+export const getOrderStatusText = (status: Order['status'], language: string = 'es'): string => {
+  const statusTexts: Record<string, Record<string, string>> = {
+    es: {
+      pendiente: 'Pendiente',
+      pagado: 'Pagado',
+      procesando: 'Procesando',
+      enviado: 'Enviado',
+      entregado: 'Entregado',
+      cancelado: 'Cancelado',
+      reembolsado: 'Reembolsado',
+      parcialmente_reembolsado: 'Parcialmente Reembolsado'
+    },
+    en: {
+      pendiente: 'Pending',
+      pagado: 'Paid',
+      procesando: 'Processing',
+      enviado: 'Shipped',
+      entregado: 'Delivered',
+      cancelado: 'Cancelled',
+      reembolsado: 'Refunded',
+      parcialmente_reembolsado: 'Partially Refunded'
+    },
+    fr: {
+      pendiente: 'En attente',
+      pagado: 'Payé',
+      procesando: 'En cours',
+      enviado: 'Expédié',
+      entregado: 'Livré',
+      cancelado: 'Annulé',
+      reembolsado: 'Remboursé',
+      parcialmente_reembolsado: 'Partiellement Remboursé'
+    }
+  };
+
+  return statusTexts[language]?.[status] || status;
+};
+
+/**
+ * Obtiene el color CSS para el estado de un pedido
+ */
+export const getOrderStatusColor = (status: Order['status']): string => {
+  const statusColors: Record<string, string> = {
+    pendiente: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    pagado: 'bg-green-100 text-green-800 border-green-200',
+    procesando: 'bg-blue-100 text-blue-800 border-blue-200',
+    enviado: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    entregado: 'bg-purple-100 text-purple-800 border-purple-200',
+    cancelado: 'bg-red-100 text-red-800 border-red-200',
+    reembolsado: 'bg-gray-100 text-gray-800 border-gray-200',
+    parcialmente_reembolsado: 'bg-orange-100 text-orange-800 border-orange-200'
+  };
+
+  return statusColors[status] || 'bg-gray-100 text-gray-800 border-gray-200';
+};
+
+/**
+ * Formatea una fecha para mostrar
+ */
+export const formatOrderDate = (dateString: string, language: string = 'es'): string => {
+  const date = new Date(dateString);
+  
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  };
+
+  const locales: Record<string, string> = {
+    es: 'es-ES',
+    en: 'en-US',
+    fr: 'fr-FR'
+  };
+
+  return date.toLocaleDateString(locales[language] || 'es-ES', options);
+};
+
+/**
+ * Calcula el progreso del tracking de un pedido
+ */
+export const getOrderProgress = (tracking: OrderTracking): number => {
+  const stages = ['orderPlaced', 'paymentConfirmed', 'processing', 'shipped', 'delivered'];
+  let completedStages = 0;
+
+  stages.forEach(stage => {
+    if (tracking[stage as keyof OrderTracking]) {
+      completedStages++;
+    }
+  });
+
+  return (completedStages / stages.length) * 100;
+};
+
+/**
+ * Verifica si un pedido puede ser cancelado
+ */
+export const canCancelOrder = (order: Order): boolean => {
+  return ['pendiente', 'pagado', 'procesando'].includes(order.status);
+};
+
+/**
+ * Verifica si un pedido puede ser rastreado
+ */
+export const canTrackOrder = (order: Order): boolean => {
+  return ['enviado', 'entregado'].includes(order.status);
+};
+
+// Mantener compatibilidad con funciones existentes
+export const getMyOrders = getUserOrders;

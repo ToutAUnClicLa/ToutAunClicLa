@@ -27,6 +27,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/ui/avat
 import { useTranslation } from '@/hooks/useTranslation';
 import { getUserAddresses } from '@/lib/services/addresses';
 import { getFavoritesCount } from '@/lib/services/favorites';
+import { getUserOrderStats } from '@/lib/services/orders';
 
 
 interface UserProfile {
@@ -158,15 +159,16 @@ export default function ProfilePage() {
           });
 
           // Cargar estadísticas reales
-          const [addressesData, favoritesCount] = await Promise.all([
+          const [addressesData, favoritesCount, orderStats] = await Promise.all([
             getUserAddresses().catch(() => []),
-            getFavoritesCount().catch(() => 0)
+            getFavoritesCount().catch(() => 0),
+            getUserOrderStats().catch(() => ({ totalOrders: 0 }))
           ]);
 
           setStats({
             addresses: addressesData.length,
             favorites: favoritesCount,
-            orders: 0, // TODO: Implementar cuando tengamos endpoint de pedidos
+            orders: orderStats.totalOrders,
           });
           
         } catch (error) {

@@ -220,7 +220,7 @@ export default function SecurityPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="shadow-lg border-0">
+            <Card className=" p-6 shadow-lg border-0">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="h-5 w-5 text-green-600" />
@@ -269,7 +269,7 @@ export default function SecurityPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Card className="shadow-lg border-0">
+            <Card className=" p-6 shadow-lg border-0">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2">
                   <User className="h-5 w-5 text-indigo-600" />
@@ -331,7 +331,7 @@ export default function SecurityPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="shadow-lg border-0">
+            <Card className=" p-6 shadow-lg border-0">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2">
                   <Key className="h-5 w-5 text-blue-600" />
@@ -448,7 +448,7 @@ export default function SecurityPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <Card className="shadow-lg border-0">
+            <Card className=" p-6 shadow-lg border-0">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2">
                   <Monitor className="h-5 w-5 text-indigo-600" />
@@ -497,7 +497,7 @@ export default function SecurityPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <Card className="shadow-lg border-0 border-red-200">
+            <Card className=" p-6 shadow-lg border-0 border-red-200">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-red-600">
                   <AlertCircle className="h-5 w-5" />

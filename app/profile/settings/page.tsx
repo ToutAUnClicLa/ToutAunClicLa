@@ -118,7 +118,7 @@ export default function SettingsPage() {
           transition={{ duration: 0.6 }}
           className="mb-4 sm:mb-6"
         >
-          <Card className="overflow-hidden shadow-lg border-0">
+          <Card className=" overflow-hidden shadow-lg border-0">
             <div className="bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 p-3 sm:p-4 md:p-6 text-white relative">
               <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-blue-600/20"></div>
               <div className="absolute top-2 right-2 w-16 h-16 bg-white/5 rounded-full blur-2xl"></div>
@@ -160,7 +160,7 @@ export default function SettingsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="shadow-lg border-0">
+            <Card className=" p-6 shadow-lg border-0">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2">
                   <User className="h-5 w-5 text-blue-600" />
@@ -215,7 +215,7 @@ export default function SettingsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="shadow-lg border-0">
+            <Card className=" p-6  shadow-lg border-0">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="h-5 w-5 text-orange-600" />
