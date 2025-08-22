@@ -665,6 +665,15 @@ export default {
       viewMenuFor: "Ver menú de",
       noDescription: "Descubre los sabores únicos de este restaurante"
     },
+
+    restaurants: {
+      status: {
+        available: "Acepta pedidos",
+        lastHour: "Última hora - hasta las {time}",
+        closed: "Cerrado - abre a las {time}",
+        openingHours: "Horario: {open} - {close}"
+      }
+    },
     
     // ProductDetail
     productDetail: {

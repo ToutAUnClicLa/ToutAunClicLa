@@ -1256,6 +1256,15 @@ export default {
       viewMenuFor: "View menu for",
       noDescription: "Discover the unique flavors of this restaurant"
     },
+
+    restaurants: {
+      status: {
+        available: "Available",
+        lastHour: "Last hour - until {time}",
+        closed: "Closed - opens at {time}",
+        openingHours: "Hours: {open} - {close}"
+      }
+    },
     
     // ProductDetail
     productDetail: {
