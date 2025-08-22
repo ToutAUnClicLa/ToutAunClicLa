@@ -272,7 +272,7 @@ export default {
       addressNote: "You can configure your delivery options now. An address will be required to proceed to checkout.",
       timeLabel: "Preferred delivery time",
       timePlaceholder: "Select a time",
-      timeHelper: "Deliveries available from 12:00 PM to 10:00 PM",
+      timeHelper: "Deliveries available from 11:00 AM to 9:00 PM",
       methodLabel: "Delivery method",
       methodHelper: "How would you like to receive your order?",
       notesLabel: "Notes for the delivery person",
@@ -295,7 +295,7 @@ export default {
       validation: {
         timeRequired: "You must select a delivery time",
         methodRequired: "You must select a delivery method",
-        timeInvalid: "Time must be between 12:00 PM and 10:00 PM",
+        timeInvalid: "Time must be between 11:00 AM and 9:00 PM",
         timeTooEarly: "Delivery time must be at least 1 hour from now. Minimum available time: {time}",
         notesTooLong: "Notes cannot exceed 500 characters",
         notesUnsafe: "Notes contain content not allowed for security reasons",

@@ -272,7 +272,7 @@ export default {
       addressNote: "Vous pouvez configurer vos options de livraison maintenant. Une adresse sera requise pour procéder au paiement.",
       timeLabel: "Heure de livraison préférée",
       timePlaceholder: "Sélectionner une heure",
-      timeHelper: "Livraisons disponibles de 12h00 à 22h00",
+      timeHelper: "Livraisons disponibles de 11h00 à 21h00",
       methodLabel: "Méthode de livraison",
       methodHelper: "Comment souhaitez-vous recevoir votre commande ?",
       notesLabel: "Notes pour le livreur",
@@ -295,7 +295,7 @@ export default {
       validation: {
         timeRequired: "Vous devez sélectionner une heure de livraison",
         methodRequired: "Vous devez sélectionner une méthode de livraison",
-        timeInvalid: "L'heure doit être entre 12h00 et 22h00",
+        timeInvalid: "L'heure doit être entre 11h00 et 21h00",
         timeTooEarly: "L'heure de livraison doit être au moins 1 heure à partir de maintenant. Heure minimum disponible: {time}",
         notesTooLong: "Les notes ne peuvent pas dépasser 500 caractères",
         notesUnsafe: "Les notes contiennent du contenu non autorisé pour des raisons de sécurité",

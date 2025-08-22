@@ -124,7 +124,7 @@ export default function DeliveryOptionsComponent({
   }>({});
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
 
-  // Generar opciones de tiempo (12:00 PM - 10:00 PM) con validación de tiempo actual + 1 hora
+  // Generar opciones de tiempo (11:00 AM - 9:00 PM) con validación de tiempo actual + 1 hora
   const generateTimeOptions = () => {
     const options = [];
     const now = new Date();
@@ -136,8 +136,13 @@ export default function DeliveryOptionsComponent({
     const minHour = minDeliveryTime.getHours();
     const minMinute = minDeliveryTime.getMinutes();
     
-    for (let hour = 12; hour <= 22; hour++) {
+    for (let hour = 11; hour <= 21; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
+        // No generar horarios después de 21:00 (9:00 PM)
+        if (hour === 21 && minute > 0) {
+          break;
+        }
+        
         // Verificar si esta hora está disponible (al menos 1 hora después de ahora)
         const isAvailable = hour > minHour || (hour === minHour && minute >= minMinute);
         
@@ -193,25 +198,35 @@ export default function DeliveryOptionsComponent({
     if (!options.horaEntregaPreferida) {
       newErrors.time = t('cart.delivery.validation.timeRequired');
     } else {
-      const [hours, minutes] = options.horaEntregaPreferida.split(':').map(Number);
-      
-      // Verificar que esté en el rango de horarios de servicio
-      if (hours < 12 || hours > 22) {
+      // Validar formato de hora
+      if (!/^\d{2}:\d{2}$/.test(options.horaEntregaPreferida)) {
         newErrors.time = t('cart.delivery.validation.timeInvalid');
       } else {
-        // Verificar que sea al menos 1 hora después de ahora
-        const now = new Date();
-        const selectedTime = new Date();
-        selectedTime.setHours(hours, minutes, 0, 0);
+        const [hours, minutes] = options.horaEntregaPreferida.split(':').map(Number);
         
-        // Si el tiempo seleccionado es para hoy y es menor que ahora + 1 hora
-        const minDeliveryTime = new Date(now.getTime() + 60 * 60 * 1000); // +1 hora
-        
-        if (selectedTime <= minDeliveryTime) {
-          const minHour = minDeliveryTime.getHours();
-          const minMinute = minDeliveryTime.getMinutes();
-          const minTimeFormatted = `${minHour > 12 ? minHour - 12 : minHour}:${minMinute.toString().padStart(2, '0')} ${minHour >= 12 ? 'PM' : 'AM'}`;
-          newErrors.time = t('cart.delivery.validation.timeTooEarly').replace('{time}', minTimeFormatted);
+        // Validar que los números sean válidos
+        if (isNaN(hours) || isNaN(minutes)) {
+          newErrors.time = t('cart.delivery.validation.timeInvalid');
+        } else if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+          newErrors.time = t('cart.delivery.validation.timeInvalid');
+        } else if (hours < 11 || hours > 21 || (hours === 21 && minutes > 0)) {
+          // Verificar que esté en el rango de horarios de servicio (11:00 AM - 9:00 PM exacto)
+          newErrors.time = t('cart.delivery.validation.timeInvalid');
+        } else {
+          // Verificar que sea al menos 1 hora después de ahora
+          const now = new Date();
+          const selectedTime = new Date();
+          selectedTime.setHours(hours, minutes, 0, 0);
+          
+          // Si el tiempo seleccionado es para hoy y es menor que ahora + 1 hora
+          const minDeliveryTime = new Date(now.getTime() + 60 * 60 * 1000); // +1 hora
+          
+          if (selectedTime <= minDeliveryTime) {
+            const minHour = minDeliveryTime.getHours();
+            const minMinute = minDeliveryTime.getMinutes();
+            const minTimeFormatted = `${minHour > 12 ? minHour - 12 : minHour}:${minMinute.toString().padStart(2, '0')} ${minHour >= 12 ? 'PM' : 'AM'}`;
+            newErrors.time = t('cart.delivery.validation.timeTooEarly', { time: minTimeFormatted });
+          }
         }
       }
     }

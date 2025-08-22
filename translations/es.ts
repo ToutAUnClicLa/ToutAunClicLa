@@ -1174,7 +1174,7 @@ export default {
       addressNote: "Puedes configurar tus opciones de entrega ahora. Se requerirá una dirección para proceder al checkout.",
       timeLabel: "Hora de entrega preferida",
       timePlaceholder: "Selecciona una hora",
-      timeHelper: "Entregas disponibles de 12:00 PM a 10:00 PM",
+      timeHelper: "Entregas disponibles de 11:00 AM a 9:00 PM",
       methodLabel: "Método de entrega",
       methodHelper: "¿Cómo prefieres recibir tu pedido?",
       notesLabel: "Notas para el repartidor",
@@ -1197,7 +1197,7 @@ export default {
       validation: {
         timeRequired: "Debes seleccionar una hora de entrega",
         methodRequired: "Debes seleccionar un método de entrega",
-        timeInvalid: "La hora debe estar entre 12:00 PM y 10:00 PM",
+        timeInvalid: "La hora debe estar entre 11:00 AM y 9:00 PM",
         timeTooEarly: "La hora de entrega debe ser al menos 1 hora después de ahora. Hora mínima disponible: {time}",
         notesTooLong: "Las notas no pueden exceder 500 caracteres",
         notesUnsafe: "Las notas contienen contenido no permitido por razones de seguridad",
