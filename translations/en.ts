@@ -1137,7 +1137,15 @@ export default {
         loadingResults: "Loading results...",
         showingResults: "📊 Showing {start} - {end} of {total} result{plural}",
         searchResultsFor: "for \"{search}\"",
-        clearAll: "🗑️ Clear all"
+        clearAll: "🗑️ Clear all",
+        loadMore: "Load more orders",
+        loading: "Loading...",
+        previous: "Previous",
+        next: "Next",
+        page: "Page",
+        showing: "Showing",
+        of: "of",
+        results: "results"
       },
       
       // Benefits
@@ -1598,5 +1606,20 @@ export default {
         website: "www.priv.gc.ca"
       }
     }
+  },
+
+  // Pagination
+  pagination: {
+    previous: "Previous",
+    next: "Next",
+    page: "Page",
+    showing: "Showing",
+    of: "of",
+    results: "results",
+    showingResults: "📊 Showing {start} - {end} of {total} result{plural}",
+    loadMore: "Load more",
+    loading: "Loading...",
+    loadingResults: "Loading results...",
+    searchResultsFor: "for \"{search}\""
   }
 };

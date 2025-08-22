@@ -7,6 +7,7 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface PaginationProps {
   currentPage: number;
@@ -31,6 +32,7 @@ export function Pagination({
   className = '',
   size = 'md'
 }: PaginationProps) {
+  const { t } = useTranslation();
   
   if (totalPages <= 1) return null;
 
@@ -95,6 +97,7 @@ export function Pagination({
     }
   };
 
+
   return (
     <div className={cn("flex flex-col sm:flex-row items-center justify-between gap-4", className)}>
       
@@ -107,7 +110,7 @@ export function Pagination({
           className="gap-1"
         >
           <ChevronLeft className="h-4 w-4" />
-          <span className="hidden sm:inline">Anterior</span>
+          <span className="hidden sm:inline">{t('pagination.previous')}</span>
         </Button>
         
         <div className="flex items-center gap-1">
@@ -145,7 +148,7 @@ export function Pagination({
           disabled={currentPage === totalPages || disabled}
           className="gap-1"
         >
-          <span className="hidden sm:inline">Siguiente</span>
+          <span className="hidden sm:inline">{t('pagination.next')}</span>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

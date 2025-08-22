@@ -1122,7 +1122,15 @@ export default {
         loadingResults: "Chargement des résultats...",
         showingResults: "📊 Affichage de {start} - {end} sur {total} résultat{plural}",
         searchResultsFor: "pour \"{search}\"",
-        clearAll: "🗑️ Tout effacer"
+        clearAll: "🗑️ Tout effacer",
+        loadMore: "Charger plus de commandes",
+        loading: "Chargement...",
+        previous: "Précédent",
+        next: "Suivant",
+        page: "Page",
+        showing: "Affichage",
+        of: "sur",
+        results: "résultats"
       },
       
       // Avantages
@@ -1585,5 +1593,20 @@ export default {
         website: "www.priv.gc.ca"
       }
     }
+  },
+
+  // Pagination
+  pagination: {
+    previous: "Précédent",
+    next: "Suivant",
+    page: "Page",
+    showing: "Affichage",
+    of: "sur",
+    results: "résultats",
+    showingResults: "📊 Affichage de {start} - {end} sur {total} résultat{plural}",
+    loadMore: "Charger plus",
+    loading: "Chargement...",
+    loadingResults: "Chargement des résultats...",
+    searchResultsFor: "pour \"{search}\""
   }
 };

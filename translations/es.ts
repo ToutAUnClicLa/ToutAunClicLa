@@ -1632,5 +1632,20 @@ export default {
         website: "www.priv.gc.ca"
       }
     }
+  },
+
+  // Paginación
+  pagination: {
+    previous: "Anterior",
+    next: "Siguiente",
+    page: "Página",
+    showing: "Mostrando",
+    of: "de",
+    results: "resultados",
+    showingResults: "📊 Mostrando {start} - {end} de {total} resultado{plural}",
+    loadMore: "Cargar más",
+    loading: "Cargando...",
+    loadingResults: "Cargando resultados...",
+    searchResultsFor: "para \"{search}\""
   }
 };

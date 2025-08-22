@@ -15,7 +15,7 @@ type TranslationType = typeof translations.es;
 export function useTranslation() {
   const { currentLanguage } = useLanguage();
   
-  const t = useCallback(<T = string>(key: string): T => {
+  const t = useCallback(<T = string>(key: string, params?: Record<string, any>): T => {
     const keys = key.split('.');
     let value: any = translations[currentLanguage];
     
@@ -25,6 +25,14 @@ export function useTranslation() {
       } else {
         return key as T; // Retorna la key si no encuentra la traducción
       }
+    }
+    
+    // Si hay parámetros y el valor es una cadena, realizar interpolación
+    if (params && typeof value === 'string') {
+      Object.keys(params).forEach(param => {
+        const regex = new RegExp(`\\{${param}\\}`, 'g');
+        value = value.replace(regex, params[param]);
+      });
     }
     
     return value as T;
