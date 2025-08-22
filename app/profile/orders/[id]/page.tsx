@@ -81,12 +81,15 @@ export default function OrderDetailPage() {
   const [copied, setCopied] = useState(false);
 
   // Función auxiliar para asegurar que las traducciones sean strings
-  const tSafe = (key: string, fallback: string = key) => {
+  const tSafe = (key: string, fallback: string = '') => {
     try {
       const result = t(key);
-      return typeof result === 'string' ? result : fallback;
+      if (typeof result === 'string' && result !== key) {
+        return result;
+      }
+      return fallback || key.split('.').pop() || '';
     } catch {
-      return fallback;
+      return fallback || key.split('.').pop() || '';
     }
   };
 
@@ -104,7 +107,7 @@ export default function OrderDetailPage() {
       try {
         await navigator.clipboard.writeText(order.orderNumber);
         setCopied(true);
-        toast.success(t('orderDetail.orderNumberCopied') || 'Copiado al portapapeles');
+        toast.success(tSafe('orderDetail.orderNumberCopied', 'Copiado al portapapeles'));
         setTimeout(() => setCopied(false), 2000);
       } catch (err) {
         toast.error('Error al copiar');
@@ -113,17 +116,17 @@ export default function OrderDetailPage() {
   };
 
   const handleDownloadInvoice = () => {
-    toast.info(t('orderDetail.help.invoiceComingSoon'));
+    toast.info(tSafe('orderDetail.help.invoiceComingSoon', 'Descarga de factura próximamente disponible'));
   };
 
   const handleTrackShipment = () => {
     if (order && canTrackOrder(order)) {
-      toast.info(t('orderDetail.help.trackingComingSoon'));
+      toast.info(tSafe('orderDetail.help.trackingComingSoon', 'Sistema de rastreo próximamente disponible'));
     }
   };
 
   const handleContactSupport = () => {
-    toast.info(t('orderDetail.help.redirectingSupport'));
+    toast.info(tSafe('orderDetail.help.redirectingSupport', 'Redirigiendo a soporte al cliente...'));
   };
 
   const getStatusIcon = (status: string) => {
@@ -168,7 +171,7 @@ export default function OrderDetailPage() {
           <div className="flex gap-3">
             <Button onClick={() => router.back()} variant="outline" className="flex-1">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              {t('common.back')}
+              {tSafe('common.back', 'Volver')}
             </Button>
             <Button onClick={refetch} className="flex-1">
               <RefreshCcw className="h-4 w-4 mr-2" />
@@ -185,11 +188,11 @@ export default function OrderDetailPage() {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50/30 flex items-center justify-center">
         <Card className="p-8 text-center max-w-md">
           <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('orderDetail.notFound')}</h2>
-          <p className="text-gray-600 mb-6">{t('orderDetail.notFoundDesc')}</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">{tSafe('orderDetail.notFound', 'Pedido no encontrado')}</h2>
+          <p className="text-gray-600 mb-6">{tSafe('orderDetail.notFoundDesc', 'El pedido solicitado no existe o no tienes acceso a él.')}</p>
           <Button onClick={() => router.push('/profile/orders')} className="w-full">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            {t('orderDetail.backToOrders')}
+            {tSafe('orderDetail.backToOrders', 'Volver a Mis Pedidos')}
           </Button>
         </Card>
       </div>
@@ -236,7 +239,7 @@ export default function OrderDetailPage() {
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              {copied ? 'Copiado!' : t('orderDetail.copyOrderNumber') || 'Copiar número'}
+                              {copied ? 'Copiado!' : tSafe('orderDetail.copyOrderNumber', 'Copiar número')}
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -253,7 +256,7 @@ export default function OrderDetailPage() {
                     className="bg-white/10 border border-white/20 text-white hover:bg-white/20 backdrop-blur-sm h-8 sm:h-9 px-2 sm:px-3"
                   >
                     <ArrowLeft className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">{t('common.back') || 'Volver'}</span>
+                    <span className="hidden sm:inline">{tSafe('common.back', 'Volver')}</span>
                   </Button>
                 </div>
 
@@ -288,7 +291,7 @@ export default function OrderDetailPage() {
             <Card className="p-4 sm:p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Truck className="h-5 w-5 text-emerald-600" />
-                <h2 className="text-lg font-semibold text-gray-900">{t('orderDetail.status.title') || 'Estado del Envío'}</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{tSafe('orderDetail.status.title', 'Estado del Envío')}</h2>
               </div>
               
               <div className="mb-4">
@@ -341,7 +344,7 @@ export default function OrderDetailPage() {
               className="flex flex-col items-center gap-2 h-auto py-4"
             >
               <Download className="h-5 w-5" />
-              <span className="text-sm">{t('orderDetail.actions.downloadInvoice')}</span>
+              <span className="text-sm">{tSafe('orderDetail.actions.downloadInvoice', 'Descargar Factura')}</span>
             </Button>
             
             {canTrackOrder(order) && (
@@ -351,7 +354,7 @@ export default function OrderDetailPage() {
                 className="flex flex-col items-center gap-2 h-auto py-4"
               >
                 <Truck className="h-5 w-5" />
-                <span className="text-sm">{t('orderDetail.actions.trackShipment')}</span>
+                <span className="text-sm">{tSafe('orderDetail.actions.trackShipment', 'Rastrear Envío')}</span>
               </Button>
             )}
             
@@ -361,16 +364,16 @@ export default function OrderDetailPage() {
               className="flex flex-col items-center gap-2 h-auto py-4"
             >
               <MessageCircle className="h-5 w-5" />
-              <span className="text-sm">{t('orderDetail.actions.contactSupport')}</span>
+              <span className="text-sm">{tSafe('orderDetail.actions.contactSupport', 'Contactar Soporte')}</span>
             </Button>
             
             <Button
               variant="outline"
-              onClick={() => toast.info(t('orderDetail.help.comingSoon'))}
+              onClick={() => toast.info(tSafe('orderDetail.help.comingSoon', 'Próximamente disponible'))}
               className="flex flex-col items-center gap-2 h-auto py-4"
             >
               <Share2 className="h-5 w-5" />
-              <span className="text-sm">{t('orderDetail.actions.share')}</span>
+              <span className="text-sm">{tSafe('orderDetail.actions.share', 'Compartir')}</span>
             </Button>
           </div>
         </motion.div>
@@ -387,7 +390,7 @@ export default function OrderDetailPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Package className="h-5 w-5 text-emerald-600" />
-                  {t('orderDetail.sections.products') || 'Productos Pedidos'}
+                  {tSafe('orderDetail.sections.products', 'Productos Pedidos')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -445,41 +448,41 @@ export default function OrderDetailPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Receipt className="h-5 w-5 text-emerald-600" />
-                  {t('orderDetail.sections.pricing') || 'Resumen de Precios'}
+                  {tSafe('orderDetail.sections.pricing', 'Resumen de Precios')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">{t('orderDetail.pricing.subtotal')}</span>
+                  <span className="text-gray-600">{tSafe('orderDetail.pricing.subtotal', 'Subtotal')}</span>
                   <span className="font-medium">${order.pricing.subtotal.toFixed(2)} CAD</span>
                 </div>
                 
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">{t('orderDetail.pricing.tps')}</span>
+                    <span className="text-gray-600">{tSafe('orderDetail.pricing.tps', 'TPS (5%)')}</span>
                     <span>${order.pricing.taxes.tps.toFixed(2)} CAD</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">{t('orderDetail.pricing.tvq')}</span>
+                    <span className="text-gray-600">{tSafe('orderDetail.pricing.tvq', 'TVQ (9.975%)')}</span>
                     <span>${order.pricing.taxes.tvq.toFixed(2)} CAD</span>
                   </div>
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-600">{t('orderDetail.pricing.totalTaxes')}</span>
+                  <span className="text-gray-600">{tSafe('orderDetail.pricing.totalTaxes', 'Total Impuestos')}</span>
                   <span className="font-medium">${order.pricing.taxes.total.toFixed(2)} CAD</span>
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-600">{t('orderDetail.pricing.shipping')}</span>
+                  <span className="text-gray-600">{tSafe('orderDetail.pricing.shipping', 'Envío')}</span>
                   <span className="font-medium">
-                    {order.pricing.shipping === 0 ? t('orderDetail.pricing.freeShipping') : `$${order.pricing.shipping.toFixed(2)} CAD`}
+                    {order.pricing.shipping === 0 ? tSafe('orderDetail.pricing.freeShipping', 'Gratis') : `$${order.pricing.shipping.toFixed(2)} CAD`}
                   </span>
                 </div>
                 
                 {order.pricing.discount > 0 && (
                   <div className="flex justify-between text-green-600">
-                    <span>{t('orderDetail.pricing.discount')} {order.pricing.couponCode && `(${order.pricing.couponCode})`}</span>
+                    <span>{tSafe('orderDetail.pricing.discount', 'Descuento')} {order.pricing.couponCode && `(${order.pricing.couponCode})`}</span>
                     <span>-${order.pricing.discount.toFixed(2)} CAD</span>
                   </div>
                 )}
@@ -487,7 +490,7 @@ export default function OrderDetailPage() {
                 <Separator />
                 
                 <div className="flex justify-between text-lg font-bold">
-                  <span>{t('orderDetail.pricing.finalTotal')}</span>
+                  <span>{tSafe('orderDetail.pricing.finalTotal', 'Total Final')}</span>
                   <span>${order.pricing.finalTotal.toFixed(2)} CAD</span>
                 </div>
               </CardContent>
@@ -498,7 +501,7 @@ export default function OrderDetailPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MapPin className="h-5 w-5 text-emerald-600" />
-                  {t('orderDetail.sections.shipping') || 'Información de Envío'}
+                  {tSafe('orderDetail.sections.shipping', 'Información de Envío')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -527,18 +530,18 @@ export default function OrderDetailPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CreditCard className="h-5 w-5 text-emerald-600" />
-                  {t('orderDetail.sections.payment') || 'Información de Pago'}
+                  {tSafe('orderDetail.sections.payment', 'Información de Pago')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">{t('orderDetail.payment.method')}</span>
+                    <span className="text-gray-600">{tSafe('orderDetail.payment.method', 'Método')}</span>
                     <span className="font-medium capitalize">{order.paymentInfo.method}</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-gray-600">{t('orderDetail.payment.paymentDate')}</span>
+                    <span className="text-gray-600">{tSafe('orderDetail.payment.paymentDate', 'Fecha de Pago')}</span>
                     <span className="font-medium">
                       {formatOrderDate(order.paymentInfo.paymentDate)}
                     </span>
@@ -548,14 +551,14 @@ export default function OrderDetailPage() {
                     <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
                       <div className="flex items-center gap-2 text-orange-800 mb-1">
                         <Info className="h-4 w-4" />
-                        <span className="font-medium">{t('orderDetail.payment.refundProcessed')}</span>
+                        <span className="font-medium">{tSafe('orderDetail.payment.refundProcessed', 'Reembolso Procesado')}</span>
                       </div>
                       <p className="text-sm text-orange-700">
-{t('orderDetail.payment.refundAmount')}: ${order.paymentInfo.refundInfo.refundAmount.toFixed(2)} CAD
+{tSafe('orderDetail.payment.refundAmount', 'Monto')}: ${order.paymentInfo.refundInfo.refundAmount.toFixed(2)} CAD
                       </p>
                       {order.paymentInfo.refundInfo.refundDate && (
                         <p className="text-sm text-orange-700">
-{t('orderDetail.payment.refundDate')}: {formatOrderDate(order.paymentInfo.refundInfo.refundDate)}
+{tSafe('orderDetail.payment.refundDate', 'Fecha')}: {formatOrderDate(order.paymentInfo.refundInfo.refundDate)}
                         </p>
                       )}
                     </div>
@@ -570,7 +573,7 @@ export default function OrderDetailPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5 text-emerald-600" />
-                    {t('orderDetail.sections.notes') || 'Notas del Pedido'}
+                    {tSafe('orderDetail.sections.notes', 'Notas del Pedido')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -587,7 +590,7 @@ export default function OrderDetailPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <ShieldCheck className="h-5 w-5 text-emerald-600" />
-{t('orderDetail.sections.availableActions')}
+                    {tSafe('orderDetail.sections.availableActions', 'Acciones Disponibles')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -595,10 +598,10 @@ export default function OrderDetailPage() {
                     <Button
                       variant="outline"
                       className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
-                      onClick={() => toast.info(t('orderDetail.help.cancelComingSoon'))}
+                      onClick={() => toast.info(tSafe('orderDetail.help.cancelComingSoon', 'Cancelación próximamente disponible'))}
                     >
                       <AlertCircle className="h-4 w-4 mr-2" />
-{t('orderDetail.actions.cancelOrder')}
+{tSafe('orderDetail.actions.cancelOrder', 'Cancelar Pedido')}
                     </Button>
                   )}
                   
@@ -608,7 +611,7 @@ export default function OrderDetailPage() {
                     onClick={() => router.push('/products')}
                   >
                     <Package className="h-4 w-4 mr-2" />
-{t('orderDetail.actions.buyAgain')}
+{tSafe('orderDetail.actions.buyAgain', 'Comprar de Nuevo')}
                   </Button>
                 </CardContent>
               </Card>
@@ -624,19 +627,19 @@ export default function OrderDetailPage() {
           className="mt-8"
         >
           <Card className="p-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200">
-            <h3 className="font-semibold text-gray-900 mb-4">{t('orderDetail.help.title')}</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">{tSafe('orderDetail.help.title', '¿Necesitas ayuda con tu pedido?')}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Button variant="outline" className="w-full justify-start" onClick={handleContactSupport}>
                 <MessageCircle className="h-4 w-4 mr-2" />
-{t('orderDetail.actions.liveChat')}
+{tSafe('orderDetail.actions.liveChat', 'Chat en Vivo')}
               </Button>
-              <Button variant="outline" className="w-full justify-start" onClick={() => toast.info(t('orderDetail.help.comingSoon'))}>
+              <Button variant="outline" className="w-full justify-start" onClick={() => toast.info(tSafe('orderDetail.help.comingSoon', 'Próximamente disponible'))}>
                 <Mail className="h-4 w-4 mr-2" />
-                {t('orderDetail.actions.sendEmail')}
+                {tSafe('orderDetail.actions.sendEmail', 'Enviar Email')}
               </Button>
-              <Button variant="outline" className="w-full justify-start" onClick={() => toast.info(t('orderDetail.help.comingSoon'))}>
+              <Button variant="outline" className="w-full justify-start" onClick={() => toast.info(tSafe('orderDetail.help.comingSoon', 'Próximamente disponible'))}>
                 <Star className="h-4 w-4 mr-2" />
-                {t('orderDetail.actions.rateOrder')}
+                {tSafe('orderDetail.actions.rateOrder', 'Calificar Pedido')}
               </Button>
             </div>
           </Card>
