@@ -143,14 +143,14 @@ export function getAvailabilityMessage(restaurant: Restaurant, t: (key: string, 
   
   if (restaurant.disponible) {
     return {
-      message: t('restaurants.status.available'),
+      message: t('catalog.restaurants.status.available'),
       color: 'green',
       status: 'available'
     };
   }
   
   return {
-    message: t('restaurants.status.lastHour', { time: restaurant.hora_limite_pedidos }),
+    message: t('catalog.restaurants.status.lastHour', { time: restaurant.hora_limite_pedidos }),
     color: 'yellow',
     status: 'last_hour'
   };
