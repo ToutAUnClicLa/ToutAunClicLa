@@ -1242,6 +1242,16 @@ export default {
       noDescription: "Découvrez les saveurs uniques de ce restaurant"
     },
     
+    // Restaurant status messages
+    restaurants: {
+      status: {
+        available: "Accepte les commandes",
+        lastHour: "Dernière heure - jusqu'à {time}",
+        closed: "Fermé - ouvre à {time}",
+        openingHours: "Horaires: {open} - {close}"
+      }
+    },
+    
     // ProductDetail
     productDetail: {
       // Informations produit

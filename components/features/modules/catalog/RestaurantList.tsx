@@ -6,15 +6,15 @@ import { ChefHat, Star, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useSubcategories } from '@/hooks/useCategories';
-import { Subcategory } from '@/lib/services/categories';
+import { useRestaurants } from '@/hooks/useRestaurants';
+import { Restaurant, restaurantsService } from '@/lib/services/restaurants';
 import { Card, CardContent } from '@/components/common/ui/card';
 import { Button } from '@/components/common/ui/button';
 import { Skeleton } from '@/components/common/ui/skeleton';
 import { cn, getImageUrl } from '@/lib/utils';
 
 interface RestaurantListProps {
-  categoryId: number;
+  categoryId?: number;
   onRestaurantSelect?: (subcategoryId: number, restaurantName: string) => void;
 }
 
@@ -37,10 +37,10 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
   const router = useRouter();
   const { t } = useTranslation();
   
-  // Usar el hook de subcategorías (restaurantes)
-  const { subcategories: restaurants, loading, error } = useSubcategories(categoryId);
+  // Usar el nuevo hook de restaurantes
+  const { restaurants, loading, error } = useRestaurants();
 
-  const handleRestaurantClick = (restaurant: Subcategory) => {
+  const handleRestaurantClick = (restaurant: Restaurant) => {
     if (onRestaurantSelect) {
       onRestaurantSelect(restaurant.id, restaurant.nombre);
     } else {
@@ -48,18 +48,14 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
     }
   };
 
-  // Función para obtener datos enriquecidos del restaurante
-  const getRestaurantData = (restaurant: Subcategory) => {
-    const mockRatings = [4.2, 4.5, 4.8, 4.1, 4.6, 4.3, 4.7, 4.4];
-    const cuisineTypes = ["Mexicana", "Peruana", "Colombiana", "Argentina", "Venezolana", "Chilena", "Ecuatoriana", "Brasileña"];
-    
-    const index = restaurant.id % mockRatings.length;
-    
-    return {
-      rating: mockRatings[index],
-      reviewCount: Math.floor(Math.random() * 500) + 50,
-      cuisineType: cuisineTypes[index]
-    };
+  // Función para obtener el estado de disponibilidad
+  const getAvailabilityStatus = (restaurant: Restaurant) => {
+    return restaurantsService.getAvailabilityMessage(restaurant, t);
+  };
+
+  // Función para obtener las banderas de nacionalidades
+  const getRestaurantFlags = (nacionalidades: string[]) => {
+    return restaurantsService.getRestaurantFlags(nacionalidades);
   };
 
   const LoadingSkeleton = () => (
@@ -154,7 +150,8 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6"
     >
       {restaurants.map((restaurant) => {
-        const restaurantData = getRestaurantData(restaurant);
+        const availabilityStatus = getAvailabilityStatus(restaurant);
+        const flags = getRestaurantFlags(restaurant.nacionalidades);
         
         return (
           <motion.div key={restaurant.id} variants={item} className="h-full">
@@ -165,8 +162,17 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
               tabIndex={0}
               aria-label={`${t('catalog.restaurantList.viewMenuFor')} ${restaurant.nombre}`}
             >
-              <CardContent className="p-4 sm:p-6 h-full flex flex-col">
+              <CardContent className="p-4 h-full flex flex-col">
                 <div className="flex flex-col h-full">
+                  
+                  {/* Banderas de nacionalidades - Posición absoluta arriba a la izquierda */}
+                  {flags && (
+                    <div className="absolute top-2 right-2 z-10">
+                      <div className="text-sm leading-none">
+                        {flags}
+                      </div>
+                    </div>
+                  )}
                   
                   {/* Header: Logo e Info básica - Altura fija */}
                   <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
@@ -213,14 +219,30 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
                   {/* Spacer para empujar el contenido inferior */}
                   <div className="flex-1"></div>
 
-                  {/* Rating y estado - Posición fija en la parte inferior */}
+                  {/* Estado de disponibilidad - Posición fija en la parte inferior */}
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
 
                     {/* Estado disponible */}
                     <div className="flex items-center gap-1 sm:gap-1.5">
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-500 rounded-full animate-pulse flex-shrink-0" />
-                      <span className="text-emerald-600 font-medium text-xs sm:text-sm">
-                        {t('catalog.restaurantList.available')}
+                      <div 
+                        className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full flex-shrink-0 ${
+                          availabilityStatus.color === 'green' 
+                            ? 'bg-emerald-500 animate-pulse' 
+                            : availabilityStatus.color === 'yellow'
+                            ? 'bg-yellow-500 animate-pulse'
+                            : 'bg-red-500'
+                        }`} 
+                      />
+                      <span 
+                        className={`font-medium text-xs sm:text-sm ${
+                          availabilityStatus.color === 'green' 
+                            ? 'text-emerald-600' 
+                            : availabilityStatus.color === 'yellow'
+                            ? 'text-yellow-600'
+                            : 'text-red-600'
+                        }`}
+                      >
+                        {availabilityStatus.message}
                       </span>
                     </div>
                   </div>
