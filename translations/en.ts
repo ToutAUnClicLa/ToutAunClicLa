@@ -264,7 +264,18 @@ export default {
       proceed: "Proceed to Checkout",
       continue: "Continue Shopping",
       authRequired: "Sign in to continue",
-      addressRequired: "Select an address"
+      addressRequired: "Select an address",
+      coupon: {
+        question: "Have a discount code?",
+        placeholder: "Enter your code here",
+        apply: "Apply",
+        applied: "Coupon applied",
+        remove: "Remove",
+        discount: "Discount",
+        error: "Invalid code",
+        expired: "Code expired",
+        success: "Coupon applied successfully!"
+      }
     },
     delivery: {
       title: "Delivery Options",

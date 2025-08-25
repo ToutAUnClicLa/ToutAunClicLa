@@ -1166,7 +1166,18 @@ export default {
       proceed: "Proceder al Pago",
       continue: "Continuar Comprando",
       authRequired: "Inicia sesión para continuar",
-      addressRequired: "Selecciona una dirección"
+      addressRequired: "Selecciona una dirección",
+      coupon: {
+        question: "¿Tienes un código de descuento?",
+        placeholder: "Ingresa tu código aquí",
+        apply: "Aplicar",
+        applied: "Cupón aplicado",
+        remove: "Remover",
+        discount: "Descuento",
+        error: "Código inválido",
+        expired: "Código expirado",
+        success: "¡Cupón aplicado correctamente!"
+      }
     },
     delivery: {
       title: "Opciones de Entrega",

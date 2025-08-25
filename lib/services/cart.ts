@@ -83,8 +83,13 @@ export interface CartSummary {
   totalConsigne?: number;
   totalTaxes?: number;
   shippingCost?: number;
+  originalShippingCost?: number;
   shippingThreshold?: number;
+  totalBeforeDiscount?: number;
   total: number;
+  discount?: number;
+  savings?: number;
+  freeShippingApplied?: boolean;
 }
 
 export interface CartPagination {
@@ -105,10 +110,15 @@ export interface CartResponse {
 }
 
 export interface Coupon {
-  codigo: string;
-  tipo: 'percentage' | 'fixed';
-  valor: number;
-  descripcion: string;
+  id?: number;
+  code?: string;
+  codigo?: string;
+  discount?: number;
+  tipo?: 'percentage' | 'fixed';
+  valor?: number;
+  type?: 'discount' | 'free_shipping';
+  description?: string;
+  descripcion?: string;
 }
 
 export interface DeliveryOptions {
@@ -151,12 +161,11 @@ export async function getCart(page: number = 1, limit: number = 20): Promise<Car
 
 /**
  * Obtener carrito con cupón aplicado
+ * Este endpoint es GET con couponCode como query parameter
  */
-export async function getCartWithCoupon(couponCode?: string): Promise<CartWithCouponResponse> {
+export async function getCartWithCoupon(couponCode: string): Promise<CartWithCouponResponse> {
   try {
-    const url = couponCode 
-      ? `${CART_BASE_URL}/with-coupon?couponCode=${encodeURIComponent(couponCode)}`
-      : `${CART_BASE_URL}/with-coupon`;
+    const url = `${CART_BASE_URL}/with-coupon?couponCode=${encodeURIComponent(couponCode)}`;
       
     const response = await fetch(url, {
       method: 'GET',

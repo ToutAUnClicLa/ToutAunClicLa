@@ -341,7 +341,7 @@ export function useCart(options: UseCartOptions = {}) {
     }
   }, [isAuthenticated, user, invalidateCache]);
 
-  // Aplicar cupón (optimizado)
+  // Aplicar cupón (flujo completo según README)
   const applyCoupon = useCallback(async (couponCode: string): Promise<boolean> => {
     if (!isAuthenticated || !user) {
       toast.error('Debes iniciar sesión para aplicar cupones');
@@ -350,21 +350,74 @@ export function useCart(options: UseCartOptions = {}) {
 
     try {
       setError(null);
+      console.log('🎫 Iniciando aplicación de cupón:', couponCode);
       
+      // PASO 1: Aplicar cupón para validar (POST /apply-coupon)
+      console.log('🔄 Paso 1: Aplicando cupón...');
       const result = await cartService.applyCoupon(couponCode);
+      console.log('✅ Cupón válido aplicado:', {
+        tipo: result.coupon.type,
+        codigo: result.coupon.code,
+        descuento: result.coupon.discount
+      });
       
-      setAppliedCoupon(result.coupon);
-      setSummary(result.summary);
+      // PASO 2: Obtener carrito actualizado con cálculos completos (GET /with-coupon)
+      console.log('🔄 Paso 2: Obteniendo carrito con cupón aplicado...');
+      const cartWithCoupon = await cartService.getCartWithCoupon(couponCode);
+      console.log('🛒 Carrito completo con cupón:', {
+        subtotal: cartWithCoupon.subtotal,
+        total: cartWithCoupon.total,
+        discountAmount: cartWithCoupon.discountAmount,
+        freeShipping: cartWithCoupon.summary?.freeShippingApplied,
+        savings: cartWithCoupon.summary?.savings
+      });
       
-      // Invalidar cache para próximas cargas
+      // PASO 3: Actualizar estado COMPLETO con respuesta de /with-coupon
+      console.log('🔄 Paso 3: Actualizando estado del carrito...');
+      
+      // Items del carrito
+      setItems(cartWithCoupon.cartItems || []);
+      
+      // Summary completo con TODOS los datos de /with-coupon
+      const newSummary = {
+        totalItems: cartWithCoupon.itemCount || 0,
+        totalQuantity: cartWithCoupon.cartItems?.reduce((sum, item) => sum + item.cantidad, 0) || 0,
+        subtotal: cartWithCoupon.subtotal || 0,
+        total: cartWithCoupon.total, // 🎯 TOTAL FINAL de la API
+        discount: cartWithCoupon.discountAmount || 0,
+        savings: cartWithCoupon.summary?.savings || 0,
+        shippingCost: cartWithCoupon.summary?.shippingCost,
+        originalShippingCost: cartWithCoupon.summary?.originalShippingCost,
+        freeShippingApplied: cartWithCoupon.summary?.freeShippingApplied || false,
+        totalTPS: cartWithCoupon.summary?.totalTPS,
+        totalTVQ: cartWithCoupon.summary?.totalTVQ,
+        totalConsigne: cartWithCoupon.summary?.totalConsigne,
+        totalTaxes: cartWithCoupon.summary?.totalTaxes,
+        shippingThreshold: cartWithCoupon.summary?.shippingThreshold || 200,
+        totalBeforeDiscount: cartWithCoupon.summary?.totalBeforeDiscount
+      };
+      
+      setSummary(newSummary);
+      console.log('🔊 Summary actualizado:', newSummary);
+      
+      // Cupón aplicado con tipo detectado
+      setAppliedCoupon(cartWithCoupon.appliedCoupon);
+      console.log('🏷️ Cupón establecido:', cartWithCoupon.appliedCoupon);
+      
+      // Limpiar cache
       invalidateCache();
       
-      toast.success('Cupón aplicado correctamente');
+      console.log('✨ ¡Cupón aplicado exitosamente! Total final:', cartWithCoupon.total);
       return true;
+      
     } catch (err: any) {
-      console.error('Error applying coupon:', err);
+      console.error('❌ Error en flujo de cupón:', err);
+      console.error('Error details:', {
+        message: err.message,
+        couponCode,
+        stack: err.stack
+      });
       setError('Error al aplicar cupón');
-      toast.error(err.message || 'Error al aplicar cupón');
       return false;
     }
   }, [isAuthenticated, user, invalidateCache]);
@@ -398,6 +451,24 @@ export function useCart(options: UseCartOptions = {}) {
       } else {
         toast.error(err.message || 'Error al actualizar opciones de entrega');
       }
+      return false;
+    }
+  }, [isAuthenticated, user, invalidateCache, loadCartNow]);
+
+  // Remover cupón
+  const removeCoupon = useCallback(async (): Promise<boolean> => {
+    if (!isAuthenticated || !user) {
+      return false;
+    }
+
+    try {
+      setAppliedCoupon(null);
+      // Recargar carrito sin cupón
+      invalidateCache();
+      await loadCartNow(true);
+      return true;
+    } catch (err: any) {
+      console.error('Error removing coupon:', err);
       return false;
     }
   }, [isAuthenticated, user, invalidateCache, loadCartNow]);
@@ -496,6 +567,7 @@ export function useCart(options: UseCartOptions = {}) {
     removeFromCart,
     clearCart,
     applyCoupon,
+    removeCoupon,
     updateDeliveryOptions,
     refreshCart,
     

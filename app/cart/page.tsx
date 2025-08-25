@@ -15,6 +15,7 @@ import { useAddresses } from '@/hooks/useAddresses';
 import AuthModal from '@/components/features/auth/AuthModal';
 import { AddressSelector } from '@/components/features/modules/cart/AddressSelector';
 import DeliveryOptions from '@/components/features/modules/cart/DeliveryOptions';
+import { CouponInput } from '@/components/features/modules/cart/CouponInput';
 import { toast } from 'sonner';
 import { CartItem } from '@/lib/services/cart';
 import type { DeliveryOptions as DeliveryOptionsType } from '@/lib/services/cart';
@@ -82,7 +83,11 @@ export default function CartPage() {
     removeFromCart,
     clearCart,
     isEmpty,
-    refreshCart 
+    refreshCart,
+    applyCoupon,
+    removeCoupon,
+    appliedCoupon,
+    summary 
   } = useCart();
   
   const { selectedAddress, primaryAddress, hasAddresses, addresses } = useAddresses();
@@ -126,7 +131,22 @@ export default function CartPage() {
 
   const shippingThreshold = 200; // Envío gratis a partir de $200
   const shippingCost = calculatedSubtotal >= shippingThreshold ? 0 : 8.99;
-  const finalTotal = calculatedSubtotal + calculatedTaxes + calculatedConsigne + shippingCost;
+  
+  // Si hay cupón aplicado, usar SOLO los datos de la API (/with-coupon)
+  // Si NO hay cupón, usar cálculos locales
+  const finalTotal = appliedCoupon && summary?.total !== undefined
+    ? summary.total // ✅ Total final de /with-coupon (ya incluye TODO)
+    : calculatedSubtotal + calculatedTaxes + calculatedConsigne + shippingCost;
+    
+  const discountAmount = summary?.discount || 0;
+  const savingsAmount = summary?.savings || 0;
+  const finalShippingCost = summary?.shippingCost !== undefined ? summary.shippingCost : shippingCost;
+  const isFreeShippingApplied = summary?.freeShippingApplied || false;
+  
+  // Para mostrar en el resumen - usar datos de API si hay cupón, sino cálculos locales
+  const displaySubtotal = appliedCoupon && summary?.subtotal ? summary.subtotal : calculatedSubtotal;
+  const displayTaxes = appliedCoupon && summary?.totalTaxes ? summary.totalTaxes : calculatedTaxes;
+  const displayConsigne = appliedCoupon && summary?.totalConsigne !== undefined ? summary.totalConsigne : calculatedConsigne;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-US', {
@@ -584,7 +604,12 @@ export default function CartPage() {
                       {formatPrice(finalTotal)}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {shippingCost === 0 ? t('cart.freeShipping') : `+ ${formatPrice(shippingCost)} ${t('cart.shipping')}`}
+                      {finalShippingCost === 0 ? (
+                        <span className={isFreeShippingApplied ? 'text-green-600 font-medium' : ''}>
+                          {t('cart.freeShipping')}
+                          {isFreeShippingApplied && ' ✓'}
+                        </span>
+                      ) : `+ ${formatPrice(finalShippingCost)} ${t('cart.shipping')}`}
                     </p>
                   </div>
                   <Button
@@ -643,27 +668,57 @@ export default function CartPage() {
                   <div className="space-y-3 sm:space-y-4">
                     <div className="flex justify-between items-center">
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.subtotal')}</span>
-                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(calculatedSubtotal)}</span>
+                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displaySubtotal)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.shipping')}</span>
                       <span className="text-sm sm:text-base font-medium text-gray-900">
-                        {shippingCost === 0 ? t('cart.summary.freeShipping') : formatPrice(shippingCost)}
+                        {finalShippingCost === 0 ? (
+                          <span className={isFreeShippingApplied ? 'text-green-600' : ''}>
+                            {t('cart.summary.freeShipping')}
+                            {isFreeShippingApplied && ' ✓'}
+                          </span>
+                        ) : formatPrice(finalShippingCost)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.taxes')}</span>
-                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(calculatedTaxes)}</span>
+                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displayTaxes)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.consigne')}</span>
-                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(calculatedConsigne)}</span>
+                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displayConsigne)}</span>
                     </div>
-                    {calculatedSubtotal < shippingThreshold && (
+                    {!isFreeShippingApplied && displaySubtotal < shippingThreshold && finalShippingCost > 0 && (
                       <div className="text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 sm:p-3 rounded-lg">
-                        {t('cart.summary.shippingThreshold').replace('{amount}', formatPrice(shippingThreshold - calculatedSubtotal))}
+                        {t('cart.summary.shippingThreshold').replace('{amount}', formatPrice(shippingThreshold - displaySubtotal))}
                       </div>
                     )}
+                    
+                    {/* Componente de cupón */}
+                    <div className="pt-2 sm:pt-3">
+                      <CouponInput
+                        onApplyCoupon={applyCoupon}
+                        onRemoveCoupon={removeCoupon}
+                        appliedCoupon={appliedCoupon}
+                        disabled={isLoading || isEmpty}
+                      />
+                    </div>
+                    
+                    {/* Mostrar descuento/ahorros si hay cupón aplicado */}
+                    {appliedCoupon && savingsAmount > 0 && (
+                      <div className="flex justify-between items-center text-green-600">
+                        <span className="text-sm sm:text-base font-medium">
+                          {appliedCoupon.type === 'free_shipping' 
+                            ? 'Ahorro en envío' 
+                            : t('cart.summary.coupon.discount')}
+                        </span>
+                        <span className="text-sm sm:text-base font-medium">
+                          -{formatPrice(savingsAmount)}
+                        </span>
+                      </div>
+                    )}
+                    
                     <Separator />
                     <div className="flex justify-between items-center">
                       <span className="text-base sm:text-lg font-semibold text-gray-900">{t('cart.summary.total')}</span>

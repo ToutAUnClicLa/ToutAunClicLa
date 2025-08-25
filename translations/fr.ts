@@ -264,7 +264,18 @@ export default {
       proceed: "Procéder au Paiement",
       continue: "Continuer les Achats",
       authRequired: "Connectez-vous pour continuer",
-      addressRequired: "Sélectionner une adresse"
+      addressRequired: "Sélectionner une adresse",
+      coupon: {
+        question: "Avez-vous un code de réduction?",
+        placeholder: "Entrez votre code ici",
+        apply: "Appliquer",
+        applied: "Coupon appliqué",
+        remove: "Retirer",
+        discount: "Remise",
+        error: "Code invalide",
+        expired: "Code expiré",
+        success: "Coupon appliqué avec succès!"
+      }
     },
     delivery: {
       title: "Options de Livraison",
