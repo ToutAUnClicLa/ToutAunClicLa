@@ -279,6 +279,17 @@ export default function CartPage() {
       return;
     }
 
+    // Validar que si hay cupón, esté correctamente aplicado
+    if (appliedCoupon) {
+      const couponCode = appliedCoupon.code || appliedCoupon.codigo;
+      if (!couponCode) {
+        toast.error('Error con el cupón aplicado. Por favor, aplica el cupón nuevamente.');
+        console.error('❌ Cupón aplicado sin código válido:', appliedCoupon);
+        return;
+      }
+      console.log('✅ Cupón validado para checkout:', couponCode);
+    }
+
     try {
       setCheckoutLoading(true);
       
@@ -299,13 +310,38 @@ export default function CartPage() {
       console.log('🔗 Cancel URL:', cancelUrl);
       console.log('🌐 NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
       
-      const payload = {
+      // Preparar payload incluyendo cupón si está aplicado
+      const payload: {
+        shipping_address_id: string;
+        success_url: string;
+        cancel_url: string;
+        coupon_code?: string;
+      } = {
         shipping_address_id: selectedAddress.id,
         success_url: successUrl,
         cancel_url: cancelUrl
       };
       
-      console.log('📦 Payload completo:', JSON.stringify(payload, null, 2));
+      // Añadir cupón solo si está realmente aplicado
+      if (appliedCoupon && (appliedCoupon.code || appliedCoupon.codigo)) {
+        payload.coupon_code = appliedCoupon.code || appliedCoupon.codigo;
+        console.log('🎟️ Cupón incluido en checkout:', {
+          code: payload.coupon_code,
+          type: appliedCoupon.type,
+          discount: appliedCoupon.discount || appliedCoupon.valor,
+          savings: savingsAmount
+        });
+      }
+      
+      console.log('📦 Payload completo para Stripe:', JSON.stringify(payload, null, 2));
+      console.log('💰 Total esperado en checkout:', finalTotal);
+      console.log('🧾 Resumen de cupón:', {
+        aplicado: !!appliedCoupon,
+        codigo: appliedCoupon?.code || appliedCoupon?.codigo,
+        tipo: appliedCoupon?.type,
+        ahorros: savingsAmount,
+        envioGratis: isFreeShippingApplied
+      });
       
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/stripe/checkout/create-session`, {
         method: 'POST',
@@ -325,13 +361,35 @@ export default function CartPage() {
         console.error('❌ Backend error details:', {
           status: response.status,
           statusText: response.statusText,
-          data: data
+          data: data,
+          payload: payload
         });
-        throw new Error(data.message || data.error || 'Error creando sesión de checkout');
+        
+        // Errores específicos de cupones
+        if (data.message?.includes('coupon') || data.message?.includes('cupón')) {
+          console.error('❌ Error relacionado con cupón:', data.message);
+          toast.error(`Error con el cupón: ${data.message}`);
+        } else {
+          toast.error(data.message || data.error || 'Error creando sesión de checkout');
+        }
+        return;
       }
 
-      console.log('✅ Checkout session creada:', data.sessionId);
-      console.log('🔗 Redirigiendo a Stripe Checkout:', data.url);
+      console.log('✅ Checkout session creada exitosamente!');
+      console.log('Session ID:', data.sessionId);
+      console.log('URL de Stripe:', data.url);
+      
+      if (data.orderSummary?.coupon) {
+        console.log('🎟️ Cupón procesado en Stripe:', {
+          codigo: data.orderSummary.coupon.codigo,
+          tipo: data.orderSummary.coupon.type,
+          descuento: data.orderSummary.coupon.descuento,
+          ahorros: data.orderSummary.savings
+        });
+      }
+      
+      console.log('💰 Total final en Stripe:', data.orderSummary?.total);
+      console.log('🔗 Redirigiendo a Stripe Checkout...');
       
       // Redirigir DIRECTAMENTE a Stripe Checkout
       window.location.href = data.url;

@@ -401,7 +401,7 @@ export function useCart(options: UseCartOptions = {}) {
       console.log('🔊 Summary actualizado:', newSummary);
       
       // Cupón aplicado con tipo detectado
-      setAppliedCoupon(cartWithCoupon.appliedCoupon);
+      setAppliedCoupon(cartWithCoupon.appliedCoupon || null);
       console.log('🏷️ Cupón establecido:', cartWithCoupon.appliedCoupon);
       
       // Limpiar cache

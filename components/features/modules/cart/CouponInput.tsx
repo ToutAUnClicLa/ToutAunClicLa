@@ -7,19 +7,12 @@ import { Badge } from '@/components/common/ui/badge';
 import { Ticket, X, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toast } from 'sonner';
+import { Coupon } from '@/lib/services/cart';
 
 interface CouponInputProps {
   onApplyCoupon: (code: string) => Promise<boolean>;
   onRemoveCoupon?: () => Promise<boolean>;
-  appliedCoupon?: {
-    id?: number;
-    code?: string;
-    discount?: number;
-    codigo?: string;
-    tipo?: 'percentage' | 'fixed';
-    valor?: number;
-    descripcion?: string;
-  } | null;
+  appliedCoupon?: Coupon | null;
   disabled?: boolean;
   className?: string;
 }

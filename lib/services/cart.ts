@@ -130,6 +130,9 @@ export interface DeliveryOptions {
 
 export interface CartWithCouponResponse extends CartResponse {
   coupon?: Coupon;
+  appliedCoupon?: Coupon;
+  subtotal?: number;
+  discountAmount?: number;
   summary: CartSummary & {
     discount?: number;
     savings?: number;
