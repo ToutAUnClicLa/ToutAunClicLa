@@ -4,9 +4,7 @@ import { useState } from 'react';
 import { MapPin, Plus, Edit, Trash2, Check, MapPinIcon } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
 import { Card, CardContent } from '@/components/common/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog';
-import { Input } from '@/components/common/ui/input';
-import { Label } from '@/components/common/ui/label';
+import { AddAddressModal } from '@/components/features/modules/address/AddAddressModal';
 import { useAddresses } from '@/hooks/useAddresses';
 import { useAuth } from '@/hooks/useAuth';
 import { validateMontrealAddress, formatCanadianPostalCode } from '@/lib/utils/montreal-validation';
@@ -14,21 +12,6 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 
-interface FormData {
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-}
-
-const initialFormData: FormData = {
-  street: '',
-  city: 'Montreal',
-  state: 'Quebec',
-  zipCode: '',
-  country: 'Canada'
-};
 
 export function AddressSelector() {
   const { user } = useAuth();
@@ -47,51 +30,20 @@ export function AddressSelector() {
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<any>(null);
-  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Validar dirección de Montreal
-  const validateAddress = (data: FormData): boolean => {
-    const validation = validateMontrealAddress(data.city, data.zipCode);
-    
-    if (!validation.isValid) {
-      toast.error(t('addresses.validation.invalid'), {
-        description: validation.error
-      });
-      return false;
-    }
-    
-    if (!data.street.trim()) {
-      toast.error(t('addresses.validation.streetRequired'));
-      return false;
-    }
-    
-    if (!data.country.trim()) {
-      toast.error(t('addresses.validation.countryRequired'));
-      return false;
-    }
-    
-    return true;
-  };
 
   // Manejar envío del formulario
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateAddress(formData)) {
-      return;
-    }
-
+  const handleSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
       if (editingAddress) {
-        await updateAddress(editingAddress.id, formData);
+        await updateAddress(editingAddress.id, data);
       } else {
-        await createAddress(formData);
+        await createAddress(data);
       }
       
       setIsDialogOpen(false);
-      setFormData(initialFormData);
       setEditingAddress(null);
     } catch (error) {
       // El error ya se maneja en el hook
@@ -103,40 +55,15 @@ export function AddressSelector() {
   // Abrir diálogo para crear nueva dirección
   const openCreateDialog = () => {
     setEditingAddress(null);
-    setFormData(initialFormData);
     setIsDialogOpen(true);
   };
 
   // Abrir diálogo para editar dirección
   const openEditDialog = (address: any) => {
     setEditingAddress(address);
-    setFormData({
-      street: address.street,
-      city: address.city,
-      state: address.state,
-      zipCode: address.zipCode,
-      country: address.country
-    });
     setIsDialogOpen(true);
   };
 
-  // Manejar cambios en el formulario
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    
-    if (name === 'zipCode') {
-      const formattedValue = formatCanadianPostalCode(value);
-      setFormData(prev => ({
-        ...prev,
-        [name]: formattedValue
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
-  };
 
   // Manejar eliminación de dirección
   const handleDeleteAddress = async (addressId: string) => {
@@ -297,107 +224,13 @@ export function AddressSelector() {
       </div>
 
       {/* Modal para crear/editar dirección */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {editingAddress ? t('addresses.editAddress') : t('addresses.addAddress')}
-            </DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <p className="text-sm text-blue-800 font-medium">
-                {t('addresses.form.deliveryArea')}
-              </p>
-              <p className="text-xs text-blue-600">
-                {t('addresses.form.deliveryAreaNote')}
-              </p>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="street">{t('addresses.form.street')}</Label>
-              <Input
-                id="street"
-                name="street"
-                value={formData.street}
-                onChange={handleInputChange}
-                placeholder={t('addresses.form.streetPlaceholder')}
-                required
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="city">{t('addresses.form.city')}</Label>
-                <Input
-                  id="city"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  placeholder={t('addresses.form.cityPlaceholder')}
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="state">{t('addresses.form.state')}</Label>
-                <Input
-                  id="state"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleInputChange}
-                  placeholder={t('addresses.form.statePlaceholder')}
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="zipCode">{t('addresses.form.zipCode')}</Label>
-                <Input
-                  id="zipCode"
-                  name="zipCode"
-                  value={formData.zipCode}
-                  onChange={handleInputChange}
-                  placeholder={t('addresses.form.zipCodePlaceholder')}
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="country">{t('addresses.form.country')}</Label>
-                <Input
-                  id="country"
-                  name="country"
-                  value={formData.country}
-                  onChange={handleInputChange}
-                  placeholder={t('addresses.form.countryPlaceholder')}
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsDialogOpen(false)}
-                className="flex-1"
-              >
-                {t('addresses.form.cancel')}
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-              >
-                {isSubmitting ? t('addresses.form.saving') : (editingAddress ? t('common.update') : t('common.create'))}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <AddAddressModal
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onSubmit={handleSubmit}
+        editingAddress={editingAddress}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 }

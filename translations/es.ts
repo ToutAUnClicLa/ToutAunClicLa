@@ -1316,7 +1316,7 @@ export default {
       add: "Agregar",
       deliveryInfo: "Solo entregas en el área metropolitana de Montreal",
       deliveryNote: "Validamos que la dirección esté dentro del área metropolitana de Montreal",
-      montrealOnly: "Solo direcciones en Montreal",
+      montrealOnly: "Solo direcciones en el área metropolitana de Montreal",
       validationNote: "Validamos que la ciudad sea Montreal y que el código postal sea válido (H1A-H5B)"
     },
     
@@ -1343,8 +1343,8 @@ export default {
       required: "Este campo es requerido",
       streetRequired: "La dirección es requerida",
       countryRequired: "El país es requerido",
-      montrealOnly: "Solo se permiten direcciones en Montreal",
-      validationInfo: "Validamos que la ciudad sea Montreal y el código postal sea válido"
+      montrealOnly: "Solo se permiten direcciones en el área metropolitana de Montreal y Rivera Sur",
+      validationInfo: "Validamos que la dirección esté dentro del área metropolitana de Montreal y Rivera Sur"
     },
     
     // Mensajes de éxito

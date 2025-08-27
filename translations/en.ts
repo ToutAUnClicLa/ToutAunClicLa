@@ -415,7 +415,7 @@ export default {
       add: "Add",
       deliveryInfo: "The address is within Montreal metropolitan area",
       deliveryNote: "We validate that the address is within Montreal metropolitan area",
-      montrealOnly: "Montreal addresses only",
+      montrealOnly: "Montreal metropolitan area addresses only",
       validationNote: "We validate that the city is Montreal and the postal code is valid (H1A-H5B)"
     },
     
@@ -444,8 +444,8 @@ export default {
       required: "This field is required",
       streetRequired: "Address is required",
       countryRequired: "Country is required",
-      montrealOnly: "Only Montreal addresses allowed",
-      validationInfo: "We validate that the city is Montreal and the postal code is valid"
+      montrealOnly: "Only addresses in Montreal metropolitan area and South Shore allowed",
+      validationInfo: "We validate that the address is within Montreal metropolitan area and South Shore"
     },
     
     // Success messages

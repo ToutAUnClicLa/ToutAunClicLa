@@ -415,7 +415,7 @@ export default {
       add: "Ajouter",
       deliveryInfo: "Livraisons dans la région métropolitaine de Montréal",
       deliveryNote: "Nous validons que l'adresse se trouve dans la région métropolitaine de Montréal",
-      montrealOnly: "Adresses de Montréal seulement",
+      montrealOnly: "Adresses de la région métropolitaine de Montréal seulement",
       validationNote: "Nous validons que la ville est Montréal et que le code postal est valide (H1A-H5B)"
     },
     
@@ -444,8 +444,8 @@ export default {
       required: "Ce champ est requis",
       streetRequired: "L'adresse est requise",
       countryRequired: "Le pays est requis",
-      montrealOnly: "Seules les adresses de Montréal sont autorisées",
-      validationInfo: "Nous validons que la ville est Montréal et que le code postal est valide"
+      montrealOnly: "Seules les adresses de la région métropolitaine de Montréal et de la Rive-Sud sont autorisées",
+      validationInfo: "Nous validons que l'adresse se trouve dans la région métropolitaine de Montréal et la Rive-Sud"
     },
     
     // Messages de succès

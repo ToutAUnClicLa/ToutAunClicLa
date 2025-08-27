@@ -21,14 +21,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/common/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
 import { Badge } from '@/components/common/ui/badge';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle
-} from '@/components/common/ui/dialog';
-import { Input } from '@/components/common/ui/input';
-import { Label } from '@/components/common/ui/label';
+import { AddAddressModal } from '@/components/features/modules/address/AddAddressModal';
 import {
   getUserAddresses,
   createAddress,
@@ -57,21 +50,6 @@ const itemVariants = {
   show: { opacity: 1, y: 0 }
 };
 
-interface FormData {
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-}
-
-const initialFormData: FormData = {
-  street: '',
-  city: '',
-  state: '',
-  zipCode: '',
-  country: ''
-};
 
 export default function AddressesPage() {
   const router = useRouter();
@@ -81,7 +59,6 @@ export default function AddressesPage() {
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -106,35 +83,17 @@ export default function AddressesPage() {
     loadAddresses();
   }, [loadAddresses]);
 
-  const validateAddress = (data: FormData): boolean => {
-    const validation = validateMontrealAddress(data.city, data.zipCode);
-    
-    if (!validation.isValid) {
-      toast.error(t('addresses.validation.invalid'), {
-        description: validation.error
-      });
-      return false;
-    }
-    
-    return true;
-  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateAddress(formData)) {
-      return;
-    }
-
+  const handleSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
       if (editingAddress) {
         const updateData: UpdateAddressData = {
-          street: formData.street,
-          city: formData.city,
-          state: formData.state,
-          zipCode: formData.zipCode,
-          country: formData.country
+          street: data.street,
+          city: data.city,
+          state: data.state,
+          zipCode: data.zipCode,
+          country: data.country
         };
         
         await updateAddress(editingAddress.id, updateData);
@@ -143,11 +102,11 @@ export default function AddressesPage() {
         });
       } else {
         const createData: CreateAddressData = {
-          street: formData.street,
-          city: formData.city,
-          state: formData.state,
-          zipCode: formData.zipCode,
-          country: formData.country
+          street: data.street,
+          city: data.city,
+          state: data.state,
+          zipCode: data.zipCode,
+          country: data.country
         };
         
         await createAddress(createData);
@@ -157,7 +116,6 @@ export default function AddressesPage() {
       }
       
       setIsDialogOpen(false);
-      setFormData(initialFormData);
       setEditingAddress(null);
       await loadAddresses();
     } catch (error: any) {
@@ -205,39 +163,14 @@ export default function AddressesPage() {
 
   const openEditDialog = (address: Address) => {
     setEditingAddress(address);
-    setFormData({
-      street: address.street,
-      city: address.city,
-      state: address.state,
-      zipCode: address.zipCode,
-      country: address.country
-    });
     setIsDialogOpen(true);
   };
 
   const openCreateDialog = () => {
     setEditingAddress(null);
-    setFormData(initialFormData);
     setIsDialogOpen(true);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    
-    // Formatear código postal automáticamente
-    if (name === 'zipCode') {
-      const formattedValue = formatCanadianPostalCode(value);
-      setFormData(prev => ({
-        ...prev,
-        [name]: formattedValue
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
-  };
 
   if (isLoading || !user) {
     return (
@@ -453,122 +386,14 @@ export default function AddressesPage() {
           </AnimatePresence>
         )}
 
-        {/* Modal para crear/editar dirección - optimizado móvil */}
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="sm:max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-lg sm:text-xl">
-                {editingAddress ? t('addresses.editAddress') : t('addresses.addNew')}
-              </DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="bg-blue-50 p-3 rounded-lg">
-                <div className="flex items-center gap-2 text-blue-800">
-                  <Shield className="h-4 w-4 flex-shrink-0" />
-                  <p className="text-sm font-medium">{t('addresses.validation.montrealOnly')}</p>
-                </div>
-                <p className="text-xs text-blue-600 mt-1">
-                  {t('addresses.validation.validationInfo')}
-                </p>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="street" className="text-sm font-medium">{t('addresses.form.street')} *</Label>
-                <Input
-                  id="street"
-                  name="street"
-                  value={formData.street}
-                  onChange={handleInputChange}
-                  placeholder={t('addresses.form.streetPlaceholder')}
-                  className="h-10 text-sm"
-                  required
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="city" className="text-sm font-medium">{t('addresses.form.city')} *</Label>
-                  <Input
-                    id="city"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    placeholder={t('addresses.form.cityPlaceholder')}
-                    className="h-10 text-sm"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="state" className="text-sm font-medium">{t('addresses.form.state')} *</Label>
-                  <Input
-                    id="state"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    placeholder={t('addresses.form.statePlaceholder')}
-                    className="h-10 text-sm"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="zipCode" className="text-sm font-medium">{t('addresses.form.zipCode')} *</Label>
-                  <Input
-                    id="zipCode"
-                    name="zipCode"
-                    value={formData.zipCode}
-                    onChange={handleInputChange}
-                    placeholder={t('addresses.form.zipCodePlaceholder')}
-                    className="h-10 text-sm"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="country" className="text-sm font-medium">{t('addresses.form.country')} *</Label>
-                  <Input
-                    id="country"
-                    name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                    placeholder={t('addresses.form.countryPlaceholder')}
-                    className="h-10 text-sm"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="flex gap-3 pt-4">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  className="flex-1 h-10 text-sm"
-                  onClick={() => setIsDialogOpen(false)}
-                  disabled={isSubmitting}
-                >
-                  {t('addresses.form.cancel')}
-                </Button>
-                <Button 
-                  type="submit" 
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 h-10 text-sm"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                      {t('addresses.form.saving')}
-                    </>
-                  ) : (
-                    editingAddress ? t('common.update') : t('common.create')
-                  )}
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        {/* Modal para crear/editar dirección */}
+        <AddAddressModal
+          isOpen={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          onSubmit={handleSubmit}
+          editingAddress={editingAddress}
+          isSubmitting={isSubmitting}
+        />
       </div>
     </div>
   );
