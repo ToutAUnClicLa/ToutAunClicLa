@@ -74,7 +74,7 @@ export function TimeInput({
       const time24 = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
       onChange?.(time24);
     }
-  }, []);
+  }, [onChange, value]);
 
   // Handle clicks outside to close dropdown
   useEffect(() => {

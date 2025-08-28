@@ -424,12 +424,10 @@ export const ProductVariations: React.FC<ProductVariationsProps> = ({
     });
   }, []);
 
-  if (!product.variations || product.variations.length === 0) {
-    return null;
-  }
-
   const sortedGroups = useMemo(() => {
-    return [...product.variations!].sort((a, b) => {
+    if (!product.variations || product.variations.length === 0) return [];
+    
+    return [...product.variations].sort((a, b) => {
       // Required groups first
       if (a.is_required && !b.is_required) return -1;
       if (!a.is_required && b.is_required) return 1;
@@ -441,6 +439,10 @@ export const ProductVariations: React.FC<ProductVariationsProps> = ({
       return a.group_name.localeCompare(b.group_name);
     });
   }, [product.variations]);
+
+  if (!product.variations || product.variations.length === 0) {
+    return null;
+  }
 
   return (
     <div className={`space-y-6 ${className}`}>

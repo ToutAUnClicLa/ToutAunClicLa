@@ -1,12 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CheckIcon, AlertCircleIcon, LoaderIcon } from 'lucide-react'
 import { Button } from '@/components/common/ui/button'
 import { useAuth } from '@/hooks/useAuth'
 import { useCart } from '@/hooks/useCart'
-import Link from 'next/link'
 import { toast } from 'sonner'
 import * as authService from '@/lib/services/auth'
 
@@ -40,34 +39,7 @@ export default function SuccessPage() {
   
   const sessionId = searchParams.get('session_id')
 
-  useEffect(() => {
-    if (!sessionId) {
-      setError('No se encontró ID de sesión')
-      setLoading(false)
-      return
-    }
-
-    // Esperar a que la autenticación se resuelva
-    const checkAuth = async () => {
-      // Dar tiempo a que las cookies se carguen
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      const token = authService.getAuthToken()
-      if (!token && !isAuthenticated) {
-        router.push('/login')
-        return
-      }
-      
-      setAuthChecked(true)
-      fetchOrderStatus()
-    }
-
-    if (!authChecked) {
-      checkAuth()
-    }
-  }, [sessionId, isAuthenticated, router, authChecked])
-
-  const fetchOrderStatus = async () => {
+  const fetchOrderStatus = useCallback(async () => {
     try {
       setLoading(true)
       
@@ -109,7 +81,35 @@ export default function SuccessPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [sessionId, clearCart])
+
+  useEffect(() => {
+    if (!sessionId) {
+      setError('No se encontró ID de sesión')
+      setLoading(false)
+      return
+    }
+
+    // Esperar a que la autenticación se resuelva
+    const checkAuth = async () => {
+      // Dar tiempo a que las cookies se carguen
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      const token = authService.getAuthToken()
+      if (!token && !isAuthenticated) {
+        router.push('/login')
+        return
+      }
+      
+      setAuthChecked(true)
+    }
+
+    if (!authChecked) {
+      checkAuth()
+    } else if (authChecked) {
+      fetchOrderStatus()
+    }
+  }, [sessionId, isAuthenticated, router, authChecked, fetchOrderStatus])
 
   // Loading state
   if (loading) {
@@ -147,7 +147,6 @@ export default function SuccessPage() {
 
   // Success state
   const { order } = orderData
-  const paymentSuccessful = orderData.payment_status === 'paid'
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -232,13 +231,7 @@ export default function SuccessPage() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4">
-          <Button 
-            onClick={() => router.push(`/profile/orders/${order?.id}`)}
-            className="w-full bg-blue-600 hover:bg-blue-700"
-          >
-            Ver Detalles del Pedido
-          </Button>
+        <div className="grid md:grid-cols-2 gap-4">
           <Button 
             variant="outline"
             onClick={() => router.push('/profile/orders')}

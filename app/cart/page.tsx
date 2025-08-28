@@ -210,7 +210,7 @@ export default function CartPage() {
         }
       });
     }
-  }, [summary, calculatedSubtotal, calculatedTaxes, calculatedConsigne]);
+  }, [summary, calculatedSubtotal, calculatedTaxes, calculatedConsigne, items]);
   
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-US', {

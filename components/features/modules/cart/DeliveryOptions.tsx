@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, Truck, MessageSquare, Check, Calendar, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
@@ -170,7 +170,7 @@ export default function DeliveryOptionsComponent({
   ];
 
   // Validar opciones
-  const validateOptions = (options: DeliveryOptions) => {
+  const validateOptions = useCallback((options: DeliveryOptions) => {
     const newErrors: typeof errors = {};
     
     if (!options.horaEntregaPreferida) {
@@ -215,7 +215,7 @@ export default function DeliveryOptionsComponent({
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [t]);
 
   // Manejar cambios en las opciones
   const handleOptionChange = (field: keyof DeliveryOptions, value: string) => {
@@ -434,7 +434,7 @@ export default function DeliveryOptionsComponent({
     // Validación estándar si todo está correcto
     const isValid = validateOptions(deliveryOptions);
     onOptionsChange?.({ ...deliveryOptions, isValid });
-  }, []);
+  }, [deliveryOptions, manualDeliveryType, onOptionsChange, validateOptions]);
 
   // Efecto para limpiar timer de debounce en unmount
   useEffect(() => {

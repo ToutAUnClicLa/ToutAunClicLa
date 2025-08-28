@@ -76,7 +76,7 @@ export function ProductPriceDisplay({
       hasVariations,
       variationModifier
     };
-  }, [product.precio, product.precio_anterior, product.categoria_id, product.TPS, product.TVQ, product.consigne, product.hasVariations, product.minPrice, product.priceRange, t]);
+  }, [product.precio, product.precio_anterior, product.categoria_id, product.TPS, product.TVQ, product.consigne, product.hasVariations, product.minPrice, product.priceRange, selectedVariations, t]);
 
   if (product.precio === 0) {
     return (
