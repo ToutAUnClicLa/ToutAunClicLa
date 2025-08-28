@@ -8,16 +8,12 @@ import { Badge } from '@/components/common/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
 import { Separator } from '@/components/common/ui/separator';
 import { Alert, AlertDescription } from '@/components/common/ui/alert';
-import { useTranslation } from '@/hooks/useTranslation';
 import { formatPrice } from '@/lib/utils';
 import {
-  ProductWithVariations,
   VariationGroup,
-  ProductVariation,
   SelectedVariation,
   VariationSelection,
   VariationValidationResult,
-  PriceCalculation,
   ProductVariationsProps,
   VariationGroupProps,
   VariationOptionProps
@@ -110,7 +106,6 @@ const VariationOption: React.FC<VariationOptionProps> = ({
   showPrice = true,
   className = ""
 }) => {
-  const { t } = useTranslation();
   const isOutOfStock = variation.stock !== undefined && variation.stock === 0;
   
   const handleSelect = () => {
@@ -253,7 +248,6 @@ const VariationGroupComponent: React.FC<VariationGroupProps> = ({
   showPrices = true,
   className = ""
 }) => {
-  const { t } = useTranslation();
   const groupSelections = selectedVariations.filter(s => s.groupId === group.id);
 
   const handleVariationSelect = (variationId: number, selected: boolean, quantity: number = 1) => {
@@ -358,7 +352,6 @@ export const ProductVariations: React.FC<ProductVariationsProps> = ({
   showPriceBreakdown = true,
   className = ""
 }) => {
-  const { t } = useTranslation();
   const [selectedVariations, setSelectedVariations] = useState<SelectedVariation[]>(
     initialSelection?.variations || []
   );
@@ -453,7 +446,7 @@ export const ProductVariations: React.FC<ProductVariationsProps> = ({
     <div className={`space-y-6 ${className}`}>
       {/* Validation Errors */}
       <AnimatePresence>
-        {calculations?.validation.errors.length > 0 && (
+        {calculations?.validation?.errors && calculations.validation.errors.length > 0 && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
