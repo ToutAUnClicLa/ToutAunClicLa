@@ -7,7 +7,8 @@ import {
   type CartItem,
   type CartSummary,
   type Coupon,
-  type DeliveryOptions
+  type DeliveryOptions,
+  type DeliveryUpdateResponse
 } from '@/lib/services/cart';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -104,7 +105,12 @@ export function useCart(options: UseCartOptions = {}) {
       const response = globalCartCache.data;
       if (isComponentMountedRef.current) {
         setItems(response.cartItems || []);
-        setSummary(response.summary);
+        // 🚚 CRITICAL FIX: Ensure cached data preserves shipping fields
+        setSummary({
+          ...response.summary,
+          shippingMessage: response.summary?.shippingMessage || null,
+          needsAddress: response.summary?.needsAddress || false
+        });
         setPagination(response.pagination);
         setHasLoadedOnce(true);
       }
@@ -146,9 +152,24 @@ export function useCart(options: UseCartOptions = {}) {
       
       if (isComponentMountedRef.current) {
         setItems(response.cartItems || []);
-        setSummary(response.summary);
+        // 🚚 CRITICAL FIX: Ensure shipping fields are preserved when loading cart
+        setSummary({
+          ...response.summary,
+          // Ensure new shipping fields are included (backend should provide them)
+          shippingMessage: response.summary?.shippingMessage || null,
+          needsAddress: response.summary?.needsAddress || false
+        });
         setPagination(response.pagination);
         setHasLoadedOnce(true);
+        
+        // 🔍 Debug log for regular cart loading
+        if (response.summary?.shippingMessage || response.summary?.needsAddress) {
+          console.log('🚚 Cart loaded with shipping state:', {
+            needsAddress: response.summary.needsAddress,
+            shippingMessage: response.summary.shippingMessage,
+            shippingCost: response.summary.shippingCost
+          });
+        }
       }
     } catch (err: any) {
       globalCartCache = { data: null, timestamp: 0, isLoading: false };
@@ -215,8 +236,8 @@ export function useCart(options: UseCartOptions = {}) {
       setError(null);
       console.log('Adding product to cart:', { productId, quantity });
       
-      const newItem = await cartService.addToCart(productId, quantity);
-      console.log('Product added successfully:', newItem);
+      const result = await cartService.addToCart(productId, quantity);
+      console.log('Product added successfully:', result);
       
       // Invalidar cache y recargar
       invalidateCache();
@@ -394,7 +415,10 @@ export function useCart(options: UseCartOptions = {}) {
         totalConsigne: cartWithCoupon.summary?.totalConsigne,
         totalTaxes: cartWithCoupon.summary?.totalTaxes,
         shippingThreshold: cartWithCoupon.summary?.shippingThreshold || 200,
-        totalBeforeDiscount: cartWithCoupon.summary?.totalBeforeDiscount
+        totalBeforeDiscount: cartWithCoupon.summary?.totalBeforeDiscount,
+        // 🚚 CRITICAL FIX: Include new shipping calculation fields
+        shippingMessage: cartWithCoupon.summary?.shippingMessage,
+        needsAddress: cartWithCoupon.summary?.needsAddress
       };
       
       setSummary(newSummary);
@@ -443,35 +467,40 @@ export function useCart(options: UseCartOptions = {}) {
   }, [isAuthenticated, user, invalidateCache]);
 
   // Actualizar opciones de entrega (nuevo)
-  const updateDeliveryOptions = useCallback(async (options: DeliveryOptions): Promise<boolean> => {
+  const updateDeliveryOptions = useCallback(async (options: DeliveryOptions): Promise<DeliveryUpdateResponse> => {
     if (!isAuthenticated || !user) {
       toast.error('Debes iniciar sesión para configurar opciones de entrega');
-      return false;
+      throw new Error('Usuario no autenticado');
     }
 
     try {
       setError(null);
       
-      const result = await cartService.updateDeliveryOptions(options);
+      const result: DeliveryUpdateResponse = await cartService.updateDeliveryOptions(options);
       
-      // Invalidar cache y recargar para reflejar cambios
+      // Si hay error del backend con sugerencias, no recargar aún
+      if (result.error) {
+        return result; // Devolver la respuesta con errores/sugerencias
+      }
+      
+      // Solo recargar si no hay errores
       invalidateCache();
       await loadCartNow(true);
       
       toast.success('Opciones de entrega actualizadas');
-      return true;
+      return result;
     } catch (err: any) {
       console.error('Error updating delivery options:', err);
       setError('Error al actualizar opciones de entrega');
       
       if (err.message?.includes('hora de entrega')) {
-        toast.error('La hora de entrega debe estar entre 12:00 PM y 10:00 PM');
+        toast.error('La hora de entrega debe estar entre 11:00 AM y 8:00 PM');
       } else if (err.message?.includes('método de entrega')) {
         toast.error('Método de entrega inválido');
       } else {
         toast.error(err.message || 'Error al actualizar opciones de entrega');
       }
-      return false;
+      throw err; // Propagar el error en lugar de devolver false
     }
   }, [isAuthenticated, user, invalidateCache, loadCartNow]);
 
@@ -553,6 +582,37 @@ export function useCart(options: UseCartOptions = {}) {
       globalCartCache = null;
     }
   }, [isAuthenticated, hasLoadedOnce]); // Agregar hasLoadedOnce como dependencia
+
+  // Escuchar cambios de dirección para recalcular costos de envío
+  useEffect(() => {
+    const handleAddressChange = (event: CustomEvent) => {
+      // Solo procesar si el componente está montado y el usuario autenticado
+      if (!isComponentMountedRef.current || !isAuthenticated || !user) {
+        return;
+      }
+
+      const { action, address } = event.detail;
+      console.log('🛒 Carrito detectó cambio de dirección:', { action, address });
+      
+      // Solo recargar si es un cambio de dirección principal que puede afectar costos de envío
+      if (action.includes('principal') || action === 'seleccionada') {
+        console.log('🔄 Recargando carrito por cambio de dirección principal...');
+        invalidateCache();
+        loadCartNow(true).catch(err => {
+          console.error('Error recargando carrito tras cambio de dirección:', err);
+        });
+      }
+    };
+
+    // Solo agregar listener si hay ventana disponible
+    if (typeof window !== 'undefined') {
+      window.addEventListener('addressChanged', handleAddressChange as EventListener);
+      
+      return () => {
+        window.removeEventListener('addressChanged', handleAddressChange as EventListener);
+      };
+    }
+  }, [invalidateCache, loadCartNow, isAuthenticated, user]);
 
   // Cleanup en unmount
   useEffect(() => {

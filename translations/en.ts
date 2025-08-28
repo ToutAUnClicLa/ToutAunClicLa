@@ -265,6 +265,7 @@ export default {
       continue: "Continue Shopping",
       authRequired: "Sign in to continue",
       addressRequired: "Select an address",
+      addressRequiredForShipping: "Add an address to calculate shipping",
       coupon: {
         question: "Have a discount code?",
         placeholder: "Enter your code here",
@@ -290,6 +291,22 @@ export default {
       notesLabel: "Notes for the delivery person",
       notesPlaceholder: "E.g: Ring the bell, apartment 3B, call upon arrival...",
       notesHelper: "Special delivery instructions (optional)",
+      typeLabel: "Delivery Type",
+      today: {
+        title: "Delivery Today",
+        description: "11:00 AM - 9:00 PM (same day with 1 hour minimum)"
+      },
+      tomorrow: {
+        title: "Delivery Tomorrow", 
+        description: "11:00 AM - 9:00 PM (next day)"
+      },
+      todaySelected: "Today delivery selected - Orders until 8:00 PM",
+      tomorrowAutoSelected: "After 9:00 PM - Tomorrow delivery selected automatically",
+      autoNextDay: "Automatic next day delivery (after 8:00 PM)",
+      noHoursToday: "No delivery slots available today",
+      suggestTomorrow: "Schedule for tomorrow?",
+      alternativeHours: "Available hours:",
+      contentFiltered: "Content filtered",
       methods: {
         puerta: {
           title: "Leave at door",
@@ -307,7 +324,7 @@ export default {
       validation: {
         timeRequired: "You must select a delivery time",
         methodRequired: "You must select a delivery method",
-        timeInvalid: "Time must be between 11:00 AM and 9:00 PM",
+        timeInvalid: "Time must be between 12:00 PM and 9:00 PM",
         timeTooEarly: "Delivery time must be at least 1 hour from now. Minimum available time: {time}",
         notesTooLong: "Notes cannot exceed 500 characters",
         notesUnsafe: "Notes contain content not allowed for security reasons",
@@ -326,6 +343,7 @@ export default {
       removeProduct: "Error removing product",
       clearCart: "Error clearing cart",
       selectAddress: "You must select an address",
+      addAddressRequired: "Please add an address to calculate shipping",
       emptyCart: "Your cart is empty",
       deliveryTimeRequired: "You must select a delivery time",
       deliveryMethodRequired: "You must select a delivery method"

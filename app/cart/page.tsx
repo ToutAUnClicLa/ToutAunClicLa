@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { ShoppingCart, ShoppingBag, Trash2, Plus, Minus, X, Package, Utensils, Store, ArrowLeft, Heart } from 'lucide-react';
+import { ShoppingCart, ShoppingBag, Trash2, Plus, Minus, Package, Utensils, Store, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
 import { Badge } from '@/components/common/ui/badge';
 import { Card, CardContent } from '@/components/common/ui/card';
@@ -71,13 +71,12 @@ const categoryOrder = ['productos', 'comidas', 'boutique'];
 
 export default function CartPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const { 
     items, 
     totalQuantity, 
-    subtotal, 
-    total, 
+ 
     isLoading, 
     updateQuantity, 
     removeFromCart,
@@ -90,7 +89,7 @@ export default function CartPage() {
     summary 
   } = useCart();
   
-  const { selectedAddress, primaryAddress, hasAddresses, addresses } = useAddresses();
+  const { selectedAddress, hasAddresses, addresses } = useAddresses();
   
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
@@ -130,23 +129,62 @@ export default function CartPage() {
   }, [items]);
 
   const shippingThreshold = 200; // Envío gratis a partir de $200
-  const shippingCost = calculatedSubtotal >= shippingThreshold ? 0 : 8.99;
+  const fallbackShippingCost = calculatedSubtotal >= shippingThreshold ? 0 : 8.99;
   
-  // Si hay cupón aplicado, usar SOLO los datos de la API (/with-coupon)
-  // Si NO hay cupón, usar cálculos locales
-  const finalTotal = appliedCoupon && summary?.total !== undefined
-    ? summary.total // ✅ Total final de /with-coupon (ya incluye TODO)
-    : calculatedSubtotal + calculatedTaxes + calculatedConsigne + shippingCost;
+  // 🏛️ SIEMPRE usar el total del backend cuando esté disponible - El backend maneja toda la lógica
+  // Solo usar cálculos locales como fallback de emergencia
+  const finalTotal = summary?.total !== undefined
+    ? summary.total // ✅ TOTAL DEL BACKEND (incluye shipping calculado con dirección)
+    : displaySubtotal + displayTaxes + displayConsigne + fallbackShippingCost; // Fallback usando valores del backend cuando estén disponibles
     
-  const discountAmount = summary?.discount || 0;
   const savingsAmount = summary?.savings || 0;
-  const finalShippingCost = summary?.shippingCost !== undefined ? summary.shippingCost : shippingCost;
+  const finalShippingCost = summary?.shippingCost !== undefined ? summary.shippingCost : fallbackShippingCost;
   const isFreeShippingApplied = summary?.freeShippingApplied || false;
   
-  // Para mostrar en el resumen - usar datos de API si hay cupón, sino cálculos locales
-  const displaySubtotal = appliedCoupon && summary?.subtotal ? summary.subtotal : calculatedSubtotal;
-  const displayTaxes = appliedCoupon && summary?.totalTaxes ? summary.totalTaxes : calculatedTaxes;
-  const displayConsigne = appliedCoupon && summary?.totalConsigne !== undefined ? summary.totalConsigne : calculatedConsigne;
+  // 🚚 CRITICAL FIX: New shipping state management from backend
+  // Always use the latest values from summary, with proper fallbacks
+  const shippingMessage = summary?.shippingMessage || null;
+  const needsAddress = summary?.needsAddress || false;
+  
+  // 🔍 Debug logging for shipping state changes
+  useEffect(() => {
+    if (summary?.shippingMessage || summary?.needsAddress) {
+      console.log('🚚 Shipping state update:', {
+        shippingMessage: summary.shippingMessage,
+        needsAddress: summary.needsAddress,
+        shippingCost: summary.shippingCost,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [summary?.shippingMessage, summary?.needsAddress, summary?.shippingCost]);
+
+  // 🏛️ Debug logging para verificar uso de valores del backend
+  useEffect(() => {
+    if (summary) {
+      console.log('💰 Valores del backend en uso:', {
+        usingBackendSubtotal: summary.subtotal !== undefined,
+        usingBackendTaxes: summary.totalTaxes !== undefined,
+        usingBackendConsigne: summary.totalConsigne !== undefined,
+        usingBackendTotal: summary.total !== undefined,
+        backendValues: {
+          subtotal: summary.subtotal,
+          totalTaxes: summary.totalTaxes,
+          totalConsigne: summary.totalConsigne,
+          total: summary.total
+        },
+        fallbackValues: {
+          calculatedSubtotal,
+          calculatedTaxes,
+          calculatedConsigne
+        }
+      });
+    }
+  }, [summary, calculatedSubtotal, calculatedTaxes, calculatedConsigne]);
+  
+  // 🏛️ USAR COMPLETAMENTE LA LÓGICA DEL BACKEND - El backend maneja todos los cálculos de precios
+  const displaySubtotal = summary?.subtotal !== undefined ? summary.subtotal : calculatedSubtotal;
+  const displayTaxes = summary?.totalTaxes !== undefined ? summary.totalTaxes : calculatedTaxes;
+  const displayConsigne = summary?.totalConsigne !== undefined ? summary.totalConsigne : calculatedConsigne;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-US', {
@@ -155,12 +193,86 @@ export default function CartPage() {
     }).format(price);
   };
 
-  // Efecto para cargar el carrito al montar el componente
+  // Helper function to render shipping display based on different states
+  const renderShippingDisplay = () => {
+    // 🚚 CRITICAL FIX: When needsAddress is true, show only the translated subtle message
+    if (needsAddress) {
+      return (
+        <div className="flex flex-col space-y-1">
+          <span className="text-xs sm:text-xs text-amber-600 font-medium">
+            {t('cart.summary.addressRequiredForShipping')}
+          </span>
+        </div>
+      );
+    }
+    
+    // State 2: shippingMessage exists (calculation error with estimated cost)
+    if (shippingMessage) {
+      return (
+        <div className="flex flex-col space-y-1">
+          <span className="text-sm sm:text-base font-medium text-gray-900">
+            {formatPrice(finalShippingCost)}
+          </span>
+          <span className="text-xs text-orange-600">
+            {shippingMessage}
+          </span>
+        </div>
+      );
+    }
+    
+    // State 3: Normal shipping display (with or without free shipping)
+    if (finalShippingCost === 0) {
+      return (
+        <span className={`text-sm sm:text-base font-medium ${isFreeShippingApplied ? 'text-green-600' : 'text-gray-900'}`}>
+          {t('cart.summary.freeShipping')}
+          {isFreeShippingApplied && ' ✓'}
+        </span>
+      );
+    }
+    
+    return (
+      <span className="text-sm sm:text-base font-medium text-gray-900">
+        {formatPrice(finalShippingCost)}
+      </span>
+    );
+  };
+
+  // Efecto para cargar el carrito al montar el componente y cuando cambia la dirección principal
   useEffect(() => {
     if (isAuthenticated) {
-      refreshCart();
+      console.log('🔄 Cargando carrito - Autenticación o dirección cambió:', {
+        isAuthenticated,
+        hasSelectedAddress: !!selectedAddress,
+        addressId: selectedAddress?.id,
+        addressCity: selectedAddress?.city,
+        hasCoupon: !!appliedCoupon
+      });
+      
+      // Si hay cupón aplicado, recalcular con cupón para obtener totales actualizados con nueva dirección
+      const reloadCart = async () => {
+        try {
+          if (appliedCoupon && (appliedCoupon.code || appliedCoupon.codigo)) {
+            const couponCode = appliedCoupon.code || appliedCoupon.codigo;
+            if (couponCode) {
+              console.log('🎟️ Recargando carrito con cupón aplicado:', couponCode);
+              await applyCoupon(couponCode);
+            } else {
+              await refreshCart();
+            }
+          } else {
+            // Recarga normal sin cupón
+            await refreshCart();
+          }
+        } catch (error) {
+          console.error('❌ Error recargando carrito:', error);
+          // Fallback: recarga básica
+          await refreshCart();
+        }
+      };
+      
+      reloadCart();
     }
-  }, [isAuthenticated, refreshCart]);
+  }, [isAuthenticated, selectedAddress, refreshCart, applyCoupon, appliedCoupon]);
 
   // Efecto para actualizar el estado de dirección válida
   useEffect(() => {
@@ -172,6 +284,56 @@ export default function CartPage() {
     
     setHasValidAddress(addressValid);
   }, [isAuthenticated, selectedAddress, hasAddresses, addresses]);
+
+  // Listener para cambios de direcciones que requieren recarga del carrito
+  useEffect(() => {
+    const handleAddressChange = (event: CustomEvent) => {
+      const { action, address } = event.detail;
+      console.log('🏠 Evento de cambio de dirección recibido en carrito:', {
+        action,
+        addressId: address?.id,
+        city: address?.city,
+        isPrimary: address?.isPrimary
+      });
+      
+      // Recargar carrito cuando hay cambios en direcciones
+      const reloadCartForAddressChange = async () => {
+        try {
+          console.log('♻️ Recargando carrito debido a cambio de dirección...');
+          
+          if (appliedCoupon && (appliedCoupon.code || appliedCoupon.codigo)) {
+            const couponCode = appliedCoupon.code || appliedCoupon.codigo;
+            if (couponCode) {
+              console.log('🎟️ Recargando carrito con cupón tras cambio de dirección:', couponCode);
+              await applyCoupon(couponCode);
+            } else {
+              await refreshCart();
+            }
+          } else {
+            await refreshCart();
+          }
+          
+          console.log('✅ Carrito recargado exitosamente tras cambio de dirección');
+        } catch (error) {
+          console.error('❌ Error recargando carrito tras cambio de dirección:', error);
+        }
+      };
+      
+      reloadCartForAddressChange();
+    };
+
+    // Agregar listener
+    if (typeof window !== 'undefined') {
+      window.addEventListener('addressChanged', handleAddressChange as EventListener);
+    }
+
+    // Cleanup
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('addressChanged', handleAddressChange as EventListener);
+      }
+    };
+  }, [appliedCoupon, applyCoupon, refreshCart]);
 
   // Mostrar modal de autenticación si no está autenticado
   useEffect(() => {
@@ -253,8 +415,18 @@ export default function CartPage() {
       return;
     }
 
+    // 🚚 CRITICAL FIX: Improved address validation logic
+    // Priority 1: Backend says address is needed (most authoritative)
+    if (needsAddress) {
+      toast.error(t('cart.summary.addAddressRequired'));
+      console.log('❌ Checkout blocked: Backend requires address (needsAddress=true)');
+      return;
+    }
+    
+    // Priority 2: Local validation for address selection
     if (!hasValidAddress || !selectedAddress) {
       toast.error(t('cart.errors.selectAddress'));
+      console.log('❌ Checkout blocked: No valid address selected locally');
       return;
     }
 
@@ -334,7 +506,12 @@ export default function CartPage() {
       }
       
       console.log('📦 Payload completo para Stripe:', JSON.stringify(payload, null, 2));
-      console.log('💰 Total esperado en checkout:', finalTotal);
+      console.log('💰 Total esperado en checkout:', finalTotal, '(del backend)');
+      console.log('🏠 Dirección para cálculo de shipping:', {
+        id: selectedAddress.id,
+        city: selectedAddress.city,
+        zipCode: selectedAddress.zipCode
+      });
       console.log('🧾 Resumen de cupón:', {
         aplicado: !!appliedCoupon,
         codigo: appliedCoupon?.code || appliedCoupon?.codigo,
@@ -661,14 +838,22 @@ export default function CartPage() {
                     <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">
                       {formatPrice(finalTotal)}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      {finalShippingCost === 0 ? (
+                    <div className="text-xs text-gray-500">
+                      {needsAddress ? (
+                        <span className="text-amber-600 font-medium">
+                          {t('cart.summary.addressRequired')}
+                        </span>
+                      ) : finalShippingCost === 0 ? (
                         <span className={isFreeShippingApplied ? 'text-green-600 font-medium' : ''}>
                           {t('cart.freeShipping')}
                           {isFreeShippingApplied && ' ✓'}
                         </span>
+                      ) : shippingMessage ? (
+                        <span className="text-orange-600">
+                          + {formatPrice(finalShippingCost)} {t('cart.shipping')} (estimado)
+                        </span>
                       ) : `+ ${formatPrice(finalShippingCost)} ${t('cart.shipping')}`}
-                    </p>
+                    </div>
                   </div>
                   <Button
                     variant="ghost"
@@ -728,16 +913,11 @@ export default function CartPage() {
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.subtotal')}</span>
                       <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displaySubtotal)}</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-start">
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.shipping')}</span>
-                      <span className="text-sm sm:text-base font-medium text-gray-900">
-                        {finalShippingCost === 0 ? (
-                          <span className={isFreeShippingApplied ? 'text-green-600' : ''}>
-                            {t('cart.summary.freeShipping')}
-                            {isFreeShippingApplied && ' ✓'}
-                          </span>
-                        ) : formatPrice(finalShippingCost)}
-                      </span>
+                      <div className="text-right">
+                        {renderShippingDisplay()}
+                      </div>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.taxes')}</span>
@@ -807,14 +987,21 @@ export default function CartPage() {
                         console.log('🔍 Button clicked - Debug info:', {
                           isAuthenticated,
                           hasValidAddress,
+                          needsAddress,
+                          shippingMessage,
                           deliveryOptionsValid: deliveryOptions.isValid,
-                          selectedAddress,
+                          selectedAddress: selectedAddress ? { id: selectedAddress.id, city: selectedAddress.city } : null,
                           addressesCount: addresses?.length || 0,
-                          deliveryOptions
+                          shippingState: {
+                            cost: finalShippingCost,
+                            isFree: isFreeShippingApplied,
+                            message: shippingMessage,
+                            needsAddress: needsAddress
+                          }
                         })
                         handleCheckout()
                       }}
-                      disabled={!isAuthenticated || !deliveryOptions.isValid || !hasValidAddress || isEmpty || checkoutLoading}
+                      disabled={!isAuthenticated || !deliveryOptions.isValid || !hasValidAddress || isEmpty || checkoutLoading || needsAddress}
                     >
                       {checkoutLoading ? (
                         <span className="flex items-center justify-center gap-2">
@@ -823,6 +1010,7 @@ export default function CartPage() {
                         </span>
                       ) : !isAuthenticated ? t('cart.summary.authRequired') : 
                        isEmpty ? 'Carrito vacío' :
+                       needsAddress ? t('cart.summary.addressRequired') :
                        !hasValidAddress ? t('cart.summary.addressRequired') : 
                        !deliveryOptions.isValid ? t('cart.delivery.error') : 
                        t('cart.summary.proceed')}

@@ -1167,6 +1167,7 @@ export default {
       continue: "Continuar Comprando",
       authRequired: "Inicia sesión para continuar",
       addressRequired: "Selecciona una dirección",
+      addressRequiredForShipping: "Agrega una dirección para calcular el envío",
       coupon: {
         question: "¿Tienes un código de descuento?",
         placeholder: "Ingresa tu código aquí",
@@ -1192,6 +1193,22 @@ export default {
       notesLabel: "Notas para el repartidor",
       notesPlaceholder: "Ej: Tocar el timbre, apartamento 3B, llamar al llegar...",
       notesHelper: "Instrucciones especiales para la entrega (opcional)",
+      typeLabel: "Tipo de Entrega",
+      today: {
+        title: "Entrega Hoy",
+        description: "11:00 AM - 9:00 PM (mismo día con 1 hora mínima)"
+      },
+      tomorrow: {
+        title: "Entrega Mañana", 
+        description: "11:00 AM - 9:00 PM (día siguiente)"
+      },
+      todaySelected: "Entrega hoy seleccionada - Pedidos hasta 8:00 PM",
+      tomorrowAutoSelected: "Después de las 9:00 PM - Entrega mañana seleccionada automáticamente",
+      autoNextDay: "Entrega automática para mañana (después de las 8:00 PM)",
+      noHoursToday: "No hay horarios disponibles hoy",
+      suggestTomorrow: "¿Programar para mañana?",
+      alternativeHours: "Horarios disponibles:",
+      contentFiltered: "Contenido filtrado",
       methods: {
         puerta: {
           title: "Dejar en puerta",
@@ -1228,6 +1245,7 @@ export default {
       removeProduct: "Error al eliminar producto",
       clearCart: "Error al vaciar carrito",
       selectAddress: "Debes seleccionar una dirección",
+      addAddressRequired: "Agrega una dirección para calcular el envío",
       emptyCart: "Tu carrito está vacío",
       deliveryTimeRequired: "Debes seleccionar una hora de entrega",
       deliveryMethodRequired: "Debes seleccionar un método de entrega"

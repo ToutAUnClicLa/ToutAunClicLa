@@ -6,6 +6,23 @@ import * as addressService from '@/lib/services/addresses';
 import { validateMontrealAddress } from '@/lib/utils/montreal-validation';
 import { toast } from 'sonner';
 
+// Función para notificar cambios de direcciones que requieren recarga del carrito
+const notifyAddressChange = (action: string, address: any) => {
+  console.log(`🏠 Dirección ${action}:`, {
+    action,
+    addressId: address?.id,
+    city: address?.city,
+    isPrimary: address?.isPrimary
+  });
+  
+  // Disparar evento personalizado para que el carrito se recargue
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('addressChanged', {
+      detail: { action, address }
+    }));
+  }
+};
+
 export interface Address {
   id: string;
   street: string;
@@ -161,6 +178,9 @@ export function useAddresses() {
       // NOTA: No await aquí para que el estado local se actualice inmediatamente
       refreshAddresses().catch(console.error);
       
+      // Notificar creación de dirección para recarga del carrito
+      notifyAddressChange('creada', newAddress);
+      
       toast.success('Dirección agregada correctamente');
       return newAddress;
     } catch (err: any) {
@@ -196,6 +216,9 @@ export function useAddresses() {
       if (selectedAddress?.id === addressId) {
         setSelectedAddress(updatedAddress);
       }
+      
+      // Notificar actualización de dirección para recarga del carrito
+      notifyAddressChange('actualizada', updatedAddress);
       
       toast.success('Dirección actualizada correctamente');
       return updatedAddress;
@@ -291,10 +314,16 @@ export function useAddresses() {
         // Actualizar la dirección seleccionada con el flag isPrimary
         setSelectedAddress({ ...address, isPrimary: true });
         
+        // Notificar cambio de dirección principal para recarga del carrito
+        notifyAddressChange('establecida como principal', { ...address, isPrimary: true });
+        
       } catch (err) {
         console.error('Error al establecer dirección como principal:', err);
         // Mantener la selección aunque falle establecer como principal
       }
+    } else {
+      // Si ya era principal, solo notificar selección
+      notifyAddressChange('seleccionada', address);
     }
   }, []);
 
@@ -314,6 +343,9 @@ export function useAddresses() {
       
       const newPrimary = addresses.find(addr => addr.id === addressId) || null;
       setPrimaryAddress(newPrimary);
+      
+      // Notificar cambio de dirección principal para recarga del carrito
+      notifyAddressChange('establecida como principal (directa)', newPrimary);
       
       toast.success('Dirección principal actualizada correctamente');
       return newPrimary;

@@ -68,6 +68,10 @@ export interface CartItem {
   usuario_id: string;
   producto_id: number;
   cantidad: number;
+  hora_entrega_preferida?: string;
+  metodo_entrega?: 'puerta' | 'manos' | 'recepcion';
+  notas_entrega?: string;
+  tipo_entrega?: 'hoy' | 'siguiente_dia';
   productos: CartProduct;
   addedAt?: string;
 }
@@ -90,6 +94,9 @@ export interface CartSummary {
   discount?: number;
   savings?: number;
   freeShippingApplied?: boolean;
+  // New fields for backend shipping calculation system
+  shippingMessage?: string | null;
+  needsAddress?: boolean;
 }
 
 export interface CartPagination {
@@ -122,10 +129,31 @@ export interface Coupon {
 }
 
 export interface DeliveryOptions {
-  horaEntregaPreferida: string;  // "HH:MM" format (12:00-22:00)
+  horaEntregaPreferida: string;  // "HH:MM" format (11:00-20:00)
   metodoEntrega: 'puerta' | 'manos' | 'recepcion';
   notasEntrega?: string | null;
   aplicarATodos?: boolean;
+  tipoEntrega?: 'estandar' | 'siguiente_dia';
+}
+
+export interface DeliveryInfo {
+  type: 'estandar' | 'siguiente_dia';
+  description: string;
+}
+
+export interface DeliveryUpdateResponse {
+  message: string;
+  updatedItems: number;
+  deliveryOptions: DeliveryOptions;
+  deliveryInfo?: DeliveryInfo;
+  availableHours?: string[];
+  suggestTomorrow?: boolean;
+  error?: {
+    code: string;
+    message: string;
+    availableHours?: string[];
+    suggestTomorrow?: boolean;
+  };
 }
 
 export interface CartWithCouponResponse extends CartResponse {
@@ -136,6 +164,8 @@ export interface CartWithCouponResponse extends CartResponse {
   summary: CartSummary & {
     discount?: number;
     savings?: number;
+    shippingMessage?: string | null;
+    needsAddress?: boolean;
   };
 }
 
@@ -152,12 +182,81 @@ export async function getCart(page: number = 1, limit: number = 20): Promise<Car
     const data = await response.json();
 
     if (!response.ok) {
+      // If backend has shippingThreshold error, return a fallback cart response
+      if (data.message?.includes('shippingThreshold is not defined') || data.error?.includes('shippingThreshold is not defined')) {
+        console.warn('Backend shippingThreshold error, returning fallback cart');
+        return {
+          cartItems: [],
+          total: 0,
+          itemCount: 0,
+          pagination: {
+            currentPage: 1,
+            totalPages: 1,
+            totalItems: 0,
+            itemsPerPage: 20,
+            hasNextPage: false,
+            hasPrevPage: false
+          },
+          summary: {
+            totalItems: 0,
+            totalQuantity: 0,
+            subtotal: 0,
+            total: 0,
+            shippingThreshold: 200,
+            shippingCost: 0,
+            shippingMessage: 'Error calculando envío, usando valores por defecto',
+            needsAddress: true,
+            totalTPS: 0,
+            totalTVQ: 0,
+            totalConsigne: 0,
+            totalTaxes: 0
+          }
+        };
+      }
       throw new Error(data.message || data.error || 'Error al obtener carrito');
+    }
+
+    // Ensure shippingThreshold has a default value if not provided by backend
+    if (data.summary && data.summary.shippingThreshold === undefined) {
+      data.summary.shippingThreshold = 200; // Default shipping threshold
     }
 
     return data;
   } catch (error: any) {
     console.error('Error en getCart:', error);
+    
+    // If the error is about shippingThreshold, return a safe fallback
+    if (error.message?.includes('shippingThreshold is not defined')) {
+      console.warn('Returning fallback cart due to shippingThreshold error');
+      return {
+        cartItems: [],
+        total: 0,
+        itemCount: 0,
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: 20,
+          hasNextPage: false,
+          hasPrevPage: false
+        },
+        summary: {
+          totalItems: 0,
+          totalQuantity: 0,
+          subtotal: 0,
+          total: 0,
+          shippingThreshold: 200,
+          shippingCost: 0,
+          shippingMessage: 'Error calculando envío, usando valores por defecto',
+          needsAddress: true,
+          totalTPS: 0,
+          totalTVQ: 0,
+          totalConsigne: 0,
+          totalTaxes: 0
+        }
+      };
+    }
+    
     throw error;
   }
 }
@@ -178,28 +277,123 @@ export async function getCartWithCoupon(couponCode: string): Promise<CartWithCou
     const data = await response.json();
 
     if (!response.ok) {
+      // Handle shippingThreshold error from backend
+      if (data.message?.includes('shippingThreshold is not defined') || data.error?.includes('shippingThreshold is not defined')) {
+        console.warn('Backend shippingThreshold error in getCartWithCoupon, returning fallback');
+        return {
+          cartItems: [],
+          total: 0,
+          itemCount: 0,
+          pagination: {
+            currentPage: 1,
+            totalPages: 1,
+            totalItems: 0,
+            itemsPerPage: 20,
+            hasNextPage: false,
+            hasPrevPage: false
+          },
+          summary: {
+            totalItems: 0,
+            totalQuantity: 0,
+            subtotal: 0,
+            total: 0,
+            shippingThreshold: 200,
+            shippingCost: 0,
+            shippingMessage: 'Error calculando envío con cupón, usando valores por defecto',
+            needsAddress: true,
+            totalTPS: 0,
+            totalTVQ: 0,
+            totalConsigne: 0,
+            totalTaxes: 0,
+            discount: 0,
+            savings: 0
+          }
+        };
+      }
+      
       if (response.status === 400 && (data.message?.includes('Personal usage limit reached') || data.message?.includes('límite personal de uso') || data.message?.includes('userUsageCount'))) {
         throw new Error('Ya has usado este cupón el máximo número de veces permitido');
       }
       throw new Error(data.message || data.error || 'Error al obtener carrito con cupón');
     }
 
+    // Ensure shippingThreshold has a default value if not provided by backend
+    if (data.summary && data.summary.shippingThreshold === undefined) {
+      data.summary.shippingThreshold = 200; // Default shipping threshold
+    }
+
     return data;
   } catch (error: any) {
     console.error('Error en getCartWithCoupon:', error);
+    
+    // If the error is about shippingThreshold, return a safe fallback
+    if (error.message?.includes('shippingThreshold is not defined')) {
+      console.warn('Returning fallback cart with coupon due to shippingThreshold error');
+      return {
+        cartItems: [],
+        total: 0,
+        itemCount: 0,
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: 20,
+          hasNextPage: false,
+          hasPrevPage: false
+        },
+        summary: {
+          totalItems: 0,
+          totalQuantity: 0,
+          subtotal: 0,
+          total: 0,
+          shippingThreshold: 200,
+          shippingCost: 0,
+          shippingMessage: 'Error calculando envío con cupón, usando valores por defecto',
+          needsAddress: true,
+          totalTPS: 0,
+          totalTVQ: 0,
+          totalConsigne: 0,
+          totalTaxes: 0,
+          discount: 0,
+          savings: 0
+        }
+      };
+    }
+    
     throw error;
   }
 }
 
 /**
- * Agregar producto al carrito
+ * Agregar producto al carrito con opciones de entrega
  */
-export async function addToCart(productId: number, quantity: number = 1): Promise<CartItem> {
+export async function addToCart(
+  productId: number, 
+  quantity: number = 1,
+  deliveryOptions?: {
+    horaEntregaPreferida?: string;
+    metodoEntrega?: 'puerta' | 'manos' | 'recepcion';
+    notasEntrega?: string;
+  }
+): Promise<{ cartItem: CartItem; deliveryInfo?: any }> {
   try {
+    const payload: any = { productId, quantity };
+    
+    // Agregar opciones de entrega si se proporcionan
+    if (deliveryOptions?.horaEntregaPreferida) {
+      payload.horaEntregaPreferida = deliveryOptions.horaEntregaPreferida;
+    }
+    if (deliveryOptions?.metodoEntrega) {
+      payload.metodoEntrega = deliveryOptions.metodoEntrega;
+    }
+    if (deliveryOptions?.notasEntrega) {
+      payload.notasEntrega = deliveryOptions.notasEntrega;
+    }
+
     const response = await fetch(`${CART_BASE_URL}/items`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({ productId, quantity }),
+      body: JSON.stringify(payload),
     });
 
     const data = await response.json();
@@ -214,7 +408,10 @@ export async function addToCart(productId: number, quantity: number = 1): Promis
       throw new Error(data.message || data.error || 'Error al agregar al carrito');
     }
 
-    return data.cartItem;
+    return {
+      cartItem: data.cartItem,
+      deliveryInfo: data.deliveryInfo
+    };
   } catch (error: any) {
     console.error('Error en addToCart:', error);
     throw error;
@@ -351,12 +548,14 @@ export async function applyCoupon(couponCode: string): Promise<{
 /**
  * Actualizar opciones de entrega para el carrito
  */
-export async function updateDeliveryOptions(options: DeliveryOptions): Promise<{
-  message: string;
-  updatedItems: number;
-  deliveryOptions: DeliveryOptions;
-}> {
+export async function updateDeliveryOptions(options: DeliveryOptions): Promise<DeliveryUpdateResponse> {
   try {
+    console.log('📤 Enviando opciones de entrega al backend:', {
+      url: `${CART_BASE_URL}/delivery-options`,
+      method: 'PUT',
+      payload: options
+    });
+    
     const response = await fetch(`${CART_BASE_URL}/delivery-options`, {
       method: 'PUT',
       headers: getHeaders(),
@@ -364,11 +563,30 @@ export async function updateDeliveryOptions(options: DeliveryOptions): Promise<{
     });
 
     const data = await response.json();
+    console.log('📥 Respuesta del backend para delivery options:', {
+      status: response.status,
+      ok: response.ok,
+      data
+    });
 
     if (!response.ok) {
       if (response.status === 400) {
+        // El backend puede devolver horarios alternativos
+        if (data.availableHours || data.suggestTomorrow) {
+          return {
+            message: data.message || 'Horario no disponible',
+            updatedItems: 0,
+            deliveryOptions: options,
+            error: {
+              code: 'INVALID_TIME',
+              message: data.message || 'Horario no disponible',
+              availableHours: data.availableHours,
+              suggestTomorrow: data.suggestTomorrow
+            }
+          };
+        }
         if (data.message?.includes('delivery time')) {
-          throw new Error('La hora de entrega debe estar entre 12:00 PM y 10:00 PM');
+          throw new Error('La hora de entrega debe estar entre 11:00 AM y 8:00 PM');
         }
         if (data.message?.includes('delivery method')) {
           throw new Error('Método de entrega inválido');
@@ -408,6 +626,9 @@ export async function getCartSummary(): Promise<CartSummary> {
       totalQuantity: 0,
       subtotal: 0,
       total: 0,
+      shippingThreshold: 200,
+      shippingMessage: null,
+      needsAddress: false
     };
   } catch (error: any) {
     console.error('Error en getCartSummary:', error);
@@ -416,6 +637,9 @@ export async function getCartSummary(): Promise<CartSummary> {
       totalQuantity: 0,
       subtotal: 0,
       total: 0,
+      shippingThreshold: 200,
+      shippingMessage: null,
+      needsAddress: false
     };
   }
 }

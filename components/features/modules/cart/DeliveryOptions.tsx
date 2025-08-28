@@ -2,16 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Truck, MessageSquare, Check } from 'lucide-react';
+import { Clock, Truck, MessageSquare, Check, Calendar, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
 import { Label } from '@/components/common/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/ui/select';
 import { Textarea } from '@/components/common/ui/textarea';
 import { Button } from '@/components/common/ui/button';
 import { Badge } from '@/components/common/ui/badge';
+import { SimpleTimePicker } from '@/components/common/ui/simple-time-picker';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCart } from '@/hooks/useCart';
-import type { DeliveryOptions } from '@/lib/services/cart';
+import { 
+  getDeliveryInfo, 
+  getMinimumDeliveryTime,
+  isValidDeliveryTime,
+  formatTimeForDisplay,
+  shouldDefaultToNextDay,
+  getAvailableHoursToday,
+  getAvailableHoursTomorrow,
+  isAfterTodayCutoff
+} from '@/lib/utils/delivery';
+import type { DeliveryOptions, DeliveryInfo, DeliveryUpdateResponse } from '@/lib/services/cart';
 
 // Funciones de seguridad para sanitizar input
 const sanitizeInput = (input: string): string => {
@@ -108,12 +118,24 @@ export default function DeliveryOptionsComponent({
   const { t } = useTranslation();
   const { updateDeliveryOptions } = useCart();
   
+  // Calcular tiempo por defecto (hora actual + 1 hora)
+  const defaultDeliveryTime = getMinimumDeliveryTime();
+  const shouldBeNextDay = shouldDefaultToNextDay();
+  const defaultDeliveryType = shouldBeNextDay ? 'siguiente_dia' : 'estandar';
+
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOptions>({
-    horaEntregaPreferida: '18:00',
+    horaEntregaPreferida: defaultDeliveryTime,
     metodoEntrega: 'puerta',
     notasEntrega: '',
-    aplicarATodos: true
+    aplicarATodos: true,
+    tipoEntrega: defaultDeliveryType
   });
+
+  const [, setDeliveryInfo] = useState<DeliveryInfo>(getDeliveryInfo(defaultDeliveryType));
+  const [manualDeliveryType, setManualDeliveryType] = useState<'estandar' | 'siguiente_dia'>(defaultDeliveryType);
+  const [availableHours, setAvailableHours] = useState<string[]>([]);
+  const [showAlternativeHours, setShowAlternativeHours] = useState(false);
+  const [backendSuggestsTomorrow, setBackendSuggestsTomorrow] = useState(false);
   
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -124,50 +146,6 @@ export default function DeliveryOptionsComponent({
   }>({});
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
 
-  // Generar opciones de tiempo (11:00 AM - 9:00 PM) con validación de tiempo actual + 1 hora
-  const generateTimeOptions = () => {
-    const options = [];
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    
-    // Calcular la hora mínima (hora actual + 1 hora)
-    const minDeliveryTime = new Date(now.getTime() + 60 * 60 * 1000); // +1 hora
-    const minHour = minDeliveryTime.getHours();
-    const minMinute = minDeliveryTime.getMinutes();
-    
-    for (let hour = 11; hour <= 21; hour++) {
-      for (let minute = 0; minute < 60; minute += 30) {
-        // No generar horarios después de 21:00 (9:00 PM)
-        if (hour === 21 && minute > 0) {
-          break;
-        }
-        
-        // Verificar si esta hora está disponible (al menos 1 hora después de ahora)
-        const isAvailable = hour > minHour || (hour === minHour && minute >= minMinute);
-        
-        // Solo agregar opciones disponibles
-        if (isAvailable) {
-          const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-          
-          // Formatear la hora para mostrar
-          let displayTime;
-          if (hour === 12) {
-            displayTime = `12:${minute.toString().padStart(2, '0')} PM`;
-          } else if (hour > 12) {
-            displayTime = `${(hour - 12).toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} PM`;
-          } else {
-            displayTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} AM`;
-          }
-          
-          options.push({ value: timeStr, label: displayTime });
-        }
-      }
-    }
-    return options;
-  };
-
-  const [timeOptions, setTimeOptions] = useState(generateTimeOptions());
 
   // Opciones de método de entrega
   const deliveryMethods = [
@@ -197,37 +175,20 @@ export default function DeliveryOptionsComponent({
     
     if (!options.horaEntregaPreferida) {
       newErrors.time = t('cart.delivery.validation.timeRequired');
+    } else if (!isValidDeliveryTime(options.horaEntregaPreferida)) {
+      newErrors.time = t('cart.delivery.validation.timeInvalid');
     } else {
-      // Validar formato de hora
-      if (!/^\d{2}:\d{2}$/.test(options.horaEntregaPreferida)) {
-        newErrors.time = t('cart.delivery.validation.timeInvalid');
-      } else {
-        const [hours, minutes] = options.horaEntregaPreferida.split(':').map(Number);
-        
-        // Validar que los números sean válidos
-        if (isNaN(hours) || isNaN(minutes)) {
-          newErrors.time = t('cart.delivery.validation.timeInvalid');
-        } else if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-          newErrors.time = t('cart.delivery.validation.timeInvalid');
-        } else if (hours < 11 || hours > 21 || (hours === 21 && minutes > 0)) {
-          // Verificar que esté en el rango de horarios de servicio (11:00 AM - 9:00 PM exacto)
-          newErrors.time = t('cart.delivery.validation.timeInvalid');
-        } else {
-          // Verificar que sea al menos 1 hora después de ahora
-          const now = new Date();
-          const selectedTime = new Date();
-          selectedTime.setHours(hours, minutes, 0, 0);
-          
-          // Si el tiempo seleccionado es para hoy y es menor que ahora + 1 hora
-          const minDeliveryTime = new Date(now.getTime() + 60 * 60 * 1000); // +1 hora
-          
-          if (selectedTime <= minDeliveryTime) {
-            const minHour = minDeliveryTime.getHours();
-            const minMinute = minDeliveryTime.getMinutes();
-            const minTimeFormatted = `${minHour > 12 ? minHour - 12 : minHour}:${minMinute.toString().padStart(2, '0')} ${minHour >= 12 ? 'PM' : 'AM'}`;
-            newErrors.time = t('cart.delivery.validation.timeTooEarly', { time: minTimeFormatted });
-          }
-        }
+      // Verificar que sea al menos 1 hora después de ahora
+      const minimumTime = getMinimumDeliveryTime();
+      const [minHours, minMinutes] = minimumTime.split(':').map(Number);
+      const [selectedHours, selectedMinutes] = options.horaEntregaPreferida.split(':').map(Number);
+      
+      const minTimeInMinutes = minHours * 60 + minMinutes;
+      const selectedTimeInMinutes = selectedHours * 60 + selectedMinutes;
+      
+      if (selectedTimeInMinutes < minTimeInMinutes) {
+        const minTimeFormatted = formatTimeForDisplay(minimumTime);
+        newErrors.time = t('cart.delivery.validation.timeTooEarly', { time: minTimeFormatted });
       }
     }
 
@@ -280,6 +241,19 @@ export default function DeliveryOptionsComponent({
       }, 300); // 300ms de debounce
       
       setDebounceTimer(timer);
+    } else if (field === 'horaEntregaPreferida') {
+      // Usar el tipo de entrega seleccionado manualmente, no calculado automáticamente
+      const newOptions = { 
+        ...deliveryOptions, 
+        [field]: sanitizedValue,
+        tipoEntrega: manualDeliveryType // Usar el tipo seleccionado manualmente
+      };
+      
+      setDeliveryOptions(newOptions);
+      setHasChanges(true);
+      
+      const isValid = validateOptions(newOptions);
+      onOptionsChange?.({ ...newOptions, isValid });
     } else {
       // Para otros campos, validar inmediatamente
       const newOptions = { ...deliveryOptions, [field]: sanitizedValue };
@@ -291,58 +265,186 @@ export default function DeliveryOptionsComponent({
     }
   };
 
+  // Manejar cambio de tipo de entrega manual
+  const handleDeliveryTypeChange = (newType: 'estandar' | 'siguiente_dia') => {
+    console.log('🚛 Cambiando tipo de entrega:', {
+      anterior: manualDeliveryType,
+      nuevo: newType,
+      metodoActual: deliveryOptions.metodoEntrega,
+      horaActual: new Date().getHours()
+    });
+    
+    // VALIDACIÓN CRÍTICA: No permitir seleccionar "hoy" después de las 8PM
+    const availableHoursToday = getAvailableHoursToday();
+    
+    // Usar la lógica de disponibilidad en lugar de hora fija
+    if (newType === 'estandar' && availableHoursToday.length === 0) {
+      console.warn('❌ No hay horarios disponibles para entrega estándar');
+      
+      // Mostrar mensaje de error temporal
+      setErrors(prev => ({
+        ...prev,
+        time: t('cart.delivery.autoNextDay')
+      }));
+      
+      // Limpiar error después de 3 segundos
+      setTimeout(() => {
+        setErrors(prev => ({ ...prev, time: undefined }));
+      }, 3000);
+      
+      // Forzar selección de "mañana"
+      setManualDeliveryType('siguiente_dia');
+      return;
+    }
+    
+    
+    setManualDeliveryType(newType);
+    const newDeliveryInfo = getDeliveryInfo(newType);
+    setDeliveryInfo(newDeliveryInfo);
+    
+    // Actualizar horarios disponibles según el tipo seleccionado
+    const newAvailableHours = newType === 'estandar' ? getAvailableHoursToday() : getAvailableHoursTomorrow();
+    setAvailableHours(newAvailableHours);
+    
+    // Validar si la hora actual es válida para el nuevo tipo
+    let updatedTime = deliveryOptions.horaEntregaPreferida;
+    if (!newAvailableHours.includes(updatedTime)) {
+      // Si la hora actual no está disponible, usar la primera disponible
+      updatedTime = newAvailableHours[0] || '11:00';
+      console.log('⏰ Hora ajustada automáticamente:', updatedTime);
+    }
+    
+    // Cuando cambiamos a día siguiente, también necesitamos actualizar el método si es necesario
+    let updatedMetodo = deliveryOptions.metodoEntrega;
+    
+    // Si es día siguiente y el método actual no es compatible, usar 'puerta' por defecto
+    if (newType === 'siguiente_dia' && !updatedMetodo) {
+      updatedMetodo = 'puerta';
+    }
+    
+    const newOptions = { 
+      ...deliveryOptions, 
+      tipoEntrega: newType,
+      metodoEntrega: updatedMetodo,
+      horaEntregaPreferida: updatedTime
+    };
+    
+    console.log('🎯 Opciones actualizadas con validación:', newOptions);
+    
+    setDeliveryOptions(newOptions);
+    setHasChanges(true);
+    
+    const isValid = validateOptions(newOptions);
+    onOptionsChange?.({ ...newOptions, isValid });
+  };
+
   // Aplicar cambios al carrito
   const handleApplyChanges = async () => {
     if (!validateOptions(deliveryOptions)) {
       return;
     }
 
+    console.log('💾 Aplicando opciones al backend:', deliveryOptions);
+    
     setIsLoading(true);
     try {
-      await updateDeliveryOptions(deliveryOptions);
-      setHasChanges(false);
+      const response: DeliveryUpdateResponse = await updateDeliveryOptions(deliveryOptions);
+      
+      if (response.error) {
+        // El backend sugiere horarios alternativos
+        if (response.error.availableHours) {
+          setAvailableHours(response.error.availableHours);
+          setShowAlternativeHours(true);
+        }
+        if (response.error.suggestTomorrow) {
+          setBackendSuggestsTomorrow(true);
+        }
+        setErrors({ time: response.error.message });
+      } else {
+        setHasChanges(false);
+        setShowAlternativeHours(false);
+        setAvailableHours([]);
+        setBackendSuggestsTomorrow(false);
+      }
     } catch (error) {
       console.error('Error updating delivery options:', error);
+      setErrors({ time: 'Error al actualizar opciones de entrega' });
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Manejar selección de hora alternativa
+  const handleAlternativeHourSelect = (hour: string) => {
+    handleOptionChange('horaEntregaPreferida', hour);
+    setShowAlternativeHours(false);
+    setAvailableHours([]);
+    setErrors({ ...errors, time: undefined });
+  };
+
+  // Manejar sugerencia de mañana
+  const handleAcceptTomorrowSuggestion = () => {
+    handleDeliveryTypeChange('siguiente_dia');
+    setBackendSuggestsTomorrow(false);
+    setErrors({ ...errors, time: undefined });
+  };
+
   // Efecto para validar opciones iniciales
   useEffect(() => {
+    // Inicializar horarios disponibles y validar configuración inicial
+    const initialAvailableHours = manualDeliveryType === 'estandar' ? getAvailableHoursToday() : getAvailableHoursTomorrow();
+    setAvailableHours(initialAvailableHours);
+    
+    // Si no hay horarios disponibles para entrega estándar, forzar cambio a "mañana"
+    if (manualDeliveryType === 'estandar' && initialAvailableHours.length === 0) {
+      console.log('🚨 Inicialización: No hay horarios disponibles hoy, forzando cambio a mañana');
+      setManualDeliveryType('siguiente_dia');
+      const tomorrowHours = getAvailableHoursTomorrow();
+      setAvailableHours(tomorrowHours);
+      
+      const updatedOptions: DeliveryOptions = {
+        ...deliveryOptions,
+        tipoEntrega: 'siguiente_dia',
+        horaEntregaPreferida: tomorrowHours[0] || '11:00'
+      };
+      setDeliveryOptions(updatedOptions);
+      
+      const isValid = validateOptions(updatedOptions);
+      onOptionsChange?.({ ...updatedOptions, isValid });
+      return;
+    }
+    
+    
+    // Validar que la hora actual esté disponible
+    if (!initialAvailableHours.includes(deliveryOptions.horaEntregaPreferida)) {
+      const firstAvailable = initialAvailableHours[0] || '11:00';
+      console.log('⏰ Inicialización: Ajustando hora no disponible:', deliveryOptions.horaEntregaPreferida, '→', firstAvailable);
+      
+      const updatedOptions: DeliveryOptions = {
+        ...deliveryOptions,
+        horaEntregaPreferida: firstAvailable
+      };
+      setDeliveryOptions(updatedOptions);
+      
+      const isValid = validateOptions(updatedOptions);
+      onOptionsChange?.({ ...updatedOptions, isValid });
+      return;
+    }
+    
+    // Validación estándar si todo está correcto
     const isValid = validateOptions(deliveryOptions);
     onOptionsChange?.({ ...deliveryOptions, isValid });
   }, []);
 
-  // Efecto para actualizar opciones de tiempo cada minuto
+  // Efecto para limpiar timer de debounce en unmount
   useEffect(() => {
-    const updateTimeOptions = () => {
-      const newTimeOptions = generateTimeOptions();
-      setTimeOptions(newTimeOptions);
-      
-      // Si la hora actualmente seleccionada ya no está disponible, resetear
-      const currentSelectedTime = deliveryOptions.horaEntregaPreferida;
-      const isCurrentTimeStillAvailable = newTimeOptions.some(option => option.value === currentSelectedTime);
-      
-      if (!isCurrentTimeStillAvailable && newTimeOptions.length > 0) {
-        const newDeliveryOptions = { ...deliveryOptions, horaEntregaPreferida: newTimeOptions[0].value };
-        setDeliveryOptions(newDeliveryOptions);
-        setHasChanges(true);
-        const isValid = validateOptions(newDeliveryOptions);
-        onOptionsChange?.({ ...newDeliveryOptions, isValid });
-      }
-    };
-
-    const interval = setInterval(updateTimeOptions, 60000); // Actualizar cada minuto
-    
     return () => {
-      clearInterval(interval);
       // Limpiar timer de debounce si existe
       if (debounceTimer) {
         clearTimeout(debounceTimer);
       }
     };
-  }, [deliveryOptions, onOptionsChange, debounceTimer]);
+  }, [debounceTimer]);
 
   return (
     <Card className={`w-full ${className || 'border-gray-200 shadow-sm'}`}>
@@ -364,40 +466,178 @@ export default function DeliveryOptionsComponent({
       </CardHeader>
       
       <CardContent className="space-y-4 sm:space-y-6">
-        {/* Selector de hora */}
+        {/* Selector de tipo de entrega */}
+        <div className="space-y-3">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+            <Truck className="h-4 w-4 text-gray-500" />
+            {t('cart.delivery.typeLabel')}
+          </Label>
+          
+          <div className="space-y-3">
+            {/* Opción Estándar */}
+            <motion.div
+              whileHover={!disabled ? { scale: 1.01 } : {}}
+              whileTap={!disabled ? { scale: 0.99 } : {}}
+            >
+              <button
+                type="button"
+                className={`w-full p-3 rounded-lg border-2 transition-all duration-200 text-left ${
+                  manualDeliveryType === 'estandar'
+                    ? 'border-green-500 bg-green-50 ring-2 ring-green-500 ring-opacity-20'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                } ${
+                  disabled || isAfterTodayCutoff()
+                    ? 'opacity-50 cursor-not-allowed' 
+                    : 'cursor-pointer'
+                }`}
+                onClick={() => {
+                  const hasHoursToday = getAvailableHoursToday().length > 0;
+                  
+                  if (!disabled && hasHoursToday) {
+                    handleDeliveryTypeChange('estandar');
+                  }
+                }}
+                disabled={disabled || isAfterTodayCutoff()}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-green-100 flex items-center justify-center">
+                    <Zap className="h-4 w-4 text-green-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900 text-sm">{t('cart.delivery.today.title')}</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">{t('cart.delivery.today.description')}</p>
+                      </div>
+                      {manualDeliveryType === 'estandar' && (
+                        <div className="flex-shrink-0 w-5 h-5 bg-green-600 rounded-full flex items-center justify-center">
+                          <Check className="h-3 w-3 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </motion.div>
+
+            {/* Opción Día Siguiente */}
+            <motion.div
+              whileHover={!disabled ? { scale: 1.01 } : {}}
+              whileTap={!disabled ? { scale: 0.99 } : {}}
+            >
+              <button
+                type="button"
+                className={`w-full p-3 rounded-lg border-2 transition-all duration-200 text-left ${
+                  manualDeliveryType === 'siguiente_dia'
+                    ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500 ring-opacity-20'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                onClick={() => !disabled && handleDeliveryTypeChange('siguiente_dia')}
+                disabled={disabled}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
+                    <Calendar className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900 text-sm">{t('cart.delivery.tomorrow.title')}</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">{t('cart.delivery.tomorrow.description')}</p>
+                      </div>
+                      {manualDeliveryType === 'siguiente_dia' && (
+                        <div className="flex-shrink-0 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                          <Check className="h-3 w-3 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </motion.div>
+          </div>
+
+          {/* Mensaje automático si es después de 7PM */}
+          {shouldDefaultToNextDay() && (
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-700 flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                {t('cart.delivery.autoNextDay')}
+              </p>
+            </div>
+          )}
+
+          {/* Sugerencia del backend para mañana */}
+          {backendSuggestsTomorrow && (
+            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-yellow-700 flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  {t('cart.delivery.alternativeHours.suggestTomorrow')}
+                </p>
+                <Button
+                  size="sm"
+                  onClick={handleAcceptTomorrowSuggestion}
+                  className="ml-2 bg-yellow-600 hover:bg-yellow-700"
+                >
+                  {t('cart.delivery.alternativeHours.acceptTomorrow')}
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Selector de hora simple */}
         <div className="space-y-2">
           <Label htmlFor="delivery-time" className="flex items-center gap-2 text-sm font-medium text-gray-700">
             <Clock className="h-4 w-4 text-gray-500" />
             {t('cart.delivery.timeLabel')}
           </Label>
-          <Select
+
+          <SimpleTimePicker
             value={deliveryOptions.horaEntregaPreferida}
-            onValueChange={(value) => handleOptionChange('horaEntregaPreferida', value)}
+            onChange={(value) => handleOptionChange('horaEntregaPreferida', value)}
             disabled={disabled}
-          >
-            <SelectTrigger className={`w-full h-11 ${errors.time ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'}`}>
-              <SelectValue placeholder={t('cart.delivery.timePlaceholder')} />
-            </SelectTrigger>
-            <SelectContent className="max-h-60">
-              {timeOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value} className="py-2">
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder={t('cart.delivery.timePlaceholder')}
+            error={!!errors.time}
+            className="w-full"
+            deliveryType={manualDeliveryType}
+          />
+          
           {errors.time && (
-            <motion.p 
+            <motion.div 
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-sm text-red-600 flex items-center gap-1"
+              className="space-y-2"
             >
-              <span className="text-red-500">⚠</span>
-              {errors.time}
-            </motion.p>
+              <p className="text-sm text-red-600 flex items-center gap-1">
+                <span className="text-red-500">⚠</span>
+                {errors.time}
+              </p>
+              
+              {/* Mostrar horarios alternativos si están disponibles */}
+              {showAlternativeHours && availableHours.length > 0 && (
+                <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                  <p className="text-sm font-medium text-orange-700 mb-2">Horarios disponibles:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {availableHours.map((hour) => (
+                      <Button
+                        key={hour}
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleAlternativeHourSelect(hour)}
+                        className="text-xs bg-white hover:bg-orange-100 border-orange-300"
+                      >
+                        {formatTimeForDisplay(hour)}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
           )}
           <p className="text-xs text-gray-500">
-            {t('cart.delivery.timeHelper')}
+            {t('cart.delivery.schedule')}
           </p>
         </div>
 

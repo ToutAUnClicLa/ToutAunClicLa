@@ -14,7 +14,6 @@ import {
   MapPin, 
   Eye, 
   Filter,
-  Download,
   RefreshCcw,
   ChevronRight,
   CheckCircle,
@@ -398,7 +397,7 @@ export default function OrdersPage() {
                         <Button 
                           variant="outline" 
                           className="flex-1"
-                          onClick={() => router.push(`/profile/orders/${order.id}`)}
+                          onClick={() => toast()}
                         >
                           <Eye className="h-4 w-4 mr-2" />
                           Ver Detalles
@@ -415,13 +414,6 @@ export default function OrdersPage() {
                           </Button>
                         )}
                         
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => toast.info('Descarga próximamente')}
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
                       </div>
                     </div>
                   </CardContent>

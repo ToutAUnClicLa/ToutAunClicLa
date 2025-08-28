@@ -265,6 +265,7 @@ export default {
       continue: "Continuer les Achats",
       authRequired: "Connectez-vous pour continuer",
       addressRequired: "Sélectionner une adresse",
+      addressRequiredForShipping: "Ajouter une adresse pour calculer la livraison",
       coupon: {
         question: "Avez-vous un code de réduction?",
         placeholder: "Entrez votre code ici",
@@ -290,6 +291,22 @@ export default {
       notesLabel: "Notes pour le livreur",
       notesPlaceholder: "Ex: Sonner, appartement 3B, appeler à l'arrivée...",
       notesHelper: "Instructions spéciales de livraison (optionnel)",
+      typeLabel: "Type de Livraison",
+      today: {
+        title: "Livraison Aujourd'hui",
+        description: "11h00 - 21h00 (même jour avec minimum 1 heure)"
+      },
+      tomorrow: {
+        title: "Livraison Demain", 
+        description: "11h00 - 21h00 (jour suivant)"
+      },
+      todaySelected: "Livraison aujourd'hui sélectionnée - Commandes jusqu'à 20h00",
+      tomorrowAutoSelected: "Après 21h00 - Livraison demain sélectionnée automatiquement",
+      autoNextDay: "Livraison automatique le lendemain (après 20h00)",
+      noHoursToday: "Aucun créneau disponible aujourd'hui",
+      suggestTomorrow: "Programmer pour demain?",
+      alternativeHours: "Heures disponibles:",
+      contentFiltered: "Contenu filtré",
       methods: {
         puerta: {
           title: "Laisser à la porte",
@@ -326,6 +343,7 @@ export default {
       removeProduct: "Erreur lors de la suppression du produit",
       clearCart: "Erreur lors du vidage du panier",
       selectAddress: "Vous devez sélectionner une adresse",
+      addAddressRequired: "Ajoutez une adresse pour calculer la livraison",
       emptyCart: "Votre panier est vide",
       deliveryTimeRequired: "Vous devez sélectionner une heure de livraison",
       deliveryMethodRequired: "Vous devez sélectionner une méthode de livraison"
