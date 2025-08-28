@@ -46,8 +46,18 @@ export const useOrders = ({
 
       const response = await getUserOrders(pageNum, limit, status);
       
+      // Validar estructura de respuesta
+      if (!response || !Array.isArray(response.orders)) {
+        throw new Error('Respuesta de API inválida');
+      }
+      
       if (append) {
-        setOrders(prev => [...prev, ...response.orders]);
+        setOrders(prev => {
+          // Evitar duplicados al agregar más elementos
+          const existingIds = new Set(prev.map(order => order.id));
+          const newOrders = response.orders.filter(order => !existingIds.has(order.id));
+          return [...prev, ...newOrders];
+        });
       } else {
         setOrders(response.orders);
       }
@@ -56,25 +66,39 @@ export const useOrders = ({
       setCurrentPage(pageNum);
     } catch (err: any) {
       console.error('Error fetching orders:', err);
-      setError(err.message || 'Error al cargar pedidos');
+      const errorMessage = err?.message || 'Error al cargar pedidos';
+      setError(errorMessage);
+      
+      // En caso de error, mantener datos existentes si es append
+      if (!append) {
+        setOrders([]);
+        setPagination(null);
+      }
     } finally {
       setLoading(false);
     }
   }, [currentPage, limit, status]);
 
   const refetch = useCallback(async () => {
+    setCurrentPage(1);
     await fetchOrders(1, false);
   }, [fetchOrders]);
 
   const fetchMore = useCallback(async () => {
-    if (pagination?.hasNextPage) {
+    if (pagination?.hasNextPage && !loading) {
       await fetchOrders(currentPage + 1, true);
     }
-  }, [fetchOrders, pagination?.hasNextPage, currentPage]);
+  }, [fetchOrders, pagination?.hasNextPage, currentPage, loading]);
 
   useEffect(() => {
-    fetchOrders(page, false);
-  }, [page, limit, status]); // Solo re-fetch cuando cambien los parámetros de consulta
+    // Reset page to 1 when filters change
+    if (page !== 1 && (currentPage !== page)) {
+      setCurrentPage(1);
+      fetchOrders(1, false);
+    } else {
+      fetchOrders(page, false);
+    }
+  }, [page, limit, status, fetchOrders]);
 
   return {
     orders,
@@ -108,10 +132,36 @@ export const useOrderStats = (): UseOrderStatsReturn => {
       setError(null);
 
       const response = await getUserOrderStats();
-      setStats(response);
+      
+      // Validar estructura de respuesta
+      if (!response || typeof response !== 'object') {
+        throw new Error('Respuesta de API inválida');
+      }
+      
+      // Validar campos obligatorios y proporcionar valores por defecto
+      const validatedStats: OrderStats = {
+        totalOrders: response.totalOrders || 0,
+        totalSpent: response.totalSpent || 0,
+        ordersByStatus: response.ordersByStatus || {},
+        recentOrdersCount: response.recentOrdersCount || 0,
+        averageOrderValue: response.averageOrderValue || 0,
+        lastOrderDate: response.lastOrderDate || undefined
+      };
+      
+      setStats(validatedStats);
     } catch (err: any) {
       console.error('Error fetching order stats:', err);
-      setError(err.message || 'Error al cargar estadísticas');
+      const errorMessage = err?.message || 'Error al cargar estadísticas';
+      setError(errorMessage);
+      
+      // Proporcionar estadísticas por defecto en caso de error
+      setStats({
+        totalOrders: 0,
+        totalSpent: 0,
+        ordersByStatus: {},
+        recentOrdersCount: 0,
+        averageOrderValue: 0
+      });
     } finally {
       setLoading(false);
     }
@@ -153,20 +203,35 @@ export const useOrderDetail = ({ orderId }: UseOrderDetailProps): UseOrderDetail
   const [error, setError] = useState<string | null>(null);
 
   const fetchOrderDetail = useCallback(async () => {
-    if (!orderId) {
+    if (!orderId || orderId <= 0) {
       setLoading(false);
+      setError('ID de pedido inválido');
       return;
     }
 
     try {
       setLoading(true);
       setError(null);
+      setOrder(null);
 
       const response = await getOrderDetails(orderId);
+      
+      // Validar estructura de respuesta
+      if (!response || typeof response !== 'object') {
+        throw new Error('Respuesta de API inválida');
+      }
+      
+      // Validar campos obligatorios
+      if (!response.id || !response.orderNumber || !response.status) {
+        throw new Error('Datos de pedido incompletos');
+      }
+      
       setOrder(response);
     } catch (err: any) {
       console.error('Error fetching order detail:', err);
-      setError(err.message || 'Error al cargar detalle del pedido');
+      const errorMessage = err?.message || 'Error al cargar detalle del pedido';
+      setError(errorMessage);
+      setOrder(null);
     } finally {
       setLoading(false);
     }

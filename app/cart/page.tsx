@@ -131,6 +131,11 @@ export default function CartPage() {
   const shippingThreshold = 200; // Envío gratis a partir de $200
   const fallbackShippingCost = calculatedSubtotal >= shippingThreshold ? 0 : 8.99;
   
+  // 🏛️ USAR COMPLETAMENTE LA LÓGICA DEL BACKEND - El backend maneja todos los cálculos de precios
+  const displaySubtotal = summary?.subtotal !== undefined ? summary.subtotal : calculatedSubtotal;
+  const displayTaxes = summary?.totalTaxes !== undefined ? summary.totalTaxes : calculatedTaxes;
+  const displayConsigne = summary?.totalConsigne !== undefined ? summary.totalConsigne : calculatedConsigne;
+  
   // 🏛️ SIEMPRE usar el total del backend cuando esté disponible - El backend maneja toda la lógica
   // Solo usar cálculos locales como fallback de emergencia
   const finalTotal = summary?.total !== undefined
@@ -181,11 +186,6 @@ export default function CartPage() {
     }
   }, [summary, calculatedSubtotal, calculatedTaxes, calculatedConsigne]);
   
-  // 🏛️ USAR COMPLETAMENTE LA LÓGICA DEL BACKEND - El backend maneja todos los cálculos de precios
-  const displaySubtotal = summary?.subtotal !== undefined ? summary.subtotal : calculatedSubtotal;
-  const displayTaxes = summary?.totalTaxes !== undefined ? summary.totalTaxes : calculatedTaxes;
-  const displayConsigne = summary?.totalConsigne !== undefined ? summary.totalConsigne : calculatedConsigne;
-
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-US', {
       style: 'currency',

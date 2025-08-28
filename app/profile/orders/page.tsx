@@ -397,7 +397,7 @@ export default function OrdersPage() {
                         <Button 
                           variant="outline" 
                           className="flex-1"
-                          onClick={() => toast()}
+                          onClick={() => router.push(`/profile/orders/${order.id}`)}
                         >
                           <Eye className="h-4 w-4 mr-2" />
                           Ver Detalles
