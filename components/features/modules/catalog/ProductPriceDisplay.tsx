@@ -126,10 +126,10 @@ export function ProductPriceDisplay({
         {/* Variation breakdown for selected variations */}
         {selectedVariations && selectedVariations.length > 0 && showBreakdown && variant !== 'compact' && (
           <div className="text-xs text-gray-600 space-y-1">
-            <div>Base: {formatPrice(product.precio)}</div>
+            <div>{t('catalog.variations.basePrice')}: {formatPrice(product.precio)}</div>
             {priceData.variationModifier !== 0 && (
               <div className={priceData.variationModifier > 0 ? 'text-green-600' : 'text-red-600'}>
-                {priceData.variationModifier > 0 ? '+' : ''}{formatPrice(priceData.variationModifier)} opciones
+                {priceData.variationModifier > 0 ? '+' : ''}{formatPrice(priceData.variationModifier)} {t('catalog.variations.optionsSelected')}
               </div>
             )}
           </div>

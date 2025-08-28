@@ -1067,6 +1067,7 @@ export default {
       selectOptions: "Select {min} to {max} options",
       optionsSelected: "options selected",
       priceBreakdown: "Price breakdown",
+      priceSummary: "Price Summary",
       basePrice: "Base price",
       additionalOptions: "Additional options",
       discounts: "Discounts",
@@ -1384,6 +1385,7 @@ export default {
       decrease: "Decrease quantity",
       maxQuantity: "Maximum available quantity: {max}",
       unitsAvailable: "units available",
+      optionGroupsAvailable: "This product has {count} option groups available",
       
       // Image gallery
       mainImage: "Main image",

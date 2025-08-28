@@ -336,7 +336,7 @@ function ProductDetail({ product, colors, params }: { product: ProductWithVariat
               <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 p-3 rounded-lg">
                 <span>⚙️</span>
                 <span>
-                  Este producto tiene {product.variations?.length || 0} grupos de opciones disponibles
+                  {t('catalog.productDetail.optionGroupsAvailable', { count: product.variations?.length || 0 })}
                 </span>
               </div>
             )}
@@ -378,7 +378,7 @@ function ProductDetail({ product, colors, params }: { product: ProductWithVariat
           {/* Quantity and Stock Section */}
           <div className="space-y-6 py-6 border-y border-gray-200">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Cantidad</span>
+              <span className="text-sm font-medium">{t('catalog.productDetail.quantity')}</span>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"

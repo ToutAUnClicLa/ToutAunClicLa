@@ -493,6 +493,7 @@ export default {
       selectOptions: "Selecciona {min} a {max} opciones",
       optionsSelected: "opciones seleccionadas",
       priceBreakdown: "Desglose de precio",
+      priceSummary: "Resumen de Precio",
       basePrice: "Precio base",
       additionalOptions: "Opciones adicionales",
       discounts: "Descuentos",
@@ -755,6 +756,7 @@ export default {
       decrease: "Disminuir cantidad",
       maxQuantity: "Cantidad máxima disponible: {max}",
       unitsAvailable: "unidades disponibles",
+      optionGroupsAvailable: "Este producto tiene {count} grupos de opciones disponibles",
       
       // Galería de imágenes
       mainImage: "Imagen principal",

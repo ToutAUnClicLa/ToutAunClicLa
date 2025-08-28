@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui
 import { Separator } from '@/components/common/ui/separator';
 import { Alert, AlertDescription } from '@/components/common/ui/alert';
 import { formatPrice } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 import {
   VariationGroup,
   SelectedVariation,
@@ -34,7 +35,8 @@ const calculatePriceModifier = (selectedVariations: SelectedVariation[], allGrou
 
 const validateVariationSelection = (
   selectedVariations: SelectedVariation[], 
-  groups: VariationGroup[]
+  groups: VariationGroup[],
+  t: (key: string, params?: Record<string, any>) => string
 ): VariationValidationResult => {
   const errors: Array<{ groupId: number; groupName: string; error: string }> = [];
   const missingRequiredGroups: number[] = [];
@@ -49,7 +51,7 @@ const validateVariationSelection = (
       errors.push({
         groupId: group.id,
         groupName: group.group_name,
-        error: 'Este grupo es requerido'
+        error: t('catalog.variations.validation.requiredGroupMissing')
       });
       continue;
     }
@@ -60,7 +62,7 @@ const validateVariationSelection = (
       errors.push({
         groupId: group.id,
         groupName: group.group_name,
-        error: `Selecciona al menos ${group.min_selections} opción(es)`
+        error: t('catalog.variations.validation.tooFewSelections', { min: group.min_selections })
       });
     }
 
@@ -69,7 +71,7 @@ const validateVariationSelection = (
       errors.push({
         groupId: group.id,
         groupName: group.group_name,
-        error: `Selecciona máximo ${group.max_selections} opción(es)`
+        error: t('catalog.variations.validation.tooManySelections', { max: group.max_selections })
       });
     }
 
@@ -81,7 +83,7 @@ const validateVariationSelection = (
         errors.push({
           groupId: group.id,
           groupName: group.group_name,
-          error: `Stock insuficiente para ${variation.name}`
+          error: t('catalog.variations.validation.stockInsufficient', { name: variation.name })
         });
       }
     }
@@ -106,6 +108,7 @@ const VariationOption: React.FC<VariationOptionProps> = ({
   showPrice = true,
   className = ""
 }) => {
+  const { t } = useTranslation();
   const isOutOfStock = variation.stock !== undefined && variation.stock === 0;
   
   const handleSelect = () => {
@@ -184,19 +187,19 @@ const VariationOption: React.FC<VariationOptionProps> = ({
             
             {variation.is_default && (
               <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700 border-blue-200">
-                Por defecto
+                {t('catalog.variations.defaultOption')}
               </Badge>
             )}
             
             {isOutOfStock && (
               <Badge variant="destructive" className="text-xs">
-                Agotado
+                {t('catalog.variations.outOfStock')}
               </Badge>
             )}
             
             {variation.stock !== undefined && variation.stock > 0 && variation.stock <= 5 && (
               <Badge variant="outline" className="text-xs bg-amber-100 text-amber-700 border-amber-200">
-                Solo {variation.stock} disponibles
+                {t('catalog.variations.onlyXAvailable', { stock: variation.stock })}
               </Badge>
             )}
           </div>
@@ -248,6 +251,7 @@ const VariationGroupComponent: React.FC<VariationGroupProps> = ({
   showPrices = true,
   className = ""
 }) => {
+  const { t } = useTranslation();
   const groupSelections = selectedVariations.filter(s => s.groupId === group.id);
 
   const handleVariationSelect = (variationId: number, selected: boolean, quantity: number = 1) => {
@@ -298,7 +302,7 @@ const VariationGroupComponent: React.FC<VariationGroupProps> = ({
             {group.group_name}
             {group.is_required && (
               <Badge variant="destructive" className="text-xs">
-                Requerido
+                {t('catalog.variations.requiredGroup')}
               </Badge>
             )}
           </CardTitle>
@@ -310,8 +314,8 @@ const VariationGroupComponent: React.FC<VariationGroupProps> = ({
         {group.min_selections > 0 && (
           <p className="text-sm text-gray-600">
             {group.group_type === 'single' 
-              ? 'Selecciona una opción'
-              : `Selecciona ${group.min_selections} a ${group.max_selections} opciones`
+              ? t('catalog.variations.selectOption')
+              : t('catalog.variations.selectOptions', { min: group.min_selections, max: group.max_selections })
             }
           </p>
         )}
@@ -352,6 +356,7 @@ export const ProductVariations: React.FC<ProductVariationsProps> = ({
   showPriceBreakdown = true,
   className = ""
 }) => {
+  const { t } = useTranslation();
   const [selectedVariations, setSelectedVariations] = useState<SelectedVariation[]>(
     initialSelection?.variations || []
   );
@@ -362,7 +367,7 @@ export const ProductVariations: React.FC<ProductVariationsProps> = ({
     
     const priceModifier = calculatePriceModifier(selectedVariations, product.variations);
     const finalPrice = product.precio + priceModifier;
-    const validation = validateVariationSelection(selectedVariations, product.variations);
+    const validation = validateVariationSelection(selectedVariations, product.variations, t);
     
     return {
       priceModifier,
@@ -375,7 +380,7 @@ export const ProductVariations: React.FC<ProductVariationsProps> = ({
         total: finalPrice
       }
     };
-  }, [product.precio, product.variations, selectedVariations]);
+  }, [product.precio, product.variations, selectedVariations, t]);
 
   // Auto-select default variations on mount
   useEffect(() => {
@@ -488,25 +493,25 @@ export const ProductVariations: React.FC<ProductVariationsProps> = ({
           <CardContent className="p-4">
             <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
               <Info className="w-5 h-5 text-blue-600" />
-              Resumen de Precio
+              {t('catalog.variations.priceSummary')}
             </h3>
             
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Precio base:</span>
+                <span className="text-gray-600">{t('catalog.variations.basePrice')}:</span>
                 <span className="font-medium">{formatPrice(calculations.breakdown.base)}</span>
               </div>
               
               {calculations.breakdown.additions > 0 && (
                 <div className="flex justify-between items-center text-green-600">
-                  <span>Opciones adicionales:</span>
+                  <span>{t('catalog.variations.additionalOptions')}:</span>
                   <span className="font-medium">+{formatPrice(calculations.breakdown.additions)}</span>
                 </div>
               )}
               
               {calculations.breakdown.discounts < 0 && (
                 <div className="flex justify-between items-center text-red-600">
-                  <span>Descuentos:</span>
+                  <span>{t('catalog.variations.discounts')}:</span>
                   <span className="font-medium">{formatPrice(calculations.breakdown.discounts)}</span>
                 </div>
               )}
@@ -514,7 +519,7 @@ export const ProductVariations: React.FC<ProductVariationsProps> = ({
               <Separator />
               
               <div className="flex justify-between items-center text-lg font-bold">
-                <span>Total:</span>
+                <span>{t('catalog.variations.totalPrice')}:</span>
                 <span className="text-blue-600">{formatPrice(calculations.breakdown.total)}</span>
               </div>
             </div>
