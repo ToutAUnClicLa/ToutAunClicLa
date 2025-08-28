@@ -17,9 +17,10 @@ import { Card, CardContent } from '@/components/common/ui/card';
 import { Badge } from '@/components/common/ui/badge';
 import { cn, getProductImageUrl, getBlurDataURL, formatPrice, isValidPrice, getDiscountPercentage, calculateCanadianTaxes, getTaxStatus } from '@/lib/utils';
 import { ProductPriceDisplay } from './ProductPriceDisplay';
+import { ProductWithVariations } from '@/types/variations';
 
 interface ProductCardProps {
-  product: Product;
+  product: Product & Partial<ProductWithVariations>;
   categoryName?: string;
   variant?: 'default' | 'compact' | 'detailed' | 'list';
   showCategory?: boolean;
@@ -70,6 +71,7 @@ export function ProductCard({
       ? getDiscountPercentage(product.precio_anterior!, product.precio)
       : 0;
     const hasValidPrice = isValidPrice(product.precio);
+    const hasVariations = product.hasVariations || (product.variations && product.variations.length > 0);
     
     // Cálculo de impuestos canadienses
     const taxCalculation = calculateCanadianTaxes(product.precio, product.TPS, product.TVQ, product.consigne);
@@ -85,6 +87,7 @@ export function ProductCard({
       hasDiscount,
       discountPercentage,
       hasValidPrice,
+      hasVariations,
       taxCalculation,
       taxStatus
     };
@@ -97,6 +100,8 @@ export function ProductCard({
     product.TPS,
     product.TVQ,
     product.consigne,
+    product.hasVariations,
+    product.variations,
     isFavorite,
     isInCart,
     getProductQuantity
@@ -210,6 +215,11 @@ export function ProductCard({
                         -{productData.discountPercentage}%
                       </Badge>
                     )}
+                    {productData.hasVariations && (
+                      <Badge className="bg-blue-500 text-white text-xs px-1 py-0 flex items-center gap-1">
+                        ⚙️ Opciones
+                      </Badge>
+                    )}
                   </div>
                 )}
 
@@ -307,6 +317,7 @@ export function ProductCard({
                       -{productData.discountPercentage}%
                     </Badge>
                   )}
+                  
                   
                   {showCategory && product.categorias && (
                     <Badge variant="outline" className="bg-white/90 text-[10px] sm:text-xs px-1 sm:px-2 py-0.5 hidden sm:flex">

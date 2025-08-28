@@ -1051,7 +1051,47 @@ export default {
       basePrice: "Base price",
       finalPrice: "Final price",
       includesTaxes: "Includes taxes",
-      plusTaxes: "Plus taxes"
+      plusTaxes: "Plus taxes",
+      from: "From"
+    },
+
+    // Product variations
+    variations: {
+      optionsAvailable: "Options available",
+      viewOptions: "View options",
+      customizationAvailable: "Customization available",
+      clickToCustomize: "Click to customize this product",
+      selectAllRequired: "Select all required options",
+      requiredGroup: "Required",
+      selectOption: "Select an option",
+      selectOptions: "Select {min} to {max} options",
+      optionsSelected: "options selected",
+      priceBreakdown: "Price breakdown",
+      basePrice: "Base price",
+      additionalOptions: "Additional options",
+      discounts: "Discounts",
+      totalPrice: "Total price",
+      validSelection: "Valid selection",
+      invalidSelection: "Incomplete selection",
+      stockInsufficient: "Insufficient stock for {name}",
+      defaultOption: "Default",
+      outOfStock: "Out of stock",
+      onlyXAvailable: "Only {stock} available",
+      priceModifier: {
+        add: "Add {price}",
+        subtract: "Discount {price}",
+        free: "Free"
+      },
+      groupTypes: {
+        single: "Select one option",
+        multiple: "Select multiple options"
+      },
+      validation: {
+        requiredGroupMissing: "This group is required",
+        tooFewSelections: "Select at least {min} option(s)",
+        tooManySelections: "Select maximum {max} option(s)",
+        stockInsufficient: "Insufficient stock for {name}"
+      }
     },
 
     // Taxes

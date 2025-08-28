@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 import { CartItem } from '@/lib/services/cart';
 import type { DeliveryOptions as DeliveryOptionsType } from '@/lib/services/cart';
 import { useTranslation } from '@/hooks/useTranslation';
+import { formatCartItemVariations, calculateCartItemFinalPrice } from '@/lib/utils/variations';
  
 // Mapeo de categorías con estilos modernos
 const getCategoryMap = (t: any) => ({
@@ -105,20 +106,40 @@ export default function CartPage() {
   // Estado para manejar la habilitación inmediata de opciones de entrega
   const [hasValidAddress, setHasValidAddress] = useState(false);
   
-  // Cálculos de totales mejorados - recalcular desde los items con impuestos reales
+  // Helper function to calculate item price including variations
+  const calculateItemFinalPrice = useCallback((item: CartItem) => {
+    const basePrice = item.productos.precio;
+    
+    let variationModifier = 0;
+    if (item.variations && item.variations.length > 0) {
+      variationModifier = item.variations.reduce((varSum, variation) => {
+        const modifier = variation.price_at_time !== undefined 
+          ? variation.price_at_time 
+          : variation.product_variations.price_modifier;
+        return varSum + (modifier * variation.quantity);
+      }, 0);
+    }
+    
+    return basePrice + variationModifier;
+  }, []);
+  
+  // Cálculos de totales mejorados - recalcular desde los items con impuestos reales INCLUYENDO VARIACIONES
   const calculatedSubtotal = useMemo(() => {
-    return items.reduce((sum, item) => sum + (item.cantidad * item.productos.precio), 0);
-  }, [items]);
+    return items.reduce((sum, item) => {
+      const finalItemPrice = calculateItemFinalPrice(item) * item.cantidad;
+      return sum + finalItemPrice;
+    }, 0);
+  }, [items, calculateItemFinalPrice]);
 
-  // Cálculo de impuestos reales basado en TPS y TVQ como porcentajes del precio
+  // Cálculo de impuestos reales basado en TPS y TVQ como porcentajes del precio INCLUYENDO VARIACIONES
   const calculatedTaxes = useMemo(() => {
     return items.reduce((sum, item) => {
-      const basePrice = item.productos.precio * item.cantidad;
-      const tpsAmount = item.productos.TPS ? (basePrice * item.productos.TPS / 100) : 0;
-      const tvqAmount = item.productos.TVQ ? (basePrice * item.productos.TVQ / 100) : 0;
+      const finalItemPrice = calculateItemFinalPrice(item) * item.cantidad;
+      const tpsAmount = item.productos.TPS ? (finalItemPrice * item.productos.TPS / 100) : 0;
+      const tvqAmount = item.productos.TVQ ? (finalItemPrice * item.productos.TVQ / 100) : 0;
       return sum + tpsAmount + tvqAmount;
     }, 0);
-  }, [items]);
+  }, [items, calculateItemFinalPrice]);
 
   // Cálculo de consigne total
   const calculatedConsigne = useMemo(() => {
@@ -181,6 +202,11 @@ export default function CartPage() {
           calculatedSubtotal,
           calculatedTaxes,
           calculatedConsigne
+        },
+        variationsData: {
+          itemsWithVariations: items.filter(item => item.variations && item.variations.length > 0).length,
+          totalItems: items.length,
+          subtotalDifference: summary.subtotal !== undefined ? (summary.subtotal - calculatedSubtotal) : 'N/A'
         }
       });
     }
@@ -641,7 +667,8 @@ export default function CartPage() {
   // Renderizar item del carrito con diseño responsive
   const renderCartItem = (item: CartItem) => {
     const isItemLoading = loadingItems.has(item.id);
-    const itemTotal = item.cantidad * item.productos.precio;
+    const itemPriceWithVariations = calculateItemFinalPrice(item);
+    const itemTotal = item.cantidad * itemPriceWithVariations;
     
     return (
       <motion.div
@@ -675,17 +702,58 @@ export default function CartPage() {
                     <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 mb-1 line-clamp-2">
                       {item.productos.nombre}
                     </h3>
+                    
+                    {/* Mostrar variaciones seleccionadas */}
+                    {item.variations && item.variations.length > 0 && (
+                      <div className="mb-2">
+                        <p className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-md inline-flex items-center gap-1">
+                          <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
+                          {formatCartItemVariations(item.variations)}
+                        </p>
+                      </div>
+                    )}
+                    
                     <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
                       {item.productos.categorias?.nombre || t('cart.noCategory')}
                     </p>
                     
                     <div className="flex items-center gap-2 sm:gap-4 mb-2">
-                      <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
-                        {formatPrice(item.productos.precio)}
-                      </span>
-                      <span className="text-xs sm:text-sm text-gray-500">
-                        {t('cart.perUnit')}
-                      </span>
+                      {item.variations && item.variations.length > 0 ? (
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-500">Base:</span>
+                            <span className="text-sm font-medium text-gray-700">
+                              {formatPrice(item.productos.precio)}
+                            </span>
+                          </div>
+                          {(() => {
+                            const pricing = calculateCartItemFinalPrice(item.productos.precio, 1, item.variations);
+                            return pricing.variationModifier !== 0 ? (
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-gray-500">Opciones:</span>
+                                <span className={`text-sm font-medium ${pricing.variationModifier > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                  {pricing.variationModifier > 0 ? '+' : ''}{formatPrice(pricing.variationModifier)}
+                                </span>
+                              </div>
+                            ) : null;
+                          })()}
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-500">Total:</span>
+                            <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
+                              {formatPrice(calculateCartItemFinalPrice(item.productos.precio, 1, item.variations).finalSubtotal)}
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
+                            {formatPrice(item.productos.precio)}
+                          </span>
+                          <span className="text-xs sm:text-sm text-gray-500">
+                            {t('cart.perUnit')}
+                          </span>
+                        </>
+                      )}
                     </div>
                     
                     {/* Badges de impuestos - debajo del precio */}
@@ -742,7 +810,7 @@ export default function CartPage() {
                       {formatPrice(itemTotal)}
                     </p>
                     <p className="text-xs sm:text-sm text-gray-500 hidden sm:block">
-                      {item.cantidad} × {formatPrice(item.productos.precio)}
+                      {item.cantidad} × {formatPrice(itemPriceWithVariations)}
                     </p>
                   </div>
                 </div>

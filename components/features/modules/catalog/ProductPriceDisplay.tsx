@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { Badge } from '@/components/common/ui/badge';
 import { formatPrice, calculateCanadianTaxes, getTaxStatus } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
+import { SelectedVariation } from '@/types/variations';
 
 interface Product {
   precio: number;
@@ -13,28 +14,69 @@ interface Product {
   TVQ?: number;
   consigne?: number;
   provedor?: string;
+  hasVariations?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+  priceRange?: {
+    min: number;
+    max: number;
+  };
 }
 
 interface ProductPriceDisplayProps {
   product: Product;
   variant?: 'compact' | 'default' | 'detailed';
   className?: string;
+  selectedVariations?: SelectedVariation[];
+  showBreakdown?: boolean;
 }
 
-export function ProductPriceDisplay({ product, variant = 'default', className = "" }: ProductPriceDisplayProps) {
+export function ProductPriceDisplay({ 
+  product, 
+  variant = 'default', 
+  className = "",
+  selectedVariations = [],
+  showBreakdown = false
+}: ProductPriceDisplayProps) {
   const { t } = useTranslation();
   
   const priceData = useMemo(() => {
     const hasDiscount = product.precio_anterior && product.precio_anterior > product.precio;
     const taxCalculation = calculateCanadianTaxes(product.precio, product.TPS, product.TVQ, product.consigne);
     const taxStatus = getTaxStatus(product.categoria_id, product.TPS, product.TVQ, product.consigne);
+    
+    // Calculate variation-based pricing
+    let displayPrice = product.precio;
+    let priceLabel = formatPrice(product.precio);
+    let hasVariations = product.hasVariations || false;
+    let variationModifier = 0;
+    
+    // If product has variations, show "Desde $X" pricing
+    if (hasVariations && (!selectedVariations || selectedVariations.length === 0)) {
+      const minPrice = product.minPrice || product.priceRange?.min || product.precio;
+      priceLabel = t('catalog.price.from') + ' ' + formatPrice(minPrice);
+      displayPrice = minPrice;
+    } else if (selectedVariations && selectedVariations.length > 0) {
+      // Calculate price with selected variations
+      // For now we'll use the already calculated final price from the parent component
+      // since this component doesn't have access to the full variation groups
+      displayPrice = product.precio; // This should be overridden by the parent passing finalPrice
+      priceLabel = formatPrice(displayPrice);
+      
+      // Note: Real variation calculation should be done in the parent component
+      // and passed as finalPrice in the product prop
+    }
 
     return {
       hasDiscount,
       taxCalculation,
-      taxStatus
+      taxStatus,
+      displayPrice,
+      priceLabel,
+      hasVariations,
+      variationModifier
     };
-  }, [product.precio, product.precio_anterior, product.categoria_id, product.TPS, product.TVQ, product.consigne]);
+  }, [product.precio, product.precio_anterior, product.categoria_id, product.TPS, product.TVQ, product.consigne, product.hasVariations, product.minPrice, product.priceRange, t]);
 
   if (product.precio === 0) {
     return (
@@ -44,10 +86,10 @@ export function ProductPriceDisplay({ product, variant = 'default', className = 
     );
   }
 
-  // Precio final a mostrar (con impuestos si aplica)
-  const finalPrice = priceData.taxCalculation.hasTaxes 
-    ? priceData.taxCalculation.totalPrice 
-    : product.precio;
+  // Precio final a mostrar (con impuestos si aplica) - TODO: Use this if needed
+  // const finalPrice = priceData.taxCalculation.hasTaxes 
+  //   ? calculateCanadianTaxes(priceData.displayPrice, product.TPS, product.TVQ, product.consigne).totalPrice
+  //   : priceData.displayPrice;
 
   return (
     <div className={`space-y-2 ${className}`}>
@@ -64,8 +106,34 @@ export function ProductPriceDisplay({ product, variant = 'default', className = 
           variant === 'compact' ? 'text-sm' : 
           variant === 'detailed' ? 'text-2xl' : 'text-lg'
         }`}>
-          {formatPrice(product.precio)}
+          {priceData.priceLabel}
         </div>
+        
+        {/* Variation indicator for products with variations */}
+        {priceData.hasVariations && (!selectedVariations || selectedVariations.length === 0) && variant !== 'compact' && (
+          <div className="flex items-center gap-1">
+            <Badge variant="outline" className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 border-blue-200">
+              {t('catalog.variations.optionsAvailable')}
+            </Badge>
+            {product.priceRange && product.priceRange.max > product.priceRange.min && (
+              <span className="text-xs text-gray-500">
+                {formatPrice(product.priceRange.min)} - {formatPrice(product.priceRange.max)}
+              </span>
+            )}
+          </div>
+        )}
+        
+        {/* Variation breakdown for selected variations */}
+        {selectedVariations && selectedVariations.length > 0 && showBreakdown && variant !== 'compact' && (
+          <div className="text-xs text-gray-600 space-y-1">
+            <div>Base: {formatPrice(product.precio)}</div>
+            {priceData.variationModifier !== 0 && (
+              <div className={priceData.variationModifier > 0 ? 'text-green-600' : 'text-red-600'}>
+                {priceData.variationModifier > 0 ? '+' : ''}{formatPrice(priceData.variationModifier)} opciones
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Información de impuestos - para todas las categorías */}
         {variant !== 'compact' && (

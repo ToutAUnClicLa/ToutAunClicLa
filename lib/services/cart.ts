@@ -51,6 +51,7 @@ export interface CartProduct {
   provedor?: string;
   categoria_id: number;
   subcategoria_id?: number;
+  hasVariations?: boolean;
   categorias?: {
     id: number;
     nombre: string;
@@ -74,6 +75,22 @@ export interface CartItem {
   tipo_entrega?: 'hoy' | 'siguiente_dia';
   productos: CartProduct;
   addedAt?: string;
+  // Variations from backend - matches backend response structure
+  variations?: Array<{
+    cart_item_id: string;
+    quantity: number;
+    price_at_time: number;
+    product_variations: {
+      id: number;
+      name: string;
+      description: string;
+      price_modifier: number;
+    };
+  }>;
+  // Computed fields for convenience
+  baseSubtotal?: number;
+  variationModifier?: number;
+  finalSubtotal?: number;
 }
 
 export interface CartSummary {
@@ -180,6 +197,24 @@ export async function getCart(page: number = 1, limit: number = 20): Promise<Car
     });
 
     const data = await response.json();
+
+    // Log cart data for variations debugging
+    if (data.cartItems && data.cartItems.length > 0) {
+      console.log('🛒 Datos del carrito recibidos del backend:', {
+        itemCount: data.cartItems.length,
+        variations: data.cartItems
+          .filter((item: any) => item.variations && item.variations.length > 0)
+          .map((item: any) => ({
+            productName: item.productos.nombre,
+            variationCount: item.variations.length,
+            variations: item.variations.map((v: any) => ({
+              name: v.product_variations?.name,
+              modifier: v.price_at_time || v.product_variations?.price_modifier,
+              quantity: v.quantity
+            }))
+          }))
+      });
+    }
 
     if (!response.ok) {
       // If backend has shippingThreshold error, return a fallback cart response
@@ -365,7 +400,7 @@ export async function getCartWithCoupon(couponCode: string): Promise<CartWithCou
 }
 
 /**
- * Agregar producto al carrito con opciones de entrega
+ * Agregar producto al carrito con opciones de entrega y variaciones
  */
 export async function addToCart(
   productId: number, 
@@ -374,7 +409,11 @@ export async function addToCart(
     horaEntregaPreferida?: string;
     metodoEntrega?: 'puerta' | 'manos' | 'recepcion';
     notasEntrega?: string;
-  }
+  },
+  variations?: Array<{
+    variationId: number;
+    quantity: number;
+  }>
 ): Promise<{ cartItem: CartItem; deliveryInfo?: any }> {
   try {
     const payload: any = { productId, quantity };
@@ -388,6 +427,15 @@ export async function addToCart(
     }
     if (deliveryOptions?.notasEntrega) {
       payload.notasEntrega = deliveryOptions.notasEntrega;
+    }
+    
+    // Agregar variaciones si se proporcionan
+    if (variations && variations.length > 0) {
+      payload.variations = variations;
+      console.log('🛒 Agregando variaciones al payload del carrito:', {
+        variations,
+        payload
+      });
     }
 
     const response = await fetch(`${CART_BASE_URL}/items`, {
@@ -406,6 +454,17 @@ export async function addToCart(
         throw new Error('Producto no encontrado');
       }
       throw new Error(data.message || data.error || 'Error al agregar al carrito');
+    }
+
+    // Log successful cart addition with variations
+    if (variations && variations.length > 0) {
+      console.log('✅ Producto agregado al carrito con variaciones exitosamente:', {
+        cartItem: data.cartItem,
+        variationsDetected: data.cartItem?.selectedVariations?.length || 0,
+        baseSubtotal: data.cartItem?.baseSubtotal,
+        variationModifier: data.cartItem?.variationModifier,
+        finalSubtotal: data.cartItem?.finalSubtotal
+      });
     }
 
     return {

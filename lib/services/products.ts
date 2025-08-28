@@ -4,6 +4,7 @@
  */
 
 import { apiCache, generateCacheKey } from '@/lib/utils/cache';
+import { VariationGroup } from '@/types/variations';
 
 // Control de peticiones en curso para evitar duplicados
 const pendingRequests = new Map<string, Promise<any>>();
@@ -159,6 +160,17 @@ export interface Product {
     tiempo_entrega: string;
     envio_gratis: boolean;
   };
+  
+  // Variation support
+  hasVariations?: boolean;
+  variations?: VariationGroup[];
+  minPrice?: number;
+  maxPrice?: number;
+  priceRange?: {
+    min: number;
+    max: number;
+  };
+  
   // Propiedades computadas para compatibilidad
   rating?: number;
   reviewCount?: number;
@@ -304,12 +316,39 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
       }
 
       // Mapear productos para agregar propiedades computadas de compatibilidad
-      const mappedProducts = data.products.map((product: any) => ({
-        ...product,
-        rating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
-        reviewCount: product.reviewCount || product.estadisticas?.total_reviews || 0,
-        averageRating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
-      }));
+      const mappedProducts = data.products.map((product: any) => {
+        const processedProduct = {
+          ...product,
+          rating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
+          reviewCount: product.reviewCount || product.estadisticas?.total_reviews || 0,
+          averageRating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
+        };
+
+        // Process variations if they exist
+        if (product.variations && product.variations.length > 0) {
+          processedProduct.hasVariations = true;
+          
+          // Calculate price range based on variations
+          let minPrice = product.precio;
+          let maxPrice = product.precio;
+          
+          product.variations.forEach((group: any) => {
+            if (group.product_variations) {
+              group.product_variations.forEach((variation: any) => {
+                const priceWithModifier = product.precio + (variation.price_modifier || 0);
+                minPrice = Math.min(minPrice, priceWithModifier);
+                maxPrice = Math.max(maxPrice, priceWithModifier);
+              });
+            }
+          });
+          
+          processedProduct.minPrice = minPrice;
+          processedProduct.maxPrice = maxPrice;
+          processedProduct.priceRange = { min: minPrice, max: maxPrice };
+        }
+
+        return processedProduct;
+      });
 
       const result = {
         products: mappedProducts,
@@ -435,6 +474,30 @@ export async function getProductById(id: number): Promise<Product> {
         reviewCount: product.reviewCount || product.estadisticas?.total_reviews || 0,
         averageRating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
       } as Product;
+
+      // Process variations if they exist
+      if (product.variations && product.variations.length > 0) {
+        processedProduct.hasVariations = true;
+        
+        // Calculate price range based on variations
+        let minPrice = product.precio;
+        let maxPrice = product.precio;
+        
+        product.variations.forEach((group: any) => {
+          if (group.product_variations) {
+            group.product_variations.forEach((variation: any) => {
+              const priceWithModifier = product.precio + (variation.price_modifier || 0);
+              minPrice = Math.min(minPrice, priceWithModifier);
+              maxPrice = Math.max(maxPrice, priceWithModifier);
+            });
+          }
+        });
+        
+        processedProduct.minPrice = minPrice;
+        processedProduct.maxPrice = maxPrice;
+        processedProduct.priceRange = { min: minPrice, max: maxPrice };
+        processedProduct.variations = product.variations;
+      }
 
       // Guardar en cache por 5 minutos (productos individuales pueden ser más estables)
       apiCache.set(cacheKey, processedProduct, 5 * 60 * 1000);

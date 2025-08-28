@@ -477,7 +477,47 @@ export default {
       basePrice: "Precio base",
       finalPrice: "Precio final",
       includesTaxes: "Incluye impuestos",
-      plusTaxes: "Más impuestos"
+      plusTaxes: "Más impuestos",
+      from: "Desde"
+    },
+
+    // Variaciones de producto
+    variations: {
+      optionsAvailable: "Opciones disponibles",
+      viewOptions: "Ver opciones",
+      customizationAvailable: "Personalización disponible",
+      clickToCustomize: "Haz clic para personalizar este producto",
+      selectAllRequired: "Selecciona todas las opciones requeridas",
+      requiredGroup: "Requerido",
+      selectOption: "Selecciona una opción",
+      selectOptions: "Selecciona {min} a {max} opciones",
+      optionsSelected: "opciones seleccionadas",
+      priceBreakdown: "Desglose de precio",
+      basePrice: "Precio base",
+      additionalOptions: "Opciones adicionales",
+      discounts: "Descuentos",
+      totalPrice: "Precio total",
+      validSelection: "Selección válida",
+      invalidSelection: "Selección incompleta",
+      stockInsufficient: "Stock insuficiente para {name}",
+      defaultOption: "Por defecto",
+      outOfStock: "Agotado",
+      onlyXAvailable: "Solo {stock} disponibles",
+      priceModifier: {
+        add: "Agregar {price}",
+        subtract: "Descuento {price}",
+        free: "Gratis"
+      },
+      groupTypes: {
+        single: "Selecciona una opción",
+        multiple: "Selecciona múltiples opciones"
+      },
+      validation: {
+        requiredGroupMissing: "Este grupo es requerido",
+        tooFewSelections: "Selecciona al menos {min} opción(es)",
+        tooManySelections: "Selecciona máximo {max} opción(es)",
+        stockInsufficient: "Stock insuficiente para {name}"
+      }
     },
 
     // Impuestos

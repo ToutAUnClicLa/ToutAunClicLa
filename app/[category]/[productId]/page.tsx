@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
-import { Star, ShoppingCart, Heart, Share2, ChevronRight, Package, Shield, Truck, ArrowRight } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Share2, ChevronRight, Package, Shield, Truck, ArrowRight, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,7 +14,6 @@ import { getProductDetail } from '@/lib/services/products';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toast } from 'sonner';
 import { cn, getImageUrl, getProductImages } from '@/lib/utils';
-import dynamic from 'next/dynamic';
 import { getFavoriteStatus, addToFavorites, removeFromFavorites } from '@/lib/services/favorites';
 import { addToCart } from '@/lib/services/cart';
 import { useAuth } from '@/hooks/useAuth';
@@ -22,6 +21,9 @@ import AuthModal from '@/components/features/auth/AuthModal';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
 import { ProductPriceDisplay } from '@/components/features/modules/catalog/ProductPriceDisplay';
+import { ProductVariations } from '@/components/features/modules/product/ProductVariations';
+import { ProductWithVariations, VariationSelection } from '@/types/variations';
+import { hasValidVariations, formatSelectedVariations, logVariationDebug } from '@/lib/utils/variations';
 
 // Dynamically import heavy components
 const MotionImage = motion(Image);
@@ -64,14 +66,27 @@ const LoadingState = () => (
   </div>
 );
 
-function ProductDetail({ product, colors, params }: { product: any; colors: any; params: any }) {
+function ProductDetail({ product, colors, params }: { product: ProductWithVariations; colors: any; params: any }) {
   const { t } = useTranslation();
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [variationSelection, setVariationSelection] = useState<VariationSelection | null>(null);
   const { user } = useAuth();
+  
+  // Check if product has variations
+  const hasVariations = hasValidVariations(product);
+  const canAddToCart = !hasVariations || (hasVariations && variationSelection?.isValid);
+  const finalPrice = variationSelection?.finalPrice || product.precio;
+
+  // Debug log for variations
+  useEffect(() => {
+    if (hasVariations && product.variations) {
+      logVariationDebug(product.id, product.nombre, variationSelection, product.variations);
+    }
+  }, [product.id, product.nombre, hasVariations, product.variations, variationSelection]);
 
   const benefits = useMemo(() => [
     {
@@ -91,31 +106,36 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
     }
   ], [t]);
 
+  // Memoizar las URLs de imágenes para evitar recalcular
+  const imageUrls = useMemo(() => ({
+    imagen_principal: product.imagen_principal,
+    imagen_secundaria: product.imagen_secundaria,
+    imagen_terciaria: product.imagen_terciaria
+  }), [product.imagen_principal, product.imagen_secundaria, product.imagen_terciaria]);
+
   const images = useMemo(() => {
-    return getProductImages({
-      imagen_principal: product.imagen_principal,
-      imagen_secundaria: product.imagen_secundaria,
-      imagen_terciaria: product.imagen_terciaria
-    });
-  }, [product.imagen_principal, product.imagen_secundaria, product.imagen_terciaria]);
+    return getProductImages(imageUrls);
+  }, [imageUrls]);
+
+  // Extraer IDs para dependencias estables
+  const productId = product?.id;
+  const userId = user?.id;
 
   // Verificar si el producto está en favoritos al cargar el componente
-  const checkFavoriteStatus = useCallback(async () => {
-    try {
-      if (user?.id && product?.id) {
-        const favoriteStatus = await getFavoriteStatus(product.id);
-        setIsFavorited(favoriteStatus.isFavorite);
-      }
-    } catch (error) {
-      console.error('Error al verificar estado de favorito:', error);
-    }
-  }, [product?.id, user?.id]); // Solo depender del ID del usuario, no del objeto completo
-
   useEffect(() => {
-    if (product?.id && user?.id) {
-      checkFavoriteStatus();
-    }
-  }, [product?.id, user?.id, checkFavoriteStatus]);
+    const checkFavoriteStatus = async () => {
+      try {
+        if (userId && productId) {
+          const favoriteStatus = await getFavoriteStatus(productId);
+          setIsFavorited(favoriteStatus.isFavorite);
+        }
+      } catch (error) {
+        console.error('Error al verificar estado de favorito:', error);
+      }
+    };
+
+    checkFavoriteStatus();
+  }, [productId, userId]);
 
   const handleAddToCart = async () => {
     if (!user) {
@@ -123,10 +143,41 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
       return;
     }
 
+    // Validate variations if product has them
+    if (hasVariations && (!variationSelection || !variationSelection.isValid)) {
+      toast.error('Por favor selecciona todas las opciones requeridas');
+      return;
+    }
+
     try {
       setIsLoading(true);
-      await addToCart(product.id, quantity);
-      toast.success(t('catalog.productDetail.addedToCart'));
+      
+      if (hasVariations && variationSelection) {
+        // Add to cart with variations
+        const variations = variationSelection.variations.map(v => ({
+          variationId: v.variationId,
+          quantity: v.quantity
+        }));
+        
+        console.log('🍔 Enviando producto al carrito con variaciones:', {
+          productId: product.id,
+          quantity,
+          variations,
+          finalPrice: variationSelection.finalPrice,
+          totalPriceModifier: variationSelection.totalPriceModifier
+        });
+        
+        await addToCart(product.id, quantity, undefined, variations);
+        
+        // Show detailed success message with variations info
+        const variationNames = formatSelectedVariations(variationSelection, product.variations || []);
+        
+        toast.success(`${product.nombre} agregado al carrito con: ${variationNames}`);
+      } else {
+        // Regular add to cart without variations
+        await addToCart(product.id, quantity);
+        toast.success(t('catalog.productDetail.addedToCart'));
+      }
     } catch (error) {
       console.error('Error al agregar al carrito:', error);
       toast.error(t('catalog.productDetail.errorAddingToCart'));
@@ -134,6 +185,10 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
       setIsLoading(false);
     }
   };
+  
+  const handleVariationChange = useCallback((selection: VariationSelection) => {
+    setVariationSelection(selection);
+  }, []);
 
   const handleToggleFavorite = async () => {
     if (!user) {
@@ -141,9 +196,11 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
       return;
     }
 
+    const previousState = isFavorited;
+    
     try {
-      setIsFavorited(!isFavorited);
-      if (isFavorited) {
+      setIsFavorited(!previousState);
+      if (previousState) {
         await removeFromFavorites(product.id);
         toast.success(t('catalog.productDetail.removedFromFavorites'));
       } else {
@@ -153,18 +210,18 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
     } catch (error) {
       console.error('Error al actualizar favoritos:', error);
       toast.error(t('catalog.productDetail.errorTogglingFavorite'));
-      setIsFavorited(!isFavorited); // Revertir cambio en UI si falla
+      setIsFavorited(previousState); // Revertir al estado anterior
     }
   };
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16">
         {/* Product Images */}
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="space-y-3"
+          className="space-y-4"
         >
           <div className="relative aspect-square rounded-lg overflow-hidden shadow">
             <AnimatePresence mode="wait">
@@ -208,14 +265,14 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
 
         {/* Product Info */}
         <motion.div 
-          className="space-y-4 sm:space-y-6"
+          className="space-y-6 lg:space-y-8"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
         >
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <span className={cn("px-2 py-1 rounded-full text-xs font-medium", colors.text, colors.border)}>
-                {product.subcategorias.nombre}
+                {product.subcategorias?.nombre}
               </span>
               {product.stock > 0 ? (
                 <span className="px-2 py-1 rounded-full text-xs font-medium text-green-600 bg-green-50 border border-green-100">
@@ -236,12 +293,12 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
                   <Star
                     key={i}
                     className={`h-4 w-4 ${
-                      i < product.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                      i < (product.rating || 0) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
                     }`}
                   />
                 ))}
                 <span className="ml-1 text-xs text-gray-600">
-                  ({product.reviews.length})
+                  ({product.reviews?.length || 0})
                 </span>
               </div>
               <Button
@@ -263,10 +320,26 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
 
           <div className="space-y-3">
             <ProductPriceDisplay 
-              product={product} 
+              product={{
+                ...product,
+                hasVariations,
+                precio: finalPrice
+              }} 
               variant="detailed"
+              selectedVariations={variationSelection?.variations}
+              showBreakdown={hasVariations}
             />
             <p className="text-sm text-gray-600 leading-relaxed">{product.descripcion}</p>
+            
+            {/* Show variation count if product has variations */}
+            {hasVariations && (
+              <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 p-3 rounded-lg">
+                <span>⚙️</span>
+                <span>
+                  Este producto tiene {product.variations?.length || 0} grupos de opciones disponibles
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -286,7 +359,24 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
             ))}
           </div>
 
-          <div className="space-y-4 py-4 border-y">
+          {/* Product Variations Section */}
+          {hasVariations && product.variations && (
+            <div className="py-6 border-y border-gray-200">
+              <h3 className="text-xl font-semibold mb-6 flex items-center gap-3 text-gray-900">
+                <span className="text-2xl">⚙️</span>
+                Personaliza tu producto
+              </h3>
+              <ProductVariations
+                product={product}
+                onSelectionChange={handleVariationChange}
+                showPriceBreakdown={true}
+                className=""
+              />
+            </div>
+          )}
+          
+          {/* Quantity and Stock Section */}
+          <div className="space-y-6 py-6 border-y border-gray-200">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Cantidad</span>
               <div className="flex items-center gap-2">
@@ -317,23 +407,51 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
                 {product.stock} {t('catalog.productDetail.unitsAvailable')}
               </p>
             )}
+            
+            {/* Variation selection status */}
+            {hasVariations && (
+              <div className="text-sm">
+                {variationSelection?.isValid ? (
+                  <div className="text-green-600 bg-green-50 p-2 rounded-lg flex items-center gap-2">
+                    <Check className="w-4 h-4" />
+                    <span>Opciones válidas seleccionadas</span>
+                  </div>
+                ) : (
+                  <div className="text-amber-600 bg-amber-50 p-2 rounded-lg flex items-center gap-2">
+                    <span>ℹ️</span>
+                    <span>Selecciona todas las opciones requeridas para continuar</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2">
             <Button 
               className={cn("flex-1 h-10", colors.button)}
               onClick={handleAddToCart}
-              disabled={product.stock === 0 || isLoading}
+              disabled={product.stock === 0 || isLoading || !canAddToCart}
             >
               {isLoading ? (
                 <span className="flex items-center">
                   <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                   {t('catalog.productCard.addingToCart')}
                 </span>
+              ) : product.stock === 0 ? (
+                <>
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  {t('catalog.productCard.outOfStock')}
+                </>
+              ) : !canAddToCart ? (
+                <>
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Selecciona opciones
+                </>
               ) : (
                 <>
                   <ShoppingCart className="h-4 w-4 mr-2" />
-                  {product.stock === 0 ? t('catalog.productCard.outOfStock') : t('catalog.productCard.addToCart')}
+                  {hasVariations ? 'Agregar personalizado' : t('catalog.productCard.addToCart')}
+                  {quantity > 1 && ` (${quantity})`}
                 </>
               )}
             </Button>
@@ -374,8 +492,8 @@ function ProductDetail({ product, colors, params }: { product: any; colors: any;
             </TabsContent>
             <TabsContent value="reviews" className="mt-4">
               <Suspense fallback={<div>{t('catalog.productDetail.loading')}</div>}>
-                <ReviewForm productId={product.id} />
-                <ReviewList reviews={product.reviews} />
+                <ReviewForm productId={product.id.toString()} />
+                <ReviewList reviews={product.reviews || []} />
               </Suspense>
             </TabsContent>
           </Tabs>
