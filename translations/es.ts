@@ -1176,6 +1176,7 @@ export default {
         discount: "Descuento",
         error: "Código inválido",
         expired: "Código expirado",
+        usageLimitReached: "Ya has usado este cupón el máximo número de veces permitido",
         success: "¡Cupón aplicado correctamente!"
       }
     },

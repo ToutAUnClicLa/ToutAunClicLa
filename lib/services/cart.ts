@@ -178,6 +178,9 @@ export async function getCartWithCoupon(couponCode: string): Promise<CartWithCou
     const data = await response.json();
 
     if (!response.ok) {
+      if (response.status === 400 && (data.message?.includes('Personal usage limit reached') || data.message?.includes('límite personal de uso') || data.message?.includes('userUsageCount'))) {
+        throw new Error('Ya has usado este cupón el máximo número de veces permitido');
+      }
       throw new Error(data.message || data.error || 'Error al obtener carrito con cupón');
     }
 
@@ -321,6 +324,9 @@ export async function applyCoupon(couponCode: string): Promise<{
         throw new Error('Cupón no válido o expirado');
       }
       if (response.status === 400) {
+        if (data.message?.includes('Personal usage limit reached') || data.message?.includes('límite personal de uso') || data.message?.includes('userUsageCount')) {
+          throw new Error('Ya has usado este cupón el máximo número de veces permitido');
+        }
         throw new Error(data.message || 'El cupón no se puede aplicar');
       }
       if (response.status === 429) {

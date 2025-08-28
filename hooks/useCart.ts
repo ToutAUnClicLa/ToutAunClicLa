@@ -417,7 +417,27 @@ export function useCart(options: UseCartOptions = {}) {
         couponCode,
         stack: err.stack
       });
-      setError('Error al aplicar cupón');
+      
+      // Manejo de errores específicos
+      if (err.message?.includes('Ya has usado este cupón el máximo número de veces permitido') || 
+          err.message?.includes('Personal usage limit reached') || 
+          err.message?.includes('userUsageCount')) {
+        setError('Límite de uso alcanzado para este cupón');
+        toast.error('Ya has usado este cupón el máximo número de veces permitido.');
+      } else if (err.message?.includes('no válido') || err.message?.includes('Invalid coupon')) {
+        setError('Cupón inválido');
+        toast.error('Código de cupón inválido');
+      } else if (err.message?.includes('expirado') || err.message?.includes('expired')) {
+        setError('Cupón expirado');
+        toast.error('El cupón ha expirado');
+      } else if (err.message?.includes('Rate limit') || err.message?.includes('Too Many Requests')) {
+        setError('Demasiados intentos');
+        toast.error('Demasiados intentos. Espera 10 minutos e intenta nuevamente.');
+      } else {
+        setError('Error al aplicar cupón');
+        toast.error('Error al aplicar el cupón. Intenta nuevamente.');
+      }
+      
       return false;
     }
   }, [isAuthenticated, user, invalidateCache]);

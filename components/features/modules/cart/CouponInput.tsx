@@ -56,6 +56,8 @@ export function CouponInput({
         toast.error('No puedes aplicar cupones a un carrito vacío');
       } else if (error.message?.includes('Rate limit') || error.message?.includes('Too Many Requests')) {
         toast.error('Demasiados intentos. Espera 10 minutos e intenta nuevamente.');
+      } else if (error.message?.includes('Personal usage limit reached') || error.message?.includes('límite personal de uso') || error.message?.includes('userUsageCount')) {
+        toast.error(t('cart.summary.coupon.usageLimitReached'));
       } else {
         toast.error(t('cart.summary.coupon.error'));
       }

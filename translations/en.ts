@@ -274,6 +274,7 @@ export default {
         discount: "Discount",
         error: "Invalid code",
         expired: "Code expired",
+        usageLimitReached: "You have already used this coupon the maximum number of times allowed",
         success: "Coupon applied successfully!"
       }
     },
