@@ -29,7 +29,8 @@ function createRequestKey(
  */
 function cleanupExpiredRequests() {
   const now = Date.now();
-  for (const [key, request] of pendingRequests.entries()) {
+  const entries = Array.from(pendingRequests.entries());
+  for (const [key, request] of entries) {
     if (now - request.timestamp > REQUEST_TIMEOUT) {
       request.abortController.abort();
       pendingRequests.delete(key);
@@ -88,7 +89,8 @@ export async function deduplicateRequest<T>(
 export function abortAllPendingRequests() {
   console.log('🛑 Aborting all pending requests:', pendingRequests.size);
   
-  for (const [key, request] of pendingRequests.entries()) {
+  const entries = Array.from(pendingRequests.entries());
+  for (const [key, request] of entries) {
     request.abortController.abort();
   }
   
@@ -153,7 +155,7 @@ export async function retryWithBackoff<T>(
     onRetry?: (attempt: number, error: Error) => void;
   } = {}
 ): Promise<T> {
-  let lastError: Error;
+  let lastError: Error = new Error('Unknown error');
   
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     if (abortSignal?.aborted) {
