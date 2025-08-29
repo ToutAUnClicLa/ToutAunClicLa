@@ -27,7 +27,7 @@ interface FormData {
 
 const initialFormData: FormData = {
   street: '',
-  city: 'Montreal',
+  city: '',
   state: 'Quebec',
   zipCode: '',
   country: 'Canada'
@@ -154,6 +154,7 @@ export function AddAddressModal({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Montreal">Montreal</SelectItem>
+                  <SelectItem value="Longueuil">Longueuil</SelectItem>
                 </SelectContent>
               </Select>
             </div>
