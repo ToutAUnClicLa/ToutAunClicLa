@@ -154,7 +154,19 @@ export function AddAddressModal({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Montreal">Montreal</SelectItem>
+                  <SelectItem value="Mont-Royal">Mont-Royal</SelectItem>
+                  <SelectItem value="Westmount">Westmount</SelectItem>
+                  <SelectItem value="Côté-Saint-Luc">Côté-Saint-Luc</SelectItem>
+                  <SelectItem value="Montreal-Ouest">Montreal-Ouest</SelectItem>
+                  <SelectItem value="Hampstead">Hampstead</SelectItem>
+                  <SelectItem value="Point-Claire">Point-Claire</SelectItem>
+                  <SelectItem value="Dollard-Des Ormeaux">Dollard-Des Ormeaux</SelectItem>
+                  <SelectItem value="Dorval">Dorval</SelectItem>
                   <SelectItem value="Longueuil">Longueuil</SelectItem>
+                  <SelectItem value="Boucherville">Boucherville</SelectItem>
+                  <SelectItem value="Saint-Lambert">Saint-Lambert</SelectItem>
+                  <SelectItem value="Brossard">Brossard</SelectItem>
+                  <SelectItem value="La Prairie">La Prairie</SelectItem>
                 </SelectContent>
               </Select>
             </div>
