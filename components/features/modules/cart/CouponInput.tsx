@@ -101,7 +101,7 @@ export function CouponInput({
               <p className="text-xs text-green-600">
                 {appliedCoupon.description || appliedCoupon.descripcion || 
                  (appliedCoupon.type === 'free_shipping' 
-                  ? 'Envío gratis aplicado (¡Ahorro de $8.99!)' 
+                  ? 'Envío gratis aplicado (¡Sin costo de domicilio!)' 
                   : `${appliedCoupon.discount || appliedCoupon.valor}% de descuento sobre el total`)}
               </p>
             </div>

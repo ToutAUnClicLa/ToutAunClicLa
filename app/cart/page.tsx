@@ -180,20 +180,19 @@ export default function CartPage() {
     }, 0);
   }, [items, summary?.totalConsigne]);
 
-  // 🚨 BACKEND VALUES FIRST - All calculations from backend, minimal fallbacks
-  const fallbackShippingThreshold = 200;
-  const fallbackShippingCost = calculatedSubtotal >= fallbackShippingThreshold ? 0 : 8.99;
+  // 🚨 BACKEND VALUES FIRST - NO FALLBACKS for pricing, only for display
+  // The backend calculates ALL prices based on user location, products, and business logic
   
-  // Always prefer backend values, use calculated values only as emergency fallbacks
+  // Always use backend values, NO local calculations for pricing
   const displaySubtotal = summary?.subtotal ?? calculatedSubtotal;
   const displayTaxes = summary?.totalTaxes ?? calculatedTaxes;
   const displayConsigne = summary?.totalConsigne ?? calculatedConsigne;
-  const shippingThreshold = summary?.shippingThreshold ?? fallbackShippingThreshold;
+  const shippingThreshold = summary?.shippingThreshold ?? 200; // Only fallback for display
   
-  // 🚨 CRITICAL: Backend total is ALWAYS authoritative when available
-  const finalTotal = summary?.total ?? (displaySubtotal + displayTaxes + displayConsigne + fallbackShippingCost);
+  // 🚨 CRITICAL: Backend total is ALWAYS authoritative - NO fallback calculations
+  const finalTotal = summary?.total ?? 0; // If no backend total, show 0 until loaded
   const savingsAmount = summary?.savings ?? 0;
-  const finalShippingCost = summary?.shippingCost ?? fallbackShippingCost;
+  const finalShippingCost = summary?.shippingCost ?? 0; // Backend determines shipping cost
   const isFreeShippingApplied = summary?.freeShippingApplied ?? false;
 
   // Functions for variation expansion
@@ -236,11 +235,11 @@ export default function CartPage() {
       const currentDisplaySubtotal = summary?.subtotal ?? calculatedSubtotal;
       const currentDisplayTaxes = summary?.totalTaxes ?? calculatedTaxes;
       const currentDisplayConsigne = summary?.totalConsigne ?? calculatedConsigne;
-      const currentFinalTotal = summary?.total ?? (currentDisplaySubtotal + currentDisplayTaxes + currentDisplayConsigne + fallbackShippingCost);
-      const currentFinalShippingCost = summary?.shippingCost ?? fallbackShippingCost;
+      const currentFinalTotal = summary?.total ?? 0; // Backend calculates total
+      const currentFinalShippingCost = summary?.shippingCost ?? 0; // Backend calculates shipping
       const currentSavingsAmount = summary?.savings ?? 0;
       const currentIsFreeShippingApplied = summary?.freeShippingApplied ?? false;
-      const currentShippingThreshold = summary?.shippingThreshold ?? fallbackShippingThreshold;
+      const currentShippingThreshold = summary?.shippingThreshold ?? 200;
       const currentNeedsAddress = summary?.needsAddress || false;
       const currentShippingMessage = summary?.shippingMessage || null;
       
@@ -270,7 +269,7 @@ export default function CartPage() {
         isEmpty: items.length === 0
       });
     }
-  }, [summary, appliedCoupon, items.length, calculatedSubtotal, calculatedTaxes, calculatedConsigne, fallbackShippingCost, fallbackShippingThreshold]);
+  }, [summary, appliedCoupon, items.length, calculatedSubtotal, calculatedTaxes, calculatedConsigne]);
   
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-US', {
@@ -293,31 +292,11 @@ export default function CartPage() {
         hasCoupon: !!appliedCoupon
       });
       
-      // Si hay cupón aplicado, recalcular con cupón para obtener totales actualizados con nueva dirección
-      const reloadCart = async () => {
-        try {
-          if (appliedCoupon && (appliedCoupon.code || appliedCoupon.codigo)) {
-            const couponCode = appliedCoupon.code || appliedCoupon.codigo;
-            if (couponCode) {
-              console.log('🎟️ Recargando carrito con cupón aplicado:', couponCode);
-              await applyCoupon(couponCode);
-            } else {
-              await refreshCart();
-            }
-          } else {
-            // Recarga normal sin cupón
-            await refreshCart();
-          }
-        } catch (error) {
-          console.error('❌ Error recargando carrito:', error);
-          // Fallback: recarga básica
-          await refreshCart();
-        }
-      };
-      
-      reloadCart();
+      // Solo recargar el carrito, NO reaplicar el cupón
+      // El cupón ya está aplicado en el backend y vendrá con refreshCart
+      refreshCart();
     }
-  }, [isAuthenticated, selectedAddress, refreshCart, applyCoupon, appliedCoupon]);
+  }, [isAuthenticated, selectedAddress?.id, refreshCart]); // Removí applyCoupon y appliedCoupon de las dependencias
 
   // Efecto para actualizar el estado de dirección válida
   useEffect(() => {
@@ -552,6 +531,22 @@ export default function CartPage() {
       
       console.log('📦 Payload completo para Stripe:', JSON.stringify(payload, null, 2));
       console.log('💰 Total esperado en checkout:', finalTotal, '(del backend)');
+      
+      // 🚨 DEBUG: Detailed total breakdown
+      console.log('🔍 DETALLE COMPLETO DEL TOTAL:', {
+        'Backend summary total': summary?.total,
+        'Calculated finalTotal': finalTotal,
+        'Frontend calculated': displaySubtotal + displayTaxes + displayConsigne + finalShippingCost,
+        'Breakdown': {
+          displaySubtotal,
+          displayTaxes, 
+          displayConsigne,
+          finalShippingCost,
+          savingsAmount
+        },
+        'Summary object': summary
+      });
+      
       console.log('🏠 Dirección para cálculo de shipping:', {
         id: selectedAddress.id,
         city: selectedAddress.city,
@@ -963,7 +958,7 @@ export default function CartPage() {
                   <div className="text-right hidden sm:block">
                     <p className="text-xs sm:text-sm text-gray-600">{t('cart.estimatedTotal')}</p>
                     <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">
-                      {formatPrice(finalTotal)}
+                      {formatPrice(displaySubtotal + displayTaxes + displayConsigne)}
                     </p>
                     <div className="text-xs text-gray-500">
                       {needsAddress ? (

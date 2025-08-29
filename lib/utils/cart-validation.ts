@@ -5,10 +5,11 @@
 
 import { CartSummary, CartResponse } from '@/lib/services/cart';
 
-// Default fallback values aligned with backend expectations
+// Display fallback values - NEVER use for pricing calculations
+// Pricing is ALWAYS calculated by backend based on location, products, etc.
 export const CART_DEFAULTS = {
   SHIPPING_THRESHOLD: 200,
-  FALLBACK_SHIPPING_COST: 8.99,
+  // NO FALLBACK_SHIPPING_COST - backend calculates based on location ($7 Riviera Sur, $17 Montreal)
   DEFAULT_TPS_RATE: 0.05, // 5%
   DEFAULT_TVQ_RATE: 0.09975, // 9.975%
   MIN_FREE_SHIPPING_AMOUNT: 200

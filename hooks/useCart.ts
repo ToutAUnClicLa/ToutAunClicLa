@@ -578,6 +578,28 @@ export function useCart(options: UseCartOptions = {}) {
     await loadCartNow(true);
   }, [loadCartNow]);
 
+  // Función para limpiar cupones al inicializar sesión (sin persistencia)
+  const clearCouponOnInit = useCallback(async (): Promise<void> => {
+    if (!isAuthenticated || !user) return;
+    
+    try {
+      console.log('🧹 Limpiando cupones al inicializar sesión (política no-persistencia)');
+      
+      // Llamar al backend para remover cualquier cupón aplicado
+      const success = await cartService.removeCoupon();
+      if (success) {
+        console.log('✅ Cupón limpiado del backend exitosamente');
+        // Limpiar estado local también
+        setAppliedCoupon(null);
+        // Recargar carrito para obtener totales actualizados sin cupón
+        await loadCartNow(true);
+      }
+    } catch (error) {
+      console.log('ℹ️ No había cupón que limpiar o error menor:', error);
+      // No mostrar toast de error - es normal que no haya cupón
+    }
+  }, [isAuthenticated, user, loadCartNow]);
+
   // Verificar si un producto está en el carrito (memoizado)
   const isInCart = useCallback((productId: number) => {
     return items.some(item => item.producto_id === productId);
@@ -646,6 +668,14 @@ export function useCart(options: UseCartOptions = {}) {
       debouncedLoadCart();
     }
   }, [autoLoad, lazy, hasLoadedOnce, isAuthenticated, user, debouncedLoadCart]);
+
+  // Limpiar cupones al inicializar sesión (política no-persistencia)
+  useEffect(() => {
+    if (isAuthenticated && user && !hasLoadedOnce) {
+      console.log('🧹 Usuario autenticado por primera vez - limpiando cupones');
+      clearCouponOnInit();
+    }
+  }, [isAuthenticated, user, hasLoadedOnce, clearCouponOnInit]);
 
   // Limpiar estado cuando el usuario se deslogea
   useEffect(() => {
@@ -747,6 +777,7 @@ export function useCart(options: UseCartOptions = {}) {
     clearCart,
     applyCoupon,
     removeCoupon,
+    clearCouponOnInit,
     updateDeliveryOptions,
     refreshCart,
     

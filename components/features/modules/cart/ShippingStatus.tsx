@@ -78,14 +78,6 @@ export function ShippingStatus({ summary, className = '' }: ShippingStatusProps)
               {t('cart.summary.freeShipping')}
             </span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="text-lg">✓</span>
-            {summary.originalShippingCost && summary.originalShippingCost > 0 && (
-              <span className="text-xs text-green-600">
-                (Ahorras {formatPrice(summary.originalShippingCost)})
-              </span>
-            )}
-          </div>
         </div>
       </div>
     );
