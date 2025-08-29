@@ -825,9 +825,6 @@ export default function CartPage() {
                     >
                       <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
-                    <Badge variant="secondary" className="text-xs">
-                      {t('cart.stock')}: {item.productos.stock}
-                    </Badge>
                   </div>
                 </div>
 

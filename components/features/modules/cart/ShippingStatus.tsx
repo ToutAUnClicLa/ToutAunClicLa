@@ -95,7 +95,7 @@ export function ShippingStatus({ summary, className = '' }: ShippingStatusProps)
   if (summary.shippingCost && summary.shippingCost > 0) {
     return (
       <div className={`bg-blue-50 border border-blue-200 rounded-lg p-3 ${className}`}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Truck className="h-5 w-5 text-blue-600" />
             <span className="text-sm font-medium text-blue-800">
@@ -106,16 +106,6 @@ export function ShippingStatus({ summary, className = '' }: ShippingStatusProps)
             {formatPrice(summary.shippingCost)}
           </span>
         </div>
-        
-        {/* ✅ MEJORA: Indicador de umbral para envío gratis */}
-        {summary.shippingThreshold && summary.subtotal && summary.subtotal < summary.shippingThreshold && (
-          <div className="mt-2 pt-2 border-t border-blue-200">
-            <p className="text-xs text-blue-700">
-              Agrega {formatPrice(summary.shippingThreshold - summary.subtotal)} más para 
-              <span className="font-medium"> envío gratis</span>
-            </p>
-          </div>
-        )}
       </div>
     );
   }

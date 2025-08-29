@@ -1,13 +1,34 @@
 "use client";
 
-import { Star, ThumbsUp, Flag } from 'lucide-react';
+import { useState } from 'react';
+import { Star, ThumbsUp, Flag, Trash2, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-import Image from 'next/image';
+import { toast } from 'sonner';
+import { UserAvatar } from '@/components/common/ui/user-avatar';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/common/ui/dropdown-menu';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/common/ui/alert-dialog';
+import { deleteReview } from '@/lib/services/reviews';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Review {
   id: string;
+  usuario_id: string;
   usuarios: {
     nombre: string;
     email: string;
@@ -20,9 +41,15 @@ interface Review {
 
 interface ReviewListProps {
   reviews: Review[];
+  onReviewDeleted?: (reviewId: string) => void;
 }
 
-export function ReviewList({ reviews }: ReviewListProps) {
+export function ReviewList({ reviews, onReviewDeleted }: ReviewListProps) {
+  const { user } = useAuth();
+  const [deletingReview, setDeletingReview] = useState<string | null>(null);
+  const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   if (!Array.isArray(reviews) || reviews.length === 0) {
     return (
       <div className="text-center py-6">
@@ -31,56 +58,127 @@ export function ReviewList({ reviews }: ReviewListProps) {
     );
   }
 
+  const handleDeleteReview = async (reviewId: string) => {
+    try {
+      setDeletingReview(reviewId);
+      await deleteReview(reviewId);
+      
+      toast.success('Comentario eliminado exitosamente');
+      
+      // Notificar al componente padre
+      onReviewDeleted?.(reviewId);
+      
+    } catch (error: any) {
+      console.error('Error al eliminar review:', error);
+      toast.error(error.message || 'Error al eliminar el comentario');
+    } finally {
+      setDeletingReview(null);
+      setShowDeleteDialog(false);
+      setReviewToDelete(null);
+    }
+  };
+
+  const confirmDeleteReview = (reviewId: string) => {
+    setReviewToDelete(reviewId);
+    setShowDeleteDialog(true);
+  };
+
   return (
-    <div className="space-y-6 mt-6">
-      {reviews.map((review) => (
-        <div key={review.id} className="border-b pb-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
-                {review.usuarios?.email ? (
-                  <div className="w-full h-full bg-indigo-100 flex items-center justify-center">
-                    <span className="text-lg font-medium text-indigo-600">
-                      {review.usuarios.nombre.charAt(0).toUpperCase()}
-                    </span>
+    <>
+      <div className="space-y-6 mt-6">
+        {reviews.map((review) => {
+          const isOwner = user?.id === review.usuario_id;
+          const isDeleting = deletingReview === review.id;
+          
+          return (
+            <div key={review.id} className="border-b pb-6">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-3">
+                  <UserAvatar 
+                    name={review.usuarios?.nombre || 'Usuario anónimo'}
+                    size="lg"
+                  />
+                  <div>
+                    <p className="font-medium">{review.usuarios?.nombre || 'Usuario anónimo'}</p>
+                    <div className="flex items-center mt-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < review.estrellas ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                      <span className="ml-2 text-sm text-gray-500">
+                        {formatDistanceToNow(new Date(review.fecha_creacion), {
+                          addSuffix: true,
+                          locale: es,
+                        })}
+                      </span>
+                    </div>
                   </div>
-                ) : (
-                  <div className="w-full h-full bg-gray-200" />
-                )}
-              </div>
-              <div>
-                <p className="font-medium">{review.usuarios?.nombre || 'Usuario anónimo'}</p>
-                <div className="flex items-center mt-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-4 w-4 ${
-                        i < review.estrellas ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                  <span className="ml-2 text-sm text-gray-500">
-                    {formatDistanceToNow(new Date(review.fecha_creacion), {
-                      addSuffix: true,
-                      locale: es,
-                    })}
-                  </span>
                 </div>
+                
+                {/* Menu de opciones */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    {isOwner && (
+                      <DropdownMenuItem
+                        className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                        onClick={() => confirmDeleteReview(review.id)}
+                        disabled={isDeleting}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        {isDeleting ? 'Eliminando...' : 'Eliminar comentario'}
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem className="cursor-pointer">
+                      <Flag className="h-4 w-4 mr-2" />
+                      Reportar comentario
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              
+              <p className="mt-3 text-gray-600">{review.comentario}</p>
+              
+              <div className="mt-4 flex items-center gap-4">
+                <Button variant="ghost" size="sm" className="text-gray-500">
+                  <ThumbsUp className="h-4 w-4 mr-2" />
+                  Útil ({review.likes || 0})
+                </Button>
               </div>
             </div>
-            <Button variant="ghost" size="icon">
-              <Flag className="h-4 w-4" />
-            </Button>
-          </div>
-          <p className="mt-3 text-gray-600">{review.comentario}</p>
-          <div className="mt-4 flex items-center gap-4">
-            <Button variant="ghost" size="sm" className="text-gray-500">
-              <ThumbsUp className="h-4 w-4 mr-2" />
-              Útil ({review.likes || 0})
-            </Button>
-          </div>
-        </div>
-      ))}
-    </div>
+          );
+        })}
+      </div>
+
+      {/* Dialog de confirmación de eliminación */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar comentario?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. El comentario será eliminado permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => reviewToDelete && handleDeleteReview(reviewToDelete)}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={!!deletingReview}
+            >
+              {deletingReview ? 'Eliminando...' : 'Eliminar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

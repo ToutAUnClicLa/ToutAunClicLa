@@ -66,7 +66,12 @@ const LoadingState = () => (
   </div>
 );
 
-function ProductDetail({ product, colors, params }: { product: ProductWithVariations; colors: any; params: any }) {
+function ProductDetail({ product, colors, params, onReviewDeleted }: { 
+  product: ProductWithVariations; 
+  colors: any; 
+  params: any; 
+  onReviewDeleted: (reviewId: string) => void;
+}) {
   const { t } = useTranslation();
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
@@ -493,7 +498,10 @@ function ProductDetail({ product, colors, params }: { product: ProductWithVariat
             <TabsContent value="reviews" className="mt-4">
               <Suspense fallback={<div>{t('catalog.productDetail.loading')}</div>}>
                 <ReviewForm productId={product.id.toString()} />
-                <ReviewList reviews={product.reviews || []} />
+                <ReviewList 
+                  reviews={product.reviews || []} 
+                  onReviewDeleted={onReviewDeleted}
+                />
               </Suspense>
             </TabsContent>
           </Tabs>
@@ -551,6 +559,16 @@ export default function ProductDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
 
+  // Handle when a review is deleted
+  const handleReviewDeleted = (deletedReviewId: string) => {
+    if (product && product.reviews) {
+      setProduct({
+        ...product,
+        reviews: product.reviews.filter((review: any) => review.id !== deletedReviewId)
+      });
+    }
+  };
+
   // Ensure category is a string, not an array
   const category = Array.isArray(params.category) ? params.category[0] : params.category;
   const colors = categoryColors[category as keyof typeof categoryColors];
@@ -603,7 +621,12 @@ export default function ProductDetailPage() {
             <span className="text-gray-900 font-medium truncate">{product.nombre}</span>
           </div>
 
-          <ProductDetail product={product} colors={colors} params={params} />
+          <ProductDetail 
+            product={product} 
+            colors={colors} 
+            params={params} 
+            onReviewDeleted={handleReviewDeleted}
+          />
         </div>
       </div>
     </>
