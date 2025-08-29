@@ -216,8 +216,8 @@ export function ProductCard({
                       </Badge>
                     )}
                     {productData.hasVariations && (
-                      <Badge className="bg-blue-500 text-white text-xs px-1 py-0 flex items-center gap-1">
-                        ⚙️ Opciones
+                      <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs px-2 py-1 flex items-center gap-1 font-medium shadow-sm">
+                        ⚙️ {product.variations?.length || 1} opciones
                       </Badge>
                     )}
                   </div>

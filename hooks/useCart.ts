@@ -10,6 +10,7 @@ import {
   type DeliveryOptions,
   type DeliveryUpdateResponse
 } from '@/lib/services/cart';
+import { validateCartSummary, validateCartResponse, logBackendDataQuality } from '@/lib/utils/cart-validation';
 import { useAuth } from '@/hooks/useAuth';
 
 // Función para notificar cambios al contador del carrito
@@ -140,8 +141,14 @@ export function useCart(options: UseCartOptions = {}) {
       }
       
       console.log('Loading cart for user:', user.id);
-      const response = await cartService.getCart(pageNum, limitNum);
+      const rawResponse = await cartService.getCart(pageNum, limitNum);
+      
+      // 🚨 VALIDATE AND ENRICH BACKEND DATA
+      const response = validateCartResponse(rawResponse);
+      const validatedSummary = validateCartSummary(response.summary);
+      
       console.log('Cart loaded successfully:', response);
+      logBackendDataQuality(validatedSummary, 'loadCart');
       
       // Actualizar cache global
       globalCartCache = {
@@ -152,22 +159,17 @@ export function useCart(options: UseCartOptions = {}) {
       
       if (isComponentMountedRef.current) {
         setItems(response.cartItems || []);
-        // 🚚 CRITICAL FIX: Ensure shipping fields are preserved when loading cart
-        setSummary({
-          ...response.summary,
-          // Ensure new shipping fields are included (backend should provide them)
-          shippingMessage: response.summary?.shippingMessage || null,
-          needsAddress: response.summary?.needsAddress || false
-        });
+        setSummary(validatedSummary);
         setPagination(response.pagination);
         setHasLoadedOnce(true);
         
-        // 🔍 Debug log for regular cart loading
-        if (response.summary?.shippingMessage || response.summary?.needsAddress) {
-          console.log('🚚 Cart loaded with shipping state:', {
-            needsAddress: response.summary.needsAddress,
-            shippingMessage: response.summary.shippingMessage,
-            shippingCost: response.summary.shippingCost
+        // 🔍 Enhanced debug log for shipping state
+        if (validatedSummary.shippingMessage || validatedSummary.needsAddress) {
+          console.log('🚚 Cart loaded with advanced shipping state:', {
+            needsAddress: validatedSummary.needsAddress,
+            shippingMessage: validatedSummary.shippingMessage,
+            shippingCost: validatedSummary.shippingCost,
+            threshold: validatedSummary.shippingThreshold
           });
         }
       }
@@ -175,24 +177,26 @@ export function useCart(options: UseCartOptions = {}) {
       globalCartCache = { data: null, timestamp: 0, isLoading: false };
       
       if (isComponentMountedRef.current) {
-        console.error('Error loading cart:', err);
+        console.error('🚨 Error loading cart:', err);
         
-        // Si es error de autenticación, no mostrar como error
+        // Enhanced error handling with backend-first fallback approach
         if (err.message?.includes('401') || err.message?.includes('Unauthorized')) {
           console.log('Authentication error, user needs to login');
           setError(null);
+        } else if (err.message?.includes('shippingThreshold')) {
+          console.warn('Backend missing shippingThreshold, using fallback cart state');
+          setError(null); // Don't show error to user for backend field issues
+        } else if (err.message?.includes('Network')) {
+          setError('Sin conexión a internet');
+          toast.error('Sin conexión a internet. Verifica tu conexión.');
         } else {
           setError('Error al cargar el carrito');
           toast.error('Error al cargar el carrito');
         }
         
+        // Reset to empty state with validated defaults
         setItems([]);
-        setSummary({
-          totalItems: 0,
-          totalQuantity: 0,
-          subtotal: 0,
-          total: 0,
-        });
+        setSummary(validateCartSummary(undefined)); // Use validation utility for consistent empty state
         setHasLoadedOnce(true);
       }
     } finally {
@@ -227,16 +231,34 @@ export function useCart(options: UseCartOptions = {}) {
   }, []);
 
   // Agregar producto al carrito (optimizado)
-  const addToCart = useCallback(async (productId: number, quantity: number = 1): Promise<boolean> => {
+  const addToCart = useCallback(async (
+    productId: number, 
+    quantity: number = 1,
+    deliveryOptions?: {
+      horaEntregaPreferida?: string;
+      metodoEntrega?: 'puerta' | 'manos' | 'recepcion';
+      notasEntrega?: string;
+    },
+    variations?: Array<{
+      variationId: number;
+      quantity: number;
+    }>
+  ): Promise<boolean> => {
     if (!isAuthenticated || !user) {
+      toast.error('Debes iniciar sesión para agregar productos al carrito');
       return false;
     }
 
     try {
       setError(null);
-      console.log('Adding product to cart:', { productId, quantity });
+      console.log('Adding product to cart:', { 
+        productId, 
+        quantity,
+        variations: variations?.length || 0,
+        deliveryOptions: !!deliveryOptions 
+      });
       
-      const result = await cartService.addToCart(productId, quantity);
+      const result = await cartService.addToCart(productId, quantity, deliveryOptions, variations);
       console.log('Product added successfully:', result);
       
       // Invalidar cache y recargar
@@ -377,9 +399,10 @@ export function useCart(options: UseCartOptions = {}) {
       console.log('🔄 Paso 1: Aplicando cupón...');
       const result = await cartService.applyCoupon(couponCode);
       console.log('✅ Cupón válido aplicado:', {
-        tipo: result.coupon.type,
-        codigo: result.coupon.code,
-        descuento: result.coupon.discount
+        tipo: result.coupon?.type,
+        codigo: result.coupon?.code,
+        descuento: result.coupon?.discount,
+        couponExists: !!result.coupon
       });
       
       // PASO 2: Obtener carrito actualizado con cálculos completos (GET /with-coupon)
@@ -507,20 +530,48 @@ export function useCart(options: UseCartOptions = {}) {
   // Remover cupón
   const removeCoupon = useCallback(async (): Promise<boolean> => {
     if (!isAuthenticated || !user) {
+      toast.error('Debes iniciar sesión para remover cupones');
       return false;
     }
 
+    if (!appliedCoupon) {
+      console.log('No hay cupón aplicado para remover');
+      return true;
+    }
+
     try {
+      setError(null);
+      console.log('🗑️ Removiendo cupón del backend:', appliedCoupon.code || appliedCoupon.codigo);
+      
+      // CRITICAL FIX: Call backend API to remove coupon
+      await cartService.removeCoupon();
+      console.log('✅ Cupón removido del backend');
+      
+      // Clear local state
       setAppliedCoupon(null);
-      // Recargar carrito sin cupón
+      
+      // Invalidate cache and reload cart to get updated totals
       invalidateCache();
       await loadCartNow(true);
+      
+      console.log('🔄 Estado actualizado sin cupón');
+      toast.success('Cupón removido exitosamente');
       return true;
     } catch (err: any) {
-      console.error('Error removing coupon:', err);
-      return false;
+      console.error('❌ Error removiendo cupón:', err);
+      setError('Error al remover cupón');
+      
+      if (err.message?.includes('No coupon applied') || err.message?.includes('no cupón')) {
+        // If backend says no coupon, clear local state anyway
+        setAppliedCoupon(null);
+        toast.info('No hay cupón aplicado');
+        return true;
+      } else {
+        toast.error('Error al remover el cupón. Intenta nuevamente.');
+        return false;
+      }
     }
-  }, [isAuthenticated, user, invalidateCache, loadCartNow]);
+  }, [isAuthenticated, user, appliedCoupon, invalidateCache, loadCartNow]);
 
   // Función pública para refrescar carrito
   const refreshCart = useCallback(async () => {
@@ -538,14 +589,55 @@ export function useCart(options: UseCartOptions = {}) {
     return item?.cantidad || 0;
   }, [items]);
 
-  // Estado derivado memoizado para evitar re-renders
+  // 🚨 Backend data completeness validation
+  const backendDataQuality = useMemo(() => {
+    if (!summary) {
+      return {
+        completeness: 0,
+        hasMinimalData: false,
+        missingFields: ['all'] as string[],
+        usingFallbacks: true
+      };
+    }
+    
+    const requiredFields = [
+      'totalItems', 'totalQuantity', 'subtotal', 'total', 
+      'totalTaxes', 'totalConsigne', 'shippingCost', 'shippingThreshold'
+    ] as const;
+    
+    const availableFields = requiredFields.filter(field => {
+      const value = summary[field as keyof CartSummary];
+      return value !== undefined && value !== null;
+    });
+    
+    const completeness = requiredFields.length > 0 ? (availableFields.length / requiredFields.length) * 100 : 0;
+    const hasMinimalData = summary.subtotal !== undefined && summary.subtotal !== null && 
+                          summary.total !== undefined && summary.total !== null;
+    const missingFields = requiredFields.filter(field => {
+      const value = summary[field as keyof CartSummary];
+      return value === undefined || value === null;
+    });
+    
+    return {
+      completeness: Math.round(completeness),
+      hasMinimalData,
+      missingFields: missingFields as string[],
+      usingFallbacks: completeness < 100
+    };
+  }, [summary]);
+
+  // Estado derivado memoizado con backend-first approach
   const derivedState = useMemo(() => ({
     isEmpty: items.length === 0,
-    totalItems: summary?.totalItems || 0,
-    totalQuantity: summary?.totalQuantity || 0,
-    subtotal: summary?.subtotal || 0,
-    total: summary?.total || 0,
-  }), [items.length, summary]);
+    totalItems: summary?.totalItems ?? 0,
+    totalQuantity: summary?.totalQuantity ?? 0,
+    subtotal: summary?.subtotal ?? 0,
+    total: summary?.total ?? 0,
+    // Backend data quality metrics
+    backendDataQuality,
+    // 🚨 Flag when using fallback calculations
+    usingFallbackCalculations: !backendDataQuality.hasMinimalData,
+  }), [items.length, summary, backendDataQuality]);
 
   // Efecto para autoLoad SOLO cuando sea necesario
   useEffect(() => {
@@ -585,17 +677,24 @@ export function useCart(options: UseCartOptions = {}) {
 
   // Escuchar cambios de dirección para recalcular costos de envío
   useEffect(() => {
-    const handleAddressChange = (event: CustomEvent) => {
+    const handleAddressChange = (event: Event) => {
       // Solo procesar si el componente está montado y el usuario autenticado
       if (!isComponentMountedRef.current || !isAuthenticated || !user) {
         return;
       }
 
-      const { action, address } = event.detail;
+      // Type-safe CustomEvent handling
+      const customEvent = event as CustomEvent<{ action: string; address: any }>;
+      if (!customEvent.detail) {
+        console.warn('Address change event missing detail');
+        return;
+      }
+
+      const { action, address } = customEvent.detail;
       console.log('🛒 Carrito detectó cambio de dirección:', { action, address });
       
       // Solo recargar si es un cambio de dirección principal que puede afectar costos de envío
-      if (action.includes('principal') || action === 'seleccionada') {
+      if (typeof action === 'string' && (action.includes('principal') || action === 'seleccionada')) {
         console.log('🔄 Recargando carrito por cambio de dirección principal...');
         invalidateCache();
         loadCartNow(true).catch(err => {
@@ -606,10 +705,10 @@ export function useCart(options: UseCartOptions = {}) {
 
     // Solo agregar listener si hay ventana disponible
     if (typeof window !== 'undefined') {
-      window.addEventListener('addressChanged', handleAddressChange as EventListener);
+      window.addEventListener('addressChanged', handleAddressChange);
       
       return () => {
-        window.removeEventListener('addressChanged', handleAddressChange as EventListener);
+        window.removeEventListener('addressChanged', handleAddressChange);
       };
     }
   }, [invalidateCache, loadCartNow, isAuthenticated, user]);

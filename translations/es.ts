@@ -518,6 +518,13 @@ export default {
         tooFewSelections: "Selecciona al menos {min} opción(es)",
         tooManySelections: "Selecciona máximo {max} opción(es)",
         stockInsufficient: "Stock insuficiente para {name}"
+      },
+      cart: {
+        variationsApplied: "Personalización aplicada",
+        basePrice: "Precio base",
+        variationCosts: "Opciones adicionales",
+        totalWithVariations: "Total personalizado",
+        variationDetails: "Detalles de personalización"
       }
     },
 

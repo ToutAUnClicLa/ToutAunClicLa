@@ -19,6 +19,17 @@ interface AddToCartButtonProps {
   showQuantitySelector?: boolean;
   showFavoriteButton?: boolean;
   size?: 'sm' | 'md' | 'lg';
+  // ✅ AÑADIDO: Soporte para variaciones según backend
+  selectedVariations?: Array<{
+    variationId: number;
+    quantity: number;
+  }>;
+  // ✅ AÑADIDO: Opciones de entrega según backend
+  deliveryOptions?: {
+    horaEntregaPreferida?: string;
+    metodoEntrega?: 'puerta' | 'manos' | 'recepcion';
+    notasEntrega?: string;
+  };
 }
 
 export function AddToCartButton({
@@ -29,7 +40,9 @@ export function AddToCartButton({
   className = '',
   showQuantitySelector = true,
   showFavoriteButton = true,
-  size = 'md'
+  size = 'md',
+  selectedVariations,
+  deliveryOptions
 }: AddToCartButtonProps) {
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -62,15 +75,36 @@ export function AddToCartButton({
 
     try {
       setIsAddingToCart(true);
-      const success = await addToCart(productId, quantity);
+      // ✅ MEJORADO: Usar addToCart con soporte completo del backend
+      const success = await addToCart(
+        productId, 
+        quantity, 
+        deliveryOptions, 
+        selectedVariations
+      );
       
       if (success) {
         // Resetear cantidad después de agregar exitosamente
         setQuantity(1);
+        
+        // ✅ MEJORADO: Mensaje específico si hay variaciones
+        const variationCount = selectedVariations?.length || 0;
+        if (variationCount > 0) {
+          toast.success(t('catalog.addToCartButton.addedToCart') + ` (${variationCount} opciones)`);
+        }
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
-      toast.error(t('catalog.addToCartButton.errorAddingToCart'));
+      
+      // ✅ MEJORADO: Manejo de errores específicos del backend
+      const errorMessage = error instanceof Error ? error.message : '';
+      if (errorMessage.includes('stock')) {
+        toast.error(t('catalog.addToCartButton.productOutOfStock'));
+      } else if (errorMessage.includes('variation')) {
+        toast.error('Error con las opciones seleccionadas');
+      } else {
+        toast.error(t('catalog.addToCartButton.errorAddingToCart'));
+      }
     } finally {
       setIsAddingToCart(false);
     }

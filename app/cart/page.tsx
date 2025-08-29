@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { ShoppingCart, ShoppingBag, Trash2, Plus, Minus, Package, Utensils, Store, ArrowLeft } from 'lucide-react';
+import { ShoppingCart, ShoppingBag, Trash2, Plus, Minus, Package, Utensils, Store, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
 import { Badge } from '@/components/common/ui/badge';
 import { Card, CardContent } from '@/components/common/ui/card';
@@ -16,11 +16,15 @@ import AuthModal from '@/components/features/auth/AuthModal';
 import { AddressSelector } from '@/components/features/modules/cart/AddressSelector';
 import DeliveryOptions from '@/components/features/modules/cart/DeliveryOptions';
 import { CouponInput } from '@/components/features/modules/cart/CouponInput';
+import { ShippingStatus } from '@/components/features/modules/cart/ShippingStatus';
+import { CartErrorBoundary } from '@/components/features/modules/cart/CartErrorBoundary';
 import { toast } from 'sonner';
 import { CartItem } from '@/lib/services/cart';
 import type { DeliveryOptions as DeliveryOptionsType } from '@/lib/services/cart';
 import { useTranslation } from '@/hooks/useTranslation';
-import { formatCartItemVariations, calculateCartItemFinalPrice } from '@/lib/utils/variations';
+import { formatCartItemVariations } from '@/lib/utils/variations';
+import { logBackendDataQuality } from '@/lib/utils/cart-validation';
+import { CartItemVariations } from '@/components/features/modules/cart/CartItemVariations';
  
 // Mapeo de categorías con estilos modernos
 const getCategoryMap = (t: any) => ({
@@ -76,8 +80,7 @@ export default function CartPage() {
   const { t } = useTranslation();
   const { 
     items, 
-    totalQuantity, 
- 
+    totalQuantity,
     isLoading, 
     updateQuantity, 
     removeFromCart,
@@ -95,6 +98,7 @@ export default function CartPage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [expandedVariations, setExpandedVariations] = useState<Set<string>>(new Set());
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOptionsType & { isValid: boolean }>({
     horaEntregaPreferida: '18:00',
     metodoEntrega: 'puerta',
@@ -113,59 +117,97 @@ export default function CartPage() {
     let variationModifier = 0;
     if (item.variations && item.variations.length > 0) {
       variationModifier = item.variations.reduce((varSum, variation) => {
-        const modifier = variation.price_at_time !== undefined 
-          ? variation.price_at_time 
-          : variation.product_variations.price_modifier;
+        const modifier = variation.price_at_time ?? variation.product_variations?.price_modifier ?? 0;
         return varSum + (modifier * variation.quantity);
       }, 0);
     }
     
     return basePrice + variationModifier;
   }, []);
+
+  // Helper function to get detailed pricing breakdown for display
+  const getItemPricingDetails = useCallback((item: CartItem) => {
+    const basePrice = item.productos.precio;
+    const baseSubtotal = basePrice;
+    
+    let variationModifier = 0;
+    if (item.variations && item.variations.length > 0) {
+      variationModifier = item.variations.reduce((varSum, variation) => {
+        const modifier = variation.price_at_time ?? variation.product_variations?.price_modifier ?? 0;
+        return varSum + (modifier * variation.quantity);
+      }, 0);
+    }
+    
+    const finalSubtotal = basePrice + variationModifier;
+    
+    return {
+      baseSubtotal,
+      variationModifier,
+      finalSubtotal
+    };
+  }, []);
   
-  // Cálculos de totales mejorados - recalcular desde los items con impuestos reales INCLUYENDO VARIACIONES
+  // 🚨 BACKEND AS SINGLE SOURCE OF TRUTH - Minimal local calculations for offline fallback only
   const calculatedSubtotal = useMemo(() => {
+    // Only calculate when backend data is unavailable
+    if (summary?.subtotal !== undefined) return summary.subtotal;
+    
     return items.reduce((sum, item) => {
       const finalItemPrice = calculateItemFinalPrice(item) * item.cantidad;
       return sum + finalItemPrice;
     }, 0);
-  }, [items, calculateItemFinalPrice]);
+  }, [items, calculateItemFinalPrice, summary?.subtotal]);
 
-  // Cálculo de impuestos reales basado en TPS y TVQ como porcentajes del precio INCLUYENDO VARIACIONES
+  // Emergency fallback for taxes calculation
   const calculatedTaxes = useMemo(() => {
+    if (summary?.totalTaxes !== undefined) return summary.totalTaxes;
+    
     return items.reduce((sum, item) => {
       const finalItemPrice = calculateItemFinalPrice(item) * item.cantidad;
       const tpsAmount = item.productos.TPS ? (finalItemPrice * item.productos.TPS / 100) : 0;
       const tvqAmount = item.productos.TVQ ? (finalItemPrice * item.productos.TVQ / 100) : 0;
       return sum + tpsAmount + tvqAmount;
     }, 0);
-  }, [items, calculateItemFinalPrice]);
+  }, [items, calculateItemFinalPrice, summary?.totalTaxes]);
 
-  // Cálculo de consigne total
+  // Emergency fallback for consigne calculation
   const calculatedConsigne = useMemo(() => {
+    if (summary?.totalConsigne !== undefined) return summary.totalConsigne;
+    
     return items.reduce((sum, item) => {
       const consigneAmount = item.productos.consigne ? item.productos.consigne * item.cantidad : 0;
       return sum + consigneAmount;
     }, 0);
-  }, [items]);
+  }, [items, summary?.totalConsigne]);
 
-  const shippingThreshold = 200; // Envío gratis a partir de $200
-  const fallbackShippingCost = calculatedSubtotal >= shippingThreshold ? 0 : 8.99;
+  // 🚨 BACKEND VALUES FIRST - All calculations from backend, minimal fallbacks
+  const fallbackShippingThreshold = 200;
+  const fallbackShippingCost = calculatedSubtotal >= fallbackShippingThreshold ? 0 : 8.99;
   
-  // 🏛️ USAR COMPLETAMENTE LA LÓGICA DEL BACKEND - El backend maneja todos los cálculos de precios
-  const displaySubtotal = summary?.subtotal !== undefined ? summary.subtotal : calculatedSubtotal;
-  const displayTaxes = summary?.totalTaxes !== undefined ? summary.totalTaxes : calculatedTaxes;
-  const displayConsigne = summary?.totalConsigne !== undefined ? summary.totalConsigne : calculatedConsigne;
+  // Always prefer backend values, use calculated values only as emergency fallbacks
+  const displaySubtotal = summary?.subtotal ?? calculatedSubtotal;
+  const displayTaxes = summary?.totalTaxes ?? calculatedTaxes;
+  const displayConsigne = summary?.totalConsigne ?? calculatedConsigne;
+  const shippingThreshold = summary?.shippingThreshold ?? fallbackShippingThreshold;
   
-  // 🏛️ SIEMPRE usar el total del backend cuando esté disponible - El backend maneja toda la lógica
-  // Solo usar cálculos locales como fallback de emergencia
-  const finalTotal = summary?.total !== undefined
-    ? summary.total // ✅ TOTAL DEL BACKEND (incluye shipping calculado con dirección)
-    : displaySubtotal + displayTaxes + displayConsigne + fallbackShippingCost; // Fallback usando valores del backend cuando estén disponibles
-    
-  const savingsAmount = summary?.savings || 0;
-  const finalShippingCost = summary?.shippingCost !== undefined ? summary.shippingCost : fallbackShippingCost;
-  const isFreeShippingApplied = summary?.freeShippingApplied || false;
+  // 🚨 CRITICAL: Backend total is ALWAYS authoritative when available
+  const finalTotal = summary?.total ?? (displaySubtotal + displayTaxes + displayConsigne + fallbackShippingCost);
+  const savingsAmount = summary?.savings ?? 0;
+  const finalShippingCost = summary?.shippingCost ?? fallbackShippingCost;
+  const isFreeShippingApplied = summary?.freeShippingApplied ?? false;
+
+  // Functions for variation expansion
+  const toggleVariationExpansion = useCallback((itemId: string) => {
+    setExpandedVariations(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+      } else {
+        newSet.add(itemId);
+      }
+      return newSet;
+    });
+  }, []);
   
   // 🚚 CRITICAL FIX: New shipping state management from backend
   // Always use the latest values from summary, with proper fallbacks
@@ -184,33 +226,51 @@ export default function CartPage() {
     }
   }, [summary?.shippingMessage, summary?.needsAddress, summary?.shippingCost]);
 
-  // 🏛️ Debug logging para verificar uso de valores del backend
+  // 🚨 Backend-first state monitoring using validation utilities (optimized)
   useEffect(() => {
     if (summary) {
-      console.log('💰 Valores del backend en uso:', {
-        usingBackendSubtotal: summary.subtotal !== undefined,
-        usingBackendTaxes: summary.totalTaxes !== undefined,
-        usingBackendConsigne: summary.totalConsigne !== undefined,
-        usingBackendTotal: summary.total !== undefined,
-        backendValues: {
-          subtotal: summary.subtotal,
-          totalTaxes: summary.totalTaxes,
-          totalConsigne: summary.totalConsigne,
-          total: summary.total
+      // Use validation utility for consistent monitoring
+      logBackendDataQuality(summary, 'cart page');
+      
+      // Calculate values inside useEffect to avoid dependency issues
+      const currentDisplaySubtotal = summary?.subtotal ?? calculatedSubtotal;
+      const currentDisplayTaxes = summary?.totalTaxes ?? calculatedTaxes;
+      const currentDisplayConsigne = summary?.totalConsigne ?? calculatedConsigne;
+      const currentFinalTotal = summary?.total ?? (currentDisplaySubtotal + currentDisplayTaxes + currentDisplayConsigne + fallbackShippingCost);
+      const currentFinalShippingCost = summary?.shippingCost ?? fallbackShippingCost;
+      const currentSavingsAmount = summary?.savings ?? 0;
+      const currentIsFreeShippingApplied = summary?.freeShippingApplied ?? false;
+      const currentShippingThreshold = summary?.shippingThreshold ?? fallbackShippingThreshold;
+      const currentNeedsAddress = summary?.needsAddress || false;
+      const currentShippingMessage = summary?.shippingMessage || null;
+      
+      // Additional cart page specific logging
+      console.log('🛒 Cart page final state:', {
+        displayValues: {
+          subtotal: currentDisplaySubtotal,
+          taxes: currentDisplayTaxes,
+          consigne: currentDisplayConsigne,
+          total: currentFinalTotal,
+          shipping: currentFinalShippingCost,
+          savings: currentSavingsAmount
         },
-        fallbackValues: {
-          calculatedSubtotal,
-          calculatedTaxes,
-          calculatedConsigne
+        couponState: appliedCoupon ? {
+          code: appliedCoupon.code || appliedCoupon.codigo,
+          type: appliedCoupon.type,
+          savings: currentSavingsAmount,
+          freeShippingApplied: currentIsFreeShippingApplied
+        } : null,
+        shippingState: {
+          needsAddress: currentNeedsAddress,
+          shippingMessage: !!currentShippingMessage,
+          cost: currentFinalShippingCost,
+          threshold: currentShippingThreshold
         },
-        variationsData: {
-          itemsWithVariations: items.filter(item => item.variations && item.variations.length > 0).length,
-          totalItems: items.length,
-          subtotalDifference: summary.subtotal !== undefined ? (summary.subtotal - calculatedSubtotal) : 'N/A'
-        }
+        itemsCount: items.length,
+        isEmpty: items.length === 0
       });
     }
-  }, [summary, calculatedSubtotal, calculatedTaxes, calculatedConsigne, items]);
+  }, [summary, appliedCoupon, items.length, calculatedSubtotal, calculatedTaxes, calculatedConsigne, fallbackShippingCost, fallbackShippingThreshold]);
   
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-US', {
@@ -219,49 +279,8 @@ export default function CartPage() {
     }).format(price);
   };
 
-  // Helper function to render shipping display based on different states
-  const renderShippingDisplay = () => {
-    // 🚚 CRITICAL FIX: When needsAddress is true, show only the translated subtle message
-    if (needsAddress) {
-      return (
-        <div className="flex flex-col space-y-1">
-          <span className="text-xs sm:text-xs text-amber-600 font-medium">
-            {t('cart.summary.addressRequiredForShipping')}
-          </span>
-        </div>
-      );
-    }
-    
-    // State 2: shippingMessage exists (calculation error with estimated cost)
-    if (shippingMessage) {
-      return (
-        <div className="flex flex-col space-y-1">
-          <span className="text-sm sm:text-base font-medium text-gray-900">
-            {formatPrice(finalShippingCost)}
-          </span>
-          <span className="text-xs text-orange-600">
-            {shippingMessage}
-          </span>
-        </div>
-      );
-    }
-    
-    // State 3: Normal shipping display (with or without free shipping)
-    if (finalShippingCost === 0) {
-      return (
-        <span className={`text-sm sm:text-base font-medium ${isFreeShippingApplied ? 'text-green-600' : 'text-gray-900'}`}>
-          {t('cart.summary.freeShipping')}
-          {isFreeShippingApplied && ' ✓'}
-        </span>
-      );
-    }
-    
-    return (
-      <span className="text-sm sm:text-base font-medium text-gray-900">
-        {formatPrice(finalShippingCost)}
-      </span>
-    );
-  };
+  // 🚨 REMOVED: renderShippingDisplay - replaced with ShippingStatus component
+  // This function is no longer needed as ShippingStatus component handles all shipping display logic
 
   // Efecto para cargar el carrito al montar el componente y cuando cambia la dirección principal
   useEffect(() => {
@@ -383,8 +402,8 @@ export default function CartPage() {
     return grouped;
   }, [items]);
 
-  // Función para manejar cambios de cantidad
-  const handleQuantityChange = async (itemId: string, newQuantity: number) => {
+  // Función para manejar cambios de cantidad (memoizada)
+  const handleQuantityChange = useCallback(async (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     
     setLoadingItems(prev => new Set(prev).add(itemId));
@@ -402,10 +421,10 @@ export default function CartPage() {
         return newSet;
       });
     }
-  };
+  }, [updateQuantity, t]);
 
-  // Función para eliminar item del carrito
-  const handleRemoveItem = async (itemId: string) => {
+  // Función para eliminar item del carrito (memoizada)
+  const handleRemoveItem = useCallback(async (itemId: string) => {
     setLoadingItems(prev => new Set(prev).add(itemId));
     
     try {
@@ -421,10 +440,10 @@ export default function CartPage() {
         return newSet;
       });
     }
-  };
+  }, [removeFromCart, t]);
 
-  // Función para limpiar el carrito
-  const handleClearCart = async () => {
+  // Función para limpiar el carrito (memoizada)
+  const handleClearCart = useCallback(async () => {
     try {
       await clearCart();
       toast.success(t('cart.success.cartCleared'));
@@ -432,10 +451,10 @@ export default function CartPage() {
       console.error('Error limpiando carrito:', error);
       toast.error(t('cart.errors.clearCart'));
     }
-  };
+  }, [clearCart, t]);
 
-  // Función para proceder al checkout
-  const handleCheckout = async () => {
+  // Función para proceder al checkout (memoizada)
+  const handleCheckout = useCallback(async () => {
     if (!isAuthenticated) {
       setShowAuthModal(true);
       return;
@@ -545,6 +564,22 @@ export default function CartPage() {
         ahorros: savingsAmount,
         envioGratis: isFreeShippingApplied
       });
+
+      // Log information about variations in cart
+      const itemsWithVariations = items.filter(item => item.variations && item.variations.length > 0);
+      if (itemsWithVariations.length > 0) {
+        console.log('🎨 Items con variaciones en checkout:', itemsWithVariations.map(item => ({
+          productId: item.producto_id,
+          productName: item.productos.nombre,
+          quantity: item.cantidad,
+          variations: item.variations?.map(v => ({
+            name: v.product_variations.name,
+            quantity: v.quantity,
+            modifier: v.product_variations.price_modifier,
+            priceAtTime: v.price_at_time
+          }))
+        })));
+      }
       
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/stripe/checkout/create-session`, {
         method: 'POST',
@@ -602,10 +637,13 @@ export default function CartPage() {
       toast.error(error.message || 'Error procesando el pago. Intenta nuevamente.');
       setCheckoutLoading(false);
     }
-  };
+  }, [
+    isAuthenticated, needsAddress, hasValidAddress, selectedAddress, isEmpty, 
+    deliveryOptions, appliedCoupon, finalTotal, savingsAmount, isFreeShippingApplied, t
+  ]);
 
-  // Función para renderizar badges de impuestos
-  const renderTaxBadges = (item: CartItem) => {
+  // Función para renderizar badges de impuestos (memoizada)
+  const renderTaxBadges = useCallback((item: CartItem) => {
     const badges = [];
     
     // Determinar si es taxable basado en si tiene TPS o TVQ
@@ -662,10 +700,10 @@ export default function CartPage() {
     }
     
     return badges;
-  };
+  }, [formatPrice]);
 
-  // Renderizar item del carrito con diseño responsive
-  const renderCartItem = (item: CartItem) => {
+  // Renderizar item del carrito con diseño responsive (memoizada)
+  const renderCartItem = useCallback((item: CartItem) => {
     const isItemLoading = loadingItems.has(item.id);
     const itemPriceWithVariations = calculateItemFinalPrice(item);
     const itemTotal = item.cantidad * itemPriceWithVariations;
@@ -705,11 +743,41 @@ export default function CartPage() {
                     
                     {/* Mostrar variaciones seleccionadas */}
                     {item.variations && item.variations.length > 0 && (
-                      <div className="mb-2">
-                        <p className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-md inline-flex items-center gap-1">
-                          <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
-                          {formatCartItemVariations(item.variations)}
-                        </p>
+                      <div className="mb-3 space-y-2">
+                        <CartItemVariations 
+                          item={item} 
+                          showDetailed={false}
+                          className=""
+                        />
+                        
+                        {/* Botón para expandir detalles */}
+                        <button
+                          onClick={() => toggleVariationExpansion(item.id)}
+                          className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 transition-colors"
+                        >
+                          {expandedVariations.has(item.id) ? (
+                            <>
+                              <ChevronUp className="w-3 h-3" />
+                              Ocultar detalles
+                            </>
+                          ) : (
+                            <>
+                              <ChevronDown className="w-3 h-3" />
+                              Ver detalles de precio
+                            </>
+                          )}
+                        </button>
+                        
+                        {/* Detalles expandidos */}
+                        {expandedVariations.has(item.id) && (
+                          <div className="mt-3">
+                            <CartItemVariations 
+                              item={item} 
+                              showDetailed={true}
+                              className=""
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
                     
@@ -719,28 +787,13 @@ export default function CartPage() {
                     
                     <div className="flex items-center gap-2 sm:gap-4 mb-2">
                       {item.variations && item.variations.length > 0 ? (
-                        <div className="flex flex-col">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">Base:</span>
-                            <span className="text-sm font-medium text-gray-700">
-                              {formatPrice(item.productos.precio)}
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-gray-500">
+                              Personalizado ({item.cantidad} × {formatPrice(item.productos.precio)})
                             </span>
-                          </div>
-                          {(() => {
-                            const pricing = calculateCartItemFinalPrice(item.productos.precio, 1, item.variations);
-                            return pricing.variationModifier !== 0 ? (
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-gray-500">Opciones:</span>
-                                <span className={`text-sm font-medium ${pricing.variationModifier > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                  {pricing.variationModifier > 0 ? '+' : ''}{formatPrice(pricing.variationModifier)}
-                                </span>
-                              </div>
-                            ) : null;
-                          })()}
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">Total:</span>
                             <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
-                              {formatPrice(calculateCartItemFinalPrice(item.productos.precio, 1, item.variations).finalSubtotal)}
+                              {formatPrice(getItemPricingDetails(item).finalSubtotal)}
                             </span>
                           </div>
                         </div>
@@ -820,10 +873,14 @@ export default function CartPage() {
         </Card>
       </motion.div>
     );
-  };
+  }, [
+    loadingItems, calculateItemFinalPrice, getItemPricingDetails, 
+    formatCartItemVariations, formatPrice, renderTaxBadges, 
+    handleRemoveItem, handleQuantityChange, t
+  ]);
 
-  // Renderizar grupo de categoría con diseño responsive
-  const renderCategoryGroup = (category: string, items: CartItem[]) => {
+  // Renderizar grupo de categoría con diseño responsive (memoizada)
+  const renderCategoryGroup = useCallback((category: string, items: CartItem[]) => {
     const categoryMap = getCategoryMap(t);
     const categoryInfo = categoryMap[category as keyof typeof categoryMap];
     const IconComponent = categoryInfo.icon;
@@ -858,7 +915,7 @@ export default function CartPage() {
         </div>
       </div>
     );
-  };
+  }, [t, renderCartItem]);
 
   // Estados de carga
   if (isLoading) {
@@ -873,9 +930,14 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 ">
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
-        <div className="max-w-6xl mx-auto">
+    <CartErrorBoundary
+      onError={(error, errorInfo) => {
+        console.error('🚨 Cart page error:', { error, errorInfo });
+      }}
+    >
+      <div className="min-h-screen bg-gray-50 ">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
+          <div className="max-w-6xl mx-auto">
           {/* Header responsive */}
           <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
@@ -984,7 +1046,7 @@ export default function CartPage() {
                     <div className="flex justify-between items-start">
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.shipping')}</span>
                       <div className="text-right">
-                        {renderShippingDisplay()}
+                        <ShippingStatus summary={summary} />
                       </div>
                     </div>
                     <div className="flex justify-between items-center">
@@ -1099,11 +1161,12 @@ export default function CartPage() {
         </div>
       </div>
       
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)}
-        redirectUrl="/cart"
-      />
-    </div>
+        <AuthModal 
+          isOpen={showAuthModal} 
+          onClose={() => setShowAuthModal(false)}
+          redirectUrl="/cart"
+        />
+      </div>
+    </CartErrorBoundary>
   );
 }
