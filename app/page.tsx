@@ -117,47 +117,47 @@ export default function Home() {
     setIsAuthModalOpen(false);
   };
 
-  // Función para formatear la descripción del hero con fecha destacada
+  // Función para formatear la descripción del hero con texto destacado
   const formatHeroDescription = () => {
     const description = t('landing.hero.description');
     
-    // Buscar y reemplazar las fechas en los diferentes idiomas
-    if (description.includes('28 de Agosto')) {
-      const parts = description.split('28 de Agosto');
+    // Buscar y reemplazar los días de la semana en los diferentes idiomas
+    if (description.includes('sábado y domingo')) {
+      const parts = description.split('sábado y domingo');
       return (
         <>
           {parts[0]}
           <span className="font-bold text-lg sm:text-xl md:text-2xl text-white">
-            28 de Agosto
+            sábado y domingo
           </span>
           {parts[1]}
         </>
       );
-    } else if (description.includes('August 28th')) {
-      const parts = description.split('August 28th');
+    } else if (description.includes('Saturday and Sunday')) {
+      const parts = description.split('Saturday and Sunday');
       return (
         <>
           {parts[0]}
           <span className="font-bold text-lg sm:text-xl md:text-2xl text-white">
-            August 28th
+            Saturday and Sunday
           </span>
           {parts[1]}
         </>
       );
-    } else if (description.includes('28 août')) {
-      const parts = description.split('28 août');
+    } else if (description.includes('samedi et dimanche')) {
+      const parts = description.split('samedi et dimanche');
       return (
         <>
           {parts[0]}
           <span className="font-bold text-lg sm:text-xl md:text-2xl text-white">
-            28 août
+            samedi et dimanche
           </span>
           {parts[1]}
         </>
       );
     }
     
-    // Si no encuentra ninguna fecha, devolver el texto normal
+    // Si no encuentra los días, devolver el texto normal
     return description;
   };
 

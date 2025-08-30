@@ -96,7 +96,7 @@ export default {
     hero: {
       title: "Descubre América Latina",
       subtitle: "Productos auténticos y experiencias únicas",
-      description: "Nuestra tienda en línea de productos exclusivos estará disponible el 28 de Agosto, trayendo los productos más auténticos de todas las Américas.",
+      description: "Este sábado y domingo, celebramos tu fidelidad. En todos los pedidos realizados al restaurante La Maison du Grand Poulet, el domicilio es completamente gratis en Rivière sur. *Aplican términos y condiciones.",
       cta: "Registrate Para Acceso Anticipado"
     },
     categories: {

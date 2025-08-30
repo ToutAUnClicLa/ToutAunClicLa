@@ -95,7 +95,7 @@ export default {
     hero: {
       title: "Découvrez l'Amérique Latine",
       subtitle: "Produits authentiques et expériences uniques",
-      description: "Notre boutique en ligne exclusive sera disponible le 28 août, apportant les produits les plus authentiques de toutes les Amériques.",
+      description: "Ce samedi et dimanche, nous célébrons votre fidélité. Pour toutes les commandes passées au restaurant La Maison du Grand Poulet, la livraison est entièrement gratuite à Rivière sur. *Des conditions s'appliquent.",
       cta: "S'inscrire pour l'accès anticipé"
     },
     categories: {

@@ -95,7 +95,7 @@ export default {
     hero: {
       title: "Discover Latin America",
       subtitle: "Authentic products and unique experiences",
-      description: "Our exclusive online store will be available on August 28th, bringing the most authentic products from all the Americas.",
+      description: "This Saturday and Sunday, we celebrate your loyalty. On all orders placed at La Maison du Grand Poulet restaurant, delivery is completely free in Rivière sur. *Terms and conditions apply.",
       cta: "Register for early access"
     },
     categories: {
