@@ -103,8 +103,13 @@ export function ProductPriceDisplay({
       {/* Precio base (siempre en azul) */}
       <div className="space-y-1">
         <div className={`font-bold text-blue-600 ${
-          variant === 'compact' ? 'text-sm' : 
-          variant === 'detailed' ? 'text-2xl' : 'text-lg'
+          // Si es "Precio a seleccionar", usar texto más pequeño
+          priceData.priceLabel === t('catalog.price.selectPrice') ? (
+            variant === 'compact' ? 'text-xs' : 'text-sm'
+          ) : (
+            variant === 'compact' ? 'text-sm' : 
+            variant === 'detailed' ? 'text-2xl' : 'text-lg'
+          )
         }`}>
           {priceData.priceLabel}
         </div>
