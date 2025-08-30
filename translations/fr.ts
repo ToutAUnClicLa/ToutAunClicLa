@@ -1224,7 +1224,8 @@ export default {
       finalPrice: "Prix final",
       includesTaxes: "Taxes incluses",
       plusTaxes: "Plus taxes",
-      from: "À partir de"
+      from: "À partir de",
+      selectPrice: "Sélectionner le prix"
     },
 
     // Variations de produit

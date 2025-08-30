@@ -51,10 +51,10 @@ export function ProductPriceDisplay({
     let hasVariations = product.hasVariations || false;
     let variationModifier = 0;
     
-    // If product has variations, show "Desde $X" pricing
+    // If product has variations, show translatable "Price to select" instead of "From $X"
     if (hasVariations && (!selectedVariations || selectedVariations.length === 0)) {
       const minPrice = product.minPrice || product.priceRange?.min || product.precio;
-      priceLabel = t('catalog.price.from') + ' ' + formatPrice(minPrice);
+      priceLabel = t('catalog.price.selectPrice');
       displayPrice = minPrice;
     } else if (selectedVariations && selectedVariations.length > 0) {
       // Calculate price with selected variations
@@ -109,18 +109,13 @@ export function ProductPriceDisplay({
           {priceData.priceLabel}
         </div>
         
-        {/* Variation indicator for products with variations */}
+        {/* Price range for variations if available */}
         {priceData.hasVariations && (!selectedVariations || selectedVariations.length === 0) && variant !== 'compact' && (
-          <div className="flex items-center gap-1">
-            <Badge variant="outline" className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 border-blue-200">
-              {t('catalog.variations.optionsAvailable')}
-            </Badge>
-            {product.priceRange && product.priceRange.max > product.priceRange.min && (
-              <span className="text-xs text-gray-500">
-                {formatPrice(product.priceRange.min)} - {formatPrice(product.priceRange.max)}
-              </span>
-            )}
-          </div>
+          product.priceRange && product.priceRange.max > product.priceRange.min && (
+            <div className="text-xs text-gray-500 mt-1">
+              Rango: {formatPrice(product.priceRange.min)} - {formatPrice(product.priceRange.max)}
+            </div>
+          )
         )}
         
         {/* Variation breakdown for selected variations */}

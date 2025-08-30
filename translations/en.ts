@@ -1239,7 +1239,8 @@ export default {
       finalPrice: "Final price",
       includesTaxes: "Includes taxes",
       plusTaxes: "Plus taxes",
-      from: "From"
+      from: "From",
+      selectPrice: "Select price"
     },
 
     // Product variations

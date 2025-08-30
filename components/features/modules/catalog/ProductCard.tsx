@@ -215,11 +215,6 @@ export function ProductCard({
                         -{productData.discountPercentage}%
                       </Badge>
                     )}
-                    {productData.hasVariations && (
-                      <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs px-2 py-1 flex items-center gap-1 font-medium shadow-sm">
-                        ⚙️ {product.variations?.length || 1} opciones
-                      </Badge>
-                    )}
                   </div>
                 )}
 
@@ -273,14 +268,13 @@ export function ProductCard({
   // Versión por defecto y detallada
   return (
     <>
-      <motion.div
-        whileHover={{ y: -4 }}
-        transition={{ duration: 0.2 }}
-        className={cn("group cursor-pointer h-full", className)}
-        onClick={handleCardClick}
-      >
-        <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-          <Link href={getProductUrl()}>
+      <Link href={getProductUrl()} className="block h-full">
+        <motion.div
+          whileHover={{ y: -4 }}
+          transition={{ duration: 0.2 }}
+          className={cn("group cursor-pointer h-full", className)}
+        >
+          <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col">
             <div className="relative aspect-square overflow-hidden">
               <Image
                 src={getProductImageUrl(product.imagen_principal, 'medium')}
@@ -345,27 +339,22 @@ export function ProductCard({
                 </div>
               )}
             </div>
-          </Link>
 
-          <CardContent className="p-2 sm:p-4 flex flex-col flex-grow">
-            <div className="flex-grow space-y-1 sm:space-y-2">
-              <Link href={getProductUrl()}>
+            <CardContent className="p-2 sm:p-4 flex flex-col flex-grow">
+              <div className="flex-grow space-y-1 sm:space-y-2">
                 <h3 className="font-semibold text-gray-900 line-clamp-2 hover:text-blue-600 transition-colors text-xs sm:text-sm lg:text-base leading-tight min-h-[2rem] sm:min-h-[2.5rem]">
                   {product.nombre}
                 </h3>
-              </Link>
 
-              {/* Mostrar descripción siempre para variantes no compactas */}
-              {(variant === 'default' || variant === 'detailed' || variant === 'list') && showDescription && (
-                <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                  {product.descripcion || 'Sin descripción disponible'}
-                </p>
-              )}
+                {/* Mostrar descripción siempre para variantes no compactas */}
+                {(variant === 'default' || variant === 'detailed' || variant === 'list') && showDescription && (
+                  <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                    {product.descripcion || 'Sin descripción disponible'}
+                  </p>
+                )}
+              </div>
 
-
-            </div>
-
-            <div className="mt-auto space-y-2 sm:space-y-3">
+              <div className="mt-auto space-y-2 sm:space-y-3">
               {/* Precio y estado del carrito */}
               <div className="flex items-center justify-between">
                 <ProductPriceDisplay 
@@ -474,6 +463,7 @@ export function ProductCard({
           </CardContent>
         </Card>
       </motion.div>
+      </Link>
 
       <AuthModal 
         isOpen={isAuthModalOpen} 
