@@ -612,6 +612,20 @@ export default function CartPage() {
       console.log('Session ID:', data.sessionId);
       console.log('URL de Stripe:', data.url);
       
+      // 🔍 FULL DEBUG - Mostrar todo el orderSummary que regresa del backend
+      console.log('📦 COMPLETE orderSummary from backend:', JSON.stringify(data.orderSummary, null, 2));
+      
+      // ✨ NEW - Log específico para promociones de Maison de Poulet
+      if (data.orderSummary?.promotionApplied) {
+        console.log('🎉 Promoción Maison de Poulet detectada en Stripe checkout!', {
+          promotionApplied: data.orderSummary.promotionApplied,
+          originalShippingCost: data.orderSummary.originalShippingCost,
+          finalShippingCost: data.orderSummary.shippingCost,
+          shippingDiscount: data.orderSummary.shippingDiscount,
+          totalSavings: data.orderSummary.savings
+        });
+      }
+      
       if (data.orderSummary?.coupon) {
         console.log('🎟️ Cupón procesado en Stripe:', {
           codigo: data.orderSummary.coupon.codigo,

@@ -613,6 +613,74 @@ export function useCart(options: UseCartOptions = {}) {
     return item?.cantidad || 0;
   }, [items]);
 
+  // ✨ NEW PROMOTION FUNCTIONS - Based on implementation guide
+  
+  // Detectar promoción Maison de Poulet
+  const hasMaisonPouletPromotion = useCallback((): boolean => {
+    const hasPromotion = Boolean(
+      summary?.promotionApplied && 
+      summary?.shippingDiscount && summary.shippingDiscount > 0
+    );
+    
+    // 🔍 DEBUG: Log para verificar promoción
+    console.log('🔍 useCart - hasMaisonPouletPromotion:', {
+      promotionApplied: summary?.promotionApplied,
+      shippingDiscount: summary?.shippingDiscount,
+      shippingCost: summary?.shippingCost,
+      originalShippingCost: summary?.originalShippingCost,
+      freeShippingApplied: summary?.freeShippingApplied,
+      shippingMessage: summary?.shippingMessage,
+      hasPromotion: hasPromotion,
+      fullSummary: summary
+    });
+    
+    return hasPromotion;
+  }, [summary?.promotionApplied, summary?.shippingDiscount, summary]);
+
+  // Obtener detalles de la promoción
+  const getPromotionDetails = useCallback(() => {
+    if (!hasMaisonPouletPromotion()) return null;
+    
+    return {
+      isActive: true,
+      discount: summary?.shippingDiscount || 0,
+      originalCost: summary?.originalShippingCost || 0,
+      message: summary?.shippingMessage || 'Promoción Maison de Poulet',
+      type: 'maison_poulet_riviera' as const
+    };
+  }, [summary?.shippingDiscount, summary?.originalShippingCost, summary?.shippingMessage, hasMaisonPouletPromotion]);
+
+  // Obtener ahorros totales (cupones + promoción)
+  const getTotalSavings = useCallback((): number => {
+    const shippingDiscount = summary?.shippingDiscount || 0;
+    const couponDiscount = summary?.savings || 0;
+    return shippingDiscount + couponDiscount;
+  }, [summary?.shippingDiscount, summary?.savings]);
+
+  // Obtener estado completo del envío
+  const getShippingStatus = useCallback(() => {
+    if (!summary) {
+      return { 
+        isFree: false, 
+        cost: 0, 
+        hasPromotion: false, 
+        hasThresholdFree: false 
+      };
+    }
+
+    const isFree = (summary.shippingCost || 0) === 0;
+    const hasPromotion = Boolean(summary.promotionApplied);
+    const hasThresholdFree = (summary.subtotal || 0) >= (summary.shippingThreshold || 200);
+
+    return {
+      isFree,
+      cost: summary.shippingCost || 0,
+      hasPromotion,
+      hasThresholdFree,
+      message: summary.shippingMessage
+    };
+  }, [summary]);
+
   // 🚨 Backend data completeness validation
   const backendDataQuality = useMemo(() => {
     if (!summary) {
@@ -786,6 +854,12 @@ export function useCart(options: UseCartOptions = {}) {
     // Utilidades memoizadas
     isInCart,
     getProductQuantity,
+    
+    // ✨ NEW PROMOTION FUNCTIONS
+    hasMaisonPouletPromotion,
+    getPromotionDetails,
+    getTotalSavings,
+    getShippingStatus,
     
     // Estado derivado memoizado
     ...derivedState,

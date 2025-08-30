@@ -107,13 +107,15 @@ export interface CartSummary {
   totalConsigne?: number;
   totalTaxes?: number;
   shippingCost?: number;
-  originalShippingCost?: number;
+  originalShippingCost?: number;  // ✨ NEW - Original shipping cost before promotion
+  shippingDiscount?: number;       // ✨ NEW - Shipping discount amount from promotion
   shippingThreshold?: number;
   totalBeforeDiscount?: number;
   total: number;
   discount?: number;
   savings?: number;
   freeShippingApplied?: boolean;
+  promotionApplied?: boolean;      // ✨ NEW - Whether Maison de Poulet promotion is active
   // New fields for backend shipping calculation system
   shippingMessage?: string | null;
   needsAddress?: boolean;
@@ -186,6 +188,20 @@ export interface CartWithCouponResponse extends CartResponse {
     savings?: number;
     shippingMessage?: string | null;
     needsAddress?: boolean;
+  };
+}
+
+// ✨ NEW - Stripe checkout response interface with promotion fields
+export interface StripeCheckoutResponse {
+  sessionId: string;
+  url: string;
+  orderSummary: {
+    originalShippingCost: string;
+    shippingCost: string;
+    shippingDiscount: string;
+    promotionApplied: boolean;
+    savings: string;
+    total: string;
   };
 }
 
