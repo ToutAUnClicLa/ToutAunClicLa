@@ -479,7 +479,7 @@ export default function CartPage() {
     if (appliedCoupon) {
       const couponCode = appliedCoupon.code || appliedCoupon.codigo;
       if (!couponCode) {
-        toast.error('Error con el cupón aplicado. Por favor, aplica el cupón nuevamente.');
+        toast.error(t('cart.errors.couponError'));
         console.error('❌ Cupón aplicado sin código válido:', appliedCoupon);
         return;
       }
@@ -492,7 +492,7 @@ export default function CartPage() {
       // Llamar directamente al backend para crear checkout session
       const token = localStorage.getItem('auth_token');
       if (!token) {
-        toast.error('Sesión expirada. Por favor inicia sesión nuevamente');
+        toast.error(t('cart.errors.sessionExpired'));
         setShowAuthModal(true);
         return;
       }
@@ -652,7 +652,7 @@ export default function CartPage() {
           key="non-taxable"
           className="bg-green-100 text-green-700 border-green-200 text-xs"
         >
-          Non Taxable
+          {t('cart.nonTaxable')}
         </Badge>
       );
     }
@@ -753,12 +753,12 @@ export default function CartPage() {
                           {expandedVariations.has(item.id) ? (
                             <>
                               <ChevronUp className="w-3 h-3" />
-                              Ocultar detalles
+                              {t('cart.variationDetails.hideDetails')}
                             </>
                           ) : (
                             <>
                               <ChevronDown className="w-3 h-3" />
-                              Ver detalles de precio
+                              {t('cart.variationDetails.showDetails')}
                             </>
                           )}
                         </button>
@@ -785,7 +785,7 @@ export default function CartPage() {
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <span className="text-xs text-gray-500">
-                              Personalizado ({item.cantidad} × {formatPrice(item.productos.precio)})
+                              {t('cart.variationDetails.customized')} ({item.cantidad} × {formatPrice(item.productos.precio)})
                             </span>
                             <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
                               {formatPrice(getItemPricingDetails(item).finalSubtotal)}
@@ -1035,9 +1035,9 @@ export default function CartPage() {
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.subtotal')}</span>
                       <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displaySubtotal)}</span>
                     </div>
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start gap-8">
                       <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.shipping')}</span>
-                      <div className="text-right">
+                      <div className="text-right text-sm ">
                         <ShippingStatus summary={summary} />
                       </div>
                     </div>
@@ -1070,7 +1070,7 @@ export default function CartPage() {
                       <div className="flex justify-between items-center text-green-600">
                         <span className="text-sm sm:text-base font-medium">
                           {appliedCoupon.type === 'free_shipping' 
-                            ? 'Ahorro en envío' 
+                            ? t('cart.checkout.savingsShipping') 
                             : t('cart.summary.coupon.discount')}
                         </span>
                         <span className="text-sm sm:text-base font-medium">
@@ -1128,10 +1128,10 @@ export default function CartPage() {
                       {checkoutLoading ? (
                         <span className="flex items-center justify-center gap-2">
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          Redirigiendo a Stripe...
+                          {t('cart.checkout.redirectingToStripe')}
                         </span>
                       ) : !isAuthenticated ? t('cart.summary.authRequired') : 
-                       isEmpty ? 'Carrito vacío' :
+                       isEmpty ? t('cart.checkout.emptyCart') :
                        needsAddress ? t('cart.summary.addressRequired') :
                        !hasValidAddress ? t('cart.summary.addressRequired') : 
                        !deliveryOptions.isValid ? t('cart.delivery.error') : 

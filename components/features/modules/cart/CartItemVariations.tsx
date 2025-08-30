@@ -160,7 +160,7 @@ export function CartItemVariations({
             
             {variationData.hasDiscounts && (
               <div className="flex justify-between items-center text-red-600">
-                <span>Descuentos:</span>
+                <span>{t('cart.variationDetails.discounts')}:</span>
                 <span className="font-medium">
                   {formatPrice(variationData.totalModifier)}
                 </span>

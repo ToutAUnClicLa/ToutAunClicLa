@@ -19,24 +19,13 @@ export function ShippingStatus({ summary, className = '' }: ShippingStatusProps)
   // ✅ MEJORA: Manejo completo de estados de shipping según backend
   if (summary.needsAddress) {
     return (
-      <div className={`bg-amber-50 border border-amber-200 rounded-lg p-4 ${className}`}>
-        <div className="flex items-start gap-3">
+      <div className={`bg-amber-50 border border-amber-200 rounded-lg p-2 ${className}`}>
+        <div className="flex items-start justify-center">
           <MapPin className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <h3 className="font-medium text-amber-800 mb-1">
               {t('cart.summary.addressRequiredForShipping')}
             </h3>
-            <p className="text-sm text-amber-700 mb-3">
-              {summary.shippingMessage || 'Necesitamos tu dirección para calcular el costo de envío'}
-            </p>
-            <Button 
-              onClick={() => router.push('/profile/addresses')}
-              className="bg-amber-600 hover:bg-amber-700 text-white"
-              size="sm"
-            >
-              <MapPin className="h-4 w-4 mr-2" />
-              Configurar dirección
-            </Button>
           </div>
         </div>
       </div>
@@ -52,7 +41,7 @@ export function ShippingStatus({ summary, className = '' }: ShippingStatusProps)
           <div className="flex-1">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-orange-800">
-                Envío estimado
+                {t('shipping.estimated')}
               </span>
               <span className="text-sm font-semibold text-orange-900">
                 {formatPrice(summary.shippingCost || 0)}

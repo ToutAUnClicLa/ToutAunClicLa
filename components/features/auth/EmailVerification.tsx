@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { AlertCircle, CheckCircle, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface EmailVerificationProps {
   email: string;
@@ -17,6 +18,7 @@ interface EmailVerificationProps {
 export function EmailVerification({ email, onSuccess }: EmailVerificationProps) {
   const router = useRouter();
   const { verifyEmail, resendVerification } = useAuth();
+  const { t } = useTranslation();
   const [verificationCode, setVerificationCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -35,7 +37,7 @@ export function EmailVerification({ email, onSuccess }: EmailVerificationProps) 
 
     try {
       await verifyEmail(verificationCode, email);
-      toast.success('Email verificado correctamente. ¡Bienvenido!');
+      toast.success(t('notifications.emailVerifiedSuccess'));
       
       if (onSuccess) {
         onSuccess();
@@ -56,10 +58,10 @@ export function EmailVerification({ email, onSuccess }: EmailVerificationProps) 
 
     try {
       await resendVerification(email);
-      toast.success('Código reenviado correctamente');
+      toast.success(t('notifications.codeResentSuccess'));
     } catch (err: any) {
       console.error('Error al reenviar código:', err);
-      toast.error('Error al reenviar código');
+      toast.error(t('notifications.codeResentError'));
     } finally {
       setIsResending(false);
     }

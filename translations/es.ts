@@ -15,7 +15,13 @@ export default {
     no: "No",
     update: "Actualizar",
     create: "Crear",
-    dateNotAvailable: "Fecha no disponible"
+    dateNotAvailable: "Fecha no disponible",
+    deleting: "Eliminando...",
+    saving: "Guardando...",
+    editing: "Editando...",
+    next: "Siguiente",
+    previous: "Anterior",
+    continue: "Continuar"
   },
   nav: {
     home: "Inicio",
@@ -525,7 +531,9 @@ export default {
         variationCosts: "Opciones adicionales",
         totalWithVariations: "Total personalizado",
         variationDetails: "Detalles de personalización"
-      }
+      },
+      customizeProduct: "Personaliza tu producto",
+      addCustomized: "Agregar personalizado"
     },
 
     // Impuestos
@@ -1227,7 +1235,13 @@ export default {
         error: "Código inválido",
         expired: "Código expirado",
         usageLimitReached: "Ya has usado este cupón el máximo número de veces permitido",
-        success: "¡Cupón aplicado correctamente!"
+        success: "¡Cupón aplicado correctamente!",
+        removedSuccess: "Cupón removido",
+        removeError: "Error al remover cupón",
+        rateLimitError: "Demasiados intentos. Espera 10 minutos e intenta nuevamente.",
+        freeShippingDescription: "Envío gratis aplicado (¡Sin costo de domicilio!)",
+        discountDescription: "{percent}% de descuento sobre el total",
+        filteredContent: "⚠ Contenido filtrado"
       }
     },
     delivery: {
@@ -1256,7 +1270,7 @@ export default {
       autoNextDay: "Entrega automática para mañana (después de las 8:00 PM)",
       noHoursToday: "No hay horarios disponibles hoy",
       suggestTomorrow: "¿Programar para mañana?",
-      alternativeHours: "Horarios disponibles:",
+      alternativeHoursLabel: "Horarios disponibles:",
       contentFiltered: "Contenido filtrado",
       methods: {
         puerta: {
@@ -1282,6 +1296,12 @@ export default {
         notesEmpty: "Las notas no pueden estar vacías o contener solo espacios"
       },
       success: "Opciones de entrega actualizadas",
+      schedule: "Entregas disponibles de 11:00 AM a 9:00 PM todos los días",
+      alternativeHours: {
+        title: "Horarios disponibles:",
+        suggestTomorrow: "No hay horarios disponibles hoy. ¿Programar para mañana?",
+        acceptTomorrow: "Programar para mañana"
+      },
       error: "Error al actualizar opciones de entrega"
     },
     success: {
@@ -1297,13 +1317,163 @@ export default {
       addAddressRequired: "Agrega una dirección para calcular el envío",
       emptyCart: "Tu carrito está vacío",
       deliveryTimeRequired: "Debes seleccionar una hora de entrega",
-      deliveryMethodRequired: "Debes seleccionar un método de entrega"
+      deliveryMethodRequired: "Debes seleccionar un método de entrega",
+      sessionExpired: "Sesión expirada. Por favor inicia sesión nuevamente",
+      couponError: "Error con el cupón aplicado. Por favor, aplica el cupón nuevamente."
+    },
+    nonTaxable: "Sin impuestos",
+    variationDetails: {
+      hideDetails: "Ocultar detalles",
+      showDetails: "Ver detalles de precio",
+      customized: "Personalizado",
+      discounts: "Descuentos"
+    },
+    checkout: {
+      redirectingToStripe: "Redirigiendo a Stripe...",
+      emptyCart: "Carrito vacío",
+      savingsShipping: "Ahorro en envío"
+    },
+    notifications: {
+      networkError: "Sin conexión a internet. Verifica tu conexión.",
+      loadError: "Error al cargar el carrito",
+      authRequired: "Debes iniciar sesión para usar esta función",
+      addToCartAuthRequired: "Debes iniciar sesión para agregar productos al carrito",
+      clearCartAuthRequired: "Debes iniciar sesión para limpiar el carrito",
+      applyCouponAuthRequired: "Debes iniciar sesión para aplicar cupones",
+      removeCouponAuthRequired: "Debes iniciar sesión para remover cupones",
+      updateDeliveryAuthRequired: "Debes iniciar sesión para configurar opciones de entrega",
+      productNotFound: "Producto no encontrado",
+      addToCartError: "Error al agregar producto al carrito",
+      addToCartAuthError: "Debes iniciar sesión para agregar productos",
+      clearCartError: "Error al limpiar carrito",
+      couponUsageLimit: "Ya has usado este cupón el máximo número de veces permitido.",
+      couponInvalid: "Código de cupón inválido",
+      couponExpired: "El cupón ha expirado",
+      couponRateLimit: "Demasiados intentos. Espera 10 minutos e intenta nuevamente.",
+      couponApplyError: "Error al aplicar el cupón. Intenta nuevamente.",
+      deliveryTimeError: "La hora de entrega debe estar entre 11:00 AM y 8:00 PM",
+      deliveryMethodError: "Método de entrega inválido",
+      deliveryUpdateError: "Error al actualizar opciones de entrega",
+      deliveryUpdateSuccess: "Opciones de entrega actualizadas",
+      couponRemovedSuccess: "Cupón removido exitosamente",
+      noCouponApplied: "No hay cupón aplicado",
+      couponRemoveError: "Error al remover el cupón. Intenta nuevamente."
     },
     auth: {
       title: "Inicia sesión para continuar",
       description: "Para proceder con tu compra, necesitas iniciar sesión o crear una cuenta",
       login: "Iniciar sesión",
       register: "Crear cuenta"
+    }
+  },
+
+  // Pedidos
+  orders: {
+    title: "Mis Pedidos",
+    description: "Historial de compras",
+    loading: "Cargando pedidos...",
+    totalOrders: "Total de Pedidos",
+    searchPlaceholder: "Buscar por número de pedido o producto...",
+    filterByStatus: "Filtrar por estado",
+    allStatuses: "Todos los estados",
+    statuses: {
+      pendiente: "Pendiente",
+      pagado: "Pagado",
+      procesando: "Procesando",
+      enviado: "Enviado",
+      entregado: "Entregado",
+      cancelado: "Cancelado",
+      reembolsado: "Reembolsado"
+    },
+    actions: {
+      refresh: "Actualizar",
+      retry: "Reintentar",
+      viewDetails: "Ver Detalles",
+      trackShipping: "Rastrear Envío",
+      loadMore: "Cargar más pedidos",
+      exploreProducts: "Explorar Productos",
+      continueShopping: "Seguir Comprando"
+    },
+    empty: {
+      noResults: "No se encontraron pedidos",
+      noOrders: "No hay pedidos aún",
+      noResultsDescription: "Intenta cambiar los términos de búsqueda",
+      noOrdersDescription: "Cuando realices tu primera compra, aparecerá aquí"
+    },
+    productQuantity: "Cantidad",
+    products: "productos",
+    moreProducts: "productos más",
+    loadingText: "Cargando...",
+    quickLinks: {
+      title: "Enlaces rápidos",
+      myAddresses: "Mis Direcciones",
+      support: "Soporte"
+    },
+    detail: {
+      invalidId: "ID de pedido inválido",
+      downloadInvoice: "Función de descarga próximamente",
+      cancelOrder: "Función de cancelación próximamente",
+      trackOrder: "Función de rastreo próximamente"
+    }
+  },
+
+  // Envío
+  shipping: {
+    estimated: "Envío estimado"
+  },
+
+  // Notificaciones generales (para evitar duplicados)
+  notifications: {
+    // Errores comunes
+    loadError: "Error al cargar",
+    saveError: "Error al guardar", 
+    deleteError: "Error al eliminar",
+    updateError: "Error al actualizar",
+    networkError: "Error de conexión",
+    unexpectedError: "Error inesperado",
+    
+    // Éxitos comunes
+    saveSuccess: "Guardado correctamente",
+    deleteSuccess: "Eliminado correctamente", 
+    updateSuccess: "Actualizado correctamente",
+    
+    // Autenticación
+    authRequired: "Debes iniciar sesión para usar esta función",
+    accountVerificationRequired: "Debes verificar tu cuenta para realizar esta acción",
+    
+    // Estados
+    loading: "Cargando...",
+    processing: "Procesando...",
+    
+    // Acciones comunes
+    actionError: "Error al realizar la acción",
+    actionSuccess: "Acción completada correctamente",
+    
+    // Validación
+    selectAllOptions: "Por favor selecciona todas las opciones requeridas",
+    selectRating: "Por favor selecciona una calificación",
+    
+    // Específicas del sistema
+    commentDeletedSuccess: "Comentario eliminado exitosamente",
+    reviewSubmitSuccess: "Reseña enviada exitosamente",
+    reviewSubmitError: "Error al enviar la reseña",
+    emailVerifiedSuccess: "Email verificado correctamente. ¡Bienvenido!",
+    codeResentSuccess: "Código reenviado correctamente",
+    codeResentError: "Error al reenviar código",
+    passwordUpdatedSuccess: "Contraseña actualizada correctamente",
+    passwordResetError: "Error al restablecer la contraseña",
+    userDataLoadError: "Error al cargar los datos del usuario",
+    paymentCanceled: "Pago cancelado - Tu carrito sigue guardado",
+    perfectContinue: "¡Perfecto! Ahora puedes continuar",
+    optionSelectionError: "Error con las opciones seleccionadas",
+    addedToCartWith: "agregado al carrito con",
+    
+    // Mensajes de éxito y error específicos
+    success: {
+      reviewDeleted: "Comentario eliminado exitosamente"
+    },
+    error: {
+      reviewDeleteError: "Error al eliminar el comentario"
     }
   },
 
@@ -1350,11 +1520,13 @@ export default {
       explore: "Explorar"
     },
     messages: {
-      added: "Agregado a favoritos",
-      removed: "Producto eliminado de favoritos",
+      added: "Producto agregado a favoritos",
+      removed: "Producto removido de favoritos",
       addedToCart: "Producto agregado al carrito",
-      errorAdd: "Error al agregar al carrito",
-      errorRemove: "Error al eliminar de favoritos",
+      errorAdd: "Error al agregar a favoritos",
+      errorRemove: "Error al remover de favoritos",
+      errorManage: "Error al gestionar favoritos",
+      loadError: "Error al cargar favoritos",
       outOfStock: "Producto agotado",
       authRequired: "Debes iniciar sesión para ver favoritos"
     },
@@ -1417,13 +1589,13 @@ export default {
     
     // Mensajes de éxito
     success: {
-      created: "Dirección creada",
+      created: "Dirección agregada correctamente",
       createdDesc: "La dirección se ha creado correctamente",
-      updated: "Dirección actualizada", 
+      updated: "Dirección actualizada correctamente", 
       updatedDesc: "La dirección se ha actualizada correctamente",
-      deleted: "Dirección eliminada",
+      deleted: "Dirección eliminada correctamente",
       deletedDesc: "La dirección se ha eliminado correctamente",
-      primarySet: "Dirección principal establecida",
+      primarySet: "Dirección principal actualizada correctamente",
       primarySetDesc: "La dirección se ha marcado como principal"
     },
     
@@ -1473,16 +1645,33 @@ export default {
       verifyButton: "Verificar",
       verifying: "Verificando...",
       resendButton: "¿No recibiste el código? Reenviar",
-      resending: "Reenviando..."
+      resending: "Reenviando...",
+      cancel: "Cancelar"
     },
     messages: {
       success: "¡Email verificado correctamente!",
+      successDescription: "Tu cuenta ha sido verificada correctamente",
       error: "Código de verificación inválido",
-      resent: "Código reenviado a tu email",
-      resendError: "Error al reenviar el código",
+      resent: "Código enviado",
+      resentDescription: "Revisa tu correo electrónico para el nuevo código de verificación",
+      resendError: "Error al enviar código",
+      resendErrorDescription: "No pudimos enviar el código de verificación",
       expired: "El código ha expirado. Solicita uno nuevo",
       required: "Ingresa el código de 6 dígitos",
       invalidLength: "El código debe tener 6 dígitos"
+    },
+    status: {
+      verified: "Email verificado",
+      verifiedDescription: "Tu cuenta está completamente verificada",
+      pending: "Verificación pendiente",
+      pendingDescription: "Para acceder a todas las funciones, verifica tu correo electrónico",
+      alreadyHaveCode: "Ya tengo el código",
+      resendCode: "Reenviar código",
+      sending: "Enviando..."
+    },
+    modal: {
+      title: "Verificar email",
+      instruction: "Ingresa el código de 6 dígitos enviado a:"
     }
   },
 
@@ -1726,5 +1915,21 @@ export default {
     loading: "Cargando...",
     loadingResults: "Cargando resultados...",
     searchResultsFor: "para \"{search}\""
+  },
+
+  // Reseñas
+  reviews: {
+    noReviews: "No hay reseñas todavía",
+    anonymousUser: "Usuario anónimo",
+    deleteComment: "Eliminar comentario",
+    reportComment: "Reportar comentario",
+    helpful: "Útil",
+    deleteConfirmTitle: "¿Eliminar comentario?",
+    deleteConfirmDescription: "Esta acción no se puede deshacer. El comentario será eliminado permanentemente.",
+    loginToReview: "Inicia sesión para dejar una reseña",
+    yourRating: "Tu calificación",
+    yourComment: "Tu comentario",
+    commentPlaceholder: "Comparte tu experiencia con este producto...",
+    submitReview: "Enviar reseña"
   }
 };

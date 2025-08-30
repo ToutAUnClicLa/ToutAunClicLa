@@ -15,7 +15,13 @@ export default {
     no: "No",
     update: "Update",
     create: "Create",
-    dateNotAvailable: "Date not available"
+    dateNotAvailable: "Date not available",
+    deleting: "Deleting...",
+    saving: "Saving...",
+    editing: "Editing...",
+    next: "Next",
+    previous: "Previous",
+    continue: "Continue"
   },
   nav: {
     home: "Home",
@@ -276,7 +282,13 @@ export default {
         error: "Invalid code",
         expired: "Code expired",
         usageLimitReached: "You have already used this coupon the maximum number of times allowed",
-        success: "Coupon applied successfully!"
+        success: "Coupon applied successfully!",
+        removedSuccess: "Coupon removed",
+        removeError: "Error removing coupon",
+        rateLimitError: "Too many attempts. Please wait 10 minutes and try again.",
+        freeShippingDescription: "Free shipping applied (No delivery cost!)",
+        discountDescription: "{percent}% discount on total",
+        filteredContent: "⚠ Content filtered"
       }
     },
     delivery: {
@@ -305,7 +317,7 @@ export default {
       autoNextDay: "Automatic next day delivery (after 8:00 PM)",
       noHoursToday: "No delivery slots available today",
       suggestTomorrow: "Schedule for tomorrow?",
-      alternativeHours: "Available hours:",
+      alternativeHoursLabel: "Available hours:",
       contentFiltered: "Content filtered",
       methods: {
         puerta: {
@@ -331,6 +343,12 @@ export default {
         notesEmpty: "Notes cannot be empty or contain only spaces"
       },
       success: "Delivery options updated",
+      schedule: "Deliveries available from 11:00 AM to 9:00 PM daily",
+      alternativeHours: {
+        title: "Available hours:",
+        suggestTomorrow: "No delivery slots available today. Schedule for tomorrow?",
+        acceptTomorrow: "Schedule for tomorrow"
+      },
       error: "Error updating delivery options"
     },
     success: {
@@ -346,7 +364,47 @@ export default {
       addAddressRequired: "Please add an address to calculate shipping",
       emptyCart: "Your cart is empty",
       deliveryTimeRequired: "You must select a delivery time",
-      deliveryMethodRequired: "You must select a delivery method"
+      deliveryMethodRequired: "You must select a delivery method",
+      sessionExpired: "Session expired. Please log in again",
+      couponError: "Error with applied coupon. Please apply the coupon again."
+    },
+    nonTaxable: "Non Taxable",
+    variationDetails: {
+      hideDetails: "Hide details",
+      showDetails: "View price details",
+      customized: "Customized",
+      discounts: "Discounts"
+    },
+    checkout: {
+      redirectingToStripe: "Redirecting to Stripe...",
+      emptyCart: "Empty cart",
+      savingsShipping: "Shipping savings"
+    },
+    notifications: {
+      networkError: "No internet connection. Check your connection.",
+      loadError: "Error loading cart",
+      authRequired: "You must sign in to use this feature",
+      addToCartAuthRequired: "You must sign in to add products to cart",
+      clearCartAuthRequired: "You must sign in to clear cart",
+      applyCouponAuthRequired: "You must sign in to apply coupons",
+      removeCouponAuthRequired: "You must sign in to remove coupons",
+      updateDeliveryAuthRequired: "You must sign in to configure delivery options",
+      productNotFound: "Product not found",
+      addToCartError: "Error adding product to cart",
+      addToCartAuthError: "You must sign in to add products",
+      clearCartError: "Error clearing cart",
+      couponUsageLimit: "You have already used this coupon the maximum number of times allowed.",
+      couponInvalid: "Invalid coupon code",
+      couponExpired: "Coupon has expired",
+      couponRateLimit: "Too many attempts. Wait 10 minutes and try again.",
+      couponApplyError: "Error applying coupon. Try again.",
+      deliveryTimeError: "Delivery time must be between 11:00 AM and 8:00 PM",
+      deliveryMethodError: "Invalid delivery method",
+      deliveryUpdateError: "Error updating delivery options",
+      deliveryUpdateSuccess: "Delivery options updated",
+      couponRemovedSuccess: "Coupon removed successfully",
+      noCouponApplied: "No coupon applied",
+      couponRemoveError: "Error removing coupon. Try again."
     },
     auth: {
       title: "Sign in to continue",
@@ -399,11 +457,13 @@ export default {
       explore: "Explore"
     },
     messages: {
-      added: "Added to favorites",
+      added: "Product added to favorites",
       removed: "Product removed from favorites",
       addedToCart: "Product added to cart",
-      errorAdd: "Error adding to cart",
+      errorAdd: "Error adding to favorites",
       errorRemove: "Error removing from favorites",
+      errorManage: "Error managing favorites",
+      loadError: "Error loading favorites",
       outOfStock: "Product out of stock",
       authRequired: "You must sign in to view favorites"
     },
@@ -469,13 +529,13 @@ export default {
     
     // Success messages
     success: {
-      created: "Address created",
+      created: "Address added successfully",
       createdDesc: "The address has been created successfully",
-      updated: "Address updated",
+      updated: "Address updated successfully",
       updatedDesc: "The address has been updated successfully", 
-      deleted: "Address deleted",
+      deleted: "Address deleted successfully",
       deletedDesc: "The address has been deleted successfully",
-      primarySet: "Primary address set",
+      primarySet: "Primary address updated successfully",
       primarySetDesc: "The address has been marked as primary"
     },
     
@@ -525,16 +585,143 @@ export default {
       verifyButton: "Verify",
       verifying: "Verifying...",
       resendButton: "Didn't receive the code? Resend",
-      resending: "Resending..."
+      resending: "Resending...",
+      cancel: "Cancel"
     },
     messages: {
       success: "Email verified successfully!",
+      successDescription: "Your account has been successfully verified",
       error: "Invalid verification code",
-      resent: "Code resent to your email",
-      resendError: "Error resending code",
+      resent: "Code sent",
+      resentDescription: "Check your email for the new verification code",
+      resendError: "Error sending code",
+      resendErrorDescription: "We couldn't send the verification code",
       expired: "Code has expired. Request a new one",
       required: "Enter the 6-digit code",
       invalidLength: "Code must be 6 digits"
+    },
+    status: {
+      verified: "Email verified",
+      verifiedDescription: "Your account is fully verified",
+      pending: "Verification pending",
+      pendingDescription: "To access all features, verify your email",
+      alreadyHaveCode: "I already have the code",
+      resendCode: "Resend code",
+      sending: "Sending..."
+    },
+    modal: {
+      title: "Verify email",
+      instruction: "Enter the 6-digit code sent to:"
+    }
+  },
+
+  // Orders
+  orders: {
+    title: "My Orders",
+    description: "Purchase history",
+    loading: "Loading orders...",
+    totalOrders: "Total Orders",
+    searchPlaceholder: "Search by order number or product...",
+    filterByStatus: "Filter by status",
+    allStatuses: "All statuses",
+    statuses: {
+      pendiente: "Pending",
+      pagado: "Paid",
+      procesando: "Processing",
+      enviado: "Shipped",
+      entregado: "Delivered",
+      cancelado: "Cancelled",
+      reembolsado: "Refunded"
+    },
+    actions: {
+      refresh: "Refresh",
+      retry: "Retry",
+      viewDetails: "View Details",
+      trackShipping: "Track Shipping",
+      loadMore: "Load more orders",
+      exploreProducts: "Explore Products",
+      continueShopping: "Continue Shopping"
+    },
+    empty: {
+      noResults: "No orders found",
+      noOrders: "No orders yet",
+      noResultsDescription: "Try changing the search terms",
+      noOrdersDescription: "When you make your first purchase, it will appear here"
+    },
+    productQuantity: "Quantity",
+    products: "products",
+    moreProducts: "more products",
+    loadingText: "Loading...",
+    quickLinks: {
+      title: "Quick links",
+      myAddresses: "My Addresses",
+      support: "Support"
+    },
+    detail: {
+      invalidId: "Invalid order ID",
+      downloadInvoice: "Download function coming soon",
+      cancelOrder: "Cancel function coming soon",
+      trackOrder: "Tracking function coming soon"
+    }
+  },
+
+  // Shipping
+  shipping: {
+    estimated: "Estimated shipping"
+  },
+
+  // General notifications (to avoid duplicates)
+  notifications: {
+    // Common errors
+    loadError: "Error loading",
+    saveError: "Error saving",
+    deleteError: "Error deleting", 
+    updateError: "Error updating",
+    networkError: "Connection error",
+    unexpectedError: "Unexpected error",
+    
+    // Common successes
+    saveSuccess: "Saved successfully",
+    deleteSuccess: "Deleted successfully",
+    updateSuccess: "Updated successfully",
+    
+    // Authentication
+    authRequired: "You must sign in to use this feature",
+    accountVerificationRequired: "You must verify your account to perform this action",
+    
+    // States
+    loading: "Loading...",
+    processing: "Processing...",
+    
+    // Common actions
+    actionError: "Error performing action",
+    actionSuccess: "Action completed successfully",
+    
+    // Validation
+    selectAllOptions: "Please select all required options",
+    selectRating: "Please select a rating",
+    
+    // System specific
+    commentDeletedSuccess: "Comment deleted successfully",
+    reviewSubmitSuccess: "Review submitted successfully",
+    reviewSubmitError: "Error submitting review",
+    emailVerifiedSuccess: "Email verified successfully. Welcome!",
+    codeResentSuccess: "Code resent successfully",
+    codeResentError: "Error resending code",
+    passwordUpdatedSuccess: "Password updated successfully",
+    passwordResetError: "Error resetting password",
+    userDataLoadError: "Error loading user data",
+    paymentCanceled: "Payment canceled - Your cart is still saved",
+    perfectContinue: "Perfect! Now you can continue",
+    optionSelectionError: "Error with selected options",
+    addedToCartWith: "added to cart with",
+    
+    // Success and error messages
+    success: {
+      reviewDeleted: "Comment deleted successfully"
+    },
+    error: {
+      reviewDeleteError: "Error deleting comment"
     }
   },
 
@@ -700,8 +887,8 @@ export default {
       pricing: {
         subtotal: "Subtotal",
         taxes: "Taxes",
-        tps: "GST (5%)",
-        tvq: "QST (9.975%)",
+        tps: "TPS (5%)",
+        tvq: "TVQ (9.975%)",
         totalTaxes: "Total Taxes",
         shipping: "Shipping",
         freeShipping: "Free",
@@ -1092,7 +1279,16 @@ export default {
         tooFewSelections: "Select at least {min} option(s)",
         tooManySelections: "Select maximum {max} option(s)",
         stockInsufficient: "Insufficient stock for {name}"
-      }
+      },
+      cart: {
+        variationsApplied: "Customization applied",
+        basePrice: "Base price",
+        variationCosts: "Additional options",
+        totalWithVariations: "Customized total",
+        variationDetails: "Customization details"
+      },
+      customizeProduct: "Customize your product",
+      addCustomized: "Add customized"
     },
 
     // Taxes
@@ -1100,8 +1296,8 @@ export default {
       nonTaxable: "Tax-free",
       taxable: "Taxable",
       basePrice: "Base price",
-      tps: "GST",
-      tvq: "PST",
+      tps: "TPS",
+      tvq: "TVQ",
       consigne: "Deposit",
       total: "Total with taxes"
     },
@@ -1693,5 +1889,21 @@ export default {
     loading: "Loading...",
     loadingResults: "Loading results...",
     searchResultsFor: "for \"{search}\""
+  },
+
+  // Reviews
+  reviews: {
+    noReviews: "No reviews yet",
+    anonymousUser: "Anonymous user",
+    deleteComment: "Delete comment",
+    reportComment: "Report comment",
+    helpful: "Helpful",
+    deleteConfirmTitle: "Delete comment?",
+    deleteConfirmDescription: "This action cannot be undone. The comment will be permanently deleted.",
+    loginToReview: "Sign in to leave a review",
+    yourRating: "Your rating",
+    yourComment: "Your comment",
+    commentPlaceholder: "Share your experience with this product...",
+    submitReview: "Submit review"
   }
 };

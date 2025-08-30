@@ -25,6 +25,7 @@ import {
 } from '@/components/common/ui/alert-dialog';
 import { deleteReview } from '@/lib/services/reviews';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface Review {
   id: string;
@@ -46,6 +47,7 @@ interface ReviewListProps {
 
 export function ReviewList({ reviews, onReviewDeleted }: ReviewListProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [deletingReview, setDeletingReview] = useState<string | null>(null);
   const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -53,7 +55,7 @@ export function ReviewList({ reviews, onReviewDeleted }: ReviewListProps) {
   if (!Array.isArray(reviews) || reviews.length === 0) {
     return (
       <div className="text-center py-6">
-        <p className="text-gray-500">No hay reseñas todavía</p>
+        <p className="text-gray-500">{t('reviews.noReviews')}</p>
       </div>
     );
   }
@@ -63,14 +65,14 @@ export function ReviewList({ reviews, onReviewDeleted }: ReviewListProps) {
       setDeletingReview(reviewId);
       await deleteReview(reviewId);
       
-      toast.success('Comentario eliminado exitosamente');
+      toast.success(t('notifications.success.reviewDeleted'));
       
       // Notificar al componente padre
       onReviewDeleted?.(reviewId);
       
     } catch (error: any) {
       console.error('Error al eliminar review:', error);
-      toast.error(error.message || 'Error al eliminar el comentario');
+      toast.error(error.message || t('notifications.error.reviewDeleteError'));
     } finally {
       setDeletingReview(null);
       setShowDeleteDialog(false);
@@ -95,11 +97,11 @@ export function ReviewList({ reviews, onReviewDeleted }: ReviewListProps) {
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
                   <UserAvatar 
-                    name={review.usuarios?.nombre || 'Usuario anónimo'}
+                    name={review.usuarios?.nombre || t('reviews.anonymousUser')}
                     size="lg"
                   />
                   <div>
-                    <p className="font-medium">{review.usuarios?.nombre || 'Usuario anónimo'}</p>
+                    <p className="font-medium">{review.usuarios?.nombre || t('reviews.anonymousUser')}</p>
                     <div className="flex items-center mt-1">
                       {[...Array(5)].map((_, i) => (
                         <Star
@@ -134,12 +136,12 @@ export function ReviewList({ reviews, onReviewDeleted }: ReviewListProps) {
                         disabled={isDeleting}
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
-                        {isDeleting ? 'Eliminando...' : 'Eliminar comentario'}
+                        {isDeleting ? t('common.deleting') : t('reviews.deleteComment')}
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem className="cursor-pointer">
                       <Flag className="h-4 w-4 mr-2" />
-                      Reportar comentario
+                      {t('reviews.reportComment')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -150,7 +152,7 @@ export function ReviewList({ reviews, onReviewDeleted }: ReviewListProps) {
               <div className="mt-4 flex items-center gap-4">
                 <Button variant="ghost" size="sm" className="text-gray-500">
                   <ThumbsUp className="h-4 w-4 mr-2" />
-                  Útil ({review.likes || 0})
+                  {t('reviews.helpful')} ({review.likes || 0})
                 </Button>
               </div>
             </div>
@@ -162,19 +164,19 @@ export function ReviewList({ reviews, onReviewDeleted }: ReviewListProps) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar comentario?</AlertDialogTitle>
+            <AlertDialogTitle>{t('reviews.deleteConfirmTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. El comentario será eliminado permanentemente.
+              {t('reviews.deleteConfirmDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => reviewToDelete && handleDeleteReview(reviewToDelete)}
               className="bg-red-600 hover:bg-red-700"
               disabled={!!deletingReview}
             >
-              {deletingReview ? 'Eliminando...' : 'Eliminar'}
+              {deletingReview ? t('common.deleting') : t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

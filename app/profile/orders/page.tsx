@@ -131,7 +131,7 @@ export default function OrdersPage() {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50/30 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-          <p className="text-gray-600">Cargando pedidos...</p>
+          <p className="text-gray-600">{t('orders.loading')}</p>
         </div>
       </div>
     );
@@ -197,7 +197,7 @@ export default function OrdersPage() {
                   <ShoppingBag className="h-8 w-8 text-emerald-600" />
                 </div>
                 <div className="text-2xl font-bold text-gray-900">{stats.totalOrders}</div>
-                <div className="text-sm text-gray-600">Total de Pedidos</div>
+                <div className="text-sm text-gray-600">{t('orders.totalOrders')}</div>
               </Card>
             </div>
           </motion.div>
@@ -215,7 +215,7 @@ export default function OrdersPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Buscar por número de pedido o producto..."
+                  placeholder={t('orders.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -225,16 +225,16 @@ export default function OrdersPage() {
               <Select value={statusFilter || 'all'} onValueChange={handleStatusFilterChange}>
                 <SelectTrigger className="w-full sm:w-48">
                   <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Filtrar por estado" />
+                  <SelectValue placeholder={t('orders.filterByStatus')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos los estados</SelectItem>
-                  <SelectItem value="pendiente">Pendiente</SelectItem>
-                  <SelectItem value="pagado">Pagado</SelectItem>
-                  <SelectItem value="procesando">Procesando</SelectItem>
-                  <SelectItem value="enviado">Enviado</SelectItem>
-                  <SelectItem value="entregado">Entregado</SelectItem>
-                  <SelectItem value="cancelado">Cancelado</SelectItem>
+                  <SelectItem value="all">{t('orders.allStatuses')}</SelectItem>
+                  <SelectItem value="pendiente">{t('orders.statuses.pendiente')}</SelectItem>
+                  <SelectItem value="pagado">{t('orders.statuses.pagado')}</SelectItem>
+                  <SelectItem value="procesando">{t('orders.statuses.procesando')}</SelectItem>
+                  <SelectItem value="enviado">{t('orders.statuses.enviado')}</SelectItem>
+                  <SelectItem value="entregado">{t('orders.statuses.entregado')}</SelectItem>
+                  <SelectItem value="cancelado">{t('orders.statuses.cancelado')}</SelectItem>
                 </SelectContent>
               </Select>
               
@@ -245,7 +245,7 @@ export default function OrdersPage() {
                 className="sm:w-auto"
               >
                 <RefreshCcw className={`h-4 w-4 mr-2 ${ordersLoading ? 'animate-spin' : ''}`} />
-                Actualizar
+                {t('orders.actions.refresh')}
               </Button>
             </div>
           </Card>
@@ -263,7 +263,7 @@ export default function OrdersPage() {
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <p className="text-red-700 mb-4">{error}</p>
               <Button onClick={refetch} variant="outline">
-                Reintentar
+                {t('orders.actions.retry')}
               </Button>
             </Card>
           )}
@@ -272,18 +272,18 @@ export default function OrdersPage() {
             <Card className="p-12 text-center">
               <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {searchTerm ? 'No se encontraron pedidos' : 'No hay pedidos aún'}
+                {searchTerm ? t('orders.empty.noResults') : t('orders.empty.noOrders')}
               </h3>
               <p className="text-gray-600 mb-6">
                 {searchTerm 
-                  ? 'Intenta cambiar los términos de búsqueda'
-                  : 'Cuando realices tu primera compra, aparecerá aquí'
+                  ? t('orders.empty.noResultsDescription')
+                  : t('orders.empty.noOrdersDescription')
                 }
               </p>
               {!searchTerm && (
                 <Button onClick={() => router.push('/products')}>
                   <ShoppingBag className="h-4 w-4 mr-2" />
-                  Explorar Productos
+                  {t('orders.actions.exploreProducts')}
                 </Button>
               )}
             </Card>
@@ -329,7 +329,7 @@ export default function OrdersPage() {
                               ${order.total.toFixed(2)} CAD
                             </p>
                             <p className="text-sm text-gray-600">
-                              {order.summary.totalItems} productos
+                              {order.summary.totalItems} {t('orders.products')}
                             </p>
                           </div>
                         </div>
@@ -361,7 +361,7 @@ export default function OrdersPage() {
                                 {item.name}
                               </p>
                               <p className="text-sm text-gray-600">
-                                Cantidad: {item.quantity} • ${item.unitPrice.toFixed(2)} CAD
+                                {t('orders.productQuantity')}: {item.quantity} • ${item.unitPrice.toFixed(2)} CAD
                               </p>
                             </div>
                           </div>
@@ -369,7 +369,7 @@ export default function OrdersPage() {
                         
                         {order.itemsPreview.length > 3 && (
                           <p className="text-sm text-gray-600 pl-15">
-                            +{order.itemsPreview.length - 3} productos más
+                            +{order.itemsPreview.length - 3} {t('orders.moreProducts')}
                           </p>
                         )}
                       </div>
@@ -400,17 +400,17 @@ export default function OrdersPage() {
                           onClick={() => router.push(`/profile/orders/${order.id}`)}
                         >
                           <Eye className="h-4 w-4 mr-2" />
-                          Ver Detalles
+                          {t('orders.actions.viewDetails')}
                         </Button>
                         
                         {canTrackOrder(order) && (
                           <Button 
                             variant="outline" 
                             className="flex-1"
-                            onClick={() => toast.info('Función de rastreo próximamente')}
+                            onClick={() => toast.info(t('orders.detail.trackOrder'))}
                           >
                             <Truck className="h-4 w-4 mr-2" />
-                            Rastrear Envío
+                            {t('orders.actions.trackShipping')}
                           </Button>
                         )}
                         
@@ -434,11 +434,11 @@ export default function OrdersPage() {
                 {ordersLoading ? (
                   <>
                     <RefreshCcw className="h-4 w-4 mr-2 animate-spin" />
-                    Cargando...
+                    {t('orders.loadingText')}
                   </>
                 ) : (
                   <>
-                    Cargar más pedidos
+                    {t('orders.actions.loadMore')}
                     <ChevronRight className="h-4 w-4 ml-2" />
                   </>
                 )}
@@ -455,24 +455,24 @@ export default function OrdersPage() {
           className="mt-8"
         >
           <Card className="p-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200">
-            <h3 className="font-semibold text-gray-900 mb-4">Enlaces rápidos</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">{t('orders.quickLinks.title')}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Link href="/products">
                 <Button variant="outline" className="w-full justify-start">
                   <ShoppingBag className="h-4 w-4 mr-2" />
-                  Seguir Comprando
+                  {t('orders.actions.continueShopping')}
                 </Button>
               </Link>
               <Link href="/profile/addresses">
                 <Button variant="outline" className="w-full justify-start">
                   <MapPin className="h-4 w-4 mr-2" />
-                  Mis Direcciones
+                  {t('orders.quickLinks.myAddresses')}
                 </Button>
               </Link>
               <Link href="/support">
                 <Button variant="outline" className="w-full justify-start">
                   <AlertCircle className="h-4 w-4 mr-2" />
-                  Soporte
+                  {t('orders.quickLinks.support')}
                 </Button>
               </Link>
             </div>

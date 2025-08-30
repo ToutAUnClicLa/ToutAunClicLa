@@ -101,7 +101,7 @@ export function AddToCartButton({
       if (errorMessage.includes('stock')) {
         toast.error(t('catalog.addToCartButton.productOutOfStock'));
       } else if (errorMessage.includes('variation')) {
-        toast.error('Error con las opciones seleccionadas');
+        toast.error(t('notifications.optionSelectionError'));
       } else {
         toast.error(t('catalog.addToCartButton.errorAddingToCart'));
       }

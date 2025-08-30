@@ -53,9 +53,9 @@ export function CouponInput({
       } else if (error.message?.includes('expirado') || error.message?.includes('expired')) {
         toast.error(t('cart.summary.coupon.expired'));
       } else if (error.message?.includes('Empty cart')) {
-        toast.error('No puedes aplicar cupones a un carrito vacío');
+        toast.error(t('cart.summary.coupon.emptyCartError'));
       } else if (error.message?.includes('Rate limit') || error.message?.includes('Too Many Requests')) {
-        toast.error('Demasiados intentos. Espera 10 minutos e intenta nuevamente.');
+        toast.error(t('cart.summary.coupon.rateLimitError'));
       } else if (error.message?.includes('Personal usage limit reached') || error.message?.includes('límite personal de uso') || error.message?.includes('userUsageCount')) {
         toast.error(t('cart.summary.coupon.usageLimitReached'));
       } else {
@@ -72,10 +72,10 @@ export function CouponInput({
     setIsLoading(true);
     try {
       await onRemoveCoupon();
-      toast.success('Cupón removido');
+      toast.success(t('cart.summary.coupon.removedSuccess'));
     } catch (error) {
       console.error('Error removing coupon:', error);
-      toast.error('Error al remover cupón');
+      toast.error(t('cart.summary.coupon.removeError'));
     } finally {
       setIsLoading(false);
     }
@@ -101,14 +101,14 @@ export function CouponInput({
               <p className="text-xs text-green-600">
                 {appliedCoupon.description || appliedCoupon.descripcion || 
                  (appliedCoupon.type === 'free_shipping' 
-                  ? 'Envío gratis aplicado (¡Sin costo de domicilio!)' 
-                  : `${appliedCoupon.discount || appliedCoupon.valor}% de descuento sobre el total`)}
+                  ? t('cart.summary.coupon.freeShippingDescription') 
+                  : t('cart.summary.coupon.discountDescription', { percent: appliedCoupon.discount || appliedCoupon.valor }))}
               </p>
             </div>
           </div>
           <Badge variant="secondary" className="bg-green-100 text-green-700">
             {appliedCoupon.type === 'free_shipping' 
-              ? '🚚 Envío Gratis' 
+              ? `🚚 ${t('cart.freeShipping')}` 
               : `🏷️ ${appliedCoupon.discount || appliedCoupon.valor}% OFF`}
           </Badge>
           {onRemoveCoupon && (

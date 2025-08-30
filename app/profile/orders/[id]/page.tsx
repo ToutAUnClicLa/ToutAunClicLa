@@ -66,7 +66,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
   useEffect(() => {
     if (isNaN(orderId)) {
-      toast.error('ID de pedido inválido');
+      toast.error(t('orders.detail.invalidId'));
       router.push('/profile/orders');
     }
   }, [orderId, router]);
@@ -88,15 +88,15 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   };
 
   const handleDownloadInvoice = () => {
-    toast.info('Función de descarga próximamente');
+    toast.info(t('orders.detail.downloadInvoice'));
   };
 
   const handleCancelOrder = () => {
-    toast.info('Función de cancelación próximamente');
+    toast.info(t('orders.detail.cancelOrder'));
   };
 
   const handleTrackOrder = () => {
-    toast.info('Función de rastreo próximamente');
+    toast.info(t('orders.detail.trackOrder'));
   };
 
   const handleContactSupport = () => {

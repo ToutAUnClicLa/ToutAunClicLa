@@ -11,6 +11,7 @@ import { Badge } from '@/components/common/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/ui/dialog';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/hooks/useTranslation';
 import * as authService from '@/lib/services/auth';
 
 interface ProfileVerificationProps {
@@ -23,6 +24,7 @@ interface ProfileVerificationProps {
 
 export default function ProfileVerification({ user, onVerificationSuccess }: ProfileVerificationProps) {
   const { refreshAuth } = useAuth();
+  const { t } = useTranslation();
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -36,15 +38,15 @@ export default function ProfileVerification({ user, onVerificationSuccess }: Pro
     
     try {
       await authService.resendVerification(user.email);
-      toast.success('Código enviado', {
-        description: 'Revisa tu correo electrónico para el nuevo código de verificación'
+      toast.success(t('verification.messages.resent'), {
+        description: t('verification.messages.resentDescription')
       });
       setIsVerificationModalOpen(true);
     } catch (error: any) {
       console.error('Error al reenviar verificación:', error);
       setError(error.message || 'Error al enviar código de verificación');
-      toast.error('Error al enviar código', {
-        description: error.message || 'No pudimos enviar el código de verificación'
+      toast.error(t('verification.messages.resendError'), {
+        description: error.message || t('verification.messages.resendErrorDescription')
       });
     } finally {
       setIsResending(false);
@@ -54,7 +56,7 @@ export default function ProfileVerification({ user, onVerificationSuccess }: Pro
   // Verificar código
   const handleVerifyCode = async () => {
     if (!verificationCode || verificationCode.length !== 6) {
-      setError('Ingresa un código de 6 dígitos');
+      setError(t('verification.messages.required'));
       return;
     }
 
@@ -64,8 +66,8 @@ export default function ProfileVerification({ user, onVerificationSuccess }: Pro
     try {
       await authService.verifyEmail(verificationCode, user.email);
       
-      toast.success('¡Email verificado!', {
-        description: 'Tu cuenta ha sido verificada correctamente'
+      toast.success(t('verification.messages.success'), {
+        description: t('verification.messages.successDescription')
       });
 
       // Actualizar estado de autenticación
@@ -80,7 +82,7 @@ export default function ProfileVerification({ user, onVerificationSuccess }: Pro
       
     } catch (error: any) {
       console.error('Error en verificación:', error);
-      setError(error.message || 'Código de verificación inválido');
+      setError(error.message || t('verification.messages.error'));
     } finally {
       setIsLoading(false);
     }
@@ -96,13 +98,13 @@ export default function ProfileVerification({ user, onVerificationSuccess }: Pro
               <CheckCircle className="h-5 w-5 text-green-600" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-green-800">Email verificado</h3>
+              <h3 className="font-semibold text-green-800">{t('verification.status.verified')}</h3>
               <p className="text-sm text-green-700">
-                Tu cuenta está completamente verificada
+                {t('verification.status.verifiedDescription')}
               </p>
             </div>
             <Badge className="bg-green-100 text-green-700 border-green-300">
-              Verificado
+              {t('profile.general.verified')}
             </Badge>
           </div>
         </CardContent>
@@ -121,10 +123,10 @@ export default function ProfileVerification({ user, onVerificationSuccess }: Pro
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-amber-800 mb-1">
-                Verificación pendiente
+                {t('verification.status.pending')}
               </h3>
               <p className="text-sm text-amber-700 mb-3">
-                Para acceder a todas las funciones, verifica tu correo electrónico: <strong>{user.email}</strong>
+                {t('verification.status.pendingDescription')}: <strong>{user.email}</strong>
               </p>
               <div className="flex flex-col sm:flex-row gap-2">
                 <Button
@@ -137,12 +139,12 @@ export default function ProfileVerification({ user, onVerificationSuccess }: Pro
                   {isResending ? (
                     <>
                       <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                      Enviando...
+                      {t('verification.status.sending')}
                     </>
                   ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
-                      Reenviar código
+                      {t('verification.status.resendCode')}
                     </>
                   )}
                 </Button>
@@ -152,12 +154,12 @@ export default function ProfileVerification({ user, onVerificationSuccess }: Pro
                   className="bg-amber-600 text-white hover:bg-amber-700"
                 >
                   <Mail className="h-4 w-4 mr-2" />
-                  Ya tengo el código
+                  {t('verification.status.alreadyHaveCode')}
                 </Button>
               </div>
             </div>
             <Badge className="bg-amber-100 text-amber-700 border-amber-300">
-              Pendiente
+              {t('profile.general.pendingVerification')}
             </Badge>
           </div>
         </CardContent>
@@ -169,14 +171,14 @@ export default function ProfileVerification({ user, onVerificationSuccess }: Pro
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Mail className="h-5 w-5 text-blue-600" />
-              Verificar email
+              {t('verification.modal.title')}
             </DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">
             <div className="text-center space-y-2">
               <p className="text-sm text-gray-600">
-                Ingresa el código de 6 dígitos enviado a:
+                {t('verification.modal.instruction')}
               </p>
               <p className="font-medium text-gray-900">{user.email}</p>
             </div>
@@ -193,7 +195,7 @@ export default function ProfileVerification({ user, onVerificationSuccess }: Pro
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="verification-code">Código de verificación</Label>
+              <Label htmlFor="verification-code">{t('verification.form.codeLabel')}</Label>
               <Input
                 id="verification-code"
                 type="text"
@@ -216,7 +218,7 @@ export default function ProfileVerification({ user, onVerificationSuccess }: Pro
                 className="flex-1"
                 disabled={isLoading}
               >
-                Cancelar
+                {t('verification.form.cancel')}
               </Button>
               <Button 
                 onClick={handleVerifyCode}
@@ -226,7 +228,7 @@ export default function ProfileVerification({ user, onVerificationSuccess }: Pro
                 {isLoading ? (
                   <>
                     <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Verificando...
+                    {t('verification.form.verifying')}
                   </>
                 ) : (
                   'Verificar'

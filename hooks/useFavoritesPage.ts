@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useAuth } from './useAuth';
 import * as favoritesService from '@/lib/services/favorites';
 import { toast } from 'sonner';
+import { useTranslation } from './useTranslation';
 
 /**
  * Hook específico para la página de favoritos
@@ -11,6 +12,7 @@ import { toast } from 'sonner';
  */
 export function useFavoritesPage() {
   const { isAuthenticated, user } = useAuth();
+  const { t } = useTranslation();
   const [favorites, setFavorites] = useState<favoritesService.FavoriteItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
@@ -32,7 +34,7 @@ export function useFavoritesPage() {
       console.error('Error loading favorites:', error);
       setFavorites([]);
       setTotalCount(0);
-      toast.error('Error al cargar favoritos');
+      toast.error(t('favorites.messages.loadError'));
     } finally {
       setIsLoading(false);
     }
@@ -52,10 +54,10 @@ export function useFavoritesPage() {
       setFavorites(prev => prev.filter(fav => fav.producto_id !== productId));
       setTotalCount(prev => Math.max(0, prev - 1));
       
-      toast.success('Producto removido de favoritos');
+      toast.success(t('favorites.messages.removed'));
     } catch (error: any) {
       console.error('Error removing from favorites:', error);
-      toast.error(error.message || 'Error al remover de favoritos');
+      toast.error(error.message || t('favorites.messages.errorRemove'));
       // Recargar en caso de error para sincronizar
       loadFavorites();
       throw error;

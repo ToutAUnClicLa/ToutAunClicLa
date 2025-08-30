@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { createReview } from '@/lib/services/reviews';
 import { toast } from 'sonner';
 import AuthModal from '@/components/features/auth/AuthModal';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ReviewFormProps {
   productId: string;
@@ -15,6 +16,7 @@ interface ReviewFormProps {
 
 export function ReviewForm({ productId }: ReviewFormProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
@@ -30,7 +32,7 @@ export function ReviewForm({ productId }: ReviewFormProps) {
     }
 
     if (rating === 0) {
-      toast.error('Por favor selecciona una calificación');
+      toast.error(t('notifications.selectRating'));
       return;
     }
 
@@ -41,14 +43,14 @@ export function ReviewForm({ productId }: ReviewFormProps) {
         estrellas: rating,
         comentario: comment,
       });
-      toast.success('Reseña enviada exitosamente');
+      toast.success(t('notifications.reviewSubmitSuccess'));
       setRating(0);
       setComment('');
       // Reload the page to show the new review
       window.location.reload();
     } catch (error) {
       console.error('Error creating review:', error);
-      toast.error('Error al enviar la reseña');
+      toast.error(t('notifications.reviewSubmitError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -58,9 +60,9 @@ export function ReviewForm({ productId }: ReviewFormProps) {
     return (
       <>
         <div className="text-center py-6">
-          <p className="text-gray-500 mb-4">Inicia sesión para dejar una reseña</p>
+          <p className="text-gray-500 mb-4">{t('reviews.loginToReview')}</p>
           <Button onClick={() => setShowAuthModal(true)}>
-            Iniciar Sesión
+            {t('auth.login')}
           </Button>
         </div>
         <AuthModal 
@@ -74,7 +76,7 @@ export function ReviewForm({ productId }: ReviewFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-2">Tu calificación</label>
+        <label className="block text-sm font-medium mb-2">{t('reviews.yourRating')}</label>
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
@@ -98,17 +100,17 @@ export function ReviewForm({ productId }: ReviewFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Tu comentario</label>
+        <label className="block text-sm font-medium mb-2">{t('reviews.yourComment')}</label>
         <Textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="Comparte tu experiencia con este producto..."
+          placeholder={t('reviews.commentPlaceholder')}
           className="min-h-[100px]"
         />
       </div>
 
       <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Enviando...' : 'Enviar reseña'}
+        {isSubmitting ? t('common.saving') : t('reviews.submitReview')}
       </Button>
     </form>
   );

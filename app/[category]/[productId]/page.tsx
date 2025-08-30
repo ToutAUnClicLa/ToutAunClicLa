@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/common/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/ui/tabs';
 import {ReviewForm} from '@/components/features/modules/reviews/ReviewForm';
 import {ReviewList} from '@/components/features/modules/reviews/ReviewList';
 import { getProductDetail } from '@/lib/services/products';
@@ -150,7 +149,7 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
 
     // Validate variations if product has them
     if (hasVariations && (!variationSelection || !variationSelection.isValid)) {
-      toast.error('Por favor selecciona todas las opciones requeridas');
+      toast.error(t('notifications.selectAllOptions'));
       return;
     }
 
@@ -177,7 +176,7 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
         // Show detailed success message with variations info
         const variationNames = formatSelectedVariations(variationSelection, product.variations || []);
         
-        toast.success(`${product.nombre} agregado al carrito con: ${variationNames}`);
+        toast.success(`${product.nombre} ${t('notifications.addedToCartWith')}: ${variationNames}`);
       } else {
         // Regular add to cart without variations
         await addToCart(product.id, quantity);
@@ -369,7 +368,7 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
             <div className="py-6 border-y border-gray-200">
               <h3 className="text-xl font-semibold mb-6 flex items-center gap-3 text-gray-900">
                 <span className="text-2xl">⚙️</span>
-                Personaliza tu producto
+                {t('catalog.variations.customizeProduct')}
               </h3>
               <ProductVariations
                 product={product}
@@ -406,12 +405,6 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
                 </Button>
               </div>
             </div>
-
-            {product.stock > 0 && (
-              <p className="text-xs text-gray-500">
-                {product.stock} {t('catalog.productDetail.unitsAvailable')}
-              </p>
-            )}
             
             {/* Variation selection status */}
             {hasVariations && (
@@ -419,12 +412,12 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
                 {variationSelection?.isValid ? (
                   <div className="text-green-600 bg-green-50 p-2 rounded-lg flex items-center gap-2">
                     <Check className="w-4 h-4" />
-                    <span>Opciones válidas seleccionadas</span>
+                    <span>{t('catalog.variations.validSelection')}</span>
                   </div>
                 ) : (
                   <div className="text-amber-600 bg-amber-50 p-2 rounded-lg flex items-center gap-2">
                     <span>ℹ️</span>
-                    <span>Selecciona todas las opciones requeridas para continuar</span>
+                    <span>{t('catalog.variations.selectAllRequired')}</span>
                   </div>
                 )}
               </div>
@@ -450,12 +443,12 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
               ) : !canAddToCart ? (
                 <>
                   <ShoppingCart className="h-4 w-4 mr-2" />
-                  Selecciona opciones
+                  {t('catalog.variations.selectOption')}
                 </>
               ) : (
                 <>
                   <ShoppingCart className="h-4 w-4 mr-2" />
-                  {hasVariations ? 'Agregar personalizado' : t('catalog.productCard.addToCart')}
+                  {hasVariations ? t('catalog.variations.addCustomized') : t('catalog.productCard.addToCart')}
                   {quantity > 1 && ` (${quantity})`}
                 </>
               )}
@@ -474,37 +467,17 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
             </Button>
           </div>
 
-          <Tabs defaultValue="description" className="w-full">
-            <TabsList className="w-full grid grid-cols-2">
-              <TabsTrigger value="description">{t('catalog.productDetail.description')}</TabsTrigger>
-              <TabsTrigger value="reviews">{t('catalog.productDetail.reviews')}</TabsTrigger>
-            </TabsList>
-            <TabsContent value="description" className="mt-4">
-              <div className="prose max-w-none">
-                <h3 className="text-base font-semibold mb-2">{t('catalog.productDetail.productInfo')}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{product.descripcion}</p>
-                {product.caracteristicas && (
-                  <ul className="mt-4 space-y-2">
-                    {product.caracteristicas.map((caracteristica: string, index: number) => (
-                      <li key={index} className="flex items-start text-sm text-gray-600">
-                        <span className="h-1.5 w-1.5 rounded-full bg-indigo-600 mr-2 mt-1.5" />
-                        {caracteristica}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </TabsContent>
-            <TabsContent value="reviews" className="mt-4">
-              <Suspense fallback={<div>{t('catalog.productDetail.loading')}</div>}>
-                <ReviewForm productId={product.id.toString()} />
-                <ReviewList 
-                  reviews={product.reviews || []} 
-                  onReviewDeleted={onReviewDeleted}
-                />
-              </Suspense>
-            </TabsContent>
-          </Tabs>
+          {/* Reviews Section */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <h3 className="text-lg font-semibold mb-4">{t('catalog.productDetail.reviews')}</h3>
+            <Suspense fallback={<div>{t('catalog.productDetail.loading')}</div>}>
+              <ReviewForm productId={product.id.toString()} />
+              <ReviewList 
+                reviews={product.reviews || []} 
+                onReviewDeleted={onReviewDeleted}
+              />
+            </Suspense>
+          </div>
         </motion.div>
       </div>
 
@@ -580,7 +553,7 @@ export default function ProductDetailPage() {
         setProduct(data);
       } catch (error) {
         console.error('Error loading product:', error);
-        toast.error('Error al cargar el producto');
+        toast.error(t('notifications.loadError'));
       } finally {
         setIsLoading(false);
       }

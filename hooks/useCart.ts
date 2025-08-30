@@ -12,6 +12,7 @@ import {
 } from '@/lib/services/cart';
 import { validateCartSummary, validateCartResponse, logBackendDataQuality } from '@/lib/utils/cart-validation';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/hooks/useTranslation';
 
 // Función para notificar cambios al contador del carrito
 const notifyCartCountChange = () => {
@@ -41,6 +42,7 @@ const DEBOUNCE_DELAY = 300; // 300ms de debounce
 export function useCart(options: UseCartOptions = {}) {
   const { autoLoad = false, page = 1, limit = 20, lazy = true } = options; // lazy por defecto
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -188,10 +190,10 @@ export function useCart(options: UseCartOptions = {}) {
           setError(null); // Don't show error to user for backend field issues
         } else if (err.message?.includes('Network')) {
           setError('Sin conexión a internet');
-          toast.error('Sin conexión a internet. Verifica tu conexión.');
+          toast.error(t('cart.notifications.networkError'));
         } else {
           setError('Error al cargar el carrito');
-          toast.error('Error al cargar el carrito');
+          toast.error(t('cart.notifications.loadError'));
         }
         
         // Reset to empty state with validated defaults
@@ -245,7 +247,7 @@ export function useCart(options: UseCartOptions = {}) {
     }>
   ): Promise<boolean> => {
     if (!isAuthenticated || !user) {
-      toast.error('Debes iniciar sesión para agregar productos al carrito');
+      toast.error(t('cart.notifications.addToCartAuthRequired'));
       return false;
     }
 
@@ -273,11 +275,11 @@ export function useCart(options: UseCartOptions = {}) {
       if (err.message?.includes('unidades disponibles')) {
         toast.error(err.message);
       } else if (err.message?.includes('no encontrado')) {
-        toast.error('Producto no encontrado');
+        toast.error(t('cart.notifications.productNotFound'));
       } else if (err.message?.includes('iniciar sesión')) {
-        toast.error('Debes iniciar sesión para agregar productos');
+        toast.error(t('cart.notifications.addToCartAuthError'));
       } else {
-        toast.error('Error al agregar producto al carrito');
+        toast.error(t('cart.notifications.addToCartError'));
       }
       return false;
     }
@@ -352,7 +354,7 @@ export function useCart(options: UseCartOptions = {}) {
   // Limpiar carrito (optimizado)
   const clearCart = useCallback(async (): Promise<boolean> => {
     if (!isAuthenticated || !user) {
-      toast.error('Debes iniciar sesión para limpiar el carrito');
+      toast.error(t('cart.notifications.clearCartAuthRequired'));
       return false;
     }
 
@@ -379,7 +381,7 @@ export function useCart(options: UseCartOptions = {}) {
     } catch (err: any) {
       console.error('Error clearing cart:', err);
       setError('Error al limpiar carrito');
-      toast.error(err.message || 'Error al limpiar carrito');
+      toast.error(err.message || t('cart.notifications.clearCartError'));
       return false;
     }
   }, [isAuthenticated, user, invalidateCache]);
@@ -387,7 +389,7 @@ export function useCart(options: UseCartOptions = {}) {
   // Aplicar cupón (flujo completo según README)
   const applyCoupon = useCallback(async (couponCode: string): Promise<boolean> => {
     if (!isAuthenticated || !user) {
-      toast.error('Debes iniciar sesión para aplicar cupones');
+      toast.error(t('cart.notifications.applyCouponAuthRequired'));
       return false;
     }
 
@@ -470,19 +472,19 @@ export function useCart(options: UseCartOptions = {}) {
           err.message?.includes('Personal usage limit reached') || 
           err.message?.includes('userUsageCount')) {
         setError('Límite de uso alcanzado para este cupón');
-        toast.error('Ya has usado este cupón el máximo número de veces permitido.');
+        toast.error(t('cart.notifications.couponUsageLimit'));
       } else if (err.message?.includes('no válido') || err.message?.includes('Invalid coupon')) {
         setError('Cupón inválido');
-        toast.error('Código de cupón inválido');
+        toast.error(t('cart.notifications.couponInvalid'));
       } else if (err.message?.includes('expirado') || err.message?.includes('expired')) {
         setError('Cupón expirado');
-        toast.error('El cupón ha expirado');
+        toast.error(t('cart.notifications.couponExpired'));
       } else if (err.message?.includes('Rate limit') || err.message?.includes('Too Many Requests')) {
         setError('Demasiados intentos');
-        toast.error('Demasiados intentos. Espera 10 minutos e intenta nuevamente.');
+        toast.error(t('cart.notifications.couponRateLimit'));
       } else {
         setError('Error al aplicar cupón');
-        toast.error('Error al aplicar el cupón. Intenta nuevamente.');
+        toast.error(t('cart.notifications.couponApplyError'));
       }
       
       return false;
@@ -492,7 +494,7 @@ export function useCart(options: UseCartOptions = {}) {
   // Actualizar opciones de entrega (nuevo)
   const updateDeliveryOptions = useCallback(async (options: DeliveryOptions): Promise<DeliveryUpdateResponse> => {
     if (!isAuthenticated || !user) {
-      toast.error('Debes iniciar sesión para configurar opciones de entrega');
+      toast.error(t('cart.notifications.updateDeliveryAuthRequired'));
       throw new Error('Usuario no autenticado');
     }
 
@@ -510,18 +512,18 @@ export function useCart(options: UseCartOptions = {}) {
       invalidateCache();
       await loadCartNow(true);
       
-      toast.success('Opciones de entrega actualizadas');
+      toast.success(t('cart.notifications.deliveryUpdateSuccess'));
       return result;
     } catch (err: any) {
       console.error('Error updating delivery options:', err);
       setError('Error al actualizar opciones de entrega');
       
       if (err.message?.includes('hora de entrega')) {
-        toast.error('La hora de entrega debe estar entre 11:00 AM y 8:00 PM');
+        toast.error(t('cart.notifications.deliveryTimeError'));
       } else if (err.message?.includes('método de entrega')) {
-        toast.error('Método de entrega inválido');
+        toast.error(t('cart.notifications.deliveryMethodError'));
       } else {
-        toast.error(err.message || 'Error al actualizar opciones de entrega');
+        toast.error(err.message || t('cart.notifications.deliveryUpdateError'));
       }
       throw err; // Propagar el error en lugar de devolver false
     }
@@ -530,7 +532,7 @@ export function useCart(options: UseCartOptions = {}) {
   // Remover cupón
   const removeCoupon = useCallback(async (): Promise<boolean> => {
     if (!isAuthenticated || !user) {
-      toast.error('Debes iniciar sesión para remover cupones');
+      toast.error(t('cart.notifications.removeCouponAuthRequired'));
       return false;
     }
 
@@ -555,7 +557,7 @@ export function useCart(options: UseCartOptions = {}) {
       await loadCartNow(true);
       
       console.log('🔄 Estado actualizado sin cupón');
-      toast.success('Cupón removido exitosamente');
+      toast.success(t('cart.notifications.couponRemovedSuccess'));
       return true;
     } catch (err: any) {
       console.error('❌ Error removiendo cupón:', err);
@@ -564,10 +566,10 @@ export function useCart(options: UseCartOptions = {}) {
       if (err.message?.includes('No coupon applied') || err.message?.includes('no cupón')) {
         // If backend says no coupon, clear local state anyway
         setAppliedCoupon(null);
-        toast.info('No hay cupón aplicado');
+        toast.info(t('cart.notifications.noCouponApplied'));
         return true;
       } else {
-        toast.error('Error al remover el cupón. Intenta nuevamente.');
+        toast.error(t('cart.notifications.couponRemoveError'));
         return false;
       }
     }

@@ -5,12 +5,14 @@ import { useAuth } from './useAuth';
 import { useAuthProtection } from './useAuthProtection';
 import * as favoritesService from '@/lib/services/favorites';
 import { toast } from 'sonner';
+import { useTranslation } from './useTranslation';
 
 /**
  * Hook optimizado para manejar favoritos con protección de autenticación
  */
 export function useFavorites() {
   const { isAuthenticated, user } = useAuth();
+  const { t } = useTranslation();
   const {
     executeForFavorites,
     canPerformAction,
@@ -53,9 +55,9 @@ export function useFavorites() {
       try {
         await favoritesService.addToFavorites(parseInt(productId));
         setFavoriteIds(prev => new Set(Array.from(prev).concat(productId)));
-        toast.success('Producto agregado a favoritos');
+        toast.success(t('favorites.messages.added'));
       } catch (error: any) {
-        toast.error(error.message || 'Error al agregar a favoritos');
+        toast.error(error.message || t('favorites.messages.errorAdd'));
         throw error;
       } finally {
         setIsLoading(false);
@@ -73,9 +75,9 @@ export function useFavorites() {
           const newIds = Array.from(prev).filter(id => id !== productId);
           return new Set(newIds);
         });
-        toast.success('Producto removido de favoritos');
+        toast.success(t('favorites.messages.removed'));
       } catch (error: any) {
-        toast.error(error.message || 'Error al remover de favoritos');
+        toast.error(error.message || t('favorites.messages.errorRemove'));
         throw error;
       } finally {
         setIsLoading(false);

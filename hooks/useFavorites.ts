@@ -5,6 +5,7 @@ import { useAuth } from './useAuth';
 import { useAuthProtection } from './useAuthProtection';
 import * as favoritesService from '@/lib/services/favorites';
 import { toast } from 'sonner';
+import { useTranslation } from './useTranslation';
 
 /**
  * Hook para manejar favoritos con protección de autenticación integrada
@@ -17,6 +18,7 @@ export function useFavorites(options: { loadOnMount?: boolean; trackFavorites?: 
   const { loadOnMount = false, trackFavorites = false } = options;
   
   const { isAuthenticated, user } = useAuth();
+  const { t } = useTranslation();
   const {
     executeForFavorites,
     canPerformAction,
@@ -88,9 +90,9 @@ export function useFavorites(options: { loadOnMount?: boolean; trackFavorites?: 
           });
         }
         
-        toast.success('Producto agregado a favoritos');
+        toast.success(t('favorites.messages.added'));
       } catch (error: any) {
-        toast.error(error.message || 'Error al agregar a favoritos');
+        toast.error(error.message || t('favorites.messages.errorAdd'));
         throw error;
       } finally {
         setIsLoading(false);
@@ -114,9 +116,9 @@ export function useFavorites(options: { loadOnMount?: boolean; trackFavorites?: 
           });
         }
         
-        toast.success('Producto removido de favoritos');
+        toast.success(t('favorites.messages.removed'));
       } catch (error: any) {
-        toast.error(error.message || 'Error al remover de favoritos');
+        toast.error(error.message || t('favorites.messages.errorRemove'));
         throw error;
       } finally {
         setIsLoading(false);
@@ -142,7 +144,7 @@ export function useFavorites(options: { loadOnMount?: boolean; trackFavorites?: 
             });
           }
           
-          toast.success('Producto agregado a favoritos');
+          toast.success(t('favorites.messages.added'));
         } catch (addError: any) {
           // Si da error 409 (ya existe), entonces remover
           if (addError.message?.includes('ya está') || addError.message?.includes('already')) {
@@ -156,13 +158,13 @@ export function useFavorites(options: { loadOnMount?: boolean; trackFavorites?: 
               });
             }
             
-            toast.success('Producto removido de favoritos');
+            toast.success(t('favorites.messages.removed'));
           } else {
             throw addError;
           }
         }
       } catch (error: any) {
-        toast.error(error.message || 'Error al gestionar favoritos');
+        toast.error(error.message || t('favorites.messages.errorManage'));
         throw error;
       } finally {
         setIsLoading(false);

@@ -5,6 +5,7 @@ import { useAuth } from './useAuth';
 import { useAuthProtection } from './useAuthProtection';
 import * as favoritesService from '@/lib/services/favorites';
 import { toast } from 'sonner';
+import { useTranslation } from './useTranslation';
 
 /**
  * Hook simple para manejar favoritos en cards de productos
@@ -12,6 +13,7 @@ import { toast } from 'sonner';
  */
 export function useSimpleFavorites() {
   const { isAuthenticated, user } = useAuth();
+  const { t } = useTranslation();
   const {
     executeForFavorites,
     canPerformAction,
@@ -30,9 +32,9 @@ export function useSimpleFavorites() {
       
       try {
         await favoritesService.addToFavorites(parseInt(productId));
-        toast.success('Producto agregado a favoritos');
+        toast.success(t('favorites.messages.added'));
       } catch (error: any) {
-        toast.error(error.message || 'Error al agregar a favoritos');
+        toast.error(error.message || t('favorites.messages.errorAdd'));
         throw error;
       } finally {
         setLoadingItems(prev => {
@@ -52,9 +54,9 @@ export function useSimpleFavorites() {
       
       try {
         await favoritesService.removeFromFavorites(parseInt(productId));
-        toast.success('Producto removido de favoritos');
+        toast.success(t('favorites.messages.removed'));
       } catch (error: any) {
-        toast.error(error.message || 'Error al remover de favoritos');
+        toast.error(error.message || t('favorites.messages.errorRemove'));
         throw error;
       } finally {
         setLoadingItems(prev => {
@@ -76,12 +78,12 @@ export function useSimpleFavorites() {
         // Intentar agregar primero
         try {
           await favoritesService.addToFavorites(parseInt(productId));
-          toast.success('Producto agregado a favoritos');
+          toast.success(t('favorites.messages.added'));
         } catch (addError: any) {
           // Si da error 409 (ya existe), entonces remover
           if (addError.message?.includes('ya está') || addError.message?.includes('already')) {
             await favoritesService.removeFromFavorites(parseInt(productId));
-            toast.success('Producto removido de favoritos');
+            toast.success(t('favorites.messages.removed'));
           } else {
             throw addError;
           }

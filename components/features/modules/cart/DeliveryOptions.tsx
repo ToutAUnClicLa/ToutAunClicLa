@@ -368,7 +368,7 @@ export default function DeliveryOptionsComponent({
       }
     } catch (error) {
       console.error('Error updating delivery options:', error);
-      setErrors({ time: 'Error al actualizar opciones de entrega' });
+      setErrors({ time: t('cart.delivery.error') });
     } finally {
       setIsLoading(false);
     }
@@ -618,7 +618,7 @@ export default function DeliveryOptionsComponent({
               {/* Mostrar horarios alternativos si están disponibles */}
               {showAlternativeHours && availableHours.length > 0 && (
                 <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                  <p className="text-sm font-medium text-orange-700 mb-2">Horarios disponibles:</p>
+                  <p className="text-sm font-medium text-orange-700 mb-2">{t('cart.delivery.alternativeHours.title')}</p>
                   <div className="flex flex-wrap gap-2">
                     {availableHours.map((hour) => (
                       <Button
@@ -738,7 +738,7 @@ export default function DeliveryOptionsComponent({
             <div className="flex items-center gap-2">
               {deliveryOptions.notasEntrega && deliveryOptions.notasEntrega !== (deliveryOptions.notasEntrega || '').replace(/[^\w\s\.\,\!\?\-\(\)\:]/g, '') && (
                 <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">
-                  ⚠ Contenido filtrado
+                  {t('cart.summary.coupon.filteredContent')}
                 </span>
               )}
               <span className={`text-xs ${

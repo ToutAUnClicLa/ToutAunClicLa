@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     
     if (!user.verified) {
-      toast.error("Debes verificar tu cuenta para realizar esta acción");
+      toast.error("Debes verificar tu cuenta para realizar esta acción"); // TODO: Use translation when context supports it
       return false;
     }
     
@@ -241,7 +241,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const resendVerification = useCallback(async (email: string) => {
     try {
       await authService.resendVerification(email);
-      toast.success('Código de verificación reenviado');
+      toast.success('Código de verificación reenviado'); // TODO: Use translation when context supports it
     } catch (error: any) {
       console.error('Error al reenviar verificación:', error);
       const errorMessage = error.message || 'Error al reenviar código';

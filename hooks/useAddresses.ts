@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
+import { useTranslation } from './useTranslation';
 import * as addressService from '@/lib/services/addresses';
 import { validateMontrealAddress } from '@/lib/utils/montreal-validation';
 import { toast } from 'sonner';
@@ -43,6 +44,7 @@ export interface CreateAddressData {
 
 export function useAddresses() {
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [primaryAddress, setPrimaryAddress] = useState<Address | null>(null);
@@ -108,7 +110,7 @@ export function useAddresses() {
       }
     } catch (err: any) {
       console.error('Error al cargar direcciones:', err);
-      setError(err.message || 'Error al cargar direcciones');
+      setError(err.message || t('addresses.errors.loadFailed'));
     } finally {
       setIsLoading(false);
       setHasInitialized(true);
@@ -140,7 +142,7 @@ export function useAddresses() {
       }
     } catch (err: any) {
       console.error('Error al refrescar direcciones:', err);
-      setError(err.message || 'Error al refrescar direcciones');
+      setError(err.message || t('addresses.errors.loadFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -156,7 +158,7 @@ export function useAddresses() {
       const validation = validateMontrealAddress(addressData.city, addressData.zipCode);
       
       if (!validation.isValid) {
-        throw new Error(validation.error || 'Dirección no válida para Montreal');
+        throw new Error(validation.error || t('addresses.validation.invalid'));
       }
       
       const newAddress = await addressService.createAddress(addressData);
@@ -181,11 +183,11 @@ export function useAddresses() {
       // Notificar creación de dirección para recarga del carrito
       notifyAddressChange('creada', newAddress);
       
-      toast.success('Dirección agregada correctamente');
+      toast.success(t('addresses.success.created'));
       return newAddress;
     } catch (err: any) {
       console.error('Error al crear dirección:', err);
-      const errorMessage = err.message || 'Error al crear dirección';
+      const errorMessage = err.message || t('addresses.errors.saveFailed');
       setError(errorMessage);
       toast.error(errorMessage);
       throw err;
@@ -204,7 +206,7 @@ export function useAddresses() {
       const validation = validateMontrealAddress(addressData.city, addressData.zipCode);
       
       if (!validation.isValid) {
-        throw new Error(validation.error || 'Dirección no válida para Montreal');
+        throw new Error(validation.error || t('addresses.validation.invalid'));
       }
       
       const updatedAddress = await addressService.updateAddress(addressId, addressData);
@@ -220,11 +222,11 @@ export function useAddresses() {
       // Notificar actualización de dirección para recarga del carrito
       notifyAddressChange('actualizada', updatedAddress);
       
-      toast.success('Dirección actualizada correctamente');
+      toast.success(t('addresses.success.updated'));
       return updatedAddress;
     } catch (err: any) {
       console.error('Error al actualizar dirección:', err);
-      const errorMessage = err.message || 'Error al actualizar dirección';
+      const errorMessage = err.message || t('addresses.errors.saveFailed');
       setError(errorMessage);
       toast.error(errorMessage);
       throw err;
@@ -281,10 +283,10 @@ export function useAddresses() {
         setPrimaryAddress(null);
       }
       
-      toast.success('Dirección eliminada correctamente');
+      toast.success(t('addresses.success.deleted'));
     } catch (err: any) {
       console.error('Error al eliminar dirección:', err);
-      const errorMessage = err.message || 'Error al eliminar dirección';
+      const errorMessage = err.message || t('addresses.errors.deleteFailed');
       setError(errorMessage);
       toast.error(errorMessage);
       throw err;
@@ -347,11 +349,11 @@ export function useAddresses() {
       // Notificar cambio de dirección principal para recarga del carrito
       notifyAddressChange('establecida como principal (directa)', newPrimary);
       
-      toast.success('Dirección principal actualizada correctamente');
+      toast.success(t('addresses.success.primarySet'));
       return newPrimary;
     } catch (err: any) {
       console.error('Error al establecer dirección principal:', err);
-      const errorMessage = err.message || 'Error al establecer dirección principal';
+      const errorMessage = err.message || t('addresses.errors.primaryFailed');
       setError(errorMessage);
       toast.error(errorMessage);
       throw err;
