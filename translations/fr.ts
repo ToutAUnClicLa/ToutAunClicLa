@@ -1195,6 +1195,13 @@ export default {
   
   // Traductions pour le catalogue de produits
   catalog: {
+    // Restaurant Banner
+    restaurantBanner: {
+      description: "Découvrez les délicieuses saveurs authentiques de {restaurantName}",
+      deliveryAvailable: "Livraison disponible",
+      businessHours: "11h00 - 21h00",
+      authenticCuisine: "Cuisine authentique"
+    },
     // ProductCard
     productCard: {
       addToCart: "Ajouter au panier",

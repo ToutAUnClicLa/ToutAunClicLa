@@ -89,7 +89,6 @@ export function FoodCatalog({ categoryId, initialSubcategory = null }: FoodCatal
             >
               <RestaurantList
                 categoryId={categoryId}
-                onRestaurantSelect={handleRestaurantSelect}
               />
             </motion.div>
           </div>

@@ -18,6 +18,7 @@ import { Badge } from '@/components/common/ui/badge';
 import { cn, getProductImageUrl, getBlurDataURL, formatPrice, isValidPrice, getDiscountPercentage, calculateCanadianTaxes, getTaxStatus } from '@/lib/utils';
 import { ProductPriceDisplay } from './ProductPriceDisplay';
 import { ProductWithVariations } from '@/types/variations';
+import { getRestaurantUrlWithFallback } from '@/lib/utils/restaurant-routes';
 
 interface ProductCardProps {
   product: Product & Partial<ProductWithVariations>;
@@ -110,7 +111,13 @@ export function ProductCard({
   // Funciones auxiliares
 
   const getProductUrl = () => {
-    // Para todas las categorías, usar la estructura estándar: /categoria/productId
+    // Si es un producto de comidas y tiene subcategoría (restaurante), usar ruta de restaurante
+    if (categoryName === 'comidas' && product.subcategorias?.nombre) {
+      const restaurantUrl = getRestaurantUrlWithFallback(product.subcategorias.nombre);
+      return `${restaurantUrl}/${product.id}`;
+    }
+    
+    // Para otras categorías, usar la estructura estándar: /categoria/productId
     return `/${categoryName}/${product.id}`;
   };
 
@@ -238,7 +245,7 @@ export function ProductCard({
               </div>
 
               <div className="p-2 sm:p-3">
-                <h3 className="font-medium text-xs sm:text-sm mb-2 overflow-hidden" style={{display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2}}>{product.nombre}</h3>
+                <h3 className="font-medium text-sm sm:text-base mb-2 overflow-hidden" style={{display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2}}>{product.nombre}</h3>
                 <div className="flex items-center justify-between">
                   <ProductPriceDisplay 
                     product={product} 
@@ -342,7 +349,7 @@ export function ProductCard({
 
             <CardContent className="p-2 sm:p-4 flex flex-col flex-grow">
               <div className="flex-grow space-y-1 sm:space-y-2">
-                <h3 className="font-semibold text-gray-900 hover:text-blue-600 transition-colors text-xs sm:text-sm lg:text-base leading-tight overflow-hidden" style={{display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2}}>
+                <h3 className="font-semibold text-gray-900 hover:text-blue-600 transition-colors text-base sm:text-lg lg:text-xl leading-tight overflow-hidden" style={{display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2}}>
                   {product.nombre}
                 </h3>
 

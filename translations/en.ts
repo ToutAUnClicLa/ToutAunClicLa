@@ -1210,6 +1210,13 @@ export default {
   
   // Product catalog translations
   catalog: {
+    // Restaurant Banner
+    restaurantBanner: {
+      description: "Discover the authentic delicious flavors of {restaurantName}",
+      deliveryAvailable: "Delivery available",
+      businessHours: "11:00 AM - 9:00 PM",
+      authenticCuisine: "Authentic cuisine"
+    },
     // ProductCard
     productCard: {
       addToCart: "Add",

@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/components/common/ui/card';
 import { Button } from '@/components/common/ui/button';
 import { Skeleton } from '@/components/common/ui/skeleton';
 import { cn, getImageUrl } from '@/lib/utils';
+import { getRestaurantUrlWithFallback } from '@/lib/utils/restaurant-routes';
 
 interface RestaurantListProps {
   categoryId?: number;
@@ -41,11 +42,8 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
   const { restaurants, loading, error } = useRestaurants();
 
   const handleRestaurantClick = (restaurant: Restaurant) => {
-    if (onRestaurantSelect) {
-      onRestaurantSelect(restaurant.id, restaurant.nombre);
-    } else {
-      router.push(`/comidas?subcategoria=${restaurant.id}`);
-    }
+    // Always navigate directly to restaurant-specific page
+    router.push(getRestaurantUrlWithFallback(restaurant.nombre));
   };
 
   // Función para obtener el estado de disponibilidad
