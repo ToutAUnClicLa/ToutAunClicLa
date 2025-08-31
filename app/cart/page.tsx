@@ -271,12 +271,12 @@ export default function CartPage() {
     }
   }, [summary, appliedCoupon, items.length, calculatedSubtotal, calculatedTaxes, calculatedConsigne]);
   
-  const formatPrice = (price: number) => {
+  const formatPrice = useCallback((price: number) => {
     return new Intl.NumberFormat('es-US', {
       style: 'currency',
       currency: 'USD'
     }).format(price);
-  };
+  }, []);
 
   // 🚨 REMOVED: renderShippingDisplay - replaced with ShippingStatus component
   // This function is no longer needed as ShippingStatus component handles all shipping display logic
@@ -296,7 +296,7 @@ export default function CartPage() {
       // El cupón ya está aplicado en el backend y vendrá con refreshCart
       refreshCart();
     }
-  }, [isAuthenticated, selectedAddress?.id, refreshCart]); // Removí applyCoupon y appliedCoupon de las dependencias
+  }, [isAuthenticated, selectedAddress?.id, refreshCart, appliedCoupon, selectedAddress]); // Incluir todas las dependencias
 
   // Efecto para actualizar el estado de dirección válida
   useEffect(() => {
@@ -648,7 +648,8 @@ export default function CartPage() {
     }
   }, [
     isAuthenticated, needsAddress, hasValidAddress, selectedAddress, isEmpty, 
-    deliveryOptions, appliedCoupon, finalTotal, savingsAmount, isFreeShippingApplied, t
+    deliveryOptions, appliedCoupon, finalTotal, savingsAmount, isFreeShippingApplied, t,
+    displayConsigne, displaySubtotal, displayTaxes, finalShippingCost, items, summary
   ]);
 
   // Función para renderizar badges de impuestos (memoizada)
@@ -709,7 +710,7 @@ export default function CartPage() {
     }
     
     return badges;
-  }, [formatPrice]);
+  }, [formatPrice, t]);
 
   // Renderizar item del carrito con diseño responsive (memoizada)
   const renderCartItem = useCallback((item: CartItem) => {
@@ -881,8 +882,8 @@ export default function CartPage() {
     );
   }, [
     loadingItems, calculateItemFinalPrice, getItemPricingDetails, 
-    formatCartItemVariations, formatPrice, renderTaxBadges, 
-    handleRemoveItem, handleQuantityChange, t
+    formatPrice, renderTaxBadges, 
+    handleRemoveItem, handleQuantityChange, t, expandedVariations, toggleVariationExpansion
   ]);
 
   // Renderizar grupo de categoría con diseño responsive (memoizada)

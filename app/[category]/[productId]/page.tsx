@@ -562,7 +562,7 @@ export default function ProductDetailPage() {
     if (params.productId) {
       loadProduct();
     }
-  }, [params.productId]); // Solo depender del productId, no del objeto t
+  }, [params.productId, t]); // Incluir t en las dependencias
 
   if (isLoading) {
     return <LoadingState />;

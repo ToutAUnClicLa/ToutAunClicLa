@@ -69,7 +69,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       toast.error(t('orders.detail.invalidId'));
       router.push('/profile/orders');
     }
-  }, [orderId, router]);
+  }, [orderId, router, t]);
 
   const getStatusIcon = (status: OrderDetail['status']) => {
     const iconMap = {

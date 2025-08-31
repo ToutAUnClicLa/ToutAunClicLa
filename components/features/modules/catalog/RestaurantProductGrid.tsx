@@ -182,7 +182,7 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
             ) : (
               <span>
                 Mostrando {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}-{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} de {pagination.totalItems} producto{pagination.totalItems !== 1 ? 's' : ''} de {restaurantName}
-                {searchValue && <span className="text-orange-600 font-medium"> para "{searchValue}"</span>}
+                {searchValue && <span className="text-orange-600 font-medium"> para &quot;{searchValue}&quot;</span>}
               </span>
             )}
           </div>

@@ -50,28 +50,12 @@ function RestaurantPageContent() {
     return <LoadingFallback />;
   }
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Restaurant",
-    "name": restaurantName,
-    "description": `Deliciosos platos de ${restaurantName} disponibles para entrega`,
-    "servesCuisine": "Cocina Latina",
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "CA",
-      "addressRegion": "QC"
-    }
-  };
 
   return (
     <>
-      <SEOMetaTags 
-        title={`${restaurantName} - Pedidos Online | ToutAunClicLa`}
-        description={`Ordena en línea desde ${restaurantName}. Entrega rápida en Montreal y Riviera Sur. Platillos frescos y auténticos.`}
-        keywords={`${restaurantName}, comida latina, entrega Montreal, pedidos online`}
-      />
+      <SEOMetaTags page="comidas" />
       
-      <StructuredData data={structuredData} />
+      <StructuredData type="organization" />
       
       <div className="min-h-screen bg-gray-50">
         {/* Header del Restaurante */}
