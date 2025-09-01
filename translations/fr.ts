@@ -95,8 +95,8 @@ export default {
     hero: {
       title: "Découvrez l'Amérique Latine",
       subtitle: "Produits authentiques et expériences uniques",
-      description: "Ce samedi et dimanche, nous célébrons votre fidélité. Pour toutes les commandes passées au restaurant La Maison du Grand Poulet, la livraison est entièrement gratuite à Rivière sur. *Des conditions s'appliquent.",
-      cta: "S'inscrire pour l'accès anticipé"
+      description: "Relier les Amériques grâce à des produits authentiques et des expériences uniques. Livraison dans la grande région de Montréal.",
+      cta: "Inscrivez-vous pour profiter de toutes les Amériques"
     },
     categories: {
       products: {
@@ -1900,5 +1900,52 @@ export default {
     yourComment: "Votre commentaire",
     commentPlaceholder: "Partagez votre expérience avec ce produit...",
     submitReview: "Soumettre l'avis"
+  },
+  
+  // Traductions pour les pages de checkout
+  checkout: {
+    cancel: {
+      title: "Paiement Annulé",
+      subtitle: "Ne vous inquiétez pas, aucun frais n'a été prélevé",
+      toastMessage: "Paiement annulé - Votre panier est toujours sauvegardé",
+      
+      whatHappened: {
+        title: "Que s'est-il passé ?",
+        reasons: [
+          "Vous avez annulé le processus de paiement dans Stripe Checkout",
+          "Votre panier est toujours sauvegardé avec tous vos produits", 
+          "Vous pouvez retenter le paiement quand vous le souhaitez",
+          "Aucun frais n'a été prélevé sur votre carte"
+        ]
+      },
+      
+      whatCanYouDo: {
+        title: "Que pouvez-vous faire maintenant ?",
+        reviewCart: {
+          title: "Réviser votre Panier",
+          description: "Vérifiez les produits avant de continuer"
+        },
+        tryAgain: {
+          title: "Réessayer", 
+          description: "Le processus de paiement est sécurisé et rapide"
+        },
+        keepShopping: {
+          title: "Continuer vos Achats",
+          description: "Explorez plus de produits"
+        }
+      },
+      
+      buttons: {
+        backToCart: "Retour à Mon Panier",
+        tryPaymentAgain: "Réessayer le Paiement",
+        continueShopping: "Continuer les Achats"
+      },
+      
+      support: {
+        title: "Avez-vous eu des problèmes de paiement ?",
+        description: "Si vous avez rencontré des problèmes techniques pendant le processus de paiement, notre équipe de support est là pour vous aider.",
+        contactButton: "Contacter le Support Technique"
+      }
+    }
   }
 };

@@ -95,8 +95,8 @@ export default {
     hero: {
       title: "Discover Latin America",
       subtitle: "Authentic products and unique experiences",
-      description: "This Saturday and Sunday, we celebrate your loyalty. On all orders placed at La Maison du Grand Poulet restaurant, delivery is completely free in Rivière sur. *Terms and conditions apply.",
-      cta: "Register for early access"
+      description: "Connecting the Americas through authentic products and unique experiences. Delivery to the Greater Montreal area.",
+      cta: "Register to enjoy all of the Americas"
     },
     categories: {
       products: {
@@ -1913,5 +1913,52 @@ export default {
     yourComment: "Your comment",
     commentPlaceholder: "Share your experience with this product...",
     submitReview: "Submit review"
+  },
+  
+  // Checkout pages translations
+  checkout: {
+    cancel: {
+      title: "Payment Canceled",
+      subtitle: "Don't worry, no charge has been made",
+      toastMessage: "Payment canceled - Your cart is still saved",
+      
+      whatHappened: {
+        title: "What happened?",
+        reasons: [
+          "You canceled the payment process in Stripe Checkout",
+          "Your cart is still saved with all your products", 
+          "You can try payment again whenever you want",
+          "No charge has been made to your card"
+        ]
+      },
+      
+      whatCanYouDo: {
+        title: "What can you do now?",
+        reviewCart: {
+          title: "Review your Cart",
+          description: "Check products before continuing"
+        },
+        tryAgain: {
+          title: "Try Again", 
+          description: "The payment process is secure and fast"
+        },
+        keepShopping: {
+          title: "Keep Shopping",
+          description: "Explore more products"
+        }
+      },
+      
+      buttons: {
+        backToCart: "Back to My Cart",
+        tryPaymentAgain: "Try Payment Again",
+        continueShopping: "Continue Shopping"
+      },
+      
+      support: {
+        title: "Did you have payment problems?",
+        description: "If you experienced any technical issues during the payment process, our support team is here to help you.",
+        contactButton: "Contact Technical Support"
+      }
+    }
   }
 };

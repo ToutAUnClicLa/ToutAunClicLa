@@ -43,7 +43,7 @@ export default {
   footer: {
     about: {
       title: "Tout à un Clic LA",
-      description: "Conectando las Américas a través de productos auténticos y experiencias únicas. Entrega en todo Montreal, Quebec y Canadá."
+      description: "Conectando las Américas a través de productos auténticos y experiencias únicas. Entrega en la zona metropolitana de Montreal."
     },
     explore: {
       title: "Explorar",
@@ -96,8 +96,8 @@ export default {
     hero: {
       title: "Descubre América Latina",
       subtitle: "Productos auténticos y experiencias únicas",
-      description: "Este sábado y domingo, celebramos tu fidelidad. En todos los pedidos realizados al restaurante La Maison du Grand Poulet, el domicilio es completamente gratis en Rivière sur. *Aplican términos y condiciones.",
-      cta: "Registrate Para Acceso Anticipado"
+      description: "Conectando las Américas a través de productos auténticos y experiencias únicas. Entrega en la zona metropolitana de Montreal.",
+      cta: "Registrate Para Distrutar de todas las americas!"
     },
     categories: {
       products: {
@@ -1599,6 +1599,7 @@ export default {
     success: {
       created: "Dirección agregada correctamente",
       createdDesc: "La dirección se ha creado correctamente",
+      firstAddressCreated: "✅ Primera dirección configurada - ¡Ya puedes proceder al pago!",
       updated: "Dirección actualizada correctamente", 
       updatedDesc: "La dirección se ha actualizada correctamente",
       deleted: "Dirección eliminada correctamente",
@@ -1939,5 +1940,52 @@ export default {
     yourComment: "Tu comentario",
     commentPlaceholder: "Comparte tu experiencia con este producto...",
     submitReview: "Enviar reseña"
+  },
+  
+  // Traducciones para páginas de checkout
+  checkout: {
+    cancel: {
+      title: "Pago Cancelado",
+      subtitle: "No te preocupes, no se ha realizado ningún cargo",
+      toastMessage: "Pago cancelado - Tu carrito sigue guardado",
+      
+      whatHappened: {
+        title: "¿Qué pasó?",
+        reasons: [
+          "Cancelaste el proceso de pago en Stripe Checkout",
+          "Tu carrito sigue guardado con todos tus productos", 
+          "Puedes intentar el pago nuevamente cuando gustes",
+          "No se ha realizado ningún cargo a tu tarjeta"
+        ]
+      },
+      
+      whatCanYouDo: {
+        title: "¿Qué puedes hacer ahora?",
+        reviewCart: {
+          title: "Revisar tu Carrito",
+          description: "Verifica los productos antes de continuar"
+        },
+        tryAgain: {
+          title: "Intentar de Nuevo", 
+          description: "El proceso de pago es seguro y rápido"
+        },
+        keepShopping: {
+          title: "Seguir Comprando",
+          description: "Explora más productos"
+        }
+      },
+      
+      buttons: {
+        backToCart: "Volver a Mi Carrito",
+        tryPaymentAgain: "Intentar Pago Nuevamente",
+        continueShopping: "Continuar Comprando"
+      },
+      
+      support: {
+        title: "¿Tuviste problemas con el pago?",
+        description: "Si experimentaste algún problema técnico durante el proceso de pago, nuestro equipo de soporte está aquí para ayudarte.",
+        contactButton: "Contactar Soporte Técnico"
+      }
+    }
   }
 };
