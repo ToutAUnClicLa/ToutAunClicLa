@@ -84,7 +84,6 @@ export function AddressSelector() {
       
     } catch (error) {
       console.error('❌ ERROR CRÍTICO en handleSubmit:', error);
-      setIsConfiguringAddress(false);
       toast.error(t('addresses.errors.saveFailed'));
     } finally {
       setIsSubmitting(false);

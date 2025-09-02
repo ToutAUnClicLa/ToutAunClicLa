@@ -245,7 +245,7 @@ export function ProductCard({
               </div>
 
               <div className="p-2 sm:p-3">
-                <h3 className="font-medium text-sm sm:text-base mb-2 overflow-hidden" style={{display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2}}>{product.nombre}</h3>
+                <h3 className="font-medium text-sm sm:text-sm lg:text-xs mb-2 overflow-hidden" style={{display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2}}>{product.nombre}</h3>
                 <div className="flex items-center justify-between">
                   <ProductPriceDisplay 
                     product={product} 
@@ -349,7 +349,7 @@ export function ProductCard({
 
             <CardContent className="p-2 sm:p-4 flex flex-col flex-grow">
               <div className="flex-grow space-y-1 sm:space-y-2">
-                <h3 className="font-semibold text-gray-900 hover:text-blue-600 transition-colors text-base sm:text-lg lg:text-xl leading-tight overflow-hidden" style={{display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2}}>
+                <h3 className="font-semibold text-gray-900 hover:text-blue-600 transition-colors text-sm sm:text-sm lg:text-sm leading-tight overflow-hidden" style={{display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2}}>
                   {product.nombre}
                 </h3>
 

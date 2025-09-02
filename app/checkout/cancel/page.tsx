@@ -30,12 +30,16 @@ export default function CancelPage() {
             📝 {t('checkout.cancel.whatHappened.title')}
           </h3>
           <div className="space-y-2 text-gray-700">
-            {t('checkout.cancel.whatHappened.reasons').map((reason: string, index: number) => (
-              <div key={index} className="flex items-start gap-3">
-                <span className="text-blue-500 mt-1">•</span>
-                <span>{reason}</span>
-              </div>
-            ))}
+            {(() => {
+              const reasons = t('checkout.cancel.whatHappened.reasons');
+              const reasonsArray = Array.isArray(reasons) ? reasons : [reasons];
+              return reasonsArray.map((reason: any, index: number) => (
+                <div key={index} className="flex items-start gap-3">
+                  <span className="text-blue-500 mt-1">•</span>
+                  <span>{String(reason)}</span>
+                </div>
+              ));
+            })()}
           </div>
         </div>
 
@@ -62,7 +66,7 @@ export default function CancelPage() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4 mb-6">
+        <div className="grid md:grid-cols-2 gap-4 mb-6">
           <Button 
             onClick={() => router.push('/cart')}
             className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
@@ -71,15 +75,7 @@ export default function CancelPage() {
             {t('checkout.cancel.buttons.backToCart')}
           </Button>
           <Button 
-            onClick={() => router.push('/cart')}
-            variant="outline"
-            className="w-full border-green-600 text-green-600 hover:bg-green-50 flex items-center justify-center gap-2"
-          >
-            <CreditCardIcon className="h-4 w-4" />
-            {t('checkout.cancel.buttons.tryPaymentAgain')}
-          </Button>
-          <Button 
-            onClick={() => router.push('/products')}
+            onClick={() => router.push('/productos')}
             variant="outline"
             className="w-full flex items-center justify-center gap-2"
           >
