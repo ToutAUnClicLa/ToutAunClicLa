@@ -29,14 +29,30 @@ export function SimpleTimePicker({
   // Generar opciones de tiempo (11:00 AM - 8:00 PM) en intervalos de 30 minutos
   const generateTimeOptions = () => {
     const options = [];
+    
+    // Obtener hora actual en Montreal (EST/EDT)
     const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
+    const montrealTime = new Date(now.toLocaleString("en-US", {timeZone: "America/Montreal"}));
+    const currentHour = montrealTime.getHours();
+    const currentMinute = montrealTime.getMinutes();
+    
+    console.log('🕐 Hora actual en Montreal:', {
+      montrealTime: montrealTime.toLocaleString(),
+      currentHour,
+      currentMinute,
+      deliveryType
+    });
     
     // Calcular hora mínima para entrega del mismo día (hora actual + 1 hora)
-    const minDeliveryTime = new Date(now.getTime() + 60 * 60 * 1000);
+    const minDeliveryTime = new Date(montrealTime.getTime() + 60 * 60 * 1000);
     const minHour = minDeliveryTime.getHours();
     const minMinute = minDeliveryTime.getMinutes();
+    
+    console.log('⏰ Hora mínima de entrega calculada:', {
+      minDeliveryTime: minDeliveryTime.toLocaleString(),
+      minHour,
+      minMinute
+    });
     
     // Desde 11:00 AM hasta 9:00 PM
     for (let hour = 11; hour <= 21; hour++) {
@@ -69,12 +85,27 @@ export function SimpleTimePicker({
           const timeInMinutes = hour * 60 + minute;
           const minTimeInMinutes = minHour * 60 + minMinute;
           
-          if (timeInMinutes < minTimeInMinutes) {
+          // Redondear hacia arriba el tiempo mínimo a la siguiente media hora
+          const roundedMinTimeInMinutes = Math.ceil(minTimeInMinutes / 30) * 30;
+          
+          if (timeInMinutes < roundedMinTimeInMinutes) {
             isAvailable = false;
             isPassed = true;
           }
+          
+          // También marcar como no disponible si es después de las 8 PM
+          if (hour > 20) {
+            isAvailable = false;
+            isPassed = false; // No es "pasado", simplemente no disponible para hoy
+          }
         }
-        // Para día siguiente, todas las horas están disponibles
+        // Para día siguiente, todas las horas están disponibles (11 AM - 8 PM)
+        else if (deliveryType === 'siguiente_dia') {
+          // Solo las horas 11 AM - 8 PM están disponibles para día siguiente
+          if (hour < 11 || hour > 20) {
+            isAvailable = false;
+          }
+        }
         
         options.push({
           value: time24,
@@ -145,7 +176,7 @@ export function SimpleTimePicker({
                   className={`
                     justify-start h-9 px-3 text-sm relative
                     ${!option.isAvailable 
-                      ? 'opacity-40 cursor-not-allowed line-through text-gray-400' 
+                      ? 'opacity-50 cursor-not-allowed text-gray-400 bg-gray-50' + (option.isPassed ? ' line-through' : '')
                       : value === option.value 
                         ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
                         : 'hover:bg-gray-100 text-gray-700'
@@ -153,10 +184,17 @@ export function SimpleTimePicker({
                   `}
                   onClick={() => handleTimeSelect(option.value, option.isAvailable)}
                 >
-                  {option.label}
+                  <span className={option.isPassed ? 'line-through' : ''}>
+                    {option.label}
+                  </span>
                   {option.isPassed && (
-                    <span className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-full h-0.5 bg-red-400 opacity-60"></div>
+                    <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-full h-0.5 bg-red-500 opacity-70"></div>
+                    </span>
+                  )}
+                  {!option.isAvailable && !option.isPassed && (
+                    <span className="text-xs absolute -top-1 -right-1 bg-gray-400 text-white rounded-full w-4 h-4 flex items-center justify-center">
+                      ✕
                     </span>
                   )}
                 </Button>

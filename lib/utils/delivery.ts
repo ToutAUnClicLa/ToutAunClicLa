@@ -1,10 +1,22 @@
 import type { DeliveryInfo } from '@/lib/services/cart';
 
+// Helper para obtener la hora actual en Montreal
+function getMontrealTime(): Date {
+  const now = new Date();
+  return new Date(now.toLocaleString("en-US", {timeZone: "America/Montreal"}));
+}
+
 // Helper function to get available delivery hours for today (copied from backend)
 export const getAvailableHoursToday = (): string[] => {
-  const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
+  const montrealTime = getMontrealTime();
+  const currentHour = montrealTime.getHours();
+  const currentMinute = montrealTime.getMinutes();
+  
+  console.log('🕒 getAvailableHoursToday - Montreal time:', {
+    montrealTime: montrealTime.toLocaleString(),
+    currentHour,
+    currentMinute
+  });
   
   // Horarios de entrega: 11:00 AM - 9:00 PM (última entrega)
   // Debe pedirse 1 hora antes, so último pedido para hoy es a las 8:00 PM
@@ -62,8 +74,15 @@ export const getAvailableHoursTomorrow = (): string[] => {
 
 // Helper function to validate delivery time and type (copied from backend)
 export const validateDeliveryTimeAndType = (preferredTime: string, deliveryType: 'estandar' | 'siguiente_dia') => {
-  const now = new Date();
-  const currentHour = now.getHours();
+  const montrealTime = getMontrealTime();
+  const currentHour = montrealTime.getHours();
+  
+  console.log('🔍 validateDeliveryTimeAndType - Montreal validation:', {
+    montrealTime: montrealTime.toLocaleString(),
+    currentHour,
+    preferredTime,
+    deliveryType
+  });
   
   // Validar formato de hora
   if (!/^([0-9]{1,2}):[0-5][0-9]$/.test(preferredTime)) {
@@ -149,8 +168,14 @@ export const validateDeliveryTimeAndType = (preferredTime: string, deliveryType:
  * - Caso contrario → estandar
  */
 export function calculateDeliveryType(preferredTime?: string): 'estandar' | 'siguiente_dia' {
-  const now = new Date();
-  const currentHour = now.getHours();
+  const montrealTime = getMontrealTime();
+  const currentHour = montrealTime.getHours();
+  
+  console.log('🧮 calculateDeliveryType - Montreal time:', {
+    montrealTime: montrealTime.toLocaleString(),
+    currentHour,
+    preferredTime
+  });
   
   // Regla 1: Si son más de las 8:00 PM (20:00), automáticamente día siguiente
   if (currentHour >= 20) {
@@ -170,12 +195,20 @@ export function calculateDeliveryType(preferredTime?: string): 'estandar' | 'sig
 }
 
 /**
- * Determina si debe mostrarse día siguiente por defecto (después de 7PM)
+ * Determina si debe mostrarse día siguiente por defecto (después de 8PM Montreal)
  * Coincide exactamente con la lógica del backend
  */
 export function shouldDefaultToNextDay(): boolean {
-  const now = new Date();
-  return now.getHours() >= 20; // 8:00 PM
+  const montrealTime = getMontrealTime();
+  const isAfter8PM = montrealTime.getHours() >= 20;
+  
+  console.log('🌙 shouldDefaultToNextDay - Montreal check:', {
+    montrealTime: montrealTime.toLocaleString(),
+    currentHour: montrealTime.getHours(),
+    isAfter8PM
+  });
+  
+  return isAfter8PM;
 }
 
 /**
@@ -205,12 +238,17 @@ export function getDeliveryInfo(type: 'estandar' | 'siguiente_dia'): DeliveryInf
 }
 
 /**
- * Calcula la hora mínima de entrega (hora actual + 1 hora)
+ * Calcula la hora mínima de entrega (hora actual + 1 hora) en Montreal
  * Limitado al horario de servicio (11:00 AM - 8:00 PM)
  */
 export function getMinimumDeliveryTime(): string {
-  const now = new Date();
-  const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+  const montrealTime = getMontrealTime();
+  const oneHourLater = new Date(montrealTime.getTime() + 60 * 60 * 1000);
+  
+  console.log('⏰ getMinimumDeliveryTime - Montreal calculation:', {
+    montrealTime: montrealTime.toLocaleString(),
+    oneHourLater: oneHourLater.toLocaleString()
+  });
   let hours = oneHourLater.getHours();
   let minutes = oneHourLater.getMinutes();
   

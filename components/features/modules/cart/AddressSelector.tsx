@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/common/ui/card';
 import { AddAddressModal } from '@/components/features/modules/address/AddAddressModal';
 import { useAddresses } from '@/hooks/useAddresses';
 import { useAuth } from '@/hooks/useAuth';
-import { validateMontrealAddress, formatCanadianPostalCode } from '@/lib/utils/montreal-validation';
+// Removed unused import: formatCanadianPostalCode
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -18,35 +18,74 @@ export function AddressSelector() {
   const { t } = useTranslation();
   const { 
     addresses, 
-    selectedAddress, 
-    primaryAddress,
+    selectedAddress,
     isLoading, 
     selectAddress, 
     createAddress,
     updateAddress,
     deleteAddress,
-    setPrimaryAddress
+    isSyncingWithBackend
   } = useAddresses();
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [setIsConfiguringAddress] = useState(() => () => {});
 
 
-  // Manejar envío del formulario
+  // 🚨 CRITICAL FIX: Manejar envío del formulario con logs detallados y configuración robusta
   const handleSubmit = async (data: any) => {
     setIsSubmitting(true);
+    console.log('📝 INICIANDO SUBMIT de formulario de dirección');
+    
     try {
+      let result;
       if (editingAddress) {
-        await updateAddress(editingAddress.id, data);
+        console.log('✏️ Actualizando dirección existente:', editingAddress.id);
+        result = await updateAddress(editingAddress.id, data);
+        toast.success(t('addresses.success.updated'));
       } else {
-        await createAddress(data);
+        // Capturar el estado antes de crear la dirección
+        const wasEmpty = addresses.length === 0;
+        console.log('🆕 CREANDO NUEVA DIRECCIÓN:', {
+          wasEmpty,
+          currentAddressCount: addresses.length,
+          addressData: data
+        });
+        
+        result = await createAddress(data);
+        
+        console.log('✅ DIRECCIÓN CREADA EXITOSAMENTE EN ADDRESSSELECTOR:', {
+          wasFirstAddress: wasEmpty,
+          newAddress: result,
+          newAddressId: result?.id,
+          isPrimary: result?.isPrimary,
+          totalAddresses: addresses.length + 1,
+          timestamp: new Date().toISOString()
+        });
+
+        // 🚨 OPTIMIZADO: Feedback inmediato sin delays
+        if (result?.id && wasEmpty) {
+          console.log('✅ Primera dirección creada y auto-seleccionada');
+          toast.success('✅ Primera dirección creada y seleccionada automáticamente', {
+            duration: 3000,
+            description: 'Ya puedes proceder con el pago'
+          });
+        } else if (result?.id) {
+          toast.success(t('addresses.success.created'));
+        }
       }
       
+      console.log('🚪 Cerrando modal de dirección');
       setIsDialogOpen(false);
       setEditingAddress(null);
+      
+      console.log('🎯 SUBMIT COMPLETADO - Los hooks deberían haber disparado eventos');
+      
     } catch (error) {
-      // El error ya se maneja en el hook
+      console.error('❌ ERROR CRÍTICO en handleSubmit:', error);
+      setIsConfiguringAddress(false);
+      toast.error(t('addresses.errors.saveFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -149,7 +188,7 @@ export function AddressSelector() {
               >
                 <Card 
                   className={`transition-all duration-200 cursor-pointer hover:shadow-md ${
-                    address.isPrimary
+                    address.isPrimary || (selectedAddress?.id === address.id)
                       ? 'ring-2 ring-indigo-500 bg-indigo-50' 
                       : 'hover:bg-gray-50'
                   }`}
@@ -159,7 +198,7 @@ export function AddressSelector() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          {address.isPrimary && (
+                          {(address.isPrimary || selectedAddress?.id === address.id) && (
                             <Check className="h-4 w-4 text-indigo-600" />
                           )}
                           <h4 className="font-medium text-gray-900">
@@ -168,6 +207,12 @@ export function AddressSelector() {
                           {address.isPrimary && (
                             <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full font-medium">
                               {t('addresses.actions.primary')}
+                            </span>
+                          )}
+                          {(isSyncingWithBackend && selectedAddress?.id === address.id) && (
+                            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-medium flex items-center gap-1">
+                              <div className="w-3 h-3 border border-yellow-600 border-t-transparent rounded-full animate-spin"></div>
+                              Sincronizando...
                             </span>
                           )}
                         </div>

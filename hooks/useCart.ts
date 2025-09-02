@@ -575,10 +575,20 @@ export function useCart(options: UseCartOptions = {}) {
     }
   }, [isAuthenticated, user, appliedCoupon, invalidateCache, loadCartNow]);
 
-  // Función pública para refrescar carrito
+  // 🚨 CRITICAL FIX: Función pública para refrescar carrito - Invalidación agresiva de cache
   const refreshCart = useCallback(async () => {
+    console.log('🚨 REFRESH CART: Invalidando cache AGRESIVAMENTE');
+    
+    // 🚨 STEP 1: Invalidar cache global inmediatamente
+    globalCartCache = null;
+    invalidateCache();
+    
+    // 🚨 STEP 2: Forzar recarga completa
+    console.log('🚨 REFRESH CART: Forzando recarga completa');
     await loadCartNow(true);
-  }, [loadCartNow]);
+    
+    console.log('🚨 REFRESH CART: COMPLETADO');
+  }, [loadCartNow, invalidateCache]);
 
   // Función para limpiar cupones al inicializar sesión (sin persistencia)
   const clearCouponOnInit = useCallback(async (): Promise<void> => {
@@ -775,9 +785,9 @@ export function useCart(options: UseCartOptions = {}) {
     }
   }, [isAuthenticated, hasLoadedOnce]); // Agregar hasLoadedOnce como dependencia
 
-  // Escuchar cambios de dirección para recalcular costos de envío
+  // Escuchar cambios de dirección para recalcular costos de envío - ROBUSTECIDO
   useEffect(() => {
-    const handleAddressChange = (event: Event) => {
+    const handleAddressChange = async (event: Event) => {
       // Solo procesar si el componente está montado y el usuario autenticado
       if (!isComponentMountedRef.current || !isAuthenticated || !user) {
         return;
@@ -791,15 +801,66 @@ export function useCart(options: UseCartOptions = {}) {
       }
 
       const { action, address } = customEvent.detail;
-      console.log('🛒 Carrito detectó cambio de dirección:', { action, address });
+      console.log('🛒 CARRITO: Cambio de dirección detectado:', { 
+        action, 
+        addressId: address?.id,
+        timestamp: new Date().toISOString()
+      });
       
-      // Solo recargar si es un cambio de dirección principal que puede afectar costos de envío
-      if (typeof action === 'string' && (action.includes('principal') || action === 'seleccionada')) {
-        console.log('🔄 Recargando carrito por cambio de dirección principal...');
-        invalidateCache();
-        loadCartNow(true).catch(err => {
-          console.error('Error recargando carrito tras cambio de dirección:', err);
-        });
+      // 🚨 CRITICAL: Recargar para TODOS los cambios importantes de dirección
+      const criticalActions = [
+        'creada',
+        'primera dirección creada', 
+        'establecida como principal',
+        'establecida como principal (directa)',
+        'seleccionada',
+        'actualizada',
+        'eliminada'
+      ];
+      
+      if (typeof action === 'string' && criticalActions.includes(action)) {
+        console.log('🔄 CARRITO: Recarga CRÍTICA por:', action);
+        
+        try {
+          // 🚨 NUEVO: Esperar tiempo adicional para cambios de dirección críticos
+          const additionalDelay = action.includes('creada') || action.includes('principal') ? 800 : 200;
+          console.log(`⏱️ CARRITO: Esperando ${additionalDelay}ms para sincronización backend`);
+          await new Promise(resolve => setTimeout(resolve, additionalDelay));
+          
+          // 🚨 INVALIDACIÓN AGRESIVA
+          globalCartCache = null;
+          invalidateCache();
+          
+          // 🚨 MÚLTIPLES INTENTOS para asegurar éxito
+          let reloadAttempts = 0;
+          const maxReloadAttempts = 3;
+          let reloadSuccess = false;
+          
+          while (reloadAttempts < maxReloadAttempts && !reloadSuccess) {
+            reloadAttempts++;
+            console.log(`🔄 CARRITO: Intento de recarga ${reloadAttempts}/${maxReloadAttempts}`);
+            
+            try {
+              await loadCartNow(true);
+              console.log(`✅ CARRITO: Recarga exitosa (intento ${reloadAttempts})`);
+              reloadSuccess = true;
+            } catch (error) {
+              console.error(`❌ CARRITO: Error en intento ${reloadAttempts}:`, error);
+              if (reloadAttempts < maxReloadAttempts) {
+                await new Promise(resolve => setTimeout(resolve, 400));
+              }
+            }
+          }
+          
+          if (!reloadSuccess) {
+            console.error('❌ CARRITO: TODOS los intentos de recarga fallaron');
+          }
+          
+        } catch (error) {
+          console.error('❌ CARRITO: Error crítico en recarga por cambio de dirección:', error);
+        }
+      } else {
+        console.log('🔍 CARRITO: Acción no crítica, omitiendo recarga:', action);
       }
     };
 

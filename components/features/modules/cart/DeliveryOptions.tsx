@@ -118,10 +118,36 @@ export default function DeliveryOptionsComponent({
   const { t } = useTranslation();
   const { updateDeliveryOptions } = useCart();
   
-  // Calcular tiempo por defecto (hora actual + 1 hora)
-  const defaultDeliveryTime = getMinimumDeliveryTime();
+  // Calcular tiempo por defecto usando Montreal timezone
   const shouldBeNextDay = shouldDefaultToNextDay();
   const defaultDeliveryType = shouldBeNextDay ? 'siguiente_dia' : 'estandar';
+  
+  // Obtener primera hora disponible según el tipo de entrega
+  const getInitialHour = () => {
+    if (shouldBeNextDay) {
+      const tomorrowHours = getAvailableHoursTomorrow();
+      return tomorrowHours[0] || '11:00';
+    } else {
+      const todayHours = getAvailableHoursToday();
+      if (todayHours.length > 0) {
+        return todayHours[0];
+      } else {
+        // Si no hay horas disponibles hoy, usar mañana
+        const tomorrowHours = getAvailableHoursTomorrow();
+        return tomorrowHours[0] || '11:00';
+      }
+    }
+  };
+
+  const defaultDeliveryTime = getInitialHour();
+  
+  console.log('🕐 DeliveryOptions initialization:', {
+    shouldBeNextDay,
+    defaultDeliveryType,
+    defaultDeliveryTime,
+    availableToday: getAvailableHoursToday(),
+    availableTomorrow: getAvailableHoursTomorrow()
+  });
 
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOptions>({
     horaEntregaPreferida: defaultDeliveryTime,
@@ -133,7 +159,18 @@ export default function DeliveryOptionsComponent({
 
   const [, setDeliveryInfo] = useState<DeliveryInfo>(getDeliveryInfo(defaultDeliveryType));
   const [manualDeliveryType, setManualDeliveryType] = useState<'estandar' | 'siguiente_dia'>(defaultDeliveryType);
-  const [availableHours, setAvailableHours] = useState<string[]>([]);
+  
+  // Inicializar horarios disponibles según el tipo de entrega
+  const getInitialAvailableHours = () => {
+    if (defaultDeliveryType === 'siguiente_dia') {
+      return getAvailableHoursTomorrow();
+    } else {
+      const todayHours = getAvailableHoursToday();
+      return todayHours.length > 0 ? todayHours : getAvailableHoursTomorrow();
+    }
+  };
+  
+  const [availableHours, setAvailableHours] = useState<string[]>(getInitialAvailableHours());
   const [showAlternativeHours, setShowAlternativeHours] = useState(false);
   const [backendSuggestsTomorrow, setBackendSuggestsTomorrow] = useState(false);
   
@@ -250,18 +287,28 @@ export default function DeliveryOptionsComponent({
       };
       
       setDeliveryOptions(newOptions);
-      setHasChanges(true);
+      setHasChanges(false); // No requerir botón de aplicar para cambios inmediatos
       
       const isValid = validateOptions(newOptions);
       onOptionsChange?.({ ...newOptions, isValid });
+      
+      // Aplicar cambios automáticamente
+      if (isValid) {
+        updateDeliveryOptions(newOptions).catch(console.error);
+      }
     } else {
-      // Para otros campos, validar inmediatamente
+      // Para otros campos, validar y aplicar inmediatamente
       const newOptions = { ...deliveryOptions, [field]: sanitizedValue };
       setDeliveryOptions(newOptions);
-      setHasChanges(true);
+      setHasChanges(false); // No requerir botón de aplicar para cambios inmediatos
       
       const isValid = validateOptions(newOptions);
       onOptionsChange?.({ ...newOptions, isValid });
+      
+      // Aplicar cambios automáticamente
+      if (isValid) {
+        updateDeliveryOptions(newOptions).catch(console.error);
+      }
     }
   };
 
@@ -332,10 +379,15 @@ export default function DeliveryOptionsComponent({
     console.log('🎯 Opciones actualizadas con validación:', newOptions);
     
     setDeliveryOptions(newOptions);
-    setHasChanges(true);
+    setHasChanges(false); // No requerir botón de aplicar para cambios inmediatos
     
     const isValid = validateOptions(newOptions);
     onOptionsChange?.({ ...newOptions, isValid });
+    
+    // Aplicar cambios automáticamente
+    if (isValid) {
+      updateDeliveryOptions(newOptions).catch(console.error);
+    }
   };
 
   // Aplicar cambios al carrito
@@ -754,9 +806,9 @@ export default function DeliveryOptionsComponent({
           </div>
         </div>
 
-        {/* Botón para aplicar cambios (solo si hay cambios) */}
+        {/* Botón para aplicar cambios - Solo mostrar si hay cambios pendientes (para notas principalmente) */}
         <AnimatePresence>
-          {hasChanges && (
+          {hasChanges && deliveryOptions.notasEntrega && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -776,7 +828,7 @@ export default function DeliveryOptionsComponent({
                 ) : (
                   <>
                     <Check className="h-4 w-4 mr-2" />
-                    {t('common.save')} {t('cart.delivery.title')}
+                    {t('common.save')} {t('cart.delivery.notes')}
                   </>
                 )}
               </Button>

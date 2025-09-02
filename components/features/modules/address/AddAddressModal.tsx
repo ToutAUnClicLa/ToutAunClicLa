@@ -27,7 +27,7 @@ interface FormData {
 
 const initialFormData: FormData = {
   street: '',
-  city: '',
+  city: 'Montreal', // Establecer Montreal como ciudad por defecto
   state: 'Quebec',
   zipCode: '',
   country: 'Canada'
@@ -81,8 +81,18 @@ export function AddAddressModal({
 
     try {
       await onSubmit(formData);
-      onOpenChange(false);
       setFormData(initialFormData);
+      onOpenChange(false);
+      
+      // Disparar evento para actualizar el carrito inmediatamente
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('addressChanged', {
+          detail: { 
+            action: 'created',
+            address: formData 
+          }
+        }));
+      }
     } catch (error) {
       // El error ya se maneja en el componente padre
     }

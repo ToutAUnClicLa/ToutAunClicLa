@@ -51,6 +51,11 @@ export function useAddresses() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasInitialized, setHasInitialized] = useState(false);
+  
+  // ✅ NEW: Estado optimizado para prevenir race conditions en checkout
+  const [isSyncingWithBackend, setIsSyncingWithBackend] = useState(false);
+  const [lastSyncedAddressId, setLastSyncedAddressId] = useState<string | null>(null);
+  const [syncStartTime, setSyncStartTime] = useState<number | null>(null);
 
   // Cargar direcciones
   const loadAddresses = useCallback(async () => {
@@ -163,28 +168,148 @@ export function useAddresses() {
       
       const newAddress = await addressService.createAddress(addressData);
       
-      // Actualizar inmediatamente el estado local antes de refrescar
-      setAddresses(prev => {
-        const newAddresses = [...prev, newAddress];
-        
-        // Si es la primera dirección, establecerla como principal y seleccionada inmediatamente
-        if (prev.length === 0) {
-          setSelectedAddress(newAddress);
-          setPrimaryAddress(newAddress);
+      console.log('🏠 DIRECCIÓN CREADA - DEBUG COMPLETO:', {
+        newAddress: {
+          id: newAddress?.id,
+          street: newAddress?.street,
+          city: newAddress?.city,
+          state: newAddress?.state,
+          zipCode: newAddress?.zipCode,
+          isPrimary: newAddress?.isPrimary,
+          fullObject: newAddress
+        },
+        systemState: {
+          currentAddressCount: addresses.length,
+          wasFirstAddress: addresses.length === 0,
+          timestamp: new Date().toISOString()
+        },
+        validation: {
+          hasValidId: !!newAddress?.id,
+          idType: typeof newAddress?.id,
+          idLength: newAddress?.id?.length
         }
-        
-        return newAddresses;
       });
       
-      // Refrescar las direcciones para obtener el estado actualizado del servidor
-      // NOTA: No await aquí para que el estado local se actualice inmediatamente
-      refreshAddresses().catch(console.error);
+      let finalAddress = { ...newAddress };
       
-      // Notificar creación de dirección para recarga del carrito
-      notifyAddressChange('creada', newAddress);
+      // Si es la primera dirección, establecerla como principal automáticamente
+      const wasFirstAddress = addresses.length === 0;
       
-      toast.success(t('addresses.success.created'));
-      return newAddress;
+      if (wasFirstAddress) {
+        // CRÍTICO: Establecer inmediatamente como principal sin esperar al backend
+        finalAddress.isPrimary = true;
+        
+        console.log('✅ PRIMERA DIRECCIÓN - Auto-selección inmediata:', {
+          finalAddress: {
+            id: finalAddress.id,
+            street: finalAddress.street,
+            city: finalAddress.city,
+            isPrimary: true
+          },
+          action: 'Auto-selected as first and primary address'
+        });
+        
+        // Actualizar inmediatamente todos los estados
+        setAddresses([finalAddress]);
+        setSelectedAddress(finalAddress);
+        setPrimaryAddress(finalAddress);
+        
+        // Intentar establecer como principal en backend (sin bloquear)
+        addressService.setPrimaryAddress(finalAddress.id)
+          .then(() => {
+            console.log('✅ Backend confirmó dirección principal');
+          })
+          .catch((err) => {
+            console.warn('⚠️ Backend no pudo confirmar principal, pero funciona localmente:', err);
+          });
+      } else {
+        // Si ya hay direcciones, agregar la nueva pero mantener la principal actual
+        const updatedAddresses = [...addresses, finalAddress];
+        setAddresses(updatedAddresses);
+        
+        // Solo cambiar selección si la nueva dirección es principal
+        if (finalAddress.isPrimary) {
+          setSelectedAddress(finalAddress);
+          setPrimaryAddress(finalAddress);
+          // Actualizar las demás para que no sean principales
+          const addressesWithUpdatedPrimary = updatedAddresses.map(addr => ({
+            ...addr,
+            isPrimary: addr.id === finalAddress.id
+          }));
+          setAddresses(addressesWithUpdatedPrimary);
+        }
+      }
+      
+      // ✅ OPTIMIZED: Marcar inmediatamente como sincronizado para UX fluida
+      console.log('🔄 Sincronización instantánea - Primera dirección lista para uso');
+      
+      // CRÍTICO: Marcar inmediatamente como sincronizado para permitir checkout sin delays
+      setLastSyncedAddressId(finalAddress.id);
+      
+      // Solo para primera dirección, hacer verificación asíncrona en background
+      if (wasFirstAddress) {
+        // Verificación en background sin bloquear UX
+        console.log('🔄 Verificando persistencia en backend (no bloqueante)');
+        
+        // Ejecutar verificación sin await para no bloquear
+        Promise.resolve().then(async () => {
+          try {
+            // Esperar un momento para dar tiempo al backend
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Verificar una sola vez
+            const currentAddresses = await addressService.getUserAddresses();
+            const primaryAddress = currentAddresses.find((addr: Address) => addr.isPrimary);
+            
+            if (primaryAddress && primaryAddress.id === finalAddress.id) {
+              console.log('✅ Backend confirma dirección principal:', primaryAddress.id);
+            } else if (currentAddresses.some(addr => addr.id === finalAddress.id)) {
+              console.log('✅ Dirección confirmada en backend');
+            } else {
+              console.log('⚠️ Verificación pendiente - dirección funcional localmente');
+            }
+          } catch (error) {
+            console.log('⚠️ Verificación en background falló - dirección funcional localmente');
+          }
+        });
+      }
+      
+      // PASO 3: Notificar cambio inmediatamente
+      console.log('✅ Notificando cambio de dirección');
+      notifyAddressChange('creada', finalAddress);
+      
+      // PASO 4: Notificación adicional solo para primera dirección
+      if (wasFirstAddress) {
+        setTimeout(() => {
+          console.log('🎉 Primera dirección creada exitosamente');
+          notifyAddressChange('primera dirección creada', finalAddress);
+        }, 50); // Reducido de 100ms a 50ms
+      }
+      
+      // Mostrar mensaje éxito personalizado para primera dirección
+      if (wasFirstAddress) {
+        toast.success(t('addresses.success.firstAddressCreated') || t('addresses.success.created'));
+      } else {
+        toast.success(t('addresses.success.created'));
+      }
+      
+      console.log('🎯 DIRECCIÓN FINAL RETORNADA:', {
+        finalAddress: {
+          id: finalAddress.id,
+          street: finalAddress.street,
+          city: finalAddress.city,
+          isPrimary: finalAddress.isPrimary
+        },
+        currentSelectedAddress: selectedAddress ? {
+          id: selectedAddress.id,
+          city: selectedAddress.city,
+          isPrimary: selectedAddress.isPrimary
+        } : null,
+        wasFirstAddress: addresses.length === 0,
+        timestamp: new Date().toISOString()
+      });
+      
+      return finalAddress;
     } catch (err: any) {
       console.error('Error al crear dirección:', err);
       const errorMessage = err.message || t('addresses.errors.saveFailed');
@@ -194,7 +319,7 @@ export function useAddresses() {
     } finally {
       setIsLoading(false);
     }
-  }, [refreshAddresses]);
+  }, [addresses, refreshAddresses, t]);
 
   // Actualizar dirección
   const updateAddress = useCallback(async (addressId: string, addressData: CreateAddressData) => {
@@ -283,6 +408,9 @@ export function useAddresses() {
         setPrimaryAddress(null);
       }
       
+      // Notificar eliminación de dirección para recarga del carrito
+      notifyAddressChange('eliminada', { id: addressId });
+      
       toast.success(t('addresses.success.deleted'));
     } catch (err: any) {
       console.error('Error al eliminar dirección:', err);
@@ -367,18 +495,43 @@ export function useAddresses() {
     setSelectedAddress(null);
   }, []);
 
-  // Cargar direcciones al montar el componente
+  // ✅ SIMPLIFIED: Verificación simple para checkout - si hay dirección seleccionada, es seguro
+  const isAddressSafeForCheckout = useCallback(() => {
+    const hasValidSelection = !!(selectedAddress?.id);
+    
+    console.log('🔍 CHECKOUT SAFETY CHECK:', {
+      hasValidSelection,
+      selectedAddressId: selectedAddress?.id,
+      addressesCount: addresses.length
+    });
+    
+    // ✅ SIMPLIFICADO: Si hay una dirección seleccionada con ID válido, permitir checkout
+    // El backend ya maneja la validación real durante el checkout
+    const isSafe = hasValidSelection;
+    
+    console.log('🎯 Checkout safe:', isSafe);
+    return isSafe;
+  }, [selectedAddress, addresses.length]);
+
+  // Ya no necesitamos timeout porque no bloqueamos nunca
+
+  // Cargar direcciones al montar el componente - Optimizado
   useEffect(() => {
     if (isAuthenticated && !hasInitialized) {
+      console.log('🔄 Inicializando hook useAddresses...');
       loadAddresses();
     } else if (!isAuthenticated) {
       // Reset cuando el usuario se desautentica
+      console.log('🔄 Reseteando direcciones (usuario no autenticado)');
       setAddresses([]);
       setSelectedAddress(null);
       setPrimaryAddress(null);
       setHasInitialized(false);
+      setIsSyncingWithBackend(false);
+      setSyncStartTime(null);
+      setLastSyncedAddressId(null);
     }
-  }, [isAuthenticated, hasInitialized]); // Solo cuando cambie autenticación y no se haya inicializado
+  }, [isAuthenticated, hasInitialized, loadAddresses]);
 
   return {
     addresses,
@@ -386,6 +539,11 @@ export function useAddresses() {
     primaryAddress,
     isLoading,
     error,
+    
+    // 🚨 NEW: Estados críticos para checkout
+    isSyncingWithBackend,
+    lastSyncedAddressId,
+    isAddressSafeForCheckout,
     
     // Acciones
     loadAddresses,

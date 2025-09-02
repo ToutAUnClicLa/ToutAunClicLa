@@ -22,9 +22,10 @@ import { toast } from 'sonner';
 import { CartItem } from '@/lib/services/cart';
 import type { DeliveryOptions as DeliveryOptionsType } from '@/lib/services/cart';
 import { useTranslation } from '@/hooks/useTranslation';
-import { formatCartItemVariations } from '@/lib/utils/variations';
+// Removed unused import: formatCartItemVariations
 import { logBackendDataQuality } from '@/lib/utils/cart-validation';
 import { CartItemVariations } from '@/components/features/modules/cart/CartItemVariations';
+import { verifyAddressForCheckout } from '@/lib/services/addresses';
  
 // Mapeo de categorías con estilos modernos
 const getCategoryMap = (t: any) => ({
@@ -93,11 +94,20 @@ export default function CartPage() {
     summary 
   } = useCart();
   
-  const { selectedAddress, hasAddresses, addresses } = useAddresses();
+  const { 
+    selectedAddress, 
+    hasAddresses, 
+    addresses, 
+    isSyncingWithBackend, 
+    lastSyncedAddressId,
+    isAddressSafeForCheckout,
+    refreshAddresses 
+  } = useAddresses();
   
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [verifyingAddress, setVerifyingAddress] = useState(false);
   const [expandedVariations, setExpandedVariations] = useState<Set<string>>(new Set());
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOptionsType & { isValid: boolean }>({
     horaEntregaPreferida: '18:00',
@@ -281,83 +291,134 @@ export default function CartPage() {
   // 🚨 REMOVED: renderShippingDisplay - replaced with ShippingStatus component
   // This function is no longer needed as ShippingStatus component handles all shipping display logic
 
-  // Efecto para cargar el carrito al montar el componente y cuando cambia la dirección principal
+  // Efecto para cargar el carrito inicial y cuando cambia la dirección principal
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('🔄 Cargando carrito - Autenticación o dirección cambió:', {
+      console.log('🔄 Cargando carrito inicial:', {
         isAuthenticated,
-        hasSelectedAddress: !!selectedAddress,
-        addressId: selectedAddress?.id,
-        addressCity: selectedAddress?.city,
+        hasSelectedAddress: !!selectedAddress?.id,
         hasCoupon: !!appliedCoupon
       });
       
-      // Solo recargar el carrito, NO reaplicar el cupón
-      // El cupón ya está aplicado en el backend y vendrá con refreshCart
+      // Cargar carrito inicial o cuando cambia dirección válida
       refreshCart();
     }
-  }, [isAuthenticated, selectedAddress?.id, refreshCart, appliedCoupon, selectedAddress]); // Incluir todas las dependencias
+  }, [isAuthenticated, selectedAddress?.id, refreshCart]);
 
-  // Efecto para actualizar el estado de dirección válida
+  // Efecto para reiniciar opciones de entrega cuando cambia la dirección
   useEffect(() => {
-    const addressValid = isAuthenticated && (
-      selectedAddress !== null || 
-      hasAddresses || 
-      (addresses && addresses.length > 0)
-    );
+    if (selectedAddress?.id) {
+      console.log('📍 Nueva dirección seleccionada, reiniciando opciones de entrega');
+      
+      // Reiniciar las opciones de entrega a los valores por defecto
+      setDeliveryOptions({
+        horaEntregaPreferida: '18:00',
+        metodoEntrega: 'puerta',
+        notasEntrega: '',
+        isValid: true
+      });
+    }
+  }, [selectedAddress?.id]);
+
+  // 🚨 CRITICAL FIX: Validación agresiva de dirección válida con logs detallados
+  useEffect(() => {
+    const addressValid = Boolean(isAuthenticated && hasAddresses && selectedAddress?.id);
     
+    console.log('🔍 VALIDACIÓN DE DIRECCIÓN (DETALLADA):', {
+      isAuthenticated,
+      hasAddresses,
+      addressesLength: addresses?.length || 0,
+      selectedAddressId: selectedAddress?.id,
+      selectedAddressCity: selectedAddress?.city,
+      selectedAddressPrimary: selectedAddress?.isPrimary,
+      addressValid,
+      prevValid: hasValidAddress,
+      timestamp: new Date().toISOString()
+    });
+    
+    // SIEMPRE actualizar el estado, incluso si parece igual (para forzar re-renders)
     setHasValidAddress(addressValid);
-  }, [isAuthenticated, selectedAddress, hasAddresses, addresses]);
+    
+    // 🚨 CRITICAL: Si se habilitó una dirección válida, refrescar carrito INMEDIATAMENTE
+    if (addressValid && (!hasValidAddress || hasValidAddress !== addressValid)) {
+      console.log('🚨 DIRECCIÓN VÁLIDA DETECTADA - REFRESCANDO CARRITO INMEDIATAMENTE');
+      
+      // Múltiples intentos para asegurar éxito
+      setTimeout(async () => {
+        try {
+          console.log('🔄 REFRESCANDO carrito por dirección válida...');
+          await refreshCart();
+          console.log('✅ Carrito refrescado por dirección válida');
+        } catch (error) {
+          console.error('❌ Error refrescando carrito por dirección válida:', error);
+        }
+      }, 100);
+    }
+  }, [isAuthenticated, hasAddresses, addresses?.length, selectedAddress?.id, selectedAddress?.city, selectedAddress?.isPrimary, hasValidAddress, refreshCart]);
 
-  // Listener para cambios de direcciones que requieren recarga del carrito
+  // 🚨 CRITICAL FIX: Listener sincronizado para cambios de direcciones
   useEffect(() => {
-    const handleAddressChange = (event: CustomEvent) => {
-      const { action, address } = event.detail;
-      console.log('🏠 Evento de cambio de dirección recibido en carrito:', {
+    const handleAddressChange = async (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const { action, address } = customEvent.detail;
+      console.log('🏠 PÁGINA CARRITO: Evento de cambio de dirección:', {
         action,
         addressId: address?.id,
-        city: address?.city,
-        isPrimary: address?.isPrimary
+        isPrimary: address?.isPrimary,
+        timestamp: new Date().toISOString()
       });
       
-      // Recargar carrito cuando hay cambios en direcciones
-      const reloadCartForAddressChange = async () => {
-        try {
-          console.log('♻️ Recargando carrito debido a cambio de dirección...');
-          
-          if (appliedCoupon && (appliedCoupon.code || appliedCoupon.codigo)) {
-            const couponCode = appliedCoupon.code || appliedCoupon.codigo;
-            if (couponCode) {
-              console.log('🎟️ Recargando carrito con cupón tras cambio de dirección:', couponCode);
-              await applyCoupon(couponCode);
-            } else {
-              await refreshCart();
-            }
-          } else {
-            await refreshCart();
-          }
-          
-          console.log('✅ Carrito recargado exitosamente tras cambio de dirección');
-        } catch (error) {
-          console.error('❌ Error recargando carrito tras cambio de dirección:', error);
-        }
-      };
+      // 🚨 CRITICAL: Las recargas ahora las maneja useCart - aquí solo monitoreamos
+      // Esto previene doble recarga y race conditions
       
-      reloadCartForAddressChange();
-    };
-
-    // Agregar listener
-    if (typeof window !== 'undefined') {
-      window.addEventListener('addressChanged', handleAddressChange as EventListener);
-    }
-
-    // Cleanup
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('addressChanged', handleAddressChange as EventListener);
+      const actionsRequiringMonitoring = [
+        'created',
+        'creada', 
+        'primera dirección creada',
+        'establecida como principal', 
+        'establecida como principal (directa)',
+        'actualizada',
+        'seleccionada'
+      ];
+      
+      if (actionsRequiringMonitoring.includes(action)) {
+        console.log('🏠 PÁGINA CARRITO: Monitoreando cambio importante:', action);
+        
+        // Para direcciones recién creadas, mostrar feedback al usuario
+        if (action === 'created' || action === 'creada' || action === 'primera dirección creada') {
+          toast.success('Dirección agregada. Actualizando carrito...', {
+            duration: 2000,
+          });
+          
+          // 🚨 CRITICAL: Refresh both addresses and cart for complete sync
+          setTimeout(async () => {
+            console.log('🏠 PÁGINA CARRITO: Refrescando direcciones y carrito después de creación');
+            try {
+              // First refresh addresses to get the new selection
+              await refreshAddresses();
+              // Then refresh cart with the new address
+              await refreshCart();
+              console.log('✅ Direcciones y carrito refrescados exitosamente');
+            } catch (error) {
+              console.error('❌ Error refrescando:', error);
+            }
+          }, 100); // Reduced delay for immediate feedback
+        }
       }
     };
-  }, [appliedCoupon, applyCoupon, refreshCart]);
+
+    if (typeof window !== 'undefined') {
+      console.log('📡 LISTENER de direcciones REGISTRADO');
+      window.addEventListener('addressChanged', handleAddressChange);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        console.log('📡 LISTENER de direcciones ELIMINADO');
+        window.removeEventListener('addressChanged', handleAddressChange);
+      }
+    };
+  }, [appliedCoupon, applyCoupon, refreshCart, refreshAddresses]);
 
   // Mostrar modal de autenticación si no está autenticado
   useEffect(() => {
@@ -439,7 +500,7 @@ export default function CartPage() {
       return;
     }
 
-    // 🚚 CRITICAL FIX: Improved address validation logic
+    // 🚚 CRITICAL FIX: Enhanced address validation with backend verification
     // Priority 1: Backend says address is needed (most authoritative)
     if (needsAddress) {
       toast.error(t('cart.summary.addAddressRequired'));
@@ -448,10 +509,69 @@ export default function CartPage() {
     }
     
     // Priority 2: Local validation for address selection
-    if (!hasValidAddress || !selectedAddress) {
+    if (!selectedAddress || !selectedAddress.id) {
       toast.error(t('cart.errors.selectAddress'));
-      console.log('❌ Checkout blocked: No valid address selected locally');
+      console.log('❌ Checkout blocked: No valid address selected locally', {
+        selectedAddress: selectedAddress ? { id: selectedAddress.id } : null,
+        hasValidAddress,
+        hasAddresses,
+        addressesCount: addresses?.length || 0
+      });
       return;
+    }
+    
+    // ✅ BALANCED: Solo bloquear si realmente hay un problema crítico
+    if (isSyncingWithBackend) {
+      console.log('⏳ CHECKOUT: Esperando sincronización rápida', {
+        selectedAddressId: selectedAddress.id,
+        isSyncingWithBackend
+      });
+      // No bloquear con toast error, solo wait un momento
+      await new Promise(resolve => setTimeout(resolve, 100));
+      // Si sigue sincronizando después de 100ms, continuar de todos modos
+      if (isSyncingWithBackend) {
+        console.log('⚡ CHECKOUT: Procediendo a pesar de sincronización activa');
+      }
+    }
+    
+    // ✅ SIMPLIFIED: Verificar que hay dirección seleccionada  
+    if (!selectedAddress?.id) {
+      console.log('⚠️ No hay dirección seleccionada para checkout');
+      toast.error('Por favor selecciona una dirección de envío');
+      return;
+    }
+    
+    console.log('✅ Address validation passed with race condition protection:', {
+      selectedAddressId: selectedAddress.id,
+      selectedAddressCity: selectedAddress.city,
+      isPrimary: selectedAddress.isPrimary,
+      isSyncingWithBackend,
+      isAddressSafeForCheckout: isAddressSafeForCheckout(),
+      validationPassed: true
+    });
+
+    // 🚨 CRITICAL NEW: Robust address verification with backend before proceeding to Stripe
+    console.log('🔍 Iniciando verificación robusta de dirección con backend antes de Stripe...');
+    setVerifyingAddress(true);
+    
+    try {
+      const isAddressReady = await verifyAddressForCheckout(selectedAddress.id, 3, 500);
+      
+      if (!isAddressReady) {
+        console.error('❌ Dirección no verificada después de intentos, bloqueando checkout');
+        toast.error('La dirección no está lista aún. Por favor, intenta en unos segundos.');
+        return;
+      }
+      
+      console.log('✅ Dirección verificada con backend, procediendo al checkout');
+      
+    } catch (verificationError) {
+      console.error('❌ Error durante verificación de dirección:', verificationError);
+      toast.error('Error verificando la dirección. Por favor, intenta nuevamente.');
+      return;
+      
+    } finally {
+      setVerifyingAddress(false);
     }
 
     if (isEmpty) {
@@ -529,6 +649,40 @@ export default function CartPage() {
         });
       }
       
+      // 🚨 CRITICAL DEBUG: Log all address and user info before sending
+      console.log('🔍 CHECKOUT PAYLOAD DEBUG - CRITICAL ANALYSIS:', {
+        selectedAddress: {
+          id: selectedAddress?.id,
+          city: selectedAddress?.city,
+          state: selectedAddress?.state,
+          street: selectedAddress?.street,
+          zipCode: selectedAddress?.zipCode,
+          isPrimary: selectedAddress?.isPrimary,
+          fullObject: selectedAddress
+        },
+        addresses: addresses?.map(addr => ({
+          id: addr.id,
+          city: addr.city,
+          isPrimary: addr.isPrimary
+        })),
+        payloadData: {
+          shipping_address_id: payload.shipping_address_id,
+          shipping_address_id_type: typeof payload.shipping_address_id,
+          shipping_address_id_length: payload.shipping_address_id?.length,
+          coupon_code: payload.coupon_code
+        },
+        timestamp: new Date().toISOString(),
+        addressValidation: {
+          hasAddresses,
+          addressesCount: addresses?.length || 0,
+          hasSelectedAddress: !!selectedAddress,
+          selectedAddressId: selectedAddress?.id,
+          isAddressSafeForCheckout: isAddressSafeForCheckout(),
+          isSyncingWithBackend,
+          lastSyncedAddressId
+        }
+      });
+
       console.log('📦 Payload completo para Stripe:', JSON.stringify(payload, null, 2));
       console.log('💰 Total esperado en checkout:', finalTotal, '(del backend)');
       
@@ -649,7 +803,8 @@ export default function CartPage() {
   }, [
     isAuthenticated, needsAddress, hasValidAddress, selectedAddress, isEmpty, 
     deliveryOptions, appliedCoupon, finalTotal, savingsAmount, isFreeShippingApplied, t,
-    displayConsigne, displaySubtotal, displayTaxes, finalShippingCost, items, summary
+    displayConsigne, displaySubtotal, displayTaxes, finalShippingCost, items, summary,
+    isSyncingWithBackend, isAddressSafeForCheckout
   ]);
 
   // Función para renderizar badges de impuestos (memoizada)
@@ -1109,6 +1264,7 @@ export default function CartPage() {
                   {/* Opciones de entrega - ahora integradas en el resumen */}
                   <div className="mt-4 sm:mt-6">
                     <DeliveryOptions 
+                      key={selectedAddress?.id || 'no-address'}
                       onOptionsChange={setDeliveryOptions}
                       disabled={false}
                       className="border-0 shadow-none bg-transparent p-0"
@@ -1121,34 +1277,78 @@ export default function CartPage() {
                       size="lg" 
                       className="w-full bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base h-10 sm:h-12"
                       onClick={() => {
-                        console.log('🔍 Button clicked - Debug info:', {
-                          isAuthenticated,
-                          hasValidAddress,
-                          needsAddress,
-                          shippingMessage,
-                          deliveryOptionsValid: deliveryOptions.isValid,
-                          selectedAddress: selectedAddress ? { id: selectedAddress.id, city: selectedAddress.city } : null,
-                          addressesCount: addresses?.length || 0,
+                        console.log('🚨 CHECKOUT BUTTON CLICKED - Debug completo:', {
+                          timestamp: new Date().toISOString(),
+                          authState: {
+                            isAuthenticated
+                          },
+                          addressState: {
+                            hasAddresses,
+                            addressesCount: addresses?.length || 0,
+                            selectedAddressId: selectedAddress?.id,
+                            selectedAddressCity: selectedAddress?.city,
+                            selectedAddressPrimary: selectedAddress?.isPrimary,
+                            hasValidAddress
+                          },
+                          cartState: {
+                            isEmpty,
+                            itemsCount: items.length,
+                            totalQuantity
+                          },
+                          deliveryState: {
+                            isValid: deliveryOptions.isValid,
+                            deliveryOptions
+                          },
                           shippingState: {
-                            cost: finalShippingCost,
-                            isFree: isFreeShippingApplied,
-                            message: shippingMessage,
-                            needsAddress: needsAddress
+                            needsAddress,
+                            shippingMessage,
+                            finalShippingCost,
+                            isFreeShippingApplied
+                          },
+                          buttonState: {
+                            disabled: !isAuthenticated || isEmpty || checkoutLoading || verifyingAddress || !deliveryOptions.isValid || !hasAddresses || !selectedAddress?.id,
+                            checkoutLoading,
+                            verifyingAddress,
+                            allConditionsMet: isAuthenticated && hasAddresses && selectedAddress?.id && deliveryOptions.isValid && !isEmpty
+                          },
+                          // NEW: Critical validation checks
+                          criticalChecks: {
+                            passedAuth: isAuthenticated,
+                            passedAddresses: hasAddresses,
+                            passedSelectedAddress: !!selectedAddress?.id,
+                            passedDelivery: deliveryOptions.isValid,
+                            passedCart: !isEmpty,
+                            passedBackendAddress: !needsAddress,
+                            blockingCondition: !isAuthenticated ? 'AUTH' : 
+                                             isEmpty ? 'EMPTY_CART' : 
+                                             checkoutLoading ? 'LOADING' : 
+                                             verifyingAddress ? 'VERIFYING_ADDRESS' :
+                                             !deliveryOptions.isValid ? 'DELIVERY_OPTIONS' : 
+                                             !hasAddresses ? 'NO_ADDRESSES' : 
+                                             !selectedAddress?.id ? 'NO_SELECTED_ADDRESS' :
+                                             needsAddress ? 'BACKEND_NEEDS_ADDRESS' : 'NONE'
                           }
                         })
                         handleCheckout()
                       }}
-                      disabled={!isAuthenticated || !deliveryOptions.isValid || !hasValidAddress || isEmpty || checkoutLoading || needsAddress}
+                      disabled={!isAuthenticated || isEmpty || checkoutLoading || verifyingAddress || !deliveryOptions.isValid || !hasAddresses || !selectedAddress?.id || needsAddress}
                     >
                       {checkoutLoading ? (
                         <span className="flex items-center justify-center gap-2">
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                           {t('cart.checkout.redirectingToStripe')}
                         </span>
+                      ) : verifyingAddress ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Verificando dirección...
+                        </span>
                       ) : !isAuthenticated ? t('cart.summary.authRequired') : 
                        isEmpty ? t('cart.checkout.emptyCart') :
-                       needsAddress ? t('cart.summary.addressRequired') :
-                       !hasValidAddress ? t('cart.summary.addressRequired') : 
+                       !hasAddresses ? t('cart.summary.addressRequired') :
+                       !selectedAddress?.id ? t('cart.errors.selectAddress') :
+                       needsAddress ? 'Procesando dirección...' :
+                       isSyncingWithBackend ? 'Procesando...' :
                        !deliveryOptions.isValid ? t('cart.delivery.error') : 
                        t('cart.summary.proceed')}
                     </Button>
