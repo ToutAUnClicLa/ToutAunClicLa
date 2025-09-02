@@ -1947,5 +1947,47 @@ export default {
         contactButton: "Contacter le Support Technique"
       }
     }
+  },
+
+  // Page Coming Soon
+  comingSoon: {
+    title: "Bientôt disponible !",
+    mainMessage: "Nous travaillons aussi dur que possible pour vous apporter cette section à un seul clic de chez vous !",
+    subtitle: "Nouvelle fonctionnalité en développement",
+    description: "Notre équipe travaille dur pour vous offrir une expérience incroyable. Restez à l'écoute des mises à jour.",
+    features: {
+      title: "Qu'est-ce qui arrive bientôt ?",
+      items: [
+        "Expérience utilisateur améliorée",
+        "Nouvelles fonctionnalités passionnantes",
+        "Meilleures performances et vitesse",
+        "Design moderne et responsive"
+      ]
+    },
+    timeline: {
+      title: "Calendrier de développement",
+      current: "En développement actif",
+      estimated: "Estimé : Bientôt disponible",
+      status: "Nous y travaillons"
+    },
+    actions: {
+      backToHome: "Retour à l'accueil",
+      backToPrevious: "Retour",
+      notifyMe: "M'avertir quand c'est prêt",
+      followUpdates: "Suivre les mises à jour",
+      visitOtherSections: "Explorer d'autres sections"
+    },
+    encouragement: {
+      title: "Quelque chose d'incroyable arrive !",
+      message: "En attendant, vous pouvez explorer nos produits et services disponibles.",
+      thanksForPatience: "Merci pour votre patience"
+    },
+    progress: {
+      title: "Progression du développement",
+      design: "Design terminé",
+      development: "Développement en cours",
+      testing: "Tests en attente",
+      launch: "Lancement bientôt"
+    }
   }
 };

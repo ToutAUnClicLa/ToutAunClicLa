@@ -1960,5 +1960,47 @@ export default {
         contactButton: "Contact Technical Support"
       }
     }
+  },
+
+  // Coming Soon Page
+  comingSoon: {
+    title: "Coming Soon!",
+    mainMessage: "We are working as hard as we can to bring you that section just one click away from your home!",
+    subtitle: "New functionality in development",
+    description: "Our team is working hard to bring you an incredible experience. Stay tuned for updates.",
+    features: {
+      title: "What's coming soon?",
+      items: [
+        "Enhanced user experience",
+        "Exciting new features",
+        "Better performance and speed",
+        "Modern responsive design"
+      ]
+    },
+    timeline: {
+      title: "Development timeline",
+      current: "In active development",
+      estimated: "Estimated: Coming soon",
+      status: "We're working on it"
+    },
+    actions: {
+      backToHome: "Back to home",
+      backToPrevious: "Go back",
+      notifyMe: "Notify me when ready",
+      followUpdates: "Follow updates",
+      visitOtherSections: "Explore other sections"
+    },
+    encouragement: {
+      title: "Something amazing is coming!",
+      message: "In the meantime, you can explore our available products and services.",
+      thanksForPatience: "Thanks for your patience"
+    },
+    progress: {
+      title: "Development progress",
+      design: "Design completed",
+      development: "Development in progress",
+      testing: "Testing pending",
+      launch: "Launch coming soon"
+    }
   }
 };

@@ -1987,5 +1987,47 @@ export default {
         contactButton: "Contactar Soporte Técnico"
       }
     }
+  },
+
+  // Página Coming Soon
+  comingSoon: {
+    title: "¡Próximamente disponible!",
+    mainMessage: "Estamos trabajando lo más que podemos para llevarte esa sección a un solo clic de tu casa!",
+    subtitle: "Nueva funcionalidad en desarrollo",
+    description: "Nuestro equipo está trabajando duro para traerte una experiencia increíble. Mantente atento a las actualizaciones.",
+    features: {
+      title: "¿Qué viene próximamente?",
+      items: [
+        "Experiencia de usuario mejorada",
+        "Nuevas funcionalidades emocionantes",
+        "Mejor rendimiento y velocidad",
+        "Diseño moderno y responsive"
+      ]
+    },
+    timeline: {
+      title: "Cronograma de desarrollo",
+      current: "En desarrollo activo",
+      estimated: "Estimado: Próximamente",
+      status: "Estamos trabajando en ello"
+    },
+    actions: {
+      backToHome: "Volver al inicio",
+      backToPrevious: "Volver atrás",
+      notifyMe: "Notificarme cuando esté listo",
+      followUpdates: "Seguir actualizaciones",
+      visitOtherSections: "Explorar otras secciones"
+    },
+    encouragement: {
+      title: "¡Algo increíble viene en camino!",
+      message: "Mientras tanto, puedes explorar nuestros productos y servicios disponibles.",
+      thanksForPatience: "Gracias por tu paciencia"
+    },
+    progress: {
+      title: "Progreso del desarrollo",
+      design: "Diseño completado",
+      development: "Desarrollo en progreso",
+      testing: "Pruebas pendientes",
+      launch: "Lanzamiento próximo"
+    }
   }
 };

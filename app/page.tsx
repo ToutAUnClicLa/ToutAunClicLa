@@ -505,7 +505,7 @@ export default function Home() {
         iconColor="text-amber-600"
       >
         <div className="w-full">
-          <Link href="/comidas">
+          <Link href="/coming-soon">
             <motion.div
               className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer group h-64 sm:h-64 md:h-80 w-full"
               whileHover={{ scale: 1.02 }}
