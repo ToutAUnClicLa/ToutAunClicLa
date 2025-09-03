@@ -1,10 +1,48 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+// Cache para normalización de texto
+const normalizeCache = new Map<string, string>();
+
+// Función avanzada para normalizar texto (quitar acentos, tildes, etc.) con cache
+const normalizeText = (text: string): string => {
+  if (!text) return '';
+  
+  if (normalizeCache.has(text)) {
+    return normalizeCache.get(text)!;
+  }
+  
+  const normalized = text
+    .toLowerCase()
+    .normalize('NFD') // Descomponer caracteres Unicode
+    .replace(/[\u0300-\u036f]/g, '') // Eliminar diacríticos (acentos, tildes)
+    // Reemplazo exhaustivo de caracteres especiales
+    .replace(/[àáâãäåāă]/g, 'a')
+    .replace(/[èéêëēėę]/g, 'e')  
+    .replace(/[ìíîïīįı]/g, 'i')
+    .replace(/[òóôõöøōő]/g, 'o')
+    .replace(/[ùúûüūų]/g, 'u')
+    .replace(/[ýÿŷ]/g, 'y')
+    .replace(/ñ/g, 'n')
+    .replace(/ç/g, 'c')
+    .replace(/œ/g, 'oe')
+    .replace(/æ/g, 'ae')
+    .replace(/ß/g, 'ss')
+    .replace(/đ/g, 'd')
+    .replace(/ł/g, 'l')
+    .replace(/[^\w\s]/g, '') // Eliminar caracteres especiales pero mantener espacios
+    .replace(/\s+/g, ' ') // Normalizar espacios múltiples
+    .trim();
+    
+  normalizeCache.set(text, normalized);
+  return normalized;
+};
+
 interface UseOptimizedSearchOptions {
   minLength?: number;
   debounceDelay?: number;
   enableCache?: boolean;
   cacheTimeout?: number;
+  normalizeSearch?: boolean; // Nueva opción para habilitar normalización
 }
 
 export function useOptimizedSearch(
@@ -15,7 +53,8 @@ export function useOptimizedSearch(
     minLength = 2,
     debounceDelay = 800,
     enableCache = true,
-    cacheTimeout = 5 * 60 * 1000 // 5 minutos
+    cacheTimeout = 5 * 60 * 1000, // 5 minutos
+    normalizeSearch = true // Por defecto habilitado
   } = options;
 
   const [searchValue, setSearchValue] = useState('');
@@ -36,11 +75,12 @@ export function useOptimizedSearch(
   // Función para actualizar el valor de búsqueda
   const updateSearchValue = useCallback((newValue: string) => {
     setSearchValue(newValue);
-    setIsSearching(newValue.length >= minLength);
+    setIsSearching(newValue.length >= minLength && newValue.trim() !== '');
   }, [minLength]);
 
   // Función para limpiar la búsqueda
   const clearSearch = useCallback(() => {
+    console.log('🧹 useOptimizedSearch: clearSearch() llamado');
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -73,27 +113,33 @@ export function useOptimizedSearch(
       return;
     }
 
-    const trimmedValue = searchValue.trim().toLowerCase();
+    // Normalizar la búsqueda si está habilitado
+    const processedValue = normalizeSearch ? normalizeText(searchValue.trim()) : searchValue.trim().toLowerCase();
+
+    // Debug de normalización
+    if (normalizeSearch && searchValue.trim() !== processedValue) {
+      console.log(`📝 Normalización: "${searchValue.trim()}" -> "${processedValue}"`);
+    }
 
     // Verificar caché si está habilitado
-    if (enableCache && cacheRef.current.has(trimmedValue)) {
-      console.log('Usando resultado desde caché para:', trimmedValue);
-      setDebouncedValue(trimmedValue);
+    if (enableCache && cacheRef.current.has(processedValue)) {
+      console.log('Usando resultado desde caché para:', processedValue);
+      setDebouncedValue(processedValue);
       setIsSearching(false);
       return;
     }
 
     timeoutRef.current = setTimeout(() => {
-      console.log('Ejecutando búsqueda para:', trimmedValue);
-      setDebouncedValue(trimmedValue);
+      console.log('🔍 Ejecutando búsqueda para:', processedValue);
+      setDebouncedValue(processedValue);
       setIsSearching(false);
       
       // Agregar a caché
       if (enableCache) {
-        cacheRef.current.set(trimmedValue, Date.now());
+        cacheRef.current.set(processedValue, Date.now());
       }
       
-      onSearchRef.current(trimmedValue);
+      onSearchRef.current(processedValue);
     }, debounceDelay);
 
     return () => {
@@ -101,7 +147,7 @@ export function useOptimizedSearch(
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [searchValue, minLength, debounceDelay, enableCache]);
+  }, [searchValue, minLength, debounceDelay, enableCache, normalizeSearch]);
 
   // Efecto para limpiar caché automáticamente
   useEffect(() => {

@@ -31,6 +31,7 @@ function ProductosContent() {
   const { t } = useTranslation();
   const searchParams = useSearchParams();
   const subcategoriaId = searchParams.get('subcategoria');
+  const searchQuery = searchParams.get('search'); // Obtener parámetro de búsqueda
 
   // Set SEO metadata
   useEffect(() => {
@@ -68,6 +69,7 @@ function ProductosContent() {
         categoryName="productos" 
         title={t('catalog.productList.productsTitle')}
         initialSubcategory={subcategoriaId ? getSubcategoryId(subcategoriaId) : null}
+        initialSearch={searchQuery || undefined}
       />
     </>
   );

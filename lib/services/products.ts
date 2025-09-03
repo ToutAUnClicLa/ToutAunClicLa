@@ -9,9 +9,9 @@ import { VariationGroup } from '@/types/variations';
 // Control de peticiones en curso para evitar duplicados
 const pendingRequests = new Map<string, Promise<any>>();
 
-// Sistema de throttling más agresivo para evitar rate limiting
+// Sistema de throttling optimizado para uso local con caché
 const requestHistory = new Map<string, number[]>();
-const MAX_REQUESTS_PER_MINUTE = 5; // Reducido de 10 a 5
+const MAX_REQUESTS_PER_MINUTE = 8; // Slightly increased since we cache more aggressively
 const THROTTLE_WINDOW = 60000; // 1 minuto
 
 // Función para verificar si podemos hacer una petición
@@ -36,11 +36,11 @@ const recordRequest = (endpoint: string): void => {
   requestHistory.set(endpoint, history);
 };
 
-// Sistema de circuit breaker para evitar spam de peticiones fallidas
+// Sistema de circuit breaker optimizado
 let circuitBreakerOpenUntil = 0;
-const CIRCUIT_BREAKER_TIMEOUT = 60000; // Aumentado a 60 segundos
+const CIRCUIT_BREAKER_TIMEOUT = 45000; // Reduced to 45 seconds for faster recovery
 let consecutiveErrors = 0;
-const MAX_CONSECUTIVE_ERRORS = 2; // Reducido de 3 a 2
+const MAX_CONSECUTIVE_ERRORS = 3; // Back to 3 for better fault tolerance
 
 // Función para verificar si el circuit breaker está abierto
 const isCircuitBreakerOpen = (): boolean => {
@@ -50,7 +50,7 @@ const isCircuitBreakerOpen = (): boolean => {
 // Función para abrir el circuit breaker
 const openCircuitBreaker = (): void => {
   circuitBreakerOpenUntil = Date.now() + CIRCUIT_BREAKER_TIMEOUT;
-  console.warn('Circuit breaker opened due to consecutive errors. Requests will be blocked for 60 seconds.');
+  console.warn(`Circuit breaker opened due to ${consecutiveErrors} consecutive errors. Requests will be blocked for ${CIRCUIT_BREAKER_TIMEOUT/1000} seconds.`);
 };
 
 // Función para manejar errores del circuit breaker
@@ -355,8 +355,8 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
         pagination: data.pagination
       };
 
-      // Guardar en cache por 3 minutos
-      apiCache.set(cacheKey, result, 3 * 60 * 1000);
+      // Guardar en cache por 8 minutos (increased for search component optimization)
+      apiCache.set(cacheKey, result, 8 * 60 * 1000);
       handleRequestResult(true);
 
       return result;
@@ -499,8 +499,8 @@ export async function getProductById(id: number): Promise<Product> {
         processedProduct.variations = product.variations;
       }
 
-      // Guardar en cache por 5 minutos (productos individuales pueden ser más estables)
-      apiCache.set(cacheKey, processedProduct, 5 * 60 * 1000);
+      // Guardar en cache por 12 minutos (individual products are more stable)
+      apiCache.set(cacheKey, processedProduct, 12 * 60 * 1000);
       console.log(`Product ${id} cached successfully`);
       handleRequestResult(true);
 
@@ -611,8 +611,8 @@ export async function getCategories(): Promise<Category[]> {
       throw new Error(data.message || data.error || 'Error al obtener categorías');
     }
 
-    // Guardar en cache por 10 minutos (las categorías cambian poco)
-    apiCache.set(cacheKey, data.categories, 10 * 60 * 1000);
+    // Guardar en cache por 20 minutos (las categorías cambian muy poco)
+    apiCache.set(cacheKey, data.categories, 20 * 60 * 1000);
     handleRequestResult(true);
 
     return data.categories;
@@ -681,8 +681,8 @@ export async function getSubcategories(categoryId?: number): Promise<Subcategory
       throw new Error(data.message || data.error || 'Error al obtener subcategorías');
     }
 
-    // Guardar en cache por 10 minutos (las subcategorías cambian poco)
-    apiCache.set(cacheKey, data.subcategories, 10 * 60 * 1000);
+    // Guardar en cache por 15 minutos (las subcategorías cambian poco)
+    apiCache.set(cacheKey, data.subcategories, 15 * 60 * 1000);
     handleRequestResult(true);
 
     return data.subcategories;

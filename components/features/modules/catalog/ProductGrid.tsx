@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Package, Utensils, Store, Filter, Search, Grid, List, Clock, Shield, Truck, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -67,6 +67,7 @@ interface ProductGridProps {
   categoryName: CategoryName;
   title: string;
   initialSubcategory?: number | null;
+  initialSearch?: string;
   showHeader?: boolean;
 }
 
@@ -74,7 +75,8 @@ export function ProductGrid({
   categoryId, 
   categoryName, 
   title, 
-  initialSubcategory = null, 
+  initialSubcategory = null,
+  initialSearch,
   showHeader = true 
 }: ProductGridProps) {
   const { t } = useTranslation();
@@ -83,7 +85,7 @@ export function ProductGrid({
   const [tempFilters, setTempFilters] = useState<ProductFilters>({
     category: typeof categoryId === 'string' ? parseInt(categoryId) : categoryId,
     subcategory: initialSubcategory || undefined,
-    search: '',
+    search: initialSearch || '',
     page: 1,
     limit: 20,
     sortBy: 'precio',
@@ -91,34 +93,13 @@ export function ProductGrid({
   });
   const [filters, setFilters] = useState<ProductFilters>(tempFilters);
 
-  // Hook optimizado para búsqueda - memoizamos la función callback
+  // Optimized search handler - no longer needed since filters are updated by useEffect
   const handleSearch = useCallback((searchTerm: string) => {
-    const startTime = Date.now();
-    
-    setFilters(prev => ({
-      ...prev,
-      search: searchTerm,
-      page: 1
-    }));
-    
     // Debug de performance en desarrollo
     if (process.env.NODE_ENV === 'development') {
-      console.log(`🔍 Iniciando búsqueda: "${searchTerm}" a las ${new Date().toLocaleTimeString()}`);
-      
-      // Medir tiempo de respuesta
-      const measurePerformance = () => {
-        const endTime = Date.now();
-        const duration = endTime - startTime;
-        console.log(`⚡ Búsqueda completada en ${duration}ms`);
-        
-        if (duration > 2000) {
-          console.warn(`🐌 Búsqueda lenta detectada: ${duration}ms para "${searchTerm}"`);
-        }
-      };
-      
-      // Usar setTimeout para medir cuando termine la búsqueda
-      setTimeout(measurePerformance, 100);
+      console.log(`🔍 Search triggered: "${searchTerm}" at ${new Date().toLocaleTimeString()}`);
     }
+    // Note: filters are now updated by the useEffect that watches debouncedValue
   }, []);
 
   const {
@@ -131,13 +112,176 @@ export function ProductGrid({
     hasSearchText
   } = useOptimizedSearch(handleSearch, {
     minLength: 2,
-    debounceDelay: 800,
+    debounceDelay: 600, // Reducido para mejor UX
     enableCache: true,
-    cacheTimeout: 5 * 60 * 1000 // 5 minutos
+    cacheTimeout: 5 * 60 * 1000, // 5 minutos
+    normalizeSearch: true // Habilitar normalización de acentos
   });
+  
+  // Inicializar con búsqueda de la URL si existe
+  useEffect(() => {
+    console.log('🔗 ProductGrid received initialSearch:', initialSearch, 'current searchValue:', searchValue);
+    if (initialSearch && initialSearch !== searchValue) {
+      console.log('🔗 Inicializando búsqueda desde URL:', initialSearch);
+      updateSearchValue(initialSearch);
+    }
+  }, [initialSearch]); // Removed circular dependencies
+  
+  // Update filters when debouncedValue changes (unidirectional sync)
+  useEffect(() => {
+    console.log('🔄 Updating filters from debouncedValue:', debouncedValue);
+    setFilters(prev => ({
+      ...prev,
+      search: debouncedValue,
+      page: 1
+    }));
+  }, [debouncedValue]); // Only depend on debouncedValue
 
-  // Usar el hook de productos con los filtros actuales
-  const { products, pagination, loading, error, refetch } = useProducts(filters);
+  // Función de normalización de texto (igual que HomeSearchBar)
+  const normalizeText = useCallback((text: string): string => {
+    if (!text) return '';
+    return text
+      .toLowerCase()
+      .normalize('NFD') // Descomponer caracteres Unicode
+      .replace(/[\u0300-\u036f]/g, '') // Eliminar diacríticos (acentos, tildes, diéresis)
+      // Reemplazos específicos para caracteres franceses y españoles
+      .replace(/[àáâãäåāă]/g, 'a')
+      .replace(/[èéêëēėę]/g, 'e')  
+      .replace(/[ìíîïīįı]/g, 'i')
+      .replace(/[òóôõöøōő]/g, 'o')
+      .replace(/[ùúûüūų]/g, 'u')
+      .replace(/[ýÿŷ]/g, 'y')
+      .replace(/ñ/g, 'n')           // Ñ española
+      .replace(/ç/g, 'c')           // Ç francesa
+      .replace(/œ/g, 'oe')          // Ligadura francesa
+      .replace(/æ/g, 'ae')          // Ligadura
+      .replace(/ß/g, 'ss')          // Alemán
+      .replace(/đ/g, 'd')           // Croata/vietnamita
+      .replace(/ł/g, 'l')           // Polaco
+      .replace(/[^\w\s]/g, '') // Eliminar caracteres especiales pero mantener espacios
+      .replace(/\s+/g, ' ') // Normalizar espacios múltiples
+      .trim();
+  }, []);
+
+  // Estado para productos filtrados localmente
+  const [locallyFiltered, setLocallyFiltered] = useState(false);
+  
+  // Determinar si hacer búsqueda local o usar la API
+  const shouldUseLocalSearch = filters.search && filters.search.length >= 2;
+  
+  // Filtros para la API (sin search si vamos a filtrar localmente)
+  const apiFilters = shouldUseLocalSearch 
+    ? { ...filters, search: undefined, page: 1, limit: 100 } // Obtener más productos para filtrar
+    : filters;
+  
+  // Usar el hook de productos con los filtros de API
+  const { products: apiProducts, pagination, loading, error, refetch } = useProducts(apiFilters);
+  
+  // Función de scoring por palabra exacta (igual que HomeSearchBar)
+  const calculateRelevance = useCallback((product: Product, searchTerm: string): number => {
+    const normalizedProductName = normalizeText(product.nombre || '');
+    const normalizedDescription = normalizeText(product.descripcion || '');
+    const normalizedSearchQuery = normalizeText(searchTerm);
+    
+    const searchWords = normalizedSearchQuery.split(' ').filter(word => word.length >= 2);
+    const nameWords = normalizedProductName.split(' ');
+    const descriptionWords = normalizedDescription.split(' ');
+    
+    let score = 0;
+    let nameMatches = 0;
+    let descriptionMatches = 0;
+    
+    // Contar coincidencias exactas por ubicación
+    searchWords.forEach(searchWord => {
+      if (nameWords.includes(searchWord)) {
+        nameMatches++;
+      } else if (descriptionWords.includes(searchWord)) {
+        descriptionMatches++;
+      }
+    });
+    
+    // Solo puntuar si hay al menos una coincidencia
+    if (nameMatches > 0 || descriptionMatches > 0) {
+      // Puntuación: priorizar nombre > descripción
+      score += nameMatches * 1000;        // Palabras exactas en nombre: alta prioridad
+      score += descriptionMatches * 300;   // Palabras exactas en descripción: media prioridad
+      
+      // Bonus por múltiples palabras encontradas
+      const totalMatches = nameMatches + descriptionMatches;
+      if (totalMatches > 1) {
+        score += totalMatches * 100; // Bonus por múltiples coincidencias
+      }
+      
+      // Pequeño bonus por stock disponible
+      if (product.stock > 0) score += 5;
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`📊 "${product.nombre}" - Score: ${score} (nombre: ${nameMatches}, desc: ${descriptionMatches})`);
+      }
+    }
+    
+    return score;
+  }, [normalizeText]);
+  
+  // Filtrar productos localmente si es necesario
+  const filteredProducts = useMemo(() => {
+    if (!shouldUseLocalSearch) {
+      return apiProducts;
+    }
+    
+    const searchTerm = filters.search || '';
+    console.log('🔍 Filtrando productos localmente para:', searchTerm);
+    
+    // Filtrar productos con scoring de relevancia
+    const scoredProducts = apiProducts
+      .map(product => ({
+        product,
+        score: calculateRelevance(product, searchTerm)
+      }))
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(({ product }) => product);
+    
+    console.log(`📊 Productos filtrados: ${scoredProducts.length} de ${apiProducts.length}`);
+    return scoredProducts;
+  }, [apiProducts, shouldUseLocalSearch, filters.search, calculateRelevance]);
+  
+  // Productos finales a mostrar
+  const products = filteredProducts;
+  
+  // Paginación customizada para búsqueda local
+  const customPagination = useMemo(() => {
+    if (!shouldUseLocalSearch) {
+      return pagination;
+    }
+    
+    // Para búsqueda local, crear paginación customizada
+    const totalItems = filteredProducts.length;
+    const itemsPerPage = filters.limit || 20;
+    const currentPage = filters.page || 1;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    return {
+      currentPage,
+      totalPages,
+      totalItems,
+      itemsPerPage
+    };
+  }, [shouldUseLocalSearch, pagination, filteredProducts.length, filters.limit, filters.page]);
+  
+  // Productos paginados para mostrar
+  const paginatedProducts = useMemo(() => {
+    if (!shouldUseLocalSearch) {
+      return products;
+    }
+    
+    const itemsPerPage = filters.limit || 20;
+    const currentPage = filters.page || 1;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    
+    return products.slice(startIndex, endIndex);
+  }, [shouldUseLocalSearch, products, filters.limit, filters.page]);
   
   // Obtener subcategorías para filtros
   const { 
@@ -208,8 +352,10 @@ export function ProductGrid({
   }, []);
 
   const handleClearFilters = useCallback(() => {
-    clearSearch(); // Usar la función del hook optimizado
-    setFilters({
+    console.log('🧹 Limpiando todos los filtros...');
+    
+    // Limpiar los filtros primero
+    const clearedFilters = {
       category: typeof categoryId === 'string' ? parseInt(categoryId) : categoryId,
       search: '',
       subcategory: undefined,
@@ -217,11 +363,19 @@ export function ProductGrid({
       limit: 20,
       sortBy: 'precio',
       sortOrder: 'desc'
-    });
+    };
+    
+    // Actualizar todos los estados de filtros
+    setFilters(clearedFilters);
+    setTempFilters(clearedFilters);
+    
+    // Limpiar explícitamente el searchValue también
+    console.log('🧹 Limpiando searchValue explícitamente');
+    clearSearch();
     
     // Notificación de confirmación
     toast.success(t('catalog.productList.notifications.filtersCleared'));
-  }, [clearSearch, categoryId, t]);
+  }, [categoryId, t, clearSearch]);
 
   const LoadingSkeleton = useMemo(() => (
     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
@@ -433,7 +587,7 @@ export function ProductGrid({
             <div className="sr-only">
               <h2>Búsqueda y filtros de productos</h2>
               <p>
-                {pagination?.totalItems || products.length} productos encontrados
+                {customPagination?.totalItems || paginatedProducts.length} productos encontrados
                 {searchValue && ` para la búsqueda "${searchValue}"`}
                 {filters.subcategory && ` en la categoría ${subcategories.find(s => s.id === filters.subcategory)?.nombre}`}
               </p>
@@ -456,11 +610,28 @@ export function ProductGrid({
                     loading && "opacity-50 cursor-not-allowed"
                   )}
                   value={searchValue}
-                  onChange={(e) => updateSearchValue(e.target.value)}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    console.log('🔍 Input onChange:', newValue);
+                    updateSearchValue(newValue);
+                    // Let debouncedValue handle filter updates
+                  }}
                   disabled={loading}
                 />
                 
-                {/* Loading spinner en el campo de búsqueda */}
+                {/* Clear button y Loading spinner en el campo de búsqueda */}
+                {searchValue && !isSearching && !loading && (
+                  <button
+                    onClick={() => {
+                      console.log('🧹 Limpiando búsqueda desde botón X del input');
+                      clearSearch();
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                    aria-label="Limpiar búsqueda"
+                  >
+                    <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                  </button>
+                )}
                 {(isSearching || loading) && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
                     <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -617,7 +788,12 @@ export function ProductGrid({
                     >
                       🔍 &ldquo;{searchValue}&rdquo;
                       <button
-                        onClick={() => !loading && updateSearchValue('')}
+                        onClick={() => {
+                          if (!loading) {
+                            console.log('🧹 Limpiando búsqueda desde badge...');
+                            clearSearch();
+                          }
+                        }}
                         className="hover:bg-gray-200 rounded-full p-0.5 transition-colors"
                         disabled={loading}
                         aria-label="Limpiar búsqueda"
@@ -670,7 +846,7 @@ export function ProductGrid({
                   onRetry={refetch}
                   retryLabel={t('catalog.productList.retry')}
                 />
-              ) : products.length === 0 ? (
+              ) : paginatedProducts.length === 0 ? (
                 <StateDisplay 
                   type="empty" 
                   title={searchValue ? `${t('catalog.productList.noProducts')} para "${searchValue}"` : t('catalog.productList.noProducts')}
@@ -694,9 +870,9 @@ export function ProductGrid({
                     animate="show"
                     className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
                     role="grid"
-                    aria-label={`Cuadrícula de ${products.length} productos`}
+                    aria-label={`Cuadrícula de ${paginatedProducts.length} productos`}
                   >
-                    {products.map((product, index) => (
+                    {paginatedProducts.map((product, index) => (
                       <motion.div key={product.id} variants={item}>
                         <ProductCard
                           product={product}
@@ -715,7 +891,7 @@ export function ProductGrid({
             </section>
 
             {/* Paginación */}
-            {pagination && pagination.totalPages > 1 && (
+            {customPagination && customPagination.totalPages > 1 && (
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -729,25 +905,40 @@ export function ProductGrid({
                     </>
                   ) : (
                     <>
-                      {t('pagination.showingResults', {
-                        start: ((pagination.currentPage - 1) * pagination.itemsPerPage) + 1,
-                        end: Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems),
-                        total: pagination.totalItems,
-                        plural: pagination.totalItems !== 1 ? 's' : ''
-                      })}
-                      {searchValue && (
-                        <span className="text-blue-600 font-medium">
-                          {t('pagination.searchResultsFor', { search: searchValue })}
-                        </span>
+                      {shouldUseLocalSearch ? (
+                        // Para búsqueda local, mostrar resultados filtrados
+                        <>
+                          Mostrando {((customPagination.currentPage - 1) * customPagination.itemsPerPage) + 1}-{Math.min(customPagination.currentPage * customPagination.itemsPerPage, customPagination.totalItems)} de {customPagination.totalItems} resultado{customPagination.totalItems !== 1 ? 's' : ''}
+                          {searchValue && (
+                            <span className="text-blue-600 font-medium">
+                              para "{searchValue}"
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        // Para búsqueda de API, usar las traducciones normales
+                        <>
+                          {t('pagination.showingResults', {
+                            start: ((customPagination.currentPage - 1) * customPagination.itemsPerPage) + 1,
+                            end: Math.min(customPagination.currentPage * customPagination.itemsPerPage, customPagination.totalItems),
+                            total: customPagination.totalItems,
+                            plural: customPagination.totalItems !== 1 ? 's' : ''
+                          })}
+                          {searchValue && (
+                            <span className="text-blue-600 font-medium">
+                              {t('pagination.searchResultsFor', { search: searchValue })}
+                            </span>
+                          )}
+                        </>
                       )}
                     </>
                   )}
                 </div>
                 <Pagination
-                  currentPage={pagination.currentPage}
-                  totalPages={pagination.totalPages}
-                  totalItems={pagination.totalItems}
-                  itemsPerPage={pagination.itemsPerPage}
+                  currentPage={customPagination.currentPage}
+                  totalPages={customPagination.totalPages}
+                  totalItems={customPagination.totalItems}
+                  itemsPerPage={customPagination.itemsPerPage}
                   onPageChange={handlePageChange}
                   disabled={loading}
                   className="justify-center"

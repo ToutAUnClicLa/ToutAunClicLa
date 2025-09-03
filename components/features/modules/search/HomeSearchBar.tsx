@@ -6,6 +6,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Product } from '@/lib/services/products';
+import { useInteractionPreloader } from '@/hooks/useProductPreloader';
 
 interface SearchResult {
   id: number;
@@ -19,8 +21,37 @@ interface SearchResult {
   stock: number;
 }
 
-// Cache para normalización de texto
+// Global product cache for all search instances
+interface ProductCache {
+  products: Product[];
+  lastUpdated: number;
+  isLoading: boolean;
+}
+
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+// Categories: 1 = Productos, 3 = Boutique
+
+// Singleton cache shared across all HomeSearchBar instances
+let globalProductCache: ProductCache | null = null;
+const cacheListeners = new Set<() => void>();
+
+// Subscribe to cache updates
+const subscribeToCacheUpdates = (callback: () => void) => {
+  cacheListeners.add(callback);
+  return () => cacheListeners.delete(callback);
+};
+
+// Notify all listeners when cache updates
+const notifyCacheUpdate = () => {
+  cacheListeners.forEach(callback => callback());
+};
+
+// Cache para normalización de texto (increased size)
 const normalizeCache = new Map<string, string>();
+
+// Cache para resultados de búsqueda filtrados
+const searchResultsCache = new Map<string, { results: SearchResult[]; timestamp: number }>();
+const SEARCH_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 // Función debounce nativa (sin dependencias externas)
 function debounce<T extends (...args: any[]) => any>(
@@ -50,7 +81,7 @@ function debounce<T extends (...args: any[]) => any>(
   return debouncedFunction;
 }
 
-// Función avanzada para normalizar texto (quitar acentos, tildes, etc.) con cache
+// Función avanzada para normalizar texto (quitar acentos franceses, españoles, etc.) con cache
 const normalizeText = (text: string): string => {
   if (!text) return '';
   
@@ -61,15 +92,29 @@ const normalizeText = (text: string): string => {
   const normalized = text
     .toLowerCase()
     .normalize('NFD') // Descomponer caracteres Unicode
-    .replace(/[\u0300-\u036f]/g, '') // Eliminar diacríticos (acentos, tildes)
-    .replace(/ñ/g, 'n') // Ñ específica
-    .replace(/ç/g, 'c') // Ç específica
+    .replace(/[\u0300-\u036f]/g, '') // Eliminar diacríticos (acentos, tildes, diéresis)
+    // Reemplazos específicos para caracteres franceses y españoles
+    .replace(/[àáâãäåāă]/g, 'a')
+    .replace(/[èéêëēėę]/g, 'e')  
+    .replace(/[ìíîïīįı]/g, 'i')
+    .replace(/[òóôõöøōő]/g, 'o')
+    .replace(/[ùúûüūų]/g, 'u')
+    .replace(/[ýÿŷ]/g, 'y')
+    .replace(/ñ/g, 'n')           // Ñ española
+    .replace(/ç/g, 'c')           // Ç francesa
+    .replace(/œ/g, 'oe')          // Ligadura francesa
+    .replace(/æ/g, 'ae')          // Ligadura
+    .replace(/ß/g, 'ss')          // Alemán
+    .replace(/đ/g, 'd')           // Croata/vietnamita
+    .replace(/ł/g, 'l')           // Polaco
     .replace(/[^\w\s]/g, '') // Eliminar caracteres especiales pero mantener espacios
     .replace(/\s+/g, ' ') // Normalizar espacios múltiples
     .trim();
     
   normalizeCache.set(text, normalized);
-  console.log(`📝 Normalización: "${text}" -> "${normalized}"`);
+  if (process.env.NODE_ENV === 'development' && text !== normalized && Math.random() < 0.1) {
+    console.log(`📝 Normalización: "${text}" -> "${normalized}"`);
+  }
   return normalized;
 };
 
@@ -78,6 +123,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
   const router = useRouter();
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const loadingPromiseRef = useRef<Promise<void> | null>(null);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -85,13 +131,31 @@ const HomeSearchBar = memo(function HomeSearchBar() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [totalResults, setTotalResults] = useState(0);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [cacheStatus, setCacheStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  
+  // Use interaction preloader for performance optimization
+  const { triggerPreload } = useInteractionPreloader();
 
-  // Cargar búsquedas recientes del localStorage
+  // Initialize product cache and load recent searches
   useEffect(() => {
     const saved = localStorage.getItem('recentSearches');
     if (saved) {
       setRecentSearches(JSON.parse(saved));
     }
+    
+    // Initialize cache if needed
+    initializeProductCache();
+    
+    // Subscribe to cache updates
+    const unsubscribe = subscribeToCacheUpdates(() => {
+      if (globalProductCache) {
+        setCacheStatus(globalProductCache.isLoading ? 'loading' : 'ready');
+      }
+    });
+    
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   // Cerrar dropdown al hacer clic fuera
@@ -106,7 +170,131 @@ const HomeSearchBar = memo(function HomeSearchBar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Función de búsqueda con API real - optimizada con cache y solo 3 resultados
+  // Initialize product cache with smart loading strategy and comprehensive error handling
+  const initializeProductCache = useCallback(async () => {
+    // Return if cache is fresh
+    if (globalProductCache && 
+        Date.now() - globalProductCache.lastUpdated < CACHE_DURATION && 
+        !globalProductCache.isLoading) {
+      setCacheStatus('ready');
+      return;
+    }
+    
+    // Prevent multiple simultaneous loads
+    if (loadingPromiseRef.current) {
+      await loadingPromiseRef.current;
+      return;
+    }
+    
+    setCacheStatus('loading');
+    
+    const loadPromise = (async () => {
+      let retryCount = 0;
+      const maxRetries = 3;
+      
+      while (retryCount < maxRetries) {
+        try {
+          console.log(`🔄 Loading product cache... (attempt ${retryCount + 1}/${maxRetries})`);
+          
+          // Mark cache as loading
+          globalProductCache = {
+            products: globalProductCache?.products || [],
+            lastUpdated: globalProductCache?.lastUpdated || 0,
+            isLoading: true
+          };
+          notifyCacheUpdate();
+          
+          const { getProducts } = await import('@/lib/services/products');
+          
+          // Load with timeout and fallback strategy
+          const loadPromises = [
+            Promise.race([
+              getProducts({ 
+                category: 1, // Productos
+                page: 1, 
+                limit: 500, // Load more products for better local filtering
+                sortBy: 'nombre',
+                sortOrder: 'asc'
+              }),
+              new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Timeout loading productos')), 15000)
+              )
+            ]),
+            Promise.race([
+              getProducts({ 
+                category: 3, // Boutique
+                page: 1, 
+                limit: 500,
+                sortBy: 'nombre',
+                sortOrder: 'asc'
+              }),
+              new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Timeout loading boutique')), 15000)
+              )
+            ])
+          ];
+
+          const results = await Promise.allSettled(loadPromises);
+          
+          // Process results and handle partial failures
+          const allProducts: Product[] = [];
+          let hasErrors = false;
+          
+          results.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+              const productResponse = result.value as { products: any[] };
+              allProducts.push(...productResponse.products);
+            } else {
+              hasErrors = true;
+              console.warn(`Failed to load category ${index === 0 ? 'productos' : 'boutique'}:`, result.reason);
+            }
+          });
+          
+          // Accept partial success if we have some products
+          if (allProducts.length > 0) {
+            // Update global cache
+            globalProductCache = {
+              products: allProducts,
+              lastUpdated: Date.now(),
+              isLoading: false
+            };
+            
+            console.log(`✅ Product cache loaded: ${allProducts.length} products${hasErrors ? ' (with some errors)' : ''}`);
+            setCacheStatus('ready');
+            notifyCacheUpdate();
+            return; // Success - exit retry loop
+          } else {
+            throw new Error('No products loaded from any category');
+          }
+          
+        } catch (error) {
+          retryCount++;
+          console.error(`❌ Error loading product cache (attempt ${retryCount}):`, error);
+          
+          if (retryCount >= maxRetries) {
+            // Keep old cache if available, but mark as not loading
+            if (globalProductCache && globalProductCache.products.length > 0) {
+              globalProductCache.isLoading = false;
+              setCacheStatus('ready'); // Use stale cache
+              console.log('🔄 Using stale cache due to loading errors');
+            } else {
+              setCacheStatus('error');
+            }
+            notifyCacheUpdate();
+          } else {
+            // Wait before retry
+            await new Promise(resolve => setTimeout(resolve, 2000 * retryCount));
+          }
+        }
+      }
+    })();
+    
+    loadingPromiseRef.current = loadPromise;
+    await loadPromise;
+    loadingPromiseRef.current = null;
+  }, []);
+  
+  // Optimized search function using local cache
   const performSearch = useCallback(async (query: string) => {
     if (query.length < 2) {
       setSearchResults([]);
@@ -114,117 +302,140 @@ const HomeSearchBar = memo(function HomeSearchBar() {
       return;
     }
 
+    // Check search results cache first
+    const cacheKey = normalizeText(query);
+    const cachedResult = searchResultsCache.get(cacheKey);
+    
+    if (cachedResult && Date.now() - cachedResult.timestamp < SEARCH_CACHE_DURATION) {
+      console.log('💾 Using cached search results for:', query);
+      setSearchResults(cachedResult.results.slice(0, 2));
+      setTotalResults(cachedResult.results.length);
+      return;
+    }
+
     setIsSearching(true);
     
     try {
-      console.log('🔍 Buscando:', query);
+      console.log('🔍 Searching locally:', query);
       
-      // Nueva estrategia: obtener productos generales y hacer búsqueda inteligente en frontend
-      const { getProducts } = await import('@/lib/services/products');
-      const response = await getProducts({ 
-        page: 1, 
-        limit: 100, // Obtener suficientes productos para buscar localmente
-        sortBy: 'nombre', // Ordenar por nombre para mejor búsqueda
-        sortOrder: 'asc'
-      });
+      // Ensure cache is ready
+      if (!globalProductCache || globalProductCache.isLoading) {
+        await initializeProductCache();
+      }
       
-      console.log('📦 Productos obtenidos para búsqueda local:', response.products.length);
+      if (!globalProductCache || globalProductCache.products.length === 0) {
+        console.warn('⚠️ No products in cache for search');
+        setSearchResults([]);
+        setTotalResults(0);
+        return;
+      }
       
-      // Debug: Ver categorías de los productos
-      response.products.forEach(product => {
-        console.log(`Producto: ${product.nombre}, Categoria ID: ${product.categoria_id}, Categoria: ${product.categorias.nombre}`);
-      });
+      const allProducts = globalProductCache.products;
+      
+      console.log(`📦 Searching through ${allProducts.length} cached products`);
+      
+      // Only log debug info in development and for specific cases
+      if (process.env.NODE_ENV === 'development' && query.length >= 3) {
+        const directMatches = allProducts.filter(product => 
+          product.nombre.toLowerCase().includes(query.toLowerCase())
+        );
+        console.log(`🔍 Direct matches for "${query}": ${directMatches.length}`);
+      }
       
       // Filtrar y mapear productos con búsqueda inteligente
-      const filteredProducts = response.products.filter(product => {
-        // 1. Filtrar comidas por múltiples criterios
-        const categoryName = product.categorias.nombre.toLowerCase();
-        const isComidas = product.categoria_id === 3 || 
-                         categoryName.includes('comida') ||
-                         categoryName.includes('food') ||
-                         categoryName.includes('aliment') ||
-                         categoryName.includes('cuisine') ||
-                         categoryName.includes('meal');
-        
-        if (isComidas) {
-          console.log(`❌ Filtrado por comidas: ${product.nombre}`);
-          return false;
-        }
+      const filteredProducts = allProducts.filter(product => {
+        // Los productos ya están filtrados por categoría (1: productos, 3: boutique)
+        // Ya no incluimos comidas (categoria_id === 2)
 
-        // 2. Búsqueda inteligente con múltiples estrategias
-        const normalizedProductName = normalizeText(product.nombre);
+        // BÚSQUEDA POR PALABRA EXACTA con normalización
+        const normalizedProductName = normalizeText(product.nombre || '');
+        const normalizedDescription = normalizeText(product.descripcion || '');
         const normalizedSearchQuery = normalizeText(query);
-        const normalizedDescription = product.descripcion ? normalizeText(product.descripcion) : '';
         
-        // Estrategia 1: Búsqueda exacta en texto normalizado
-        const exactMatchName = normalizedProductName.includes(normalizedSearchQuery);
-        const exactMatchDescription = normalizedDescription.includes(normalizedSearchQuery);
+        // Dividir en palabras (filtrar palabras muy cortas)
+        const searchWords = normalizedSearchQuery.split(' ').filter(word => word.length >= 2);
+        const nameWords = normalizedProductName.split(' ');
+        const descriptionWords = normalizedDescription.split(' ');
         
-        // Estrategia 2: Búsqueda por palabras individuales
-        const searchWords = normalizedSearchQuery.split(' ').filter(word => word.length > 1);
-        const productWords = normalizedProductName.split(' ');
-        const wordsMatch = searchWords.every(searchWord => 
-          productWords.some(productWord => 
-            productWord.includes(searchWord) || searchWord.includes(productWord)
-          )
-        );
+        // Verificar si alguna palabra de búsqueda coincide exactamente
+        let exactWordMatches = 0;
         
-        // Estrategia 3: Búsqueda al inicio de palabras (para "caf" -> "café")
-        const startsWithMatch = productWords.some(productWord => 
-          searchWords.some(searchWord => productWord.startsWith(searchWord))
-        );
+        searchWords.forEach(searchWord => {
+          // Buscar coincidencia exacta de palabra en nombre
+          if (nameWords.includes(searchWord)) {
+            exactWordMatches++;
+          }
+          // Buscar coincidencia exacta de palabra en descripción
+          else if (descriptionWords.includes(searchWord)) {
+            exactWordMatches++;
+          }
+        });
         
-        const isMatch = exactMatchName || exactMatchDescription || wordsMatch || startsWithMatch;
-        
-        if (isMatch) {
-          console.log(`✅ ENCONTRADO: "${product.nombre}"`);
-          console.log(`   Producto normalizado: "${normalizedProductName}"`);
-          console.log(`   Búsqueda normalizada: "${normalizedSearchQuery}"`);
-          console.log(`   Exacta: ${exactMatchName}, Palabras: ${wordsMatch}, Inicio: ${startsWithMatch}`);
-        }
+        // CRITERIO: Debe tener al menos una palabra exacta en nombre o descripción
+        const isMatch = exactWordMatches > 0;
         
         return isMatch;
       });
 
-      // Calcular puntuación de relevancia y ordenar
+      // Calcular puntuación de relevancia basada en palabras exactas
       const scoredProducts = filteredProducts.map(product => {
-        const normalizedProductName = normalizeText(product.nombre);
+        const normalizedProductName = normalizeText(product.nombre || '');
+        const normalizedDescription = normalizeText(product.descripcion || '');
         const normalizedSearchQuery = normalizeText(query);
         
+        const searchWords = normalizedSearchQuery.split(' ').filter(word => word.length >= 2);
+        const nameWords = normalizedProductName.split(' ');
+        const descriptionWords = normalizedDescription.split(' ');
+        
         let score = 0;
+        let nameMatches = 0;
+        let descriptionMatches = 0;
         
-        // Puntuación más alta para coincidencia exacta
-        if (normalizedProductName === normalizedSearchQuery) score += 100;
+        // Contar coincidencias exactas por ubicación
+        searchWords.forEach(searchWord => {
+          if (nameWords.includes(searchWord)) {
+            nameMatches++;
+          } else if (descriptionWords.includes(searchWord)) {
+            descriptionMatches++;
+          }
+        });
         
-        // Puntuación alta para inicio de nombre
-        if (normalizedProductName.startsWith(normalizedSearchQuery)) score += 80;
+        // Puntuación: priorizar nombre > descripción
+        score += nameMatches * 1000;        // Palabras exactas en nombre: alta prioridad
+        score += descriptionMatches * 300;   // Palabras exactas en descripción: media prioridad
         
-        // Puntuación media para contiene el término
-        if (normalizedProductName.includes(normalizedSearchQuery)) score += 60;
+        // Bonus por múltiples palabras encontradas
+        const totalMatches = nameMatches + descriptionMatches;
+        if (totalMatches > 1) {
+          score += totalMatches * 100; // Bonus por múltiples coincidencias
+        }
         
-        // Puntuación por palabras individuales
-        const searchWords = normalizedSearchQuery.split(' ');
-        const productWords = normalizedProductName.split(' ');
-        const wordMatches = searchWords.filter(searchWord => 
-          productWords.some(productWord => productWord.includes(searchWord))
-        ).length;
-        score += (wordMatches / searchWords.length) * 40;
-        
-        // Bonus por stock disponible
+        // Pequeño bonus por stock disponible
         if (product.stock > 0) score += 5;
         
-        console.log(`📊 "${product.nombre}" - Score: ${score}`);
+        // Only log scoring issues if score is unexpectedly 0
+        if (process.env.NODE_ENV === 'development' && score === 0) {
+          const originalName = product.nombre.toLowerCase();
+          const searchTerm = query.toLowerCase();
+          if (originalName.includes(searchTerm)) {
+            console.warn(`❌ Scoring issue: "${product.nombre}" contains "${searchTerm}" but has score 0`);
+          }
+        }
         
         return { ...product, searchScore: score };
       });
       
-      // Guardar el total de resultados para mostrar en el botón
-      const totalResults = scoredProducts.length;
+      // Filtrar solo productos con score > 0 (que realmente coinciden)
+      const validProducts = scoredProducts.filter(p => p.searchScore > 0);
       
-      // Ordenar por relevancia y tomar solo 2 para preview
-      const mappedResults: SearchResult[] = scoredProducts
+      // Guardar el total de resultados VÁLIDOS para mostrar en el botón
+      const totalResults = validProducts.length;
+      
+      console.log(`🎯 Found ${totalResults} matching products`);
+      
+      // Sort by relevance and create results
+      const allResults: SearchResult[] = validProducts
         .sort((a, b) => b.searchScore - a.searchScore)
-        .slice(0, 2)
         .map(product => ({
           id: product.id,
           nombre: product.nombre,
@@ -232,14 +443,39 @@ const HomeSearchBar = memo(function HomeSearchBar() {
           precio: product.precio,
           imagen_principal: product.imagen_principal,
           categoria_id: product.categoria_id,
-          categoria_nombre: product.categorias.nombre,
+          categoria_nombre: product.categorias?.nombre || (product.categoria_id === 1 ? 'Productos' : 'Boutique'),
           subcategoria: product.subcategorias?.nombre,
           stock: product.stock
         }));
       
-      console.log('🎯 Productos después del filtro:', mappedResults.length);
-      console.log('📊 Total de resultados encontrados:', totalResults);
-      setSearchResults(mappedResults);
+      // Cache the full results
+      searchResultsCache.set(cacheKey, {
+        results: allResults,
+        timestamp: Date.now()
+      });
+      
+      // Clean old cache entries periodically
+      if (searchResultsCache.size > 100) {
+        const now = Date.now();
+        const entriesToDelete: string[] = [];
+        
+        searchResultsCache.forEach((value, key) => {
+          if (now - value.timestamp > SEARCH_CACHE_DURATION) {
+            entriesToDelete.push(key);
+          }
+        });
+        
+        entriesToDelete.forEach(key => {
+          searchResultsCache.delete(key);
+        });
+      }
+      
+      // Return top 2 for preview
+      const previewResults = allResults.slice(0, 2);
+      
+      console.log(`💾 Cached ${allResults.length} results, showing ${previewResults.length} in preview`);
+      
+      setSearchResults(previewResults);
       setTotalResults(totalResults);
     } catch (error) {
       console.error('❌ Error searching:', error);
@@ -248,11 +484,11 @@ const HomeSearchBar = memo(function HomeSearchBar() {
     } finally {
       setIsSearching(false);
     }
-  }, []);
+  }, [initializeProductCache]);
 
-  // Debounce más agresivo para evitar demasiadas peticiones
+  // More aggressive debounce since we're using local cache
   const debouncedSearch = useMemo(
-    () => debounce((query: string) => performSearch(query), 600),
+    () => debounce((query: string) => performSearch(query), 300), // Reduced from 600ms to 300ms for better UX
     [performSearch]
   );
 
@@ -284,25 +520,53 @@ const HomeSearchBar = memo(function HomeSearchBar() {
     if (!searchQuery.trim()) return;
     
     console.log('🎯 Ejecutando búsqueda:', searchQuery);
-    saveRecentSearch(searchQuery);
     
-    // Determinar a qué categoría ir basándose en los resultados (solo productos y boutique)
-    if (searchResults.length > 0) {
-      // Contar resultados por categoría (sin incluir comidas)
-      const productsCount = searchResults.filter(r => r.categoria_id === 1).length;
-      const boutiqueCount = searchResults.filter(r => r.categoria_id === 2).length;
+    // Save the search query before clearing it
+    const currentQuery = searchQuery.trim();
+    saveRecentSearch(currentQuery);
+    
+    // Smart navigation based on cached results analysis
+    const cacheKey = normalizeText(currentQuery);
+    const cachedResult = searchResultsCache.get(cacheKey);
+    
+    if (cachedResult && cachedResult.results.length > 0) {
+      // Use full cached results for navigation decision (more accurate than preview)
+      const productsCount = cachedResult.results.filter(r => r.categoria_id === 1).length;
+      const boutiqueCount = cachedResult.results.filter(r => r.categoria_id === 3).length;
+      
+      console.log(`🎯 Navigation decision based on ${cachedResult.results.length} cached results:`);
+      console.log(`   📦 Products: ${productsCount}, 🏪 Boutique: ${boutiqueCount}`);
       
       if (boutiqueCount > productsCount) {
-        router.push(`/boutique?search=${encodeURIComponent(searchQuery)}`);
+        console.log('→ Navigating to /boutique (majority in cached results)');
+        router.push(`/boutique?search=${encodeURIComponent(currentQuery)}`);
       } else {
-        router.push(`/productos?search=${encodeURIComponent(searchQuery)}`);
+        console.log('→ Navigating to /productos (majority in cached results or tie)');
+        router.push(`/productos?search=${encodeURIComponent(currentQuery)}`);
       }
     } else {
-      // Por defecto ir a productos
-      router.push(`/productos?search=${encodeURIComponent(searchQuery)}`);
+      // Fallback: search both categories and decide based on preview results
+      if (searchResults.length > 0) {
+        const productsCount = searchResults.filter(r => r.categoria_id === 1).length;
+        const boutiqueCount = searchResults.filter(r => r.categoria_id === 3).length;
+        
+        console.log(`🎯 Fallback navigation based on ${searchResults.length} preview results:`);
+        console.log(`   📦 Products: ${productsCount}, 🏪 Boutique: ${boutiqueCount}`);
+        
+        if (boutiqueCount > productsCount) {
+          console.log('→ Navigating to /boutique (majority in preview results)');
+          router.push(`/boutique?search=${encodeURIComponent(currentQuery)}`);
+        } else {
+          console.log('→ Navigating to /productos (majority in preview results or tie)');
+          router.push(`/productos?search=${encodeURIComponent(currentQuery)}`);
+        }
+      } else {
+        console.log('→ No results, navigating to /productos by default');
+        router.push(`/productos?search=${encodeURIComponent(currentQuery)}`);
+      }
     }
     
-    // Limpiar y cerrar
+    // Clean up UI state after navigation
     setSearchQuery('');
     setIsFocused(false);
     setSearchResults([]);
@@ -313,13 +577,12 @@ const HomeSearchBar = memo(function HomeSearchBar() {
   const handleResultClick = useCallback((result: SearchResult) => {
     saveRecentSearch(result.nombre);
     
-    // Navegar directamente al producto (solo productos y boutique)
+    // Navegar directamente al producto (productos y boutique)
     if (result.categoria_id === 1) {
       router.push(`/productos/${result.id}`);
-    } else if (result.categoria_id === 2) {
+    } else if (result.categoria_id === 3) { // Boutique es categoria_id === 3
       router.push(`/boutique/${result.id}`);
     }
-    // No incluimos categoria_id === 3 (comidas) ya que están filtradas
     
     // Limpiar
     setSearchQuery('');
@@ -363,7 +626,11 @@ const HomeSearchBar = memo(function HomeSearchBar() {
               type="text"
               value={searchQuery}
               onChange={handleSearchChange}
-              onFocus={() => setIsFocused(true)}
+              onFocus={() => {
+                setIsFocused(true);
+                // Trigger preload on first interaction
+                triggerPreload();
+              }}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               placeholder={t('landing.search.placeholder')}
               className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-gray-900 placeholder-gray-500 focus:outline-none text-sm sm:text-base bg-transparent"
@@ -406,18 +673,43 @@ const HomeSearchBar = memo(function HomeSearchBar() {
               className="mt-2 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-gray-200 overflow-hidden"
               style={{ position: 'relative' }} // Cambiado de absolute a relative
             >
-              {/* Estado de carga */}
-              {isSearching && (
+              {/* Estado de carga mejorado */}
+              {(isSearching || cacheStatus === 'loading') && (
                 <div className="p-4 text-center text-gray-500">
                   <div className="inline-flex items-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 mr-2"></div>
-                    {t('landing.search.searchingMessage')}
+                    {cacheStatus === 'loading' ? 'Cargando productos...' : t('landing.search.searchingMessage')}
+                  </div>
+                </div>
+              )}
+              
+              {/* Error de caché con fallback */}
+              {cacheStatus === 'error' && !isSearching && searchQuery.length >= 2 && (
+                <div className="p-4 text-center text-red-500">
+                  <div className="text-sm font-medium">Error al cargar productos</div>
+                  <div className="text-xs mt-1">Búsqueda temporalmente limitada</div>
+                  <div className="mt-3 space-y-2">
+                    <button 
+                      onClick={initializeProductCache}
+                      className="block w-full px-3 py-2 bg-red-100 hover:bg-red-200 rounded text-sm transition-colors"
+                    >
+                      🔄 Reintentar carga
+                    </button>
+                    <button 
+                      onClick={handleSearch}
+                      className="block w-full px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded text-sm transition-colors"
+                    >
+                      🔍 Buscar en línea
+                    </button>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-2">
+                    La búsqueda en línea puede ser más lenta
                   </div>
                 </div>
               )}
 
-              {/* Resultados con imágenes de productos - máximo 3 */}
-              {!isSearching && searchResults.length > 0 && (
+              {/* Resultados con imágenes de productos - máximo 2 */}
+              {!isSearching && cacheStatus === 'ready' && searchResults.length > 0 && (
                 <div className="p-2">
                   <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center justify-between">
                     <span>{t('landing.search.showingResults', { count: searchResults.length, plural: searchResults.length !== 1 ? 's' : '' })}</span>
@@ -462,10 +754,13 @@ const HomeSearchBar = memo(function HomeSearchBar() {
                             <span className="flex items-center">
                               {result.categoria_id === 1 ? (
                                 <Package className="h-3 w-3 mr-1 text-indigo-400" />
-                              ) : (
+                              ) : result.categoria_id === 3 ? (
                                 <Store className="h-3 w-3 mr-1 text-purple-400" />
+                              ) : (
+                                <Package className="h-3 w-3 mr-1 text-gray-400" />
                               )}
-                              {result.categoria_id === 1 ? t('landing.search.products') : t('landing.search.boutique')}
+                              {result.categoria_id === 1 ? t('landing.search.products') : 
+                               result.categoria_id === 3 ? t('landing.search.boutique') : 'Otro'}
                             </span>
                             {result.stock > 0 ? (
                               <span className="text-green-600 text-xs">• {t('landing.search.inStock')}</span>
@@ -509,7 +804,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
               )}
 
               {/* Sin resultados después de buscar */}
-              {!isSearching && searchQuery.length >= 2 && searchResults.length === 0 && (
+              {!isSearching && cacheStatus === 'ready' && searchQuery.length >= 2 && searchResults.length === 0 && (
                 <div className="p-6 text-center">
                   <div className="text-gray-400 mb-3">
                     <Search className="h-10 w-10 mx-auto mb-2" />

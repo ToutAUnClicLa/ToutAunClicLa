@@ -309,7 +309,7 @@ export default function Home() {
             </picture>
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
           </div>
-          <div className="absolute inset-0 flex flex-col justify-start mt-24 md:justify-center md:mt-0 px-4 sm:px-6 lg:px-8">
+          <div className="absolute inset-0 flex flex-col justify-start mt-20 md:justify-center md:mt-0 px-4 sm:px-6 lg:px-8">
             <div className="container">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <motion.div
@@ -472,6 +472,24 @@ export default function Home() {
         iconColor="text-amber-600"
       >
         <div className="w-full">
+          <motion.div
+          className="mb-10 sm:mb-16 text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+        >
+          <Link href="/coming-soon">
+            <motion.button
+              className="inline-flex items-center bg-amber-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-amber-700 transition-colors shadow-lg shadow-amber-500/30"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {t('landing.sections.foods.viewAll') as string}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </motion.button>
+          </Link>
+        </motion.div>
           <Link href="/coming-soon">
             <motion.div
               className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer group h-64 sm:h-64 md:h-80 w-full"
@@ -512,24 +530,7 @@ export default function Home() {
             </motion.div>
           </Link>
         </div>
-        <motion.div
-          className="mt-10 sm:mt-16 text-center"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-        >
-          <Link href="/comidas">
-            <motion.button
-              className="inline-flex items-center bg-amber-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-amber-700 transition-colors shadow-lg shadow-amber-500/30"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {t('landing.sections.foods.viewAll') as string}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </motion.button>
-          </Link>
-        </motion.div>
+
       </Section>
 
       {/* Boutique Section */}
