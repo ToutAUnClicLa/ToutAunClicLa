@@ -911,7 +911,7 @@ export function ProductGrid({
                           Mostrando {((customPagination.currentPage - 1) * customPagination.itemsPerPage) + 1}-{Math.min(customPagination.currentPage * customPagination.itemsPerPage, customPagination.totalItems)} de {customPagination.totalItems} resultado{customPagination.totalItems !== 1 ? 's' : ''}
                           {searchValue && (
                             <span className="text-blue-600 font-medium">
-                              para "{searchValue}"
+                              para &quot;{searchValue}&quot;
                             </span>
                           )}
                         </>

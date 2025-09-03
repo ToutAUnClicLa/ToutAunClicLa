@@ -303,7 +303,7 @@ export default function CartPage() {
       // Cargar carrito inicial o cuando cambia dirección válida
       refreshCart();
     }
-  }, [isAuthenticated, selectedAddress?.id, refreshCart]);
+  }, [isAuthenticated, selectedAddress?.id, refreshCart, appliedCoupon]);
 
   // Efecto para reiniciar opciones de entrega cuando cambia la dirección
   useEffect(() => {
@@ -804,7 +804,7 @@ export default function CartPage() {
     isAuthenticated, needsAddress, hasValidAddress, selectedAddress, isEmpty, 
     deliveryOptions, appliedCoupon, finalTotal, savingsAmount, isFreeShippingApplied, t,
     displayConsigne, displaySubtotal, displayTaxes, finalShippingCost, items, summary,
-    isSyncingWithBackend, isAddressSafeForCheckout
+    isSyncingWithBackend, isAddressSafeForCheckout, addresses, hasAddresses, lastSyncedAddressId
   ]);
 
   // Función para renderizar badges de impuestos (memoizada)
