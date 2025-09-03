@@ -27,7 +27,7 @@ export default {
     home: "Home",
     products: "Grocery",
     foods: "Foods",
-    boutique: "Boutique",
+    boutique: "Souvenirs",
     login: "Login",
     profile: {
       myProfile: "My Profile",
@@ -50,7 +50,7 @@ export default {
       home: "Home",
       products: "Products",
       foods: "Foods",
-      boutique: "Boutique"
+      boutique: "Souvenirs"
     },
     popularProducts: {
       title: "Popular Products",
@@ -98,6 +98,40 @@ export default {
       description: "Connecting the Americas through authentic products and unique experiences. Delivery to the Greater Montreal area.",
       cta: "Register to enjoy all of the Americas"
     },
+    search: {
+      title: "What are you looking for?",
+      placeholder: "Search products, brands, categories...",
+      button: "Search",
+      noResultsTitle: "No results",
+      noResultsMessage: "We couldn't find products matching your search",
+      searchingMessage: "Searching products...",
+      showingResults: "Showing {count} result{plural}",
+      viewAllResults: "View all results",
+      suggestions: "Suggestions:",
+      popularSearches: "Popular searches:",
+      recentSearches: "Recent searches:",
+      clearSearch: "Clear search",
+      searchInProducts: "Search in Products",
+      searchInBoutique: "Search in Boutique",
+      // New translations for the search bar
+      minCharactersTitle: "Type at least 2 characters",
+      minCharactersMessage: "to start searching for products",
+      keepTypingTitle: "Keep typing...",
+      keepTypingMessage: "or try different search terms",
+      searchingFor: "Searching: \"{query}\"",
+      inStock: "In stock",
+      outOfStock: "Out of stock",
+      products: "Products",
+      boutique: "Boutique",
+      categories: {
+        productos: "Products",
+        boutique: "Boutique"
+      },
+      quickActions: {
+        seeAll: "See all",
+        filter: "Filter"
+      }
+    },
     categories: {
       products: {
         title: "Products",
@@ -108,7 +142,7 @@ export default {
         description: "Latin American gastronomy with authentic recipes and traditional flavors."
       },
       boutique: {
-        title: "Boutique",
+        title: "Souvenirs",
         description: "Unique souvenirs and gifts that capture the essence of each country."
       }
     },
@@ -124,7 +158,7 @@ export default {
         viewAll: "View full catalog"
       },
       boutique: {
-        title: "Boutique Collection",
+        title: "Souvenirs Collection",
         description: "Discover our exclusive collection of handcrafted items from the Americas",
         viewAll: "View full catalog"
       }

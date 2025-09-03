@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useTranslation } from '@/hooks/useTranslation';
 import AuthModal from '@/components/features/auth/AuthModal';
+import HomeSearchBar from '@/components/features/modules/search/HomeSearchBar';
 
 // Types
 interface CategoryCardProps {
@@ -296,19 +297,19 @@ export default function Home() {
             style={{ width: "100%", height: "100%", minHeight: "inherit" }}
           >
             <picture className="block w-full h-full">
-              <source media="(min-width: 768px)" srcSet="/fondoEscritorio.jpg" />
-              <source media="(max-width: 767px)" srcSet="/fondoMobile.png" />
+              <source media="(min-width: 768px)" srcSet="/imagenPrueba.jpeg" />
+              <source media="(max-width: 767px)" srcSet="/imagenPrueba.jpeg" />
               <Image
-                src="/fondoEscritorio.jpg"
+                src="/imagenPrueba.jpeg"
                 alt="Hero background"
                 fill
-                className="object-cover filter blur-[0.5px] transition-opacity duration-300 opacity-100"
+                className="object-cover blur-[1px] lg:blur-[2px] filter transition-opacity duration-300 opacity-100"
                 priority
               />
             </picture>
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
           </div>
-          <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-6 lg:px-8">
+          <div className="absolute inset-0 flex flex-col justify-start mt-24 md:justify-center md:mt-0 px-4 sm:px-6 lg:px-8">
             <div className="container">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <motion.div
@@ -338,7 +339,7 @@ export default function Home() {
                     </motion.div>
                   </motion.div>
                   <motion.p
-                    className="text-sm xs:text-base sm:text-lg md:text-xl text-white/90 mb-6 sm:mb-8 md:mb-10 max-w-xl leading-relaxed mt-8 sm:mt-10 md:mt-12"
+                    className="text-sm xs:text-base sm:text-lg md:text-xl text-white/90  max-w-xl leading-relaxed mt-8 sm:mt-10 md:mt-12"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
@@ -346,6 +347,16 @@ export default function Home() {
                   >
                     {formatHeroDescription()}
                   </motion.p>
+
+                  {/* Search Bar */}
+                  <motion.div
+                    className="mt-6 sm:mt-8 md:mt-10 w-full max-w-xl"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                  >
+                    <HomeSearchBar />
+                  </motion.div>
                 </motion.div>
 
                 {/* Desktop Categories */}
@@ -360,7 +371,7 @@ export default function Home() {
                 </motion.div>
 
                 {/* Mobile Categories */}
-                <motion.div className="md:hidden w-full mt-6 sm:mt-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
+                <motion.div className="md:hidden w-full  " initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
                   <div className="grid grid-cols-3 gap-2 sm:gap-3">
                     {categories.map((cat, i) => (
                       <div key={i} onClick={() => scrollToSection(cat.sectionId)} className="cursor-pointer">

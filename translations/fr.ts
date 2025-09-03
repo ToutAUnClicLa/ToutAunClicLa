@@ -27,7 +27,7 @@ export default {
     home: "Accueil",
     products: "Épicerie",
     foods: "Cuisine",
-    boutique: "Boutique",
+    boutique: "Souvenirs",
     login: "Se connecter",
     profile: {
       myProfile: "Mon Profil",
@@ -50,7 +50,7 @@ export default {
       home: "Accueil",
       products: "Produits",
       foods: "Cuisine",
-      boutique: "Boutique"
+      boutique: "Souvenirs"
     },
     popularProducts: {
       title: "Produits Populaires",
@@ -98,6 +98,40 @@ export default {
       description: "Relier les Amériques grâce à des produits authentiques et des expériences uniques. Livraison dans la grande région de Montréal.",
       cta: "Inscrivez-vous pour profiter de toutes les Amériques"
     },
+    search: {
+      title: "Que recherchez-vous ?",
+      placeholder: "Rechercher produits, marques, catégories...",
+      button: "Rechercher",
+      noResultsTitle: "Aucun résultat",
+      noResultsMessage: "Nous n'avons trouvé aucun produit correspondant à votre recherche",
+      searchingMessage: "Recherche en cours...",
+      showingResults: "Affichage de {count} résultat{plural}",
+      viewAllResults: "Voir tous les résultats",
+      suggestions: "Suggestions :",
+      popularSearches: "Recherches populaires :",
+      recentSearches: "Recherches récentes :",
+      clearSearch: "Effacer la recherche",
+      searchInProducts: "Rechercher dans Produits",
+      searchInBoutique: "Rechercher dans Boutique",
+      // Nouvelles traductions pour la barre de recherche
+      minCharactersTitle: "Tapez au moins 2 caractères",
+      minCharactersMessage: "pour commencer à rechercher des produits",
+      keepTypingTitle: "Continuez à taper...",
+      keepTypingMessage: "ou essayez d'autres termes de recherche",
+      searchingFor: "Recherche : \"{query}\"",
+      inStock: "En stock",
+      outOfStock: "Épuisé",
+      products: "Produits",
+      boutique: "Boutique",
+      categories: {
+        productos: "Produits",
+        boutique: "Boutique"
+      },
+      quickActions: {
+        seeAll: "Voir tout",
+        filter: "Filtrer"
+      }
+    },
     categories: {
       products: {
         title: "Produits",
@@ -108,7 +142,7 @@ export default {
         description: "Gastronomie latino-américaine avec des recettes authentiques et des saveurs traditionnelles."
       },
       boutique: {
-        title: "Boutique",
+        title: "Souvenirs",
         description: "Souvenirs et cadeaux uniques qui capturent l'essence de chaque pays."
       }
     },
@@ -124,7 +158,7 @@ export default {
         viewAll: "Voir catalogue complet"
       },
       boutique: {
-        title: "Collection Boutique",
+        title: "Collection Souvenirs",
         description: "Découvrez notre collection exclusive d'articles artisanaux des Amériques",
         viewAll: "Voir catalogue complet"
       }

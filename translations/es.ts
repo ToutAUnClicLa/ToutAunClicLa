@@ -27,7 +27,7 @@ export default {
     home: "Inicio",
     products: "Productos",
     foods: "Comidas",
-    boutique: "Boutique",
+    boutique: "Souvenirs",
     login: "Iniciar Sesión",
     profile: {
       myProfile: "Mi Perfil",
@@ -50,7 +50,7 @@ export default {
       home: "Inicio",
       products: "Productos",
       foods: "Comidas",
-      boutique: "Boutique"
+      boutique: "Souvenirs"
     },
     popularProducts: {
       title: "Productos Populares",
@@ -99,6 +99,40 @@ export default {
       description: "Conectando las Américas a través de productos auténticos y experiencias únicas. Entrega en la zona metropolitana de Montreal.",
       cta: "Registrate Para Distrutar de todas las americas!"
     },
+    search: {
+      title: "¿Qué estás buscando?",
+      placeholder: "Buscar productos, marcas, categorías...",
+      button: "Buscar",
+      noResultsTitle: "Sin resultados",
+      noResultsMessage: "No encontramos productos que coincidan con tu búsqueda",
+      searchingMessage: "Buscando productos...",
+      showingResults: "Mostrando {count} resultado{plural}",
+      viewAllResults: "Ver todos los resultados",
+      suggestions: "Sugerencias:",
+      popularSearches: "Búsquedas populares:",
+      recentSearches: "Búsquedas recientes:",
+      clearSearch: "Limpiar búsqueda",
+      searchInProducts: "Buscar en Productos",
+      searchInBoutique: "Buscar en Boutique",
+      // Nuevas traducciones para el buscador
+      minCharactersTitle: "Escribe al menos 2 caracteres",
+      minCharactersMessage: "para comenzar a buscar productos",
+      keepTypingTitle: "Sigue escribiendo...",
+      keepTypingMessage: "o prueba con otros términos de búsqueda",
+      searchingFor: "Buscando: \"{query}\"",
+      inStock: "En stock",
+      outOfStock: "Agotado",
+      products: "Productos",
+      boutique: "Boutique",
+      categories: {
+        productos: "Productos",
+        boutique: "Boutique"
+      },
+      quickActions: {
+        seeAll: "Ver todo",
+        filter: "Filtrar"
+      }
+    },
     categories: {
       products: {
         title: "Productos",
@@ -109,7 +143,7 @@ export default {
         description: "Gastronomía latinoamericana con recetas auténticas y sabores tradicionales."
       },
       boutique: {
-        title: "Boutique",
+        title: "Souvenirs",
         description: "Souvenirs y regalos únicos que capturan la esencia de cada país."
       }
     },
@@ -125,7 +159,7 @@ export default {
         viewAll: "Ver catálogo completo"
       },
       boutique: {
-        title: "Colección Boutique",
+        title: "Colección de Souvenirs",
         description: "Descubre nuestra colección exclusiva de artículos artesanales de las Américas",
         viewAll: "Ver catálogo completo"
       }
