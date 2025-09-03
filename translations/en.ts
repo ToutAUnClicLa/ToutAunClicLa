@@ -67,7 +67,7 @@ export default {
       specialIngredients: "Special Ingredients"
     },    contact: {
       title: "Contact",
-      address: "1614 Av Bourbonnière Montreal Quebec. H1W3N4",
+      address: "620 Rue Saint-Thomas, Longueuil, QC J4H 3A7",
       email: "serviceclient@toutaunclicla.com",
       contactNow: "Contact Now"
     },
