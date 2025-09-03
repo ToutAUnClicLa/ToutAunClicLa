@@ -125,7 +125,7 @@ export function ProductGrid({
       console.log('🔗 Inicializando búsqueda desde URL:', initialSearch);
       updateSearchValue(initialSearch);
     }
-  }, [initialSearch]); // Removed circular dependencies
+  }, [initialSearch, searchValue, updateSearchValue]);
   
   // Update filters when debouncedValue changes (unidirectional sync)
   useEffect(() => {
@@ -362,7 +362,7 @@ export function ProductGrid({
       page: 1,
       limit: 20,
       sortBy: 'precio',
-      sortOrder: 'desc'
+      sortOrder: 'desc' as const
     };
     
     // Actualizar todos los estados de filtros

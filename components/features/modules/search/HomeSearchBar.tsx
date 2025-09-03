@@ -156,7 +156,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
