@@ -396,6 +396,24 @@ export default function Home() {
         color="from-indigo-50 to-blue-50"
         iconColor="text-indigo-600"
       >
+        <motion.div
+          className="mb-10 sm:mb-16 text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+        >
+          <Link href="/productos">
+            <motion.button
+              className="inline-flex items-center bg-indigo-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/30"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {t('landing.sections.products.viewAll') as string}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </motion.button>
+          </Link>
+        </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {productCategories.map(category => (
             <Link key={category.id} href={`/productos?subcategoria=${category.subcategoria_id}`}>
@@ -442,24 +460,7 @@ export default function Home() {
             </Link>
           ))}
         </div>
-        <motion.div
-          className="mt-10 sm:mt-16 text-center"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-        >
-          <Link href="/productos">
-            <motion.button
-              className="inline-flex items-center bg-indigo-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/30"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {t('landing.sections.products.viewAll') as string}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </motion.button>
-          </Link>
-        </motion.div>
+
       </Section>
 
       {/* Food Section */}
@@ -542,6 +543,24 @@ export default function Home() {
         color="from-purple-50 to-pink-50"
         iconColor="text-purple-600"
       >
+        <motion.div
+          className="mb-10 sm:mb-16 text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+        >
+          <Link href="/boutique">
+            <motion.button
+              className="inline-flex items-center bg-purple-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-purple-700 transition-colors shadow-lg shadow-purple-500/30"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {t('landing.sections.boutique.viewAll') as string}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </motion.button>
+          </Link>
+        </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {boutiqueCategories.map(category => (
             <Link key={category.id} href={`/boutique?subcategoria=${category.subcategoria_id}`}>
@@ -588,24 +607,6 @@ export default function Home() {
             </Link>
           ))}
         </div>
-        <motion.div
-          className="mt-10 sm:mt-16 text-center"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-        >
-          <Link href="/boutique">
-            <motion.button
-              className="inline-flex items-center bg-purple-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-purple-700 transition-colors shadow-lg shadow-purple-500/30"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {t('landing.sections.boutique.viewAll') as string}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </motion.button>
-          </Link>
-        </motion.div>
       </Section>
       
       {/* Auth Modal */}
