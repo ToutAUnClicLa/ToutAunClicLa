@@ -346,25 +346,6 @@ export default function Home() {
                   >
                     {formatHeroDescription()}
                   </motion.p>
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.6 }} className="mb-4 sm:mb-6 md:mb-0 hidden md:block">
-                    <motion.button
-                      className="group relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 rounded-xl text-base sm:text-lg md:text-xl font-medium transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-indigo-500/30 flex items-center space-x-3 overflow-hidden"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => openAuthModal('register')}
-                    >
-                      <span className="relative z-10">{t('landing.hero.cta') as string}</span>
-                      <motion.div className="relative z-10" animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                        <ChevronDown className="h-5 w-5 transform rotate-90" />
-                      </motion.div>
-                      <motion.div 
-                        className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out"
-                        initial={{ x: '-100%' }}
-                        whileHover={{ x: '0%' }}
-                        transition={{ duration: 0.5, ease: "easeInOut" }}
-                      />
-                    </motion.button>
-                  </motion.div>
                 </motion.div>
 
                 {/* Desktop Categories */}
@@ -388,31 +369,6 @@ export default function Home() {
                     ))}
                   </div>
                   
-                  {/* Botón de registro para móviles - después de las categorías */}
-                  <motion.div 
-                    className="mt-6 flex justify-center"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.5 }}
-                  >
-                    <motion.button
-                      className="group relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-16 py-6 rounded-xl text-base font-medium transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-indigo-500/30 flex items-center space-x-2 overflow-hidden"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => openAuthModal('register')}
-                    >
-                      <span className="relative z-10">{t('landing.hero.cta') as string}</span>
-                      <motion.div className="relative z-10" animate={{ x: [0, 3, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                        <ChevronDown className="h-4 w-4 transform rotate-90" />
-                      </motion.div>
-                      <motion.div 
-                        className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out"
-                        initial={{ x: '-100%' }}
-                        whileHover={{ x: '0%' }}
-                        transition={{ duration: 0.5, ease: "easeInOut" }}
-                      />
-                    </motion.button>
-                  </motion.div>
                 </motion.div>
               </div>
             </div>
