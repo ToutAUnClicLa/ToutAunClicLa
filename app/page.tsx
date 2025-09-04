@@ -480,7 +480,7 @@ export default function Home() {
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <Link href="/coming-soon">
+          <Link href="/comidas">
             <motion.button
               className="inline-flex items-center bg-amber-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-amber-700 transition-colors shadow-lg shadow-amber-500/30"
               whileHover={{ scale: 1.05 }}
@@ -491,7 +491,7 @@ export default function Home() {
             </motion.button>
           </Link>
         </motion.div>
-          <Link href="/coming-soon">
+          <Link href="/comidas">
             <motion.div
               className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer group h-64 sm:h-64 md:h-80 w-full"
               whileHover={{ scale: 1.02 }}

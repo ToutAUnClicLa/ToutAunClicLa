@@ -29,6 +29,7 @@ export default {
     foods: "Foods",
     boutique: "Souvenirs",
     login: "Login",
+    aboutUs: "About Us",
     profile: {
       myProfile: "My Profile",
       addresses: "Addresses",
@@ -2035,6 +2036,96 @@ export default {
       development: "Development in progress",
       testing: "Testing pending",
       launch: "Launch coming soon"
+    }
+  },
+
+  aboutUs: {
+    title: "About Us",
+    subtitle: "Connecting the Americas with authentic products and traditional flavors from Montreal",
+    metaTitle: "About Us - ToutAunClicLa",
+    metaDescription: "Learn about ToutAunClicLa's story, a company founded by Colombian and Venezuelan entrepreneurs bringing authentic Latin American products to Montreal.",
+    hero: {
+      title: "Connecting the Americas",
+      subtitle: "A story of passion, tradition and authentic flavors",
+      description: "We are ToutAunClicLa, a company founded with the dream of bringing the most authentic flavors and products of Latin America to Montreal families."
+    },
+    mission: {
+      title: "Our Mission",
+      description: "To facilitate access to authentic Latin American products in Montreal, maintaining the quality, tradition and flavors that connect us with our roots."
+    },
+    story: {
+      title: "Our Story",
+      description: "ToutAunClicLa was born from the shared dream of three Latin entrepreneurs: two Colombians and one Venezuelan united by their passion for bringing authentic Latin American flavors to Montreal families. Every product in our store tells a story of tradition, quality, and love for our roots.",
+      mission: "Our mission is to connect Latin families with the products they love, keeping alive the culinary and cultural tradition that defines us as a community in Montreal.",
+      introduction: "ToutAunClicLa was born from the meeting of three passionate entrepreneurs:",
+      founders: {
+        title: "Our Founders",
+        description: "Two talented Colombians and a Venezuelan entrepreneur who share a common vision: bringing the best of Latin America to Montreal.",
+        colombia: "Representing Colombia's diversity and richness",
+        venezuela: "Contributing Venezuelan warmth and flavor"
+      },
+      journey: {
+        title: "Our Journey",
+        paragraph1: "We arrived in Montreal with our traditions, family recipes and the desire to share the authentic flavors that define us as Latinos.",
+        paragraph2: "We understand the nostalgia of being away from home and the importance of finding those products that connect us with our roots.",
+        paragraph3: "Each product in our catalog is carefully selected, guaranteeing the authenticity and quality our customers deserve."
+      }
+    },
+    values: {
+      title: "Our Values",
+      authenticity: {
+        title: "Authenticity",
+        description: "Every product reflects the true essence of Latin America"
+      },
+      quality: {
+        title: "Quality",
+        description: "We select only the best products from trusted suppliers"
+      },
+      community: {
+        title: "Community",
+        description: "We build bridges between cultures and strengthen the Latino community"
+      },
+      service: {
+        title: "Service",
+        description: "We provide an exceptional experience to every customer"
+      }
+    },
+    location: {
+      title: "Our Location",
+      subtitle: "Serving the Greater Montreal Area",
+      address: "620 Rue Saint-Thomas, Longueuil, QC J4H 3A7",
+      serviceArea: "We deliver throughout the Montreal metropolitan area",
+      commitment: "We are committed to providing the best service to our local community."
+    },
+    team: {
+      title: "Our Team",
+      description: "A multicultural team united by the passion of sharing the best of Latin America",
+      colombianFounders: "Colombian Founders",
+      venezuelanFounder: "Venezuelan Founder",
+      teamSpirit: "Together, we work to create a unique experience that celebrates our cultural diversity."
+    },
+    contact: {
+      title: "Connect with Us",
+      description: "We are located in the heart of the Montreal metropolitan area, ready to serve you with the best Latin American products. Our team is here to help you find exactly what you're looking for and make you feel at home.",
+      subtitle: "Have questions or comments? We'd love to hear from you!",
+      email: "serviceclient@toutaunclicla.com",
+      address: "620 Rue Saint-Thomas, Longueuil, QC J4H 3A7",
+      getInTouch: "Get in touch",
+      followJourney: "Follow our journey and discover new products every week."
+    },
+    cta: {
+      title: "Discover Our Products",
+      subtitle: "Explore our selection of authentic products",
+      description: "From traditional flours to homemade sauces, find everything you need to recreate the flavors of home.",
+      browseProducts: "Browse Products",
+      visitBoutique: "Visit Boutique",
+      orderOnline: "Order online and receive at home"
+    },
+    stats: {
+      experience: "Years of experience",
+      products: "Authentic products",
+      customers: "Satisfied customers",
+      deliveries: "Deliveries completed"
     }
   }
 };

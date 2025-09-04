@@ -56,7 +56,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const LINKS = [
   { href: "/", label: "nav.home", icon: Home },
   { href: "/productos", label: "nav.products", icon: Package },
-  { href: "/coming-soon", label: "nav.foods", icon: ShoppingBag },
+  { href: "/comidas", label: "nav.foods", icon: ShoppingBag },
   { href: "/boutique", label: "nav.boutique", icon: Store }
 ];
 

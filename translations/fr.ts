@@ -29,6 +29,7 @@ export default {
     foods: "Cuisine",
     boutique: "Souvenirs",
     login: "Se connecter",
+    aboutUs: "À propos",
     profile: {
       myProfile: "Mon Profil",
       addresses: "Adresses",
@@ -2022,6 +2023,96 @@ export default {
       development: "Développement en cours",
       testing: "Tests en attente",
       launch: "Lancement bientôt"
+    }
+  },
+
+  aboutUs: {
+    title: "À propos de nous",
+    subtitle: "Connecter les Amériques avec des produits authentiques et des saveurs traditionnelles depuis Montréal",
+    metaTitle: "À propos de nous - ToutAunClicLa",
+    metaDescription: "Découvrez l'histoire de ToutAunClicLa, une entreprise fondée par des entrepreneurs colombiens et vénézuéliens apportant des produits authentiques d'Amérique latine à Montréal.",
+    hero: {
+      title: "Connecter les Amériques",
+      subtitle: "Une histoire de passion, tradition et saveurs authentiques",
+      description: "Nous sommes ToutAunClicLa, une entreprise fondée avec le rêve d'apporter les saveurs et produits les plus authentiques d'Amérique latine aux familles de Montréal."
+    },
+    mission: {
+      title: "Notre Mission",
+      description: "Faciliter l'accès aux produits authentiques d'Amérique latine à Montréal, en maintenant la qualité, la tradition et les saveurs qui nous connectent à nos racines."
+    },
+    story: {
+      title: "Notre Histoire",
+      description: "ToutAunClicLa est née du rêve partagé de trois entrepreneurs latinos : deux Colombiens et un Vénézuélien unis par leur passion d'apporter les saveurs authentiques d'Amérique latine aux familles de Montréal. Chaque produit dans notre magasin raconte une histoire de tradition, de qualité et d'amour pour nos racines.",
+      mission: "Notre mission est de connecter les familles latines avec les produits qu'elles aiment, en gardant vivante la tradition culinaire et culturelle qui nous définit en tant que communauté à Montréal.",
+      introduction: "ToutAunClicLa est née de la rencontre de trois entrepreneurs passionnés :",
+      founders: {
+        title: "Nos Fondateurs",
+        description: "Deux Colombiens talentueux et un entrepreneur vénézuélien qui partagent une vision commune : apporter le meilleur de l'Amérique latine à Montréal.",
+        colombia: "Représentant la diversité et la richesse de la Colombie",
+        venezuela: "Apportant la chaleur et la saveur vénézuéliennes"
+      },
+      journey: {
+        title: "Notre Parcours",
+        paragraph1: "Nous sommes arrivés à Montréal avec nos traditions, nos recettes familiales et le désir de partager les saveurs authentiques qui nous définissent en tant que Latinos.",
+        paragraph2: "Nous comprenons la nostalgie d'être loin de chez soi et l'importance de trouver ces produits qui nous connectent à nos racines.",
+        paragraph3: "Chaque produit de notre catalogue est soigneusement sélectionné, garantissant l'authenticité et la qualité que nos clients méritent."
+      }
+    },
+    values: {
+      title: "Nos Valeurs",
+      authenticity: {
+        title: "Authenticité",
+        description: "Chaque produit reflète la véritable essence de l'Amérique latine"
+      },
+      quality: {
+        title: "Qualité",
+        description: "Nous sélectionnons uniquement les meilleurs produits de fournisseurs de confiance"
+      },
+      community: {
+        title: "Communauté",
+        description: "Nous construisons des ponts entre les cultures et renforçons la communauté latino"
+      },
+      service: {
+        title: "Service",
+        description: "Nous offrons une expérience exceptionnelle à chaque client"
+      }
+    },
+    location: {
+      title: "Notre Emplacement",
+      subtitle: "Au service de la région métropolitaine de Montréal",
+      address: "620 Rue Saint-Thomas, Longueuil, QC J4H 3A7",
+      serviceArea: "Nous livrons dans toute la région métropolitaine de Montréal",
+      commitment: "Nous nous engageons à fournir le meilleur service à notre communauté locale."
+    },
+    team: {
+      title: "Notre Équipe",
+      description: "Une équipe multiculturelle unie par la passion de partager le meilleur de l'Amérique latine",
+      colombianFounders: "Fondateurs Colombiens",
+      venezuelanFounder: "Fondateur Vénézuélien",
+      teamSpirit: "Ensemble, nous travaillons pour créer une expérience unique qui célèbre notre diversité culturelle."
+    },
+    contact: {
+      title: "Contactez-nous",
+      description: "Nous sommes situés au cœur de la région métropolitaine de Montréal, prêts à vous servir avec les meilleurs produits d'Amérique latine. Notre équipe est là pour vous aider à trouver exactement ce que vous cherchez et vous faire sentir chez vous.",
+      subtitle: "Vous avez des questions ou des commentaires ? Nous aimerions avoir de vos nouvelles !",
+      email: "serviceclient@toutaunclicla.com",
+      address: "620 Rue Saint-Thomas, Longueuil, QC J4H 3A7",
+      getInTouch: "Prenez contact",
+      followJourney: "Suivez notre parcours et découvrez de nouveaux produits chaque semaine."
+    },
+    cta: {
+      title: "Découvrez nos Produits",
+      subtitle: "Explorez notre sélection de produits authentiques",
+      description: "Des farines traditionnelles aux sauces maison, trouvez tout ce dont vous avez besoin pour recréer les saveurs de chez vous.",
+      browseProducts: "Parcourir les Produits",
+      visitBoutique: "Visiter la Boutique",
+      orderOnline: "Commandez en ligne et recevez chez vous"
+    },
+    stats: {
+      experience: "Années d'expérience",
+      products: "Produits authentiques",
+      customers: "Clients satisfaits",
+      deliveries: "Livraisons effectuées"
     }
   }
 };
