@@ -78,8 +78,11 @@ export default function AuthModal({
     setAcceptTerms(false);
     setShowPassword(false);
     setShowConfirmPassword(false);
-    setShowEmailForm(false);
-  }, [mode, formData.email]);
+    // Solo resetear showEmailForm si no estamos en modo registro
+    if (mode !== 'register') {
+      setShowEmailForm(false);
+    }
+  }, [mode]);
 
   // Restablecer al abrir/cerrar modal
   useEffect(() => {
@@ -415,7 +418,7 @@ export default function AuthModal({
 
         {/* Contenido del formulario */}
         <div className="px-3 sm:px-4 py-3 sm:py-4 max-h-[calc(92vh-100px)] sm:max-h-[calc(90vh-120px)] overflow-y-auto">
-          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4" autoComplete="off">
             {/* Error message */}
             <AnimatePresence mode="wait">
               {error && (
@@ -637,7 +640,12 @@ export default function AuthModal({
                           <Input
                             id="email"
                             name="email"
-                            type="email"
+                            type="text"
+                            inputMode="email"
+                            autoComplete="off"
+                            autoCorrect="off"
+                            autoCapitalize="off"
+                            spellCheck="false"
                             value={formData.email}
                             onChange={handleInputChange}
                             placeholder={t('auth.emailPlaceholder')}

@@ -1146,6 +1146,7 @@ export default {
     accountVerifiedCorrectly: "Votre compte a été vérifié avec succès",
     invalidVerificationCode: "Code de vérification invalide",
     accountRequiresVerification: "Votre compte nécessite une vérification. Nous vous avons envoyé un nouveau code à votre e-mail.",
+    checkYourEmail: "Vérifiez votre e-mail",
     
     // En-têtes de modal
     createFreeAccount: "Créez votre compte gratuit",
@@ -2031,10 +2032,35 @@ export default {
     subtitle: "Connecter les Amériques avec des produits authentiques et des saveurs traditionnelles depuis Montréal",
     metaTitle: "À propos de nous - ToutAunClicLa",
     metaDescription: "Découvrez l'histoire de ToutAunClicLa, une entreprise fondée par des entrepreneurs colombiens et vénézuéliens apportant des produits authentiques d'Amérique latine à Montréal.",
+    pageTitle: "À propos de nous",
+    pageSubtitle: "Nous connectons les cultures, apportant les traditions latino-américaines à votre foyer à Montréal",
     hero: {
       title: "Connecter les Amériques",
       subtitle: "Une histoire de passion, tradition et saveurs authentiques",
       description: "Nous sommes ToutAunClicLa, une entreprise fondée avec le rêve d'apporter les saveurs et produits les plus authentiques d'Amérique latine aux familles de Montréal."
+    },
+    ourStory: {
+      title: "Notre Histoire",
+      description1: "Nous sommes trois entrepreneurs passionnés unis par l'amour de nos traditions et le désir de partager la richesse culturelle de l'Amérique latine avec les familles de Montréal.",
+      description2: "Notre mission est d'être le pont qui relie les familles latino-américaines à leurs racines, en offrant des produits authentiques qui éveillent des souvenirs et créent de nouveaux moments autour de la table."
+    },
+    founders: {
+      title: "Nos Fondateurs",
+      zenen1: {
+        name: "Zenen Contreras Fernandez",
+        role: "Président - Co-fondateur",
+        description: "Leader axé sur la connexion des cultures à travers des produits authentiques"
+      },
+      david: {
+        name: "David Araujo Lopez",
+        role: "Vice-président - Co-fondateur",
+        description: "Spécialiste des opérations et de l'expérience client"
+      },
+      zenen2: {
+        name: "Zenen Contreras Royero",
+        role: "Technologie - Co-fondateur",
+        description: "Expert en développement technologique et innovation numérique"
+      }
     },
     mission: {
       title: "Notre Mission",
@@ -2060,17 +2086,26 @@ export default {
     },
     values: {
       title: "Nos Valeurs",
-      authenticity: {
-        title: "Authenticité",
-        description: "Chaque produit reflète la véritable essence de l'Amérique latine"
-      },
-      quality: {
-        title: "Qualité",
-        description: "Nous sélectionnons uniquement les meilleurs produits de fournisseurs de confiance"
+      subtitle: "Les principes qui guident chaque décision et nous connectent à notre communauté",
+      passion: {
+        title: "Passion",
+        description: "Amour pour notre culture et nos produits authentiques"
       },
       community: {
         title: "Communauté",
-        description: "Nous construisons des ponts entre les cultures et renforçons la communauté latino"
+        description: "Nous connectons les familles à leurs traditions"
+      },
+      quality: {
+        title: "Qualité",
+        description: "Seulement les meilleurs produits latino-américains"
+      },
+      diversity: {
+        title: "Diversité",
+        description: "Nous célébrons la richesse culturelle de l'Amérique latine"
+      },
+      authenticity: {
+        title: "Authenticité",
+        description: "Chaque produit reflète la véritable essence de l'Amérique latine"
       },
       service: {
         title: "Service",
@@ -2093,19 +2128,28 @@ export default {
     },
     contact: {
       title: "Contactez-nous",
-      description: "Nous sommes situés au cœur de la région métropolitaine de Montréal, prêts à vous servir avec les meilleurs produits d'Amérique latine. Notre équipe est là pour vous aider à trouver exactement ce que vous cherchez et vous faire sentir chez vous.",
+      description: "Nous sommes là pour vous aider. Contactez-nous pour toute demande ou suivez-nous sur les réseaux sociaux",
       subtitle: "Vous avez des questions ou des commentaires ? Nous aimerions avoir de vos nouvelles !",
       email: "serviceclient@toutaunclicla.com",
       address: "620 Rue Saint-Thomas, Longueuil, QC J4H 3A7",
+      addressLine1: "620 Rue Saint-Thomas",
+      addressLine2: "Longueuil, QC J4H 3A7",
+      addressLine3: "Montréal, Canada",
       getInTouch: "Prenez contact",
-      followJourney: "Suivez notre parcours et découvrez de nouveaux produits chaque semaine."
+      followJourney: "Suivez notre parcours et découvrez de nouveaux produits chaque semaine.",
+      contactInfo: "Informations de Contact",
+      followUs: "Suivez-nous",
+      followDescription: "Restez connecté avec nos dernières nouvelles et produits",
+      addressLabel: "Adresse",
+      emailLabel: "Courriel"
     },
     cta: {
-      title: "Découvrez nos Produits",
-      subtitle: "Explorez notre sélection de produits authentiques",
+      title: "Prêt à découvrir nos produits?",
+      subtitle: "Explorez notre sélection de produits authentiques latino-américains et reconnectez avec vos traditions",
       description: "Des farines traditionnelles aux sauces maison, trouvez tout ce dont vous avez besoin pour recréer les saveurs de chez vous.",
-      browseProducts: "Parcourir les Produits",
-      visitBoutique: "Visiter la Boutique",
+      browseProducts: "Voir les produits",
+      viewFoods: "Voir la nourriture",
+      visitBoutique: "Voir la boutique",
       orderOnline: "Commandez en ligne et recevez chez vous"
     },
     stats: {

@@ -4,8 +4,10 @@ import { motion } from 'framer-motion';
 import { MapPin, Mail, Facebook, Instagram, Twitter, Linkedin, Heart, Users, ShoppingBag, Globe, Package, Utensils, Store, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function SobreNosotrosPage() {
+  const { t } = useTranslation();
   const socialLinks = [
     { icon: Facebook, href: "https://facebook.com/toutaunclicla", label: "Facebook", color: "hover:text-blue-600" },
     { icon: Instagram, href: "https://instagram.com/toutaunclicla", label: "Instagram", color: "hover:text-pink-600" },
@@ -14,30 +16,33 @@ export default function SobreNosotrosPage() {
 
   const founders = [
     { 
-      name: "Zenen Contreras Fernandez", 
-      role: "Presidente - Co-fundador", 
-      description: "Líder enfocado en conectar culturas a través de productos auténticos",
+      key: 'zenen1',
+      name: t('aboutUs.founders.zenen1.name'), 
+      role: t('aboutUs.founders.zenen1.role'), 
+      description: t('aboutUs.founders.zenen1.description'),
       gradient: "from-indigo-500 to-purple-500"
     },
     { 
-      name: "David Araujo Lopez", 
-      role: "VicePresidente - Co-fundador", 
-      description: "Especialista en operaciones y experiencia del cliente",
+      key: 'david',
+      name: t('aboutUs.founders.david.name'), 
+      role: t('aboutUs.founders.david.role'), 
+      description: t('aboutUs.founders.david.description'),
       gradient: "from-purple-500 to-pink-500" 
     },
     { 
-      name: "Zenen Contreras Royero", 
-      role: "Tecnología - Co-fundador", 
-      description: "Experto en desarrollo tecnológico e innovación digital",
+      key: 'zenen2',
+      name: t('aboutUs.founders.zenen2.name'), 
+      role: t('aboutUs.founders.zenen2.role'), 
+      description: t('aboutUs.founders.zenen2.description'),
       gradient: "from-blue-500 to-indigo-500"
     }
   ];
 
   const values = [
-    { icon: Heart, title: "Pasión", description: "Amor por nuestra cultura y productos auténticos", gradient: "from-indigo-500 to-purple-500" },
-    { icon: Users, title: "Comunidad", description: "Conectamos familias con sus tradiciones", gradient: "from-purple-500 to-pink-500" },
-    { icon: ShoppingBag, title: "Calidad", description: "Solo los mejores productos latinoamericanos", gradient: "from-blue-500 to-indigo-500" },
-    { icon: Globe, title: "Diversidad", description: "Celebramos la riqueza cultural de Latinoamérica", gradient: "from-indigo-500 to-blue-500" }
+    { icon: Heart, title: t('aboutUs.values.passion.title'), description: t('aboutUs.values.passion.description'), gradient: "from-indigo-500 to-purple-500" },
+    { icon: Users, title: t('aboutUs.values.community.title'), description: t('aboutUs.values.community.description'), gradient: "from-purple-500 to-pink-500" },
+    { icon: ShoppingBag, title: t('aboutUs.values.quality.title'), description: t('aboutUs.values.quality.description'), gradient: "from-blue-500 to-indigo-500" },
+    { icon: Globe, title: t('aboutUs.values.diversity.title'), description: t('aboutUs.values.diversity.description'), gradient: "from-indigo-500 to-blue-500" }
   ];
 
   return (
@@ -63,10 +68,10 @@ export default function SobreNosotrosPage() {
               </div>
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6 leading-tight">
-              Sobre Nosotros
+              {t('aboutUs.pageTitle')}
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-indigo-100 leading-relaxed max-w-2xl mx-auto">
-              Conectamos culturas, llevamos tradiciones latinoamericanas a tu hogar en Montreal
+              {t('aboutUs.pageSubtitle')}
             </p>
           </motion.div>
         </div>
@@ -84,13 +89,13 @@ export default function SobreNosotrosPage() {
               className="text-center mb-12 sm:mb-16"
             >
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
-                Nuestra Historia
+                {t('aboutUs.ourStory.title')}
               </h2>
               <p className="text-base sm:text-lg text-gray-600 leading-relaxed mb-6">
-                Somos tres emprendedores apasionados unidos por el amor a nuestras tradiciones y el deseo de compartir la riqueza cultural de Latinoamérica con las familias de Montreal.
+                {t('aboutUs.ourStory.description1')}
               </p>
               <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
-                Nuestra misión es ser el puente que conecta a las familias latinoamericanas con sus raíces, ofreciendo productos auténticos que despiertan recuerdos y crean nuevas memorias alrededor de la mesa.
+                {t('aboutUs.ourStory.description2')}
               </p>
             </motion.div>
             
@@ -98,19 +103,19 @@ export default function SobreNosotrosPage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {founders.map((founder, index) => (
                 <motion.div 
-                  key={founder.name} 
+                  key={founder.key} 
                   initial={{ opacity: 0, y: 30 }} 
                   whileInView={{ opacity: 1, y: 0 }} 
                   viewport={{ once: true }} 
                   transition={{ duration: 0.6, delay: index * 0.15 }} 
-                  className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 text-center hover:shadow-xl transition-all duration-300 group"
+                  className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 text-center hover:shadow-xl transition-all duration-300 group flex flex-col"
                 >
                   <div className={`w-16 h-16 bg-gradient-to-br ${founder.gradient} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     <Users className="h-8 w-8 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{founder.name}</h3>
-                  <p className="text-sm font-semibold text-indigo-600 mb-3">{founder.role}</p>
-                  <p className="text-sm text-gray-600 leading-relaxed">{founder.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 min-h-[56px] flex items-center justify-center">{founder.name}</h3>
+                  <p className="text-sm font-semibold text-indigo-600 mb-3 min-h-[48px] flex items-center justify-center">{founder.role}</p>
+                  <p className="text-sm text-gray-600 leading-relaxed flex-grow flex items-center justify-center">{founder.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -130,10 +135,10 @@ export default function SobreNosotrosPage() {
               className="text-center mb-12 sm:mb-16"
             >
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
-                Nuestros Valores
+                {t('aboutUs.values.title')}
               </h2>
               <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-                Los principios que guían cada decisión y nos conectan con nuestra comunidad
+                {t('aboutUs.values.subtitle')}
               </p>
             </motion.div>
             
@@ -174,10 +179,10 @@ export default function SobreNosotrosPage() {
               className="text-center mb-12"
             >
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Contáctanos
+                {t('aboutUs.contact.title')}
               </h2>
               <p className="text-base sm:text-lg text-gray-600">
-                Estamos aquí para ayudarte. Contáctanos para cualquier consulta o síguenos en redes sociales
+                {t('aboutUs.contact.description')}
               </p>
             </motion.div>
             
@@ -189,17 +194,17 @@ export default function SobreNosotrosPage() {
                 transition={{ duration: 0.8 }} 
                 className="bg-white rounded-xl p-6 shadow-lg border border-gray-100"
               >
-                <h3 className="text-lg font-bold text-gray-900 mb-6">Información de Contacto</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-6">{t('aboutUs.contact.contactInfo')}</h3>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
                       <MapPin className="h-5 w-5 text-indigo-600" />
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900 mb-1">Dirección</p>
-                      <p className="text-gray-600 text-sm">620 Rue Saint-Thomas</p>
-                      <p className="text-gray-600 text-sm">Longueuil, QC J4H 3A7</p>
-                      <p className="text-gray-600 text-sm">Montreal, Canadá</p>
+                      <p className="font-semibold text-gray-900 mb-1">{t('aboutUs.contact.addressLabel')}</p>
+                      <p className="text-gray-600 text-sm">{t('aboutUs.contact.addressLine1')}</p>
+                      <p className="text-gray-600 text-sm">{t('aboutUs.contact.addressLine2')}</p>
+                      <p className="text-gray-600 text-sm">{t('aboutUs.contact.addressLine3')}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -207,7 +212,7 @@ export default function SobreNosotrosPage() {
                       <Mail className="h-5 w-5 text-purple-600" />
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900 mb-1">Email</p>
+                      <p className="font-semibold text-gray-900 mb-1">{t('aboutUs.contact.emailLabel')}</p>
                       <a 
                         href="mailto:serviceclient@toutaunclicla.com" 
                         className="text-indigo-600 hover:text-indigo-700 transition-colors font-medium text-sm"
@@ -226,8 +231,8 @@ export default function SobreNosotrosPage() {
                 transition={{ duration: 0.8 }} 
                 className="bg-white rounded-xl p-6 shadow-lg border border-gray-100"
               >
-                <h3 className="text-lg font-bold text-gray-900 mb-6">Síguenos</h3>
-                <p className="text-gray-600 mb-6 text-sm">Mantente conectado con nuestras últimas novedades y productos</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-6">{t('aboutUs.contact.followUs')}</h3>
+                <p className="text-gray-600 mb-6 text-sm">{t('aboutUs.contact.followDescription')}</p>
                 <div className="grid grid-cols-2 gap-3">
                   {socialLinks.map((social) => {
                     const Icon = social.icon;
@@ -261,10 +266,10 @@ export default function SobreNosotrosPage() {
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
-              ¿Listo para descubrir nuestros productos?
+              {t('aboutUs.cta.title')}
             </h2>
             <p className="text-indigo-100 mb-8 text-base sm:text-lg max-w-2xl mx-auto">
-              Explora nuestra selección de productos auténticos latinoamericanos y conecta con tus tradiciones
+              {t('aboutUs.cta.subtitle')}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-2xl mx-auto">
@@ -275,7 +280,7 @@ export default function SobreNosotrosPage() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Package className="mr-2 h-5 w-5" />
-                  Ver productos
+                  {t('aboutUs.cta.browseProducts')}
                 </motion.button>
               </Link>
               
@@ -286,7 +291,7 @@ export default function SobreNosotrosPage() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Utensils className="mr-2 h-5 w-5" />
-                  Ver Comida
+                  {t('aboutUs.cta.viewFoods')}
                 </motion.button>
               </Link>
               
@@ -297,7 +302,7 @@ export default function SobreNosotrosPage() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Store className="mr-2 h-5 w-5" />
-                  Ver Boutique
+                  {t('aboutUs.cta.visitBoutique')}
                 </motion.button>
               </Link>
             </div>
