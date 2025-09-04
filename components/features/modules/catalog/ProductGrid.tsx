@@ -112,28 +112,29 @@ export function ProductGrid({
     hasSearchText
   } = useOptimizedSearch(handleSearch, {
     minLength: 2,
-    debounceDelay: 600, // Reducido para mejor UX
+    debounceDelay: 800, // Aumentado para evitar cortes mientras escribe
     enableCache: true,
     cacheTimeout: 5 * 60 * 1000, // 5 minutos
     normalizeSearch: true // Habilitar normalización de acentos
   });
   
-  // Inicializar con búsqueda de la URL si existe
+  // Inicializar con búsqueda de la URL si existe (solo una vez al montar)
   useEffect(() => {
     console.log('🔗 ProductGrid received initialSearch:', initialSearch, 'current searchValue:', searchValue);
-    if (initialSearch && initialSearch !== searchValue) {
+    if (initialSearch && initialSearch.trim() !== '') {
       console.log('🔗 Inicializando búsqueda desde URL:', initialSearch);
       updateSearchValue(initialSearch);
     }
-  }, [initialSearch, searchValue, updateSearchValue]);
+  }, [initialSearch]); // Solo depende de initialSearch para evitar bucles
   
   // Update filters when debouncedValue changes (unidirectional sync)
   useEffect(() => {
-    console.log('🔄 Updating filters from debouncedValue:', debouncedValue);
+    console.log('🔄 Actualizando filtros desde debouncedValue:', `"${debouncedValue}"`);
+    console.log('   💡 Búsqueda se realizará por nombre Y descripción de productos');
     setFilters(prev => ({
       ...prev,
       search: debouncedValue,
-      page: 1
+      page: 1 // Reset to first page when search changes
     }));
   }, [debouncedValue]); // Only depend on debouncedValue
 
@@ -177,7 +178,7 @@ export function ProductGrid({
   // Usar el hook de productos con los filtros de API
   const { products: apiProducts, pagination, loading, error, refetch } = useProducts(apiFilters);
   
-  // Función de scoring por palabra exacta (igual que HomeSearchBar)
+  // Función de scoring con coincidencias parciales y exactas
   const calculateRelevance = useCallback((product: Product, searchTerm: string): number => {
     const normalizedProductName = normalizeText(product.nombre || '');
     const normalizedDescription = normalizeText(product.descripcion || '');
@@ -188,35 +189,56 @@ export function ProductGrid({
     const descriptionWords = normalizedDescription.split(' ');
     
     let score = 0;
-    let nameMatches = 0;
-    let descriptionMatches = 0;
+    let exactNameMatches = 0;
+    let exactDescMatches = 0;
+    let partialNameMatches = 0;
+    let partialDescMatches = 0;
     
-    // Contar coincidencias exactas por ubicación
     searchWords.forEach(searchWord => {
+      // 1. Verificar coincidencias exactas (mayor prioridad)
       if (nameWords.includes(searchWord)) {
-        nameMatches++;
+        exactNameMatches++;
       } else if (descriptionWords.includes(searchWord)) {
-        descriptionMatches++;
+        exactDescMatches++;
+      } 
+      // 2. Si no hay coincidencia exacta, buscar coincidencias parciales
+      else {
+        // Buscar si alguna palabra del nombre contiene el término de búsqueda
+        const namePartialMatch = nameWords.some(word => word.includes(searchWord));
+        if (namePartialMatch) {
+          partialNameMatches++;
+        } else {
+          // Buscar si alguna palabra de la descripción contiene el término
+          const descPartialMatch = descriptionWords.some(word => word.includes(searchWord));
+          if (descPartialMatch) {
+            partialDescMatches++;
+          }
+        }
       }
     });
     
+    const totalMatches = exactNameMatches + exactDescMatches + partialNameMatches + partialDescMatches;
+    
     // Solo puntuar si hay al menos una coincidencia
-    if (nameMatches > 0 || descriptionMatches > 0) {
-      // Puntuación: priorizar nombre > descripción
-      score += nameMatches * 1000;        // Palabras exactas en nombre: alta prioridad
-      score += descriptionMatches * 300;   // Palabras exactas en descripción: media prioridad
+    if (totalMatches > 0) {
+      // Puntuación jerárquica: exactas > parciales, nombre > descripción
+      score += exactNameMatches * 1000;     // Coincidencias exactas en nombre: máxima prioridad
+      score += exactDescMatches * 400;      // Coincidencias exactas en descripción: alta prioridad  
+      score += partialNameMatches * 600;    // Coincidencias parciales en nombre: media-alta prioridad
+      score += partialDescMatches * 200;    // Coincidencias parciales en descripción: media prioridad
       
-      // Bonus por múltiples palabras encontradas
-      const totalMatches = nameMatches + descriptionMatches;
+      // Bonus por múltiples coincidencias
       if (totalMatches > 1) {
-        score += totalMatches * 100; // Bonus por múltiples coincidencias
+        score += totalMatches * 50;
       }
       
       // Pequeño bonus por stock disponible
       if (product.stock > 0) score += 5;
       
       if (process.env.NODE_ENV === 'development') {
-        console.log(`📊 "${product.nombre}" - Score: ${score} (nombre: ${nameMatches}, desc: ${descriptionMatches})`);
+        console.log(`📊 "${product.nombre}" - Score: ${score}`);
+        console.log(`   🎯 Exactas: nombre(${exactNameMatches}) desc(${exactDescMatches})`);
+        console.log(`   🔍 Parciales: nombre(${partialNameMatches}) desc(${partialDescMatches})`);
       }
     }
     
@@ -230,19 +252,23 @@ export function ProductGrid({
     }
     
     const searchTerm = filters.search || '';
-    console.log('🔍 Filtrando productos localmente para:', searchTerm);
+    console.log('🔍 Búsqueda local iniciada para:', `"${searchTerm}"`);
+    console.log('   📦 Total productos a filtrar:', apiProducts.length);
+    console.log('   🎯 Tipos de coincidencia: exactas + parciales (nombre + descripción)');
     
-    // Filtrar productos con scoring de relevancia
+    // Filtrar productos con scoring de relevancia (nombre Y descripción)
     const scoredProducts = apiProducts
       .map(product => ({
         product,
         score: calculateRelevance(product, searchTerm)
       }))
-      .filter(({ score }) => score > 0)
-      .sort((a, b) => b.score - a.score)
+      .filter(({ score }) => score > 0) // Solo productos con al menos 1 coincidencia
+      .sort((a, b) => b.score - a.score) // Ordenar por relevancia
       .map(({ product }) => product);
     
-    console.log(`📊 Productos filtrados: ${scoredProducts.length} de ${apiProducts.length}`);
+    console.log(`✅ Productos encontrados: ${scoredProducts.length} de ${apiProducts.length}`);
+    console.log('   💡 Ahora "coro" encuentra "corona", "café" encuentra "cafetería", etc.');
+    
     return scoredProducts;
   }, [apiProducts, shouldUseLocalSearch, filters.search, calculateRelevance]);
   
@@ -588,7 +614,7 @@ export function ProductGrid({
               <h2>Búsqueda y filtros de productos</h2>
               <p>
                 {customPagination?.totalItems || paginatedProducts.length} productos encontrados
-                {searchValue && ` para la búsqueda "${searchValue}"`}
+                {searchValue && ` para la búsqueda "${searchValue}" (nombre + descripción)`}
                 {filters.subcategory && ` en la categoría ${subcategories.find(s => s.id === filters.subcategory)?.nombre}`}
               </p>
             </div>
@@ -602,7 +628,7 @@ export function ProductGrid({
                 )} />
                 <Input
                   type="search"
-                  placeholder={t('catalog.productList.searchPlaceholder')}
+                  placeholder={t('catalog.productList.searchPlaceholder') + ' (coincidencias exactas y parciales)'}
                   className={cn(
                     "pl-10 h-12 text-base transition-colors border-gray-200",
                     "focus:border-blue-300 focus:ring-0 focus:ring-offset-0 focus:shadow-none",
@@ -612,9 +638,9 @@ export function ProductGrid({
                   value={searchValue}
                   onChange={(e) => {
                     const newValue = e.target.value;
-                    console.log('🔍 Input onChange:', newValue);
+                    console.log('⌨️ Usuario escribiendo:', `"${newValue}"`, '- longitud:', newValue.length);
                     updateSearchValue(newValue);
-                    // Let debouncedValue handle filter updates
+                    // El debounce manejará automáticamente la actualización de filtros después de 800ms
                   }}
                   disabled={loading}
                 />

@@ -357,22 +357,26 @@ const HomeSearchBar = memo(function HomeSearchBar() {
         const nameWords = normalizedProductName.split(' ');
         const descriptionWords = normalizedDescription.split(' ');
         
-        // Verificar si alguna palabra de búsqueda coincide exactamente
-        let exactWordMatches = 0;
+        // Verificar coincidencias exactas y parciales
+        let totalMatches = 0;
         
         searchWords.forEach(searchWord => {
-          // Buscar coincidencia exacta de palabra en nombre
-          if (nameWords.includes(searchWord)) {
-            exactWordMatches++;
+          // 1. Buscar coincidencia exacta de palabra (prioridad alta)
+          if (nameWords.includes(searchWord) || descriptionWords.includes(searchWord)) {
+            totalMatches++;
           }
-          // Buscar coincidencia exacta de palabra en descripción
-          else if (descriptionWords.includes(searchWord)) {
-            exactWordMatches++;
+          // 2. Si no hay coincidencia exacta, buscar coincidencias parciales
+          else {
+            const partialNameMatch = nameWords.some(word => word.includes(searchWord));
+            const partialDescMatch = descriptionWords.some(word => word.includes(searchWord));
+            if (partialNameMatch || partialDescMatch) {
+              totalMatches++;
+            }
           }
         });
         
-        // CRITERIO: Debe tener al menos una palabra exacta en nombre o descripción
-        const isMatch = exactWordMatches > 0;
+        // CRITERIO: Debe tener al menos una coincidencia (exacta o parcial)
+        const isMatch = totalMatches > 0;
         
         return isMatch;
       });
@@ -388,26 +392,43 @@ const HomeSearchBar = memo(function HomeSearchBar() {
         const descriptionWords = normalizedDescription.split(' ');
         
         let score = 0;
-        let nameMatches = 0;
-        let descriptionMatches = 0;
+        let exactNameMatches = 0;
+        let exactDescMatches = 0;
+        let partialNameMatches = 0;
+        let partialDescMatches = 0;
         
-        // Contar coincidencias exactas por ubicación
+        // Contar coincidencias exactas y parciales por ubicación
         searchWords.forEach(searchWord => {
+          // 1. Verificar coincidencias exactas primero
           if (nameWords.includes(searchWord)) {
-            nameMatches++;
+            exactNameMatches++;
           } else if (descriptionWords.includes(searchWord)) {
-            descriptionMatches++;
+            exactDescMatches++;
+          }
+          // 2. Si no hay exacta, verificar coincidencias parciales
+          else {
+            const namePartialMatch = nameWords.some(word => word.includes(searchWord));
+            if (namePartialMatch) {
+              partialNameMatches++;
+            } else {
+              const descPartialMatch = descriptionWords.some(word => word.includes(searchWord));
+              if (descPartialMatch) {
+                partialDescMatches++;
+              }
+            }
           }
         });
         
-        // Puntuación: priorizar nombre > descripción
-        score += nameMatches * 1000;        // Palabras exactas en nombre: alta prioridad
-        score += descriptionMatches * 300;   // Palabras exactas en descripción: media prioridad
+        // Puntuación jerárquica: exactas > parciales, nombre > descripción
+        score += exactNameMatches * 1000;     // Coincidencias exactas en nombre: máxima prioridad
+        score += exactDescMatches * 400;      // Coincidencias exactas en descripción: alta prioridad  
+        score += partialNameMatches * 600;    // Coincidencias parciales en nombre: media-alta prioridad
+        score += partialDescMatches * 200;    // Coincidencias parciales en descripción: media prioridad
         
         // Bonus por múltiples palabras encontradas
-        const totalMatches = nameMatches + descriptionMatches;
+        const totalMatches = exactNameMatches + exactDescMatches + partialNameMatches + partialDescMatches;
         if (totalMatches > 1) {
-          score += totalMatches * 100; // Bonus por múltiples coincidencias
+          score += totalMatches * 50; // Bonus por múltiples coincidencias
         }
         
         // Pequeño bonus por stock disponible

@@ -62,7 +62,7 @@ export function ReviewForm({ productId }: ReviewFormProps) {
         <div className="text-center py-6">
           <p className="text-gray-500 mb-4">{t('reviews.loginToReview')}</p>
           <Button onClick={() => setShowAuthModal(true)}>
-            {t('auth.login')}
+            {t('nav.login')}
           </Button>
         </div>
         <AuthModal 
