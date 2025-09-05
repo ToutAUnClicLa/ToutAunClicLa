@@ -453,161 +453,127 @@ export function Navbar() {
             
             {/* Contenido principal con scroll suave */}
             <div className="flex-1 overflow-y-auto overscroll-contain w-full">
-              {/* Sección de usuario */}
-              <div className="px-4 py-5 bg-gradient-to-b from-gray-50 to-white w-full">
-                {isAuthenticated ? (
-                  <motion.div 
-                    className="relative p-4 bg-white rounded-2xl shadow-sm border border-gray-100"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="relative">
-                        <Avatar className="h-14 w-14 border-3 border-white shadow-lg">
-                          <AvatarImage src="" />
-                          <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-lg">
-                            {getUserInitials()}
-                          </AvatarFallback>
-                        </Avatar>
-                        {!isUserVerified() && (
-                          <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-amber-500 rounded-full border-2 border-white flex items-center justify-center">
-                            <div className="h-2 w-2 bg-white rounded-full animate-pulse"></div>
-                          </div>
-                        )}
+              {isAuthenticated ? (
+                <>
+                  {/* Sección de usuario autenticado */}
+                  <div className="px-4 py-5 bg-gradient-to-b from-gray-50 to-white w-full">
+                    <motion.div 
+                      className="relative p-4 bg-white rounded-2xl shadow-sm border border-gray-100"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="relative">
+                          <Avatar className="h-14 w-14 border-3 border-white shadow-lg">
+                            <AvatarImage src="" />
+                            <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-lg">
+                              {getUserInitials()}
+                            </AvatarFallback>
+                          </Avatar>
+                          {!isUserVerified() && (
+                            <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-amber-500 rounded-full border-2 border-white flex items-center justify-center">
+                              <div className="h-2 w-2 bg-white rounded-full animate-pulse"></div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h2 className="text-lg font-bold text-gray-900 truncate">
+                            {user?.nombre || t('navbar.mobile.user')}
+                          </h2>
+                          <p className="text-sm text-gray-500 truncate mb-1">{user?.email}</p>
+                          {!isUserVerified() ? (
+                            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
+                              <AlertCircle className="h-3 w-3 mr-1" />
+                              {t('navbar.mobile.verifyAccount')}
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-green-50 text-green-700 border-green-200 text-xs">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              {t('navbar.mobile.accountVerified')}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-lg font-bold text-gray-900 truncate">
-                          {user?.nombre || t('navbar.mobile.user')}
-                        </h2>
-                        <p className="text-sm text-gray-500 truncate mb-1">{user?.email}</p>
-                        {!isUserVerified() ? (
-                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
-                            <AlertCircle className="h-3 w-3 mr-1" />
-                            {t('navbar.mobile.verifyAccount')}
-                          </Badge>
-                        ) : (
-                          <Badge className="bg-green-50 text-green-700 border-green-200 text-xs">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            {t('navbar.mobile.accountVerified')}
-                          </Badge>
-                        )}
-                      </div>
+                    </motion.div>
+                  </div>
+                  
+                  {/* Accesos rápidos mejorados - solo para usuarios autenticados */}
+                  <div className="px-4 py-4 w-full">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="h-6 w-1 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full"></div>
+                      <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
+                        {t('navbar.mobile.quickAccess')}
+                      </h3>
                     </div>
-                  </motion.div>
-                ) : (
-                  <motion.div 
-                    className="text-center p-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 rounded-2xl border border-indigo-100"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-inner">
-                      <User className="h-10 w-10 text-indigo-600" />
+                    <div className="grid grid-cols-3 gap-3">
+                      {/* Mi Perfil */}
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full"
+                      >
+                        <Button 
+                          variant="outline" 
+                          className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100 hover:border-indigo-200 relative overflow-hidden group"
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            router.push('/profile');
+                          }}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                          <User className="h-5 w-5 text-indigo-600 flex-shrink-0" />
+                          <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{t('navbar.mobile.myProfile')}</span>
+                        </Button>
+                      </motion.div>
+
+                      {/* Pedidos */}
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full"
+                      >
+                        <Button 
+                          variant="outline" 
+                          className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-100 hover:border-amber-200 relative overflow-hidden group"
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            router.push('/profile/orders');
+                          }}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                          <ShoppingBag className="h-5 w-5 text-amber-600 flex-shrink-0" />
+                          <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{t('navbar.mobile.orders')}</span>
+                        </Button>
+                      </motion.div>
+
+                      {/* Direcciones */}
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full"
+                      >
+                        <Button 
+                          variant="outline" 
+                          className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100 hover:border-blue-200 relative overflow-hidden group"
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            router.push('/profile/addresses');
+                          }}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                          <MapPin className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                          <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{t('navbar.mobile.addresses')}</span>
+                        </Button>
+                      </motion.div>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{t('navbar.mobile.welcome')}</h3>
-                    <p className="text-sm text-gray-600 mb-5 leading-relaxed">
-                      {t('navbar.mobile.loginPrompt')}
-                    </p>
-                    <Button 
-                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2 px-6 rounded-xl shadow-lg"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        openAuthModal('login');
-                      }}
-                    >
-                      {t('navbar.mobile.login')}
-                    </Button>
-                  </motion.div>
-                )}
-              </div>
+                  </div>
+                  
+                  <div className="w-full border-t border-gray-200 my-2"></div>
+                </>
+              ) : null}
               
-              {/* Accesos rápidos mejorados */}
-              <div className="px-4 py-4 w-full">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="h-6 w-1 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full"></div>
-                  <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
-                    {t('navbar.mobile.quickAccess')}
-                  </h3>
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {/* Mi Perfil */}
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full"
-                  >
-                    <Button 
-                      variant="outline" 
-                      className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100 hover:border-indigo-200 relative overflow-hidden group"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        if (isAuthenticated) {
-                          router.push('/profile');
-                        } else {
-                          openAuthModal('login');
-                        }
-                      }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                      <User className="h-5 w-5 text-indigo-600 flex-shrink-0" />
-                      <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{t('navbar.mobile.myProfile')}</span>
-                    </Button>
-                  </motion.div>
-
-                  {/* Pedidos */}
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full"
-                  >
-                    <Button 
-                      variant="outline" 
-                      className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-100 hover:border-amber-200 relative overflow-hidden group"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        if (isAuthenticated) {
-                          router.push('/profile/orders');
-                        } else {
-                          openAuthModal('login');
-                        }
-                      }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                      <ShoppingBag className="h-5 w-5 text-amber-600 flex-shrink-0" />
-                      <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{t('navbar.mobile.orders')}</span>
-                    </Button>
-                  </motion.div>
-
-                  {/* Direcciones */}
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full"
-                  >
-                    <Button 
-                      variant="outline" 
-                      className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100 hover:border-blue-200 relative overflow-hidden group"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        if (isAuthenticated) {
-                          router.push('/profile/addresses');
-                        } else {
-                          openAuthModal('login');
-                        }
-                      }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                      <MapPin className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                      <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{t('navbar.mobile.addresses')}</span>
-                    </Button>
-                  </motion.div>
-                </div>
-              </div>
-              
-              <div className="w-full border-t border-gray-200 my-2"></div>
-              
-              {/* Navegación principal */}
+              {/* Navegación principal - siempre visible, arriba del todo para usuarios no autenticados */}
               <div className="px-4 py-4 w-full">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="h-6 w-1 bg-gradient-to-b from-green-500 to-blue-500 rounded-full"></div>
@@ -717,9 +683,8 @@ export function Navbar() {
             
             {/* Footer fijo */}
             <div className="border-t bg-gray-50/80 backdrop-blur-sm w-full">
-              
-              {/* Cerrar sesión (solo usuarios autenticados) */}
-              {isAuthenticated && (
+              {isAuthenticated ? (
+                /* Cerrar sesión (solo usuarios autenticados) */
                 <>
                   <div className="w-full border-t border-gray-200"></div>
                   <div className="px-4 py-3">
@@ -740,6 +705,28 @@ export function Navbar() {
                     </Button>
                   </div>
                 </>
+              ) : (
+                /* Botón compacto de iniciar sesión para usuarios no autenticados */
+                <div className="px-4 py-4">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <Button 
+                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold h-12 rounded-xl shadow-lg"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        openAuthModal('login');
+                      }}
+                    >
+                      <div className="flex items-center justify-center gap-3">
+                        <User className="h-5 w-5" />
+                        <span>{t('navbar.mobile.login')}</span>
+                      </div>
+                    </Button>
+                  </motion.div>
+                </div>
               )}
             </div>
           </motion.div>
