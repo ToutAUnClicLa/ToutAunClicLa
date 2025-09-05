@@ -280,7 +280,7 @@ export default function SobreNosotrosPage() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Package className="mr-2 h-5 w-5" />
-                  {t('aboutUs.cta.browseProducts')}
+                  {String(t('aboutUs.cta.browseProducts'))}
                 </motion.button>
               </Link>
               
@@ -291,7 +291,7 @@ export default function SobreNosotrosPage() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Utensils className="mr-2 h-5 w-5" />
-                  {t('aboutUs.cta.viewFoods')}
+                  {String(t('aboutUs.cta.viewFoods'))}
                 </motion.button>
               </Link>
               
@@ -302,7 +302,7 @@ export default function SobreNosotrosPage() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Store className="mr-2 h-5 w-5" />
-                  {t('aboutUs.cta.visitBoutique')}
+                  {String(t('aboutUs.cta.visitBoutique'))}
                 </motion.button>
               </Link>
             </div>

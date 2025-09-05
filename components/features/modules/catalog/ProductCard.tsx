@@ -117,6 +117,11 @@ export function ProductCard({
       return `${restaurantUrl}/${product.id}`;
     }
     
+    // Para productos y boutique, usar la estructura estándar
+    if (categoryName === 'productos' || categoryName === 'boutique') {
+      return `/productos/${product.id}`;
+    }
+    
     // Para otras categorías, usar la estructura estándar: /categoria/productId
     return `/${categoryName}/${product.id}`;
   };
