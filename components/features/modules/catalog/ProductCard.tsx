@@ -111,10 +111,15 @@ export function ProductCard({
   // Funciones auxiliares
 
   const getProductUrl = () => {
-    // Si es un producto de comidas y tiene subcategoría (restaurante), usar ruta de restaurante
-    if (categoryName === 'comidas' && product.subcategorias?.nombre) {
-      const restaurantUrl = getRestaurantUrlWithFallback(product.subcategorias.nombre);
-      return `${restaurantUrl}/${product.id}`;
+    // Si es un producto de comidas, SIEMPRE usar ruta de restaurante
+    if (categoryName === 'comidas') {
+      if (product.subcategorias?.nombre) {
+        const restaurantUrl = getRestaurantUrlWithFallback(product.subcategorias.nombre);
+        return `${restaurantUrl}/${product.id}`;
+      } else {
+        // Si no tiene restaurante, usar la ruta de categoria/productId genérica
+        return `/${categoryName}/${product.id}`;
+      }
     }
     
     // Para productos y boutique, usar la estructura estándar
