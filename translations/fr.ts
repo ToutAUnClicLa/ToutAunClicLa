@@ -1448,7 +1448,7 @@ export default {
       benefits: {
         fastDelivery: {
           title: "Livraison Rapide",
-          description: "Recevez votre commande en 24-48h"
+          description: "Recevez votre commande en 1h environ"
         },
         qualityGuarantee: {
           title: "Garantie Qualité",

@@ -442,31 +442,6 @@ export function ProductGrid({
         </Select>
       </div>
 
-      {/* Filtro por Rango de Precios */}
-      <div>
-        <label className="text-sm font-medium mb-2 block">{t('catalog.productList.priceRange')}</label>
-        <div className="space-y-2">
-          <div className="flex gap-2 items-center">
-            <Input
-              type="number"
-              min={0}
-              placeholder={t('catalog.productList.minPrice')}
-              value={filters.minPrice || ''}
-              onChange={(e) => handleFilterChange('minPrice', parseInt(e.target.value) || undefined)}
-              className="flex-1"
-            />
-            <span className="text-gray-400">-</span>
-            <Input
-              type="number"
-              min={0}
-              placeholder={t('catalog.productList.maxPrice')}
-              value={filters.maxPrice || ''}
-              onChange={(e) => handleFilterChange('maxPrice', parseInt(e.target.value) || undefined)}
-              className="flex-1"
-            />
-          </div>
-        </div>
-      </div>
 
       {/* Botón Limpiar Filtros */}
       <Button 
@@ -502,31 +477,6 @@ export function ProductGrid({
         </Select>
       </div>
 
-      {/* Filtro por Rango de Precios */}
-      <div>
-        <label className="text-sm font-medium mb-2 block">{t('catalog.productList.priceRange')}</label>
-        <div className="space-y-2">
-          <div className="flex gap-2 items-center">
-            <Input
-              type="number"
-              min={0}
-              placeholder={t('catalog.productList.minPrice')}
-              value={tempFilters.minPrice || ''}
-              onChange={(e) => handleTempFilterChange('minPrice', parseInt(e.target.value) || undefined)}
-              className="flex-1"
-            />
-            <span className="text-gray-400">-</span>
-            <Input
-              type="number"
-              min={0}
-              placeholder={t('catalog.productList.maxPrice')}
-              value={tempFilters.maxPrice || ''}
-              onChange={(e) => handleTempFilterChange('maxPrice', parseInt(e.target.value) || undefined)}
-              className="flex-1"
-            />
-          </div>
-        </div>
-      </div>
 
       {/* Botones de acción */}
       <div className="flex gap-2 pt-4">
