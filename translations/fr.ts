@@ -1480,8 +1480,23 @@ export default {
         productNotFound: "Produit non trouvé"
       },
       
-      // Prix et taxes
-      price: {
+      // Subcategorías
+      subcategories: {
+        // Productos
+        "1": "Farines et Pâtes",
+        "12": "Boissons",
+        "3": "Paquets et Collations", 
+        "2": "Sauces et Assaisonnements",
+        
+        // Boutique
+        "8": "Accessoires",
+        "7": "Vêtements",
+        "9": "Souvenirs"
+      },
+    
+
+    // Prix et taxes
+    price: {
         notAvailable: "Non disponible",
         basePrice: "Prix de base",
         total: "Total",
@@ -1676,7 +1691,7 @@ export default {
       viewMenu: "Voir le menu",
       callToAction: "Vous ne trouvez pas ce que vous cherchez? Explorez tous nos restaurants partenaires.",
       exploreAll: "Explorer tous les restaurants"
-    }
+    },
   },
 
 

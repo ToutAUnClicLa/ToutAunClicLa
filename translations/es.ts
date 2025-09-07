@@ -709,6 +709,20 @@ export default {
         errorAddingToCart: "Error al agregar al carrito",
         errorTogglingFavorite: "Error al gestionar favoritos",
         loginRequired: "Debes iniciar sesión para continuar"
+      },
+      
+      // Subcategorías
+      subcategories: {
+        // Productos
+        "1": "Harinas y Masas",
+        "12": "Bebidas",
+        "3": "Paquetes y Snacks", 
+        "2": "Salsas y Aderezos",
+        
+        // Boutique
+        "8": "Accesorios",
+        "7": "Ropa",
+        "9": "Souvenirs"
       }
     },
 

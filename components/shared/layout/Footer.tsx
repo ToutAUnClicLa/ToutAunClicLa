@@ -165,7 +165,7 @@ export function Footer() {
                 </li>
                 <li className="flex items-center text-sm md:text-base">
                   <Mail className="h-5 w-5 text-indigo-400 mr-2 flex-shrink-0" />
-                  <a href="mailto:info@toutaunclicla.com" className="text-gray-400 hover:text-white transition-colors duration-200" itemProp="email">
+                  <a href="mailto:serviceclient@toutaunclicla.com" className="text-gray-400 hover:text-white transition-colors duration-200" itemProp="email">
                     {t('footer.contact.email')}
                   </a>
                 </li>

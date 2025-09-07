@@ -1495,7 +1495,21 @@ export default {
         productNotFound: "Product not found"
       },
       
-      // Prices and taxes
+      // Subcategorías
+      subcategories: {
+        // Productos
+        "1": "Flours and Doughs",
+        "12": "Beverages",
+        "3": "Packages and Snacks", 
+        "2": "Sauces and Dressings",
+        
+        // Boutique
+        "8": "Accessories",
+        "7": "Clothing",
+        "9": "Souvenirs"
+      },
+  
+    // Prices and taxes
       price: {
         notAvailable: "Not available",
         basePrice: "Base price",
@@ -1519,9 +1533,8 @@ export default {
         stock: "Available",
         lowStock: "Low stock",
         outOfStock: "Out of stock"
-      }
+      },
     },
-
     // FoodCatalog
     foodCatalog: {
       title: "Traditional Foods",
@@ -1690,10 +1703,9 @@ export default {
       viewMenu: "View menu",
       callToAction: "Can't find what you're looking for? Explore all our partner restaurants.",
       exploreAll: "Explore all restaurants"
-    }
+    },
   },
-
-  // SEO and metadata
+  //SEO META TAFS
   seo: {
     products: {
       title: "Authentic Latin American Products | Tout à un Clic LA",

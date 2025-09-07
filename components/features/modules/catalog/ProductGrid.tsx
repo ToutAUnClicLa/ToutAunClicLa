@@ -19,7 +19,7 @@ import { Card, CardContent } from '@/components/common/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/common/ui/sheet';
 import { StateDisplay } from '@/components/common/StateDisplay';
 import { Pagination } from '@/components/common/Pagination';
-import { cn } from '@/lib/utils';
+import { cn, useSubcategoryTranslation } from '@/lib/utils';
 
 const container = {  
   hidden: { opacity: 0 },
@@ -80,6 +80,7 @@ export function ProductGrid({
   showHeader = true 
 }: ProductGridProps) {
   const { t } = useTranslation();
+  const translateSubcategory = useSubcategoryTranslation(t);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [tempFilters, setTempFilters] = useState<ProductFilters>({
@@ -435,7 +436,7 @@ export function ProductGrid({
             <SelectItem value="all">{t('catalog.productList.allSubcategories')}</SelectItem>
             {subcategories.map((sub) => (
               <SelectItem key={sub.id} value={sub.id.toString()}>
-                {sub.nombre}
+                {translateSubcategory(sub.id)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -470,7 +471,7 @@ export function ProductGrid({
             <SelectItem value="all">{t('catalog.productList.allSubcategories')}</SelectItem>
             {subcategories.map((sub) => (
               <SelectItem key={sub.id} value={sub.id.toString()}>
-                {sub.nombre}
+                {translateSubcategory(sub.id)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -565,7 +566,7 @@ export function ProductGrid({
               <p>
                 {customPagination?.totalItems || paginatedProducts.length} productos encontrados
                 {searchValue && ` para la búsqueda "${searchValue}" (nombre + descripción)`}
-                {filters.subcategory && ` en la categoría ${subcategories.find(s => s.id === filters.subcategory)?.nombre}`}
+                {filters.subcategory && ` en la categoría ${translateSubcategory(filters.subcategory)}`}
               </p>
             </div>
             {/* Controles de búsqueda y filtros optimizados para mobile */}
@@ -719,7 +720,7 @@ export function ProductGrid({
                         loading && "opacity-50"
                       )}
                     >
-                      📂 {subcategories.find(s => s.id === filters.subcategory)?.nombre}
+                      📂 {translateSubcategory(filters.subcategory)}
                       <button
                         onClick={() => !loading && handleFilterChange('subcategory', undefined)}
                         className="hover:bg-gray-200 rounded-full p-0.5 transition-colors"

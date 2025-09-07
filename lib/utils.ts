@@ -145,3 +145,41 @@ export function getProductImages(product: {
   
   return images;
 }
+
+/**
+ * Obtiene la traducción de una subcategoría basándose en su ID
+ * @param subcategoryId - ID de la subcategoría
+ * @param translations - Objeto de traducciones desde useTranslation
+ * @returns Nombre traducido de la subcategoría o el nombre original como fallback
+ */
+export function getTranslatedSubcategory(subcategoryId: number, translations: any): string {
+  const subcategoriesTranslations = translations?.catalog?.productList?.subcategories;
+  
+  if (subcategoriesTranslations && subcategoriesTranslations[subcategoryId.toString()]) {
+    return subcategoriesTranslations[subcategoryId.toString()];
+  }
+  
+  // Fallback para IDs conocidos si no hay traducción disponible
+  const fallbackNames: Record<number, string> = {
+    1: "Harinas y Masas",
+    12: "Bebidas", 
+    3: "Paquetes y Snacks",
+    2: "Salsas y Aderezos",
+    8: "Accesorios",
+    7: "Ropa",
+    9: "Souvenirs"
+  };
+  
+  return fallbackNames[subcategoryId] || `Subcategoría ${subcategoryId}`;
+}
+
+/**
+ * Hook personalizado para traducir subcategorías (para usar con useTranslation)
+ * @param t - Función de traducción desde useTranslation hook
+ * @returns Función para traducir subcategorías por ID
+ */
+export function useSubcategoryTranslation(t: any) {
+  return (subcategoryId: number): string => {
+    return getTranslatedSubcategory(subcategoryId, { catalog: { productList: { subcategories: t('catalog.productList.subcategories', { returnObjects: true }) } } });
+  };
+}

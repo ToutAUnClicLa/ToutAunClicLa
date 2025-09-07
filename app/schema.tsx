@@ -40,7 +40,7 @@ const organizationData: SchemaType = {
     "longitude": -73.5673
   },
   "telephone": "+15141234567",
-  "email": "info@toutaunclicla.com",
+  "email": "serviceclient@toutaunclicla.com",
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
@@ -60,7 +60,7 @@ const localBusinessData: SchemaType = {
   "image": "https://toutaunclicla.com/store-image.jpg",
   "priceRange": "$$",
   "telephone": "+15141234567",
-  "email": "info@toutaunclicla.com",
+  "email": "serviceclient@toutaunclicla.com",
   "url": "https://toutaunclicla.com",
   "address": {
     "@type": "PostalAddress",
