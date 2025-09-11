@@ -13,6 +13,7 @@ interface Product {
   TPS?: number;
   TVQ?: number;
   consigne?: number;
+  ecoprecio?: boolean;
   provedor?: string;
   hasVariations?: boolean;
   minPrice?: number;
@@ -102,16 +103,24 @@ export function ProductPriceDisplay({
 
       {/* Precio base (siempre en azul) */}
       <div className="space-y-1">
-        <div className={`font-bold text-blue-600 ${
-          // Si es "Precio a seleccionar", usar texto más pequeño
-          priceData.priceLabel === t('catalog.price.selectPrice') ? (
-            variant === 'compact' ? 'text-xs' : 'text-sm'
-          ) : (
-            variant === 'compact' ? 'text-sm' : 
-            variant === 'detailed' ? 'text-2xl' : 'text-lg'
-          )
-        }`}>
-          {priceData.priceLabel}
+        <div className="flex items-baseline gap-2">
+          <span className={`font-bold text-blue-600 ${
+            // Si es "Precio a seleccionar", usar texto más pequeño
+            priceData.priceLabel === t('catalog.price.selectPrice') ? (
+              variant === 'compact' ? 'text-xs' : 'text-sm'
+            ) : (
+              variant === 'compact' ? 'text-sm' : 
+              variant === 'detailed' ? 'text-2xl' : 'text-lg'
+            )
+          }`}>
+            {priceData.priceLabel}
+          </span>
+          {/* Eco fee text */}
+          {product.ecoprecio && (
+            <span className="text-xs text-emerald-600 font-medium">
+              {t('cart.ecoFee')}
+            </span>
+          )}
         </div>
         
         {/* Price range for variations if available */}

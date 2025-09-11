@@ -51,6 +51,7 @@ export interface CartProduct {
   TPS?: number;
   TVQ?: number;
   consigne?: number;
+  ecoprecio?: boolean;
   provedor?: string;
   categoria_id: number;
   subcategoria_id?: number;

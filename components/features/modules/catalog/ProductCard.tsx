@@ -329,7 +329,6 @@ export function ProductCard({
                     </Badge>
                   )}
                   
-                  
                   {showCategory && product.categorias && (
                     <Badge variant="outline" className="bg-white/90 text-[10px] sm:text-xs px-1 sm:px-2 py-0.5 hidden sm:flex">
                       {product.categorias.nombre}

@@ -957,16 +957,30 @@ export default function CartPage() {
                             <span className="text-xs text-gray-500">
                               {t('cart.variationDetails.customized')} ({item.cantidad} × {formatPrice(item.productos.precio)})
                             </span>
-                            <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
-                              {formatPrice(getItemPricingDetails(item).finalSubtotal)}
-                            </span>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
+                                {formatPrice(getItemPricingDetails(item).finalSubtotal)}
+                              </span>
+                              {item.productos.ecoprecio && (
+                                <span className="text-xs text-emerald-600 font-medium">
+                                  {t('cart.ecoFee')}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       ) : (
                         <>
-                          <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
-                            {formatPrice(item.productos.precio)}
-                          </span>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
+                              {formatPrice(item.productos.precio)}
+                            </span>
+                            {item.productos.ecoprecio && (
+                              <span className="text-xs text-emerald-600 font-medium">
+                                {t('cart.ecoFee')}
+                              </span>
+                            )}
+                          </div>
                           <span className="text-xs sm:text-sm text-gray-500">
                             {t('cart.perUnit')}
                           </span>

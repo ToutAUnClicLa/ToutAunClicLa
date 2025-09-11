@@ -1252,6 +1252,7 @@ export default {
     subtitle: "Productos seleccionados",
     product: "producto",
     products: "productos",
+    ecoFee: "Ecoprecio",
     estimatedTotal: "Total estimado",
     shipping: "envío",
     freeShipping: "Envío gratis",

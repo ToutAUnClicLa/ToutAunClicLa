@@ -118,6 +118,7 @@ export interface Product {
   TPS?: number;
   TVQ?: number;
   consigne?: number;
+  ecoprecio?: boolean;
   activo?: boolean;
   fecha_creacion: string;
   fecha_actualizacion?: string;
