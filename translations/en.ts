@@ -1252,7 +1252,8 @@ export default {
       description: "Discover the authentic delicious flavors of {restaurantName}",
       deliveryAvailable: "Delivery available",
       businessHours: "11:00 AM - 9:00 PM",
-      authenticCuisine: "Authentic cuisine"
+      authenticCuisine: "Authentic cuisine",
+      backToRestaurants: "Back to Foods"
     },
     // ProductCard
     productCard: {
