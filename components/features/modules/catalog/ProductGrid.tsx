@@ -404,21 +404,6 @@ export function ProductGrid({
     toast.success(t('catalog.productList.notifications.filtersCleared'));
   }, [categoryId, t, clearSearch]);
 
-  const LoadingSkeleton = useMemo(() => (
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <Card key={i} className="overflow-hidden">
-          <Skeleton className="aspect-square w-full" />
-          <CardContent className="p-2 sm:p-4 space-y-2">
-            <Skeleton className="h-3 sm:h-4 w-3/4" />
-            <Skeleton className="h-2 sm:h-3 w-1/2" />
-            <Skeleton className="h-4 sm:h-6 w-1/4" />
-            <Skeleton className="h-6 sm:h-9 w-full" />
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  ), []);
 
   const FilterContent = useCallback(() => (
     <div className="space-y-4 sm:space-y-6">

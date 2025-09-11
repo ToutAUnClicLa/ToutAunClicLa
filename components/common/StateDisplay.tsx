@@ -39,9 +39,9 @@ const defaultMessages = {
 
 const LoadingSkeleton = ({ itemsCount = 8, variant = 'grid' }: { itemsCount: number; variant: 'grid' | 'list' | 'compact' }) => {
   const gridClasses = {
-    grid: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6',
+    grid: 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6',
     list: 'space-y-4',
-    compact: 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'
+    compact: 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6'
   };
 
   if (variant === 'list') {
@@ -64,15 +64,24 @@ const LoadingSkeleton = ({ itemsCount = 8, variant = 'grid' }: { itemsCount: num
   return (
     <div className={gridClasses[variant]}>
       {Array.from({ length: itemsCount }).map((_, i) => (
-        <Card key={i} className="overflow-hidden">
-          <Skeleton className="aspect-square w-full" />
-          <CardContent className="p-4 space-y-2">
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-3 w-1/2" />
-            <Skeleton className="h-6 w-1/4" />
-            <Skeleton className="h-9 w-full" />
-          </CardContent>
-        </Card>
+        <div key={i} className="group">
+          <Card className="overflow-hidden border-0 shadow-md">
+            <div className="relative aspect-square overflow-hidden">
+              <Skeleton className="w-full h-full" />
+            </div>
+            <CardContent className="p-2 sm:p-4 space-y-2">
+              <Skeleton className="h-3 sm:h-4 w-3/4" />
+              <Skeleton className="h-2 sm:h-3 w-1/2" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 sm:h-6 w-1/4" />
+                <div className="flex gap-1 sm:gap-2">
+                  <Skeleton className="h-6 sm:h-8 flex-1" />
+                  <Skeleton className="h-6 sm:h-8 w-6 sm:w-8 rounded" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       ))}
     </div>
   );
