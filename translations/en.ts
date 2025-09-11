@@ -1579,6 +1579,7 @@ export default {
       noRestaurantsDesc: "We will soon have more traditional food options for you.",
       viewMenu: "View menu",
       available: "Available",
+      comingSoon: "Available very soon",
       rating: "rating",
       openNow: "Open now",
       popular: "Popular",

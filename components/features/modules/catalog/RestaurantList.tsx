@@ -42,6 +42,10 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
   const { restaurants, loading, error } = useRestaurants();
 
   const handleRestaurantClick = (restaurant: Restaurant) => {
+    // Solo navegar si el restaurante está disponible
+    if (!restaurant.disponible) {
+      return; // No hacer nada si no está disponible
+    }
     // Always navigate directly to restaurant-specific page
     router.push(getRestaurantUrlWithFallback(restaurant.nombre));
   };
@@ -140,6 +144,9 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
     );
   }
 
+  // Ordenar restaurantes: disponibles primero en orden alfabético
+  const sortedRestaurants = restaurantsService.sortRestaurantsByAvailability(restaurants);
+
   return (
     <motion.div
       variants={container}
@@ -147,7 +154,7 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
       animate="show"
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6"
     >
-      {restaurants.map((restaurant) => {
+      {sortedRestaurants.map((restaurant) => {
         const availabilityStatus = getAvailabilityStatus(restaurant);
         const flags = getRestaurantFlags(restaurant.nacionalidades);
         
@@ -158,7 +165,7 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
               onClick={() => handleRestaurantClick(restaurant)}
               role="button"
               tabIndex={0}
-              aria-label={`${t('catalog.restaurantList.viewMenuFor')} ${restaurant.nombre}`}
+              aria-label={restaurant.disponible ? `${t('catalog.restaurantList.viewMenuFor')} ${restaurant.nombre}` : `${restaurant.nombre} - ${t('catalog.restaurantList.comingSoon')}`}
             >
               <CardContent className="p-4 h-full flex flex-col">
                 <div className="flex flex-col h-full">
@@ -228,6 +235,8 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
                             ? 'bg-emerald-500 animate-pulse' 
                             : availabilityStatus.color === 'yellow'
                             ? 'bg-yellow-500 animate-pulse'
+                            : availabilityStatus.color === 'blue'
+                            ? 'bg-blue-500'
                             : 'bg-red-500'
                         }`} 
                       />
@@ -237,6 +246,8 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
                             ? 'text-emerald-600' 
                             : availabilityStatus.color === 'yellow'
                             ? 'text-yellow-600'
+                            : availabilityStatus.color === 'blue'
+                            ? 'text-blue-600'
                             : 'text-red-600'
                         }`}
                       >
@@ -247,19 +258,31 @@ export function RestaurantList({ categoryId, onRestaurantSelect }: RestaurantLis
 
                   {/* Call to Action Button Premium - Posición fija */}
                   <Button 
-                    className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-white font-semibold text-sm sm:text-base h-10 sm:h-12 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg sm:rounded-xl relative overflow-hidden group-hover:scale-[1.02]"
+                    className={cn(
+                      "w-full font-semibold text-sm sm:text-base h-10 sm:h-12 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg sm:rounded-xl relative overflow-hidden group-hover:scale-[1.02]",
+                      restaurant.disponible 
+                        ? "bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-white" 
+                        : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white cursor-pointer"
+                    )}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleRestaurantClick(restaurant);
+                      if (restaurant.disponible) {
+                        handleRestaurantClick(restaurant);
+                      }
+                      // Si no está disponible, no hacer nada pero mantener la interacción visual
                     }}
-                    aria-label={`${t('catalog.restaurantList.viewMenu')} - ${restaurant.nombre}`}
+                    aria-label={restaurant.disponible ? `${t('catalog.restaurantList.viewMenu')} - ${restaurant.nombre}` : `${restaurant.nombre} - ${t('catalog.restaurantList.comingSoon')}`}
                   >
-                    {/* Efecto shimmer */}
+                    {/* Efecto shimmer siempre */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                     
                     <span className="flex items-center justify-center gap-1.5 sm:gap-2">
-                      {t('catalog.restaurantList.viewMenu')}
-                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-300 flex-shrink-0" />
+                      {restaurant.disponible ? t('catalog.restaurantList.viewMenu') : t('catalog.restaurantList.comingSoon')}
+                      {restaurant.disponible ? (
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-300 flex-shrink-0" />
+                      ) : (
+                        <span className="text-lg"></span>
+                      )}
                     </span>
                   </Button>
                 </div>

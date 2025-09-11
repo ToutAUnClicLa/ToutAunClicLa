@@ -1566,6 +1566,7 @@ export default {
       noRestaurantsDesc: "Nous aurons bientôt plus d'options de cuisine traditionnelle pour vous.",
       viewMenu: "Voir le menu",
       available: "Disponible",
+      comingSoon: "Disponible très bientôt",
       rating: "note",
       openNow: "Ouvert maintenant",
       popular: "Populaire",

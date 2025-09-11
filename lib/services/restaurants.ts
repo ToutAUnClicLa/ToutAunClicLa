@@ -120,9 +120,10 @@ export function getRestaurantFlags(nacionalidades: string[]): string {
 
 /**
  * Verificar si un restaurante puede recibir pedidos
+ * Solo si está disponible (disponible: true)
  */
 export function canOrderFrom(restaurant: Restaurant): boolean {
-  return restaurant.abierto && restaurant.disponible;
+  return restaurant.disponible && restaurant.abierto;
 }
 
 /**
@@ -130,9 +131,18 @@ export function canOrderFrom(restaurant: Restaurant): boolean {
  */
 export function getAvailabilityMessage(restaurant: Restaurant, t: (key: string, params?: any) => string): {
   message: string;
-  color: 'green' | 'yellow' | 'red';
-  status: 'available' | 'last_hour' | 'closed';
+  color: 'green' | 'yellow' | 'red' | 'blue';
+  status: 'available' | 'last_hour' | 'closed' | 'coming_soon';
 } {
+  // Si disponible es false, mostrar "Disponible muy pronto" independientemente del horario
+  if (!restaurant.disponible) {
+    return {
+      message: t('catalog.restaurantList.comingSoon'),
+      color: 'blue',
+      status: 'coming_soon'
+    };
+  }
+  
   if (!restaurant.abierto) {
     return {
       message: t('catalog.restaurants.status.closed', { time: restaurant.horario_apertura }),
@@ -158,18 +168,16 @@ export function getAvailabilityMessage(restaurant: Restaurant, t: (key: string, 
 
 /**
  * Ordenar restaurantes por disponibilidad
+ * Primero: disponibles en orden alfabético
+ * Segundo: no disponibles en orden alfabético
  */
 export function sortRestaurantsByAvailability(restaurants: Restaurant[]): Restaurant[] {
   return [...restaurants].sort((a, b) => {
-    // Primero: disponibles
+    // Primero: disponibles van antes que no disponibles
     if (a.disponible && !b.disponible) return -1;
     if (!a.disponible && b.disponible) return 1;
     
-    // Segundo: abiertos pero no disponibles
-    if (a.abierto && !b.abierto) return -1;
-    if (!a.abierto && b.abierto) return 1;
-    
-    // Tercero: alfabético
+    // Si ambos tienen el mismo estado de disponibilidad, ordenar alfabéticamente
     return a.nombre.localeCompare(b.nombre);
   });
 }
