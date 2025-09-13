@@ -177,6 +177,7 @@ export function AddAddressModal({
                   <SelectItem value="Saint-Lambert">Saint-Lambert</SelectItem>
                   <SelectItem value="Brossard">Brossard</SelectItem>
                   <SelectItem value="La Prairie">La Prairie</SelectItem>
+                  <SelectItem value="Candiac">Candiac</SelectItem>
                 </SelectContent>
               </Select>
             </div>
