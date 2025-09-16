@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Truck } from 'lucide-react';
 import { useTranslation, useOptimizedSearch } from '@/hooks';
@@ -38,6 +38,7 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
   const [searchTerm, setSearchTerm] = useState('');
+  const gridRef = useRef<HTMLDivElement>(null);
 
   // Handle search with optimization
   const handleSearch = useCallback((searchValue: string) => {
@@ -65,15 +66,23 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
     search: debouncedValue || undefined, // Only add search if user is searching
     page: currentPage,
     limit: itemsPerPage,
-    sortBy: 'nombre',
-    sortOrder: 'asc'
+    sortBy: 'precio',
+    sortOrder: 'desc'
   };
 
   const { products, pagination, loading, error, refetch } = useProducts(filters);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Scroll al inicio del grid con un pequeño offset
+    if (gridRef.current) {
+      const yOffset = -100; // Offset para dejar espacio del header
+      const y = gridRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    } else {
+      // Fallback al comportamiento anterior
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   // Reset page when restaurant changes
@@ -82,7 +91,7 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
   }, [restaurantName]);
 
   return (
-    <div className="space-y-8">
+    <div ref={gridRef} className="space-y-8">
       {/* Search Bar Only */}
       <div className="text-center">
         <div className="max-w-md mx-auto">
@@ -93,7 +102,7 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
             )} />
             <Input
               type="search"
-              placeholder="Buscar en el menú..."
+              placeholder={t('catalog.productList.searchPlaceholder')}
               className="pl-10 h-12 text-base border-gray-200 focus:border-orange-300 focus:ring-orange-100"
               value={searchValue}
               onChange={(e) => updateSearchValue(e.target.value)}
@@ -133,10 +142,10 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
         ) : products.length === 0 ? (
           <StateDisplay 
             type="empty" 
-            title={searchValue ? `No se encontraron productos para "${searchValue}"` : `No hay productos disponibles en ${restaurantName}`}
-            message={searchValue ? "Intenta con otros términos de búsqueda" : "Este restaurante no tiene productos disponibles en este momento."}
+            title={searchValue ? t('catalog.productList.noResultsFor', { search: searchValue }) : t('catalog.productList.noProductsAvailable', { restaurant: restaurantName })}
+            message={searchValue ? t('catalog.productList.tryOtherTerms') : t('catalog.productList.restaurantNoProducts')}
             onRetry={searchValue ? () => updateSearchValue('') : refetch}
-            retryLabel={searchValue ? "Limpiar búsqueda" : t('catalog.productList.retry')}
+            retryLabel={searchValue ? t('common.clearSearch') : t('catalog.productList.retry')}
           />
         ) : (
           <AnimatePresence>
@@ -181,8 +190,8 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
               </div>
             ) : (
               <span>
-                Mostrando {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}-{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} de {pagination.totalItems} producto{pagination.totalItems !== 1 ? 's' : ''} de {restaurantName}
-                {searchValue && <span className="text-orange-600 font-medium"> para &quot;{searchValue}&quot;</span>}
+                {t('pagination.showing')} {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}-{Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} {t('common.of')} {pagination.totalItems} {pagination.totalItems !== 1 ? t('common.products') : t('common.product')} {t('common.of')} {restaurantName}
+                {searchValue && <span className="text-orange-600 font-medium"> {t('common.for')} &quot;{searchValue}&quot;</span>}
               </span>
             )}
           </div>

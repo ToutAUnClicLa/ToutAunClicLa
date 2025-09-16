@@ -81,6 +81,7 @@ export function ProductGrid({
 }: ProductGridProps) {
   const { t } = useTranslation();
   const translateSubcategory = useSubcategoryTranslation(t);
+  const gridRef = useRef<HTMLDivElement>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [tempFilters, setTempFilters] = useState<ProductFilters>({
@@ -374,8 +375,15 @@ export function ProductGrid({
 
   const handlePageChange = useCallback((page: number) => {
     setFilters(prev => ({ ...prev, page }));
-    // Scroll to top when page changes
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Scroll al inicio del grid con un pequeño offset
+    if (gridRef.current) {
+      const yOffset = -100; // Offset para dejar espacio del header
+      const y = gridRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    } else {
+      // Fallback al comportamiento anterior
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, []);
 
   const handleClearFilters = useCallback(() => {
@@ -502,7 +510,7 @@ export function ProductGrid({
   ], [t]);
 
   return (
-    <div className={cn("min-h-screen py-6", showHeader ? colors.bg : 'bg-white')}>
+    <div ref={gridRef} className={cn("min-h-screen py-6", showHeader ? colors.bg : 'bg-white')}>
       <div className={showHeader ? "container" : "max-w-7xl mx-auto px-4"}>
         {showHeader && (
           <div className="flex items-center gap-3 mb-6">

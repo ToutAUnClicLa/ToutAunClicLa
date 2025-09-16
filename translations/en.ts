@@ -21,7 +21,12 @@ export default {
     editing: "Editing...",
     next: "Next",
     previous: "Previous",
-    continue: "Continue"
+    continue: "Continue",
+    of: "of",
+    for: "for",
+    product: "product",
+    products: "products",
+    clearSearch: "Clear search"
   },
   nav: {
     home: "Home",
@@ -1427,6 +1432,10 @@ export default {
       searchMinLength: "Type at least 2 characters to search",
       searchResults: "{count} results found",
       searchClear: "Clear search",
+      noResultsFor: "No products found for \"{search}\"",
+      tryOtherTerms: "Try other search terms",
+      noProductsAvailable: "No products available in {restaurant}",
+      restaurantNoProducts: "This restaurant has no products available at the moment",
       
       // Notifications
       notifications: {

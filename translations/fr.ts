@@ -21,7 +21,12 @@ export default {
     editing: "Modification...",
     next: "Suivant",
     previous: "Précédent",
-    continue: "Continuer"
+    continue: "Continuer",
+    of: "de",
+    for: "pour",
+    product: "produit",
+    products: "produits",
+    clearSearch: "Effacer la recherche"
   },
   nav: {
     home: "Accueil",
@@ -1412,6 +1417,10 @@ export default {
       searchMinLength: "Tapez au moins 2 caractères pour rechercher",
       searchResults: "{count} résultats trouvés",
       searchClear: "Effacer la recherche",
+      noResultsFor: "Aucun produit trouvé pour \"{search}\"",
+      tryOtherTerms: "Essayez d'autres termes de recherche",
+      noProductsAvailable: "Aucun produit disponible chez {restaurant}",
+      restaurantNoProducts: "Ce restaurant n'a aucun produit disponible pour le moment",
       
       // Notifications
       notifications: {
