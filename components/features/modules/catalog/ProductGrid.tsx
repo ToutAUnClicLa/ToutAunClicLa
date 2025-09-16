@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Package, Utensils, Store, Filter, Search, Grid, List, Clock, Shield, Truck, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -81,9 +81,9 @@ export function ProductGrid({
 }: ProductGridProps) {
   const { t } = useTranslation();
   const translateSubcategory = useSubcategoryTranslation(t);
-  const gridRef = useRef<HTMLDivElement>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isChangingPage, setIsChangingPage] = useState(false);
   const [tempFilters, setTempFilters] = useState<ProductFilters>({
     category: typeof categoryId === 'string' ? parseInt(categoryId) : categoryId,
     subcategory: initialSubcategory || undefined,
@@ -374,16 +374,15 @@ export function ProductGrid({
   }, [filters]);
 
   const handlePageChange = useCallback((page: number) => {
-    setFilters(prev => ({ ...prev, page }));
-    // Scroll al inicio del grid con un pequeño offset
-    if (gridRef.current) {
-      const yOffset = -100; // Offset para dejar espacio del header
-      const y = gridRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    } else {
-      // Fallback al comportamiento anterior
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    setIsChangingPage(true);
+    // Scroll instantáneo al tope
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    // Actualizar página con un pequeño delay para que el scroll suceda primero
+    setTimeout(() => {
+      setFilters(prev => ({ ...prev, page }));
+      // Reactivar animaciones después del cambio
+      setTimeout(() => setIsChangingPage(false), 100);
+    }, 50);
   }, []);
 
   const handleClearFilters = useCallback(() => {
@@ -510,7 +509,7 @@ export function ProductGrid({
   ], [t]);
 
   return (
-    <div ref={gridRef} className={cn("min-h-screen py-6", showHeader ? colors.bg : 'bg-white')}>
+    <div className={cn("min-h-screen py-6", showHeader ? colors.bg : 'bg-white')}>
       <div className={showHeader ? "container" : "max-w-7xl mx-auto px-4"}>
         {showHeader && (
           <div className="flex items-center gap-3 mb-6">
@@ -832,8 +831,28 @@ export function ProductGrid({
                     t('catalog.productList.retry')
                   }
                 />
+              ) : isChangingPage ? (
+                // Sin animaciones durante el cambio de página para máxima velocidad
+                <div 
+                  className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+                  role="grid"
+                  aria-label={`Cuadrícula de ${paginatedProducts.length} productos`}
+                >
+                  {paginatedProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      categoryName={categoryName}
+                      variant="default"
+                      showCategory={showHeader}
+                      showRating={true}
+                      showSubcategory={categoryName === 'comidas'}
+                      className="h-full"
+                    />
+                  ))}
+                </div>
               ) : (
-                <AnimatePresence>
+                <AnimatePresence mode="wait">
                   <motion.div 
                     variants={container}
                     initial="hidden"

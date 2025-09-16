@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Truck } from 'lucide-react';
 import { useTranslation, useOptimizedSearch } from '@/hooks';
@@ -38,7 +38,6 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
   const [searchTerm, setSearchTerm] = useState('');
-  const gridRef = useRef<HTMLDivElement>(null);
 
   // Handle search with optimization
   const handleSearch = useCallback((searchValue: string) => {
@@ -74,15 +73,8 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // Scroll al inicio del grid con un pequeño offset
-    if (gridRef.current) {
-      const yOffset = -100; // Offset para dejar espacio del header
-      const y = gridRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    } else {
-      // Fallback al comportamiento anterior
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    // Scroll al tope de la página con animación suave
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Reset page when restaurant changes
@@ -91,7 +83,7 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
   }, [restaurantName]);
 
   return (
-    <div ref={gridRef} className="space-y-8">
+    <div className="space-y-8">
       {/* Search Bar Only */}
       <div className="text-center">
         <div className="max-w-md mx-auto">
