@@ -139,7 +139,7 @@ export function CouponInput({
                 onKeyPress={handleKeyPress}
                 disabled={disabled || isLoading}
                 className="text-sm"
-                maxLength={20}
+                maxLength={40}
               />
             </div>
             <Button
