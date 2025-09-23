@@ -91,7 +91,7 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
     <div className="lg:flex lg:gap-8">
       {/* Desktop Sidebar - Solo visible en desktop */}
       <div className="hidden lg:block lg:w-80 lg:flex-shrink-0">
-        <div className="sticky top-8">
+        <div className="sticky top-20">
           {restaurant && (
             <RestaurantSchedule
               diasAbiertos={restaurant.dias_abiertos}
@@ -117,7 +117,7 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
 
         {/* Search Bar */}
         <div className="text-center">
-          <div className="max-w-md mx-auto">
+          <div className="max-w-4xl mx-auto">
             <div className="relative">
               <Search className={cn(
                 "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",
