@@ -127,10 +127,6 @@ function RestaurantPageContent() {
                     {t('catalog.restaurantBanner.deliveryAvailable')}
                   </Badge>
                   <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                    <Clock className="h-4 w-4 mr-2" />
-                    {t('catalog.restaurantBanner.businessHours')}
-                  </Badge>
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
                     <Star className="h-4 w-4 mr-2" />
                     {t('catalog.restaurantBanner.authenticCuisine')}
                   </Badge>

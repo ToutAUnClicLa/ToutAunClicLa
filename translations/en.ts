@@ -21,6 +21,7 @@ export default {
     editing: "Editing...",
     next: "Next",
     previous: "Previous",
+    today: "Today",
     continue: "Continue",
     of: "of",
     for: "for",
@@ -1606,7 +1607,15 @@ export default {
         available: "Available",
         lastHour: "Last hour - until {time}",
         closed: "Closed - opens at {time}",
+        closedToday: "Closed today",
         openingHours: "Hours: {open} - {close}"
+      },
+      schedule: {
+        title: "Schedule",
+        viewSchedule: "View schedule",
+        closed: "Closed",
+        openToday: "Open today",
+        closedToday: "Closed today"
       }
     },
     

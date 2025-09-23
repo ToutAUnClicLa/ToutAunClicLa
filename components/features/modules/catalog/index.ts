@@ -8,4 +8,5 @@ export { ProductCard } from './ProductCard';
 export { ProductGrid } from './ProductGrid';
 export { CategoryCard } from './CategoryCard';
 export { RestaurantList } from './RestaurantList';
+export { RestaurantSchedule } from './RestaurantSchedule';
 export { FoodCatalog } from './FoodCatalog';

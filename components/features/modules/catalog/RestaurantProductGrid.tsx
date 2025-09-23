@@ -5,7 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Truck } from 'lucide-react';
 import { useTranslation, useOptimizedSearch } from '@/hooks';
 import { useProducts } from '@/hooks/useProducts';
+import { useRestaurantDetails } from '@/hooks/useRestaurantDetails';
 import { ProductCard } from './ProductCard';
+import { RestaurantSchedule } from './RestaurantSchedule';
 import { ProductFilters } from '@/lib/services/products';
 import { StateDisplay } from '@/components/common/StateDisplay';
 import { Pagination } from '@/components/common/Pagination';
@@ -38,6 +40,9 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Obtener detalles del restaurante incluyendo horarios
+  const { restaurant, loading: restaurantLoading, error: restaurantError } = useRestaurantDetails(restaurantName);
 
   // Handle search with optimization
   const handleSearch = useCallback((searchValue: string) => {
@@ -83,31 +88,57 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
   }, [restaurantName]);
 
   return (
-    <div className="space-y-8">
-      {/* Search Bar Only */}
-      <div className="text-center">
-        <div className="max-w-md mx-auto">
-          <div className="relative">
-            <Search className={cn(
-              "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",
-              isSearching ? "text-orange-500 animate-pulse" : "text-gray-400"
-            )} />
-            <Input
-              type="search"
-              placeholder={t('catalog.productList.searchPlaceholder')}
-              className="pl-10 h-12 text-base border-gray-200 focus:border-orange-300 focus:ring-orange-100"
-              value={searchValue}
-              onChange={(e) => updateSearchValue(e.target.value)}
-              disabled={loading}
+    <div className="lg:flex lg:gap-8">
+      {/* Desktop Sidebar - Solo visible en desktop */}
+      <div className="hidden lg:block lg:w-80 lg:flex-shrink-0">
+        <div className="sticky top-8">
+          {restaurant && (
+            <RestaurantSchedule
+              diasAbiertos={restaurant.dias_abiertos}
+              restaurantName={restaurantName}
+              variant="sidebar"
             />
-            {(isSearching || loading) && (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
+
+      {/* Contenido Principal */}
+      <div className="lg:flex-1 space-y-8">
+        {/* Mobile Schedule Button - Solo visible en mobile */}
+        <div className="lg:hidden">
+          {restaurant && (
+            <RestaurantSchedule
+              diasAbiertos={restaurant.dias_abiertos}
+              restaurantName={restaurantName}
+              variant="modal"
+            />
+          )}
+        </div>
+
+        {/* Search Bar */}
+        <div className="text-center">
+          <div className="max-w-md mx-auto">
+            <div className="relative">
+              <Search className={cn(
+                "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",
+                isSearching ? "text-orange-500 animate-pulse" : "text-gray-400"
+              )} />
+              <Input
+                type="search"
+                placeholder={t('catalog.productList.searchPlaceholder')}
+                className="pl-10 h-12 text-base border-gray-200 focus:border-orange-300 focus:ring-orange-100"
+                value={searchValue}
+                onChange={(e) => updateSearchValue(e.target.value)}
+                disabled={loading}
+              />
+              {(isSearching || loading) && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
       {/* Products Grid */}
       <section 
@@ -198,6 +229,7 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
           />
         </motion.div>
       )}
+      </div>
     </div>
   );
 }

@@ -30,13 +30,19 @@ const getHeaders = () => {
   };
 };
 
+export interface DiaAbierto {
+  dia: number; // 0=Domingo, 1=Lunes, ..., 6=Sábado
+  abierto: boolean;
+  hora_apertura?: string;
+  hora_cierre?: string;
+}
+
 export interface Restaurant {
   id: number;
   nombre: string;
   Imagen?: string;
   Descripcion?: string;
-  horario_apertura: string;
-  horario_cierre: string;
+  dias_abiertos?: DiaAbierto[];
   nacionalidades: string[];
   categorias: {
     id: number;
@@ -44,11 +50,16 @@ export interface Restaurant {
   };
   abierto: boolean;
   disponible: boolean;
+  puede_recibir_pedidos?: boolean;
   horario_entrega: {
     inicio: string;
     fin: string;
   };
   hora_limite_pedidos: string;
+  dia_actual?: DiaAbierto | null;
+  abierto_hoy?: boolean;
+  codigo_postal?: string | null;
+  gmail?: string | null;
 }
 
 export interface RestaurantsResponse {
@@ -119,11 +130,30 @@ export function getRestaurantFlags(nacionalidades: string[]): string {
 }
 
 /**
+ * Obtener el horario de hoy para un restaurante
+ */
+export function getTodaySchedule(dias_abiertos?: DiaAbierto[]): DiaAbierto | null {
+  if (!dias_abiertos || !Array.isArray(dias_abiertos)) return null;
+
+  const today = new Date().getDay(); // 0=Domingo, 1=Lunes, etc.
+  return dias_abiertos.find(dia => dia.dia === today) || null;
+}
+
+/**
+ * Formatear hora de formato HH:MM a formato legible
+ */
+export function formatTime(time?: string): string {
+  if (!time) return '';
+  // Remover los segundos si existen (HH:MM:SS -> HH:MM)
+  return time.split(':').slice(0, 2).join(':');
+}
+
+/**
  * Verificar si un restaurante puede recibir pedidos
- * Solo si está disponible (disponible: true)
+ * Solo si está disponible y puede recibir pedidos
  */
 export function canOrderFrom(restaurant: Restaurant): boolean {
-  return restaurant.disponible && restaurant.abierto;
+  return restaurant.disponible && (restaurant.puede_recibir_pedidos ?? restaurant.abierto);
 }
 
 /**
@@ -142,42 +172,72 @@ export function getAvailabilityMessage(restaurant: Restaurant, t: (key: string, 
       status: 'coming_soon'
     };
   }
-  
-  if (!restaurant.abierto) {
+
+  // Si el restaurante no abre hoy
+  if (restaurant.abierto_hoy === false) {
     return {
-      message: t('catalog.restaurants.status.closed', { time: restaurant.horario_apertura }),
+      message: t('catalog.restaurants.status.closedToday'),
       color: 'red',
       status: 'closed'
     };
   }
-  
-  if (restaurant.disponible) {
+
+  // Si está cerrado pero abre hoy, mostrar hora de apertura
+  if (!restaurant.abierto && restaurant.dia_actual?.abierto) {
+    const apertura = restaurant.dia_actual.hora_apertura || restaurant.horario_entrega?.inicio || '12:00';
+    return {
+      message: t('catalog.restaurants.status.closed', { time: apertura }),
+      color: 'red',
+      status: 'closed'
+    };
+  }
+
+  // Si no puede recibir pedidos (última hora antes del cierre)
+  if (restaurant.abierto && !restaurant.puede_recibir_pedidos) {
+    return {
+      message: t('catalog.restaurants.status.lastHour', { time: restaurant.hora_limite_pedidos }),
+      color: 'yellow',
+      status: 'last_hour'
+    };
+  }
+
+  // Si está abierto y puede recibir pedidos
+  if (restaurant.abierto && restaurant.puede_recibir_pedidos) {
     return {
       message: t('catalog.restaurants.status.available'),
       color: 'green',
       status: 'available'
     };
   }
-  
+
+  // Estado por defecto: cerrado
   return {
-    message: t('catalog.restaurants.status.lastHour', { time: restaurant.hora_limite_pedidos }),
-    color: 'yellow',
-    status: 'last_hour'
+    message: t('catalog.restaurants.status.closed'),
+    color: 'red',
+    status: 'closed'
   };
 }
 
 /**
  * Ordenar restaurantes por disponibilidad
- * Primero: disponibles en orden alfabético
- * Segundo: no disponibles en orden alfabético
+ * Primero: disponibles y abiertos
+ * Segundo: disponibles pero cerrados
+ * Tercero: no disponibles (próximamente)
+ * Dentro de cada grupo: orden alfabético
  */
 export function sortRestaurantsByAvailability(restaurants: Restaurant[]): Restaurant[] {
   return [...restaurants].sort((a, b) => {
     // Primero: disponibles van antes que no disponibles
     if (a.disponible && !b.disponible) return -1;
     if (!a.disponible && b.disponible) return 1;
-    
-    // Si ambos tienen el mismo estado de disponibilidad, ordenar alfabéticamente
+
+    // Si ambos están disponibles, ordenar por abierto/cerrado
+    if (a.disponible && b.disponible) {
+      if (a.abierto && !b.abierto) return -1;
+      if (!a.abierto && b.abierto) return 1;
+    }
+
+    // Si tienen el mismo estado, ordenar alfabéticamente
     return a.nombre.localeCompare(b.nombre);
   });
 }
@@ -189,4 +249,6 @@ export const restaurantsService = {
   canOrderFrom,
   getAvailabilityMessage,
   sortRestaurantsByAvailability,
+  getTodaySchedule,
+  formatTime,
 };
