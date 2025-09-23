@@ -13,18 +13,79 @@ import { Badge } from '@/components/common/ui/badge';
 import { Button } from '@/components/common/ui/button';
 
 const LoadingFallback = () => (
-  <div className="min-h-screen bg-white py-6">
-    <div className="container">
-      <div className="animate-pulse">
-        <div className="text-center space-y-4 mb-8">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mx-auto mb-4" />
-          <div className="h-12 bg-gray-200 rounded w-1/2 mx-auto mb-2" />
-          <div className="h-6 bg-gray-200 rounded w-2/3 mx-auto" />
+  <div className="min-h-screen bg-gray-50">
+    {/* Header Banner Skeleton */}
+    <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white relative">
+      <div className="container mx-auto px-4">
+        <div className="relative pt-4 pb-8">
+          <div className="flex sm:absolute sm:top-4 sm:left-0 sm:z-10 justify-start mb-4 sm:mb-0">
+            <div className="h-8 w-28 bg-white/20 rounded-md animate-pulse" />
+          </div>
+          <div className="text-center space-y-4 sm:pt-2 max-w-4xl mx-auto">
+            <div className="mb-4">
+              <div className="h-12 bg-white/20 rounded w-1/2 mx-auto animate-pulse" />
+            </div>
+            <div className="h-6 bg-white/20 rounded w-2/3 mx-auto animate-pulse" />
+            <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
+              <div className="h-8 w-32 bg-white/20 rounded-full animate-pulse" />
+              <div className="h-8 w-28 bg-white/20 rounded-full animate-pulse" />
+            </div>
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-gray-200 rounded-lg h-64" />
-          ))}
+      </div>
+    </div>
+
+    {/* Content with Sidebar Layout */}
+    <div className="container mx-auto px-4 py-8">
+      <div className="lg:flex lg:gap-8">
+        {/* Desktop Sidebar Skeleton - Solo visible en desktop */}
+        <div className="hidden lg:block lg:w-80 lg:flex-shrink-0">
+          <div className="sticky top-20">
+            <div className="bg-white shadow-lg border-0 p-4 rounded-lg animate-pulse">
+              {/* Header del horario */}
+              <div className="pb-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="h-5 w-5 bg-gray-200 rounded" />
+                  <div className="h-6 w-20 bg-gray-200 rounded" />
+                </div>
+              </div>
+
+              {/* Lista de días */}
+              <div className="space-y-4">
+                {[...Array(7)].map((_, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-gray-50">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-gray-300 rounded-full" />
+                      <div className="h-4 w-16 bg-gray-200 rounded" />
+                    </div>
+                    <div className="h-4 w-24 bg-gray-200 rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Contenido Principal */}
+        <div className="lg:flex-1 space-y-8 animate-pulse">
+          {/* Mobile Schedule Button Skeleton - Solo visible en mobile */}
+          <div className="lg:hidden">
+            <div className="w-full h-12 bg-gray-200 rounded-xl" />
+          </div>
+
+          {/* Search Bar Skeleton */}
+          <div className="text-center">
+            <div className="max-w-4xl mx-auto">
+              <div className="h-12 bg-gray-200 rounded-lg" />
+            </div>
+          </div>
+
+          {/* Products Grid Skeleton */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="bg-gray-200 rounded-lg h-64" />
+            ))}
+          </div>
         </div>
       </div>
     </div>
