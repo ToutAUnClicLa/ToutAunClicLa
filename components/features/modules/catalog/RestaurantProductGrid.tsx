@@ -92,13 +92,37 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
       {/* Desktop Sidebar - Solo visible en desktop */}
       <div className="hidden lg:block lg:w-80 lg:flex-shrink-0">
         <div className="sticky top-20">
-          {restaurant && (
+          {(restaurantLoading || loading) ? (
+            // Skeleton del sidebar de horarios - mostrar mientras cargan productos o restaurante
+            <div className="bg-white shadow-lg border-0 p-4 rounded-lg animate-pulse">
+              {/* Header del horario */}
+              <div className="pb-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="h-5 w-5 bg-gray-200 rounded" />
+                  <div className="h-6 w-20 bg-gray-200 rounded" />
+                </div>
+              </div>
+
+              {/* Lista de días */}
+              <div className="space-y-4">
+                {[...Array(7)].map((_, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-gray-50">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-gray-300 rounded-full" />
+                      <div className="h-4 w-16 bg-gray-200 rounded" />
+                    </div>
+                    <div className="h-4 w-24 bg-gray-200 rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : restaurant ? (
             <RestaurantSchedule
               diasAbiertos={restaurant.dias_abiertos}
               restaurantName={restaurantName}
               variant="sidebar"
             />
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -106,13 +130,16 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
       <div className="lg:flex-1 space-y-8">
         {/* Mobile Schedule Button - Solo visible en mobile */}
         <div className="lg:hidden">
-          {restaurant && (
+          {(restaurantLoading || loading) ? (
+            // Skeleton del botón mobile - mostrar mientras cargan productos o restaurante
+            <div className="w-full h-12 bg-gray-200 rounded-xl animate-pulse" />
+          ) : restaurant ? (
             <RestaurantSchedule
               diasAbiertos={restaurant.dias_abiertos}
               restaurantName={restaurantName}
               variant="modal"
             />
-          )}
+          ) : null}
         </div>
 
         {/* Search Bar */}
