@@ -221,8 +221,9 @@ export function getAvailabilityMessage(restaurant: Restaurant, t: (key: string, 
 /**
  * Ordenar restaurantes por disponibilidad
  * Primero: disponibles y abiertos
- * Segundo: disponibles pero cerrados
- * Tercero: no disponibles (próximamente)
+ * Segundo: disponibles, cerrados pero abren hoy (con hora de apertura)
+ * Tercero: disponibles pero cerrados completamente hoy
+ * Cuarto: no disponibles (próximamente)
  * Dentro de cada grupo: orden alfabético
  */
 export function sortRestaurantsByAvailability(restaurants: Restaurant[]): Restaurant[] {
@@ -231,10 +232,25 @@ export function sortRestaurantsByAvailability(restaurants: Restaurant[]): Restau
     if (a.disponible && !b.disponible) return -1;
     if (!a.disponible && b.disponible) return 1;
 
-    // Si ambos están disponibles, ordenar por abierto/cerrado
+    // Si ambos están disponibles
     if (a.disponible && b.disponible) {
-      if (a.abierto && !b.abierto) return -1;
-      if (!a.abierto && b.abierto) return 1;
+      // Prioridad 1: Abiertos y pueden recibir pedidos
+      const aCanOrder = a.abierto && a.puede_recibir_pedidos;
+      const bCanOrder = b.abierto && b.puede_recibir_pedidos;
+      if (aCanOrder && !bCanOrder) return -1;
+      if (!aCanOrder && bCanOrder) return 1;
+
+      // Prioridad 2: Cerrados pero abren hoy (tienen horario de apertura)
+      const aOpensToday = !a.abierto && a.dia_actual?.abierto === true;
+      const bOpensToday = !b.abierto && b.dia_actual?.abierto === true;
+      if (aOpensToday && !bOpensToday) return -1;
+      if (!aOpensToday && bOpensToday) return 1;
+
+      // Prioridad 3: Completamente cerrados hoy
+      const aClosedToday = !a.abierto && a.abierto_hoy === false;
+      const bClosedToday = !b.abierto && b.abierto_hoy === false;
+      if (!aClosedToday && bClosedToday) return -1;
+      if (aClosedToday && !bClosedToday) return 1;
     }
 
     // Si tienen el mismo estado, ordenar alfabéticamente
