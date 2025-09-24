@@ -26,8 +26,8 @@ import type { DeliveryOptions, DeliveryInfo, DeliveryUpdateResponse } from '@/li
 // Funciones de seguridad para sanitizar input
 const sanitizeInput = (input: string): string => {
   if (!input) return '';
-  
-  // Eliminar caracteres potencialmente peligrosos
+
+  // Eliminar caracteres potencialmente peligrosos pero manteniendo espacios y caracteres normales
   let sanitized = input
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Eliminar tags script
     .replace(/<[^>]*>/g, '') // Eliminar todos los tags HTML
@@ -43,29 +43,21 @@ const sanitizeInput = (input: string): string => {
     .replace(/document\./gi, '') // Eliminar acceso a document
     .replace(/window\./gi, '') // Eliminar acceso a window
     .replace(/\$\{.*?\}/g, '') // Eliminar template literals
-    .replace(/`.*?`/g, '') // Eliminar backticks
+    .replace(/`/g, '') // Eliminar backticks
     .replace(/\|\|/g, '') // Eliminar OR operators
-    .replace(/&&/g, '') // Eliminar AND operators
-    .replace(/[<>'"&]/g, (match) => { // Escapar caracteres especiales
-      const escapeMap: { [key: string]: string } = {
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#x27;',
-        '&': '&amp;'
-      };
-      return escapeMap[match] || match;
-    });
+    .replace(/&&/g, ''); // Eliminar AND operators
 
-  // Limitar a caracteres seguros (letras, números, espacios, puntuación básica)
-  sanitized = sanitized.replace(/[^\w\s\.\,\!\?\-\(\)\:]/g, '');
-  
+  // NO escapar caracteres HTML ya que esto interfiere con el input normal
+  // Solo limitar a caracteres seguros (letras, números, espacios, puntuación básica, acentos)
+  sanitized = sanitized.replace(/[^\w\s\.\,\!\?\-\(\)\:\;\'\"\áéíóúüñÁÉÍÓÚÜÑàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛ]/g, '');
+
   // Truncar si es muy largo
   if (sanitized.length > 500) {
     sanitized = sanitized.substring(0, 500);
   }
-  
-  return sanitized.trim();
+
+  // NO usar trim() para preservar espacios al inicio/final si el usuario los quiere
+  return sanitized;
 };
 
 // Validar que el contenido no contenga patrones sospechosos
@@ -788,7 +780,7 @@ export default function DeliveryOptionsComponent({
               {t('cart.delivery.notesHelper')}
             </p>
             <div className="flex items-center gap-2">
-              {deliveryOptions.notasEntrega && deliveryOptions.notasEntrega !== (deliveryOptions.notasEntrega || '').replace(/[^\w\s\.\,\!\?\-\(\)\:]/g, '') && (
+              {deliveryOptions.notasEntrega && deliveryOptions.notasEntrega !== (deliveryOptions.notasEntrega || '').replace(/[^\w\s\.\,\!\?\-\(\)\:\;\'\"\áéíóúüñÁÉÍÓÚÜÑàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛ]/g, '') && (
                 <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">
                   {t('cart.summary.coupon.filteredContent')}
                 </span>
