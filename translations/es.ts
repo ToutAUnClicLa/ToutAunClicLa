@@ -799,8 +799,8 @@ export default {
     restaurants: {
       status: {
         available: "Disponible",
-        lastHour: "Última hora - hasta las {time}",
-        closed: "Cerrado - abre a las {time}",
+        lastHour: "Última hora - Hasta las {time}",
+        closed: "Cerrado - Abre a las {time}",
         closedToday: "Cerrado hoy",
         openingHours: "Horario: {open} - {close}"
       },
