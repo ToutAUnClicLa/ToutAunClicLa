@@ -31,10 +31,15 @@ interface ProductCardProps {
   showBadges?: boolean;
   className?: string;
   onClick?: (product: Product) => void;
+  restaurantStatus?: {
+    abierto: boolean;
+    disponible: boolean;
+  };
+  restaurantLoading?: boolean;
 }
 
-export function ProductCard({ 
-  product, 
+export function ProductCard({
+  product,
   categoryName = 'productos',
   variant = 'default',
   showCategory = true,
@@ -43,7 +48,9 @@ export function ProductCard({
   showDescription = true,
   showBadges = true,
   className = "",
-  onClick
+  onClick,
+  restaurantStatus,
+  restaurantLoading = false
 }: ProductCardProps) {
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -59,8 +66,9 @@ export function ProductCard({
   const [imageError, setImageError] = useState(false);
   const [quantityToAdd, setQuantityToAdd] = useState(1);
 
-  // Estados derivados del producto - memoizados para evitar re-cálculos
-  const productData = useMemo(() => {
+  // Estados derivados del producto - memoización optimizada
+  // Separar lógica base del producto de lógica de restaurante
+  const productBaseData = useMemo(() => {
     const productIdStr = product.id.toString();
     const isProductFavorite = isFavorite(productIdStr);
     const isOutOfStock = product.stock === 0;
@@ -68,12 +76,13 @@ export function ProductCard({
     const inCart = isInCart(product.id);
     const cartQuantity = getProductQuantity(product.id);
     const hasDiscount = product.precio_anterior && product.precio_anterior > product.precio;
-    const discountPercentage = hasDiscount 
+    const discountPercentage = hasDiscount
       ? getDiscountPercentage(product.precio_anterior!, product.precio)
       : 0;
     const hasValidPrice = isValidPrice(product.precio);
     const hasVariations = product.hasVariations || (product.variations && product.variations.length > 0);
-    
+    const isProductNotAvailableToday = product.disponible_hoy === false;
+
     // Cálculo de impuestos canadienses
     const taxCalculation = calculateCanadianTaxes(product.precio, product.TPS, product.TVQ, product.consigne);
     const taxStatus = getTaxStatus(product.categoria_id, product.TPS, product.TVQ, product.consigne);
@@ -89,13 +98,14 @@ export function ProductCard({
       discountPercentage,
       hasValidPrice,
       hasVariations,
+      isProductNotAvailableToday,
       taxCalculation,
       taxStatus
     };
   }, [
-    product.id, 
-    product.stock, 
-    product.precio, 
+    product.id,
+    product.stock,
+    product.precio,
     product.precio_anterior,
     product.categoria_id,
     product.TPS,
@@ -103,10 +113,39 @@ export function ProductCard({
     product.consigne,
     product.hasVariations,
     product.variations,
+    product.disponible_hoy,
     isFavorite,
     isInCart,
     getProductQuantity
   ]);
+
+  // Lógica de restaurante separada - solo recalcula cuando cambia el estado del restaurante
+  const restaurantData = useMemo(() => {
+    const isRestaurantCheckRequired = categoryName === 'comidas';
+    const isRestaurantClosed = restaurantStatus ? (!restaurantStatus.abierto || !restaurantStatus.disponible) : false;
+    const isRestaurantDataLoading = isRestaurantCheckRequired && restaurantLoading;
+    const restaurantCheckPassed = !isRestaurantCheckRequired || (!restaurantLoading && !isRestaurantClosed);
+
+    return {
+      isRestaurantClosed,
+      isRestaurantDataLoading,
+      restaurantCheckPassed
+    };
+  }, [categoryName, restaurantStatus, restaurantLoading]);
+
+  // Combinar datos base con datos de restaurante
+  const productData = useMemo(() => {
+    const canAddToCart = !productBaseData.isOutOfStock &&
+                        !productBaseData.isProductNotAvailableToday &&
+                        restaurantData.restaurantCheckPassed &&
+                        product.precio > 0;
+
+    return {
+      ...productBaseData,
+      ...restaurantData,
+      canAddToCart
+    };
+  }, [productBaseData, restaurantData, product.precio]);
 
   // Funciones auxiliares
 
@@ -148,8 +187,14 @@ export function ProductCard({
       return;
     }
 
-    if (productData.isOutOfStock) {
-      toast.error(t('catalog.addToCartButton.productOutOfStock'));
+    if (!productData.canAddToCart) {
+      if (productData.isOutOfStock) {
+        toast.error(t('catalog.addToCartButton.productOutOfStock'));
+      } else if (productData.isProductNotAvailableToday) {
+        toast.error(t('catalog.addToCartButton.productNotAvailableToday'));
+      } else if (productData.isRestaurantClosed) {
+        toast.error(t('catalog.addToCartButton.restaurantClosed'));
+      }
       return;
     }
 
@@ -387,7 +432,7 @@ export function ProductCard({
               </div>
 
               {/* Selector de cantidad */}
-              {!productData.isOutOfStock && product.precio > 0 && (
+              {(productData.canAddToCart || productData.isRestaurantDataLoading) && (
                 <div className="flex items-center gap-2">
                   <span className="text-xs sm:text-sm text-gray-600">{t('catalog.addToCartButton.quantity')}:</span>
                   <div className="flex items-center border rounded-lg">
@@ -399,13 +444,13 @@ export function ProductCard({
                         e.stopPropagation();
                         setQuantityToAdd(Math.max(1, quantityToAdd - 1));
                       }}
-                      disabled={quantityToAdd <= 1}
+                      disabled={quantityToAdd <= 1 || productData.isRestaurantDataLoading}
                       className="h-6 w-6 sm:h-8 sm:w-8 p-0 rounded-r-none"
                     >
                       <Minus className="h-3 w-3" />
                     </Button>
                     <span className="px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium min-w-[2rem] text-center">
-                      {quantityToAdd}
+                      {productData.isRestaurantDataLoading ? '-' : quantityToAdd}
                     </span>
                     <Button
                       variant="ghost"
@@ -415,7 +460,7 @@ export function ProductCard({
                         e.stopPropagation();
                         setQuantityToAdd(Math.min(product.stock, quantityToAdd + 1));
                       }}
-                      disabled={quantityToAdd >= product.stock}
+                      disabled={quantityToAdd >= product.stock || productData.isRestaurantDataLoading}
                       className="h-6 w-6 sm:h-8 sm:w-8 p-0 rounded-l-none"
                     >
                       <Plus className="h-3 w-3" />
@@ -425,12 +470,12 @@ export function ProductCard({
               )}
 
               {/* Botones de acción */}
-              <div className="flex gap-1 sm:gap-2">
+              <div className="flex gap-[0.25rem]">
                 <Button
-                  className="flex-1 text-xs sm:text-sm h-8 sm:h-10"
+                  className="text-xs sm:text-sm h-8 sm:h-10"
                   onClick={handleAddToCart}
-                  disabled={productData.isOutOfStock || isAddingToCart || cartLoading || product.precio === 0}
-                  variant={productData.inCart ? "outline" : "default"}
+                  disabled={!productData.canAddToCart || isAddingToCart || cartLoading || productData.isRestaurantDataLoading}
+                  variant={productData.inCart ? "outline" : productData.isRestaurantDataLoading ? "outline" : "default"}
                 >
                   {isAddingToCart ? (
                     <div className="flex items-center gap-1 sm:gap-2">
@@ -438,17 +483,35 @@ export function ProductCard({
                       <span className="hidden sm:inline">{t('catalog.addToCartButton.addingToCart')}</span>
                       <span className="sm:hidden">...</span>
                     </div>
+                  ) : productData.isRestaurantDataLoading ? (
+                    <div className="flex items-center gap-1 sm:gap-2 text-white">
+                      <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span className="hidden sm:inline text-xs sm:text-sm">{t('catalog.addToCartButton.checkingRestaurant')}</span>
+                      <span className="sm:hidden text-[10px]">...</span>
+                    </div>
                   ) : productData.isOutOfStock ? (
-                    <span className="text-xs sm:text-sm">{t('catalog.addToCartButton.outOfStock')}</span>
+                    <div className="flex items-center gap-1 sm:gap-2 justify-center min-w-0">
+                      <span className="text-[10px] sm:text-xs truncate">{t('catalog.addToCartButton.outOfStock')}</span>
+                    </div>
+                  ) : productData.isProductNotAvailableToday ? (
+                    <div className="flex items-center gap-1 sm:gap-2 justify-center min-w-0">
+                      <span className="text-[10px] sm:text-xs truncate">{t('catalog.addToCartButton.productNotAvailableToday')}</span>
+                    </div>
+                  ) : productData.isRestaurantClosed ? (
+                    <div className="flex items-center gap-1 justify-center min-w-0">
+                      <span className="text-[10px] sm:text-xs truncate">{t('catalog.addToCartButton.restaurantClosed')}</span>
+                    </div>
                   ) : product.precio === 0 ? (
-                    <span className="text-xs sm:text-sm">{t('catalog.price.notAvailable')}</span>
+                    <div className="flex items-center gap-1 sm:gap-2 justify-center min-w-0">
+                      <span className="text-[10px] sm:text-xs truncate">{t('catalog.price.notAvailable')}</span>
+                    </div>
                   ) : (
-                    <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="flex items-center gap-1">
                       <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
-                      <span className="hidden sm:inline">
+                      <span className="hidden sm:inline text-xs sm:text-sm">
                         {t('catalog.addToCartButton.addToCart')} {quantityToAdd > 1 ? `(${quantityToAdd})` : ''}
                       </span>
-                      <span className="sm:hidden">
+                      <span className="sm:hidden text-[10px]">
                         +{quantityToAdd}
                       </span>
                     </div>
@@ -461,7 +524,7 @@ export function ProductCard({
                   onClick={handleToggleFavorite}
                   disabled={favoritesLoading}
                   className={cn(
-                    "h-8 w-8 sm:h-10 sm:w-10",
+                    "h-8 w-[1.75rem] sm:h-10 sm:w-[2rem] flex-shrink-0",
                     productData.isProductFavorite && 'border-red-300 bg-red-50'
                   )}
                 >

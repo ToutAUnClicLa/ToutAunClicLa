@@ -10,6 +10,7 @@ import { Badge } from '@/components/common/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
 import { RestaurantList } from './RestaurantList';
 import { ProductGrid } from './ProductGrid';
+import { useSubcategoryTranslation } from '@/lib/utils';
 
 interface FoodCatalogProps {
   categoryId: number;
@@ -18,10 +19,14 @@ interface FoodCatalogProps {
 
 export function FoodCatalog({ categoryId, initialSubcategory = null }: FoodCatalogProps) {
   const { t } = useTranslation();
+  const translateSubcategory = useSubcategoryTranslation(t);
   const [selectedRestaurant, setSelectedRestaurant] = useState<{
     id: number;
     name: string;
-  } | null>(initialSubcategory ? { id: initialSubcategory, name: 'Restaurante' } : null);
+  } | null>(initialSubcategory ? {
+    id: initialSubcategory,
+    name: translateSubcategory(initialSubcategory)
+  } : null);
   const [showProducts, setShowProducts] = useState(!!initialSubcategory);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('rating');
@@ -30,10 +35,13 @@ export function FoodCatalog({ categoryId, initialSubcategory = null }: FoodCatal
   // Si hay una subcategoría inicial, mostrar directamente los productos
   useEffect(() => {
     if (initialSubcategory) {
-      setSelectedRestaurant({ id: initialSubcategory, name: 'Restaurante' });
+      setSelectedRestaurant({
+        id: initialSubcategory,
+        name: translateSubcategory(initialSubcategory)
+      });
       setShowProducts(true);
     }
-  }, [initialSubcategory]);
+  }, [initialSubcategory, translateSubcategory]);
 
   const handleRestaurantSelect = (subcategoryId: number, restaurantName: string) => {
     setSelectedRestaurant({ id: subcategoryId, name: restaurantName });
@@ -150,12 +158,13 @@ export function FoodCatalog({ categoryId, initialSubcategory = null }: FoodCatal
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <ProductGrid 
-                  categoryId={categoryId} 
-                  categoryName="comidas" 
+                <ProductGrid
+                  categoryId={categoryId}
+                  categoryName="comidas"
                   title=""
                   showHeader={false}
                   initialSubcategory={selectedRestaurant?.id || null}
+                  restaurantName={selectedRestaurant?.name || undefined}
                 />
               </motion.div>
             </motion.div>

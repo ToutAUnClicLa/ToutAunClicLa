@@ -57,6 +57,10 @@ export interface ProductWithVariations {
   reviews?: any[];
   caracteristicas?: string[];
   productos_relacionados?: ProductWithVariations[];
+
+  // Restaurant availability fields
+  disponible_hoy?: boolean;
+  dias_disponibles?: number[];
   
   // Relationships
   categorias: { 

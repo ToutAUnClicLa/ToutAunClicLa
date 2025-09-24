@@ -1350,10 +1350,13 @@ export default {
       quantity: "Quantité",
       total: "Total",
       addingToCart: "Ajout...",
+      checkingRestaurant: "Vérification...",
       errorAddingToCart: "Erreur lors de l'ajout au panier",
       addedToCart: "Ajouté au panier",
       alreadyInCart: "Déjà dans le panier",
-      inCart: "Dans le panier"
+      inCart: "Dans le panier",
+      productNotAvailableToday: "Pas disponible aujourd'hui",
+      restaurantClosed: "Restaurant fermé"
     },
 
     // Messages

@@ -609,8 +609,11 @@ export default {
       quantity: "Cantidad",
       total: "Total",
       addingToCart: "Agregando...",
+      checkingRestaurant: "Verificando...",
       errorAddingToCart: "Error al agregar al carrito",
-      addedToCart: "Agregado al carrito"
+      addedToCart: "Agregado al carrito",
+      productNotAvailableToday: "Hoy no disponible",
+      restaurantClosed: "Restaurante cerrado"
     },
     
     // ProductList

@@ -120,6 +120,8 @@ export interface Product {
   consigne?: number;
   ecoprecio?: boolean;
   activo?: boolean;
+  disponible_hoy?: boolean;
+  dias_disponibles?: number[];
   fecha_creacion: string;
   fecha_actualizacion?: string;
   categorias: { 

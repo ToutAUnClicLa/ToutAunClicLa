@@ -1365,10 +1365,13 @@ export default {
       quantity: "Quantity",
       total: "Total",
       addingToCart: "Adding...",
+      checkingRestaurant: "Checking...",
       errorAddingToCart: "Error adding to cart",
       addedToCart: "Added to cart",
       alreadyInCart: "Already in cart",
-      inCart: "In cart"
+      inCart: "In cart",
+      productNotAvailableToday: "Not available today",
+      restaurantClosed: "Restaurant closed"
     },
 
     // Messages

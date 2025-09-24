@@ -24,6 +24,7 @@ import { ProductVariations } from '@/components/features/modules/product/Product
 import { ProductWithVariations, VariationSelection } from '@/types/variations';
 import { hasValidVariations, formatSelectedVariations, logVariationDebug } from '@/lib/utils/variations';
 import { getRestaurantNameFromSlug, getRestaurantUrlWithFallback } from '@/lib/utils/restaurant-routes';
+import { useRestaurantDetails } from '@/hooks/useRestaurantDetails';
 
 // Dynamically import heavy components
 const MotionImage = motion(Image);
@@ -80,10 +81,23 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [variationSelection, setVariationSelection] = useState<VariationSelection | null>(null);
   const { user } = useAuth();
-  
+
+  // Get restaurant details from URL
+  const restaurantName = getRestaurantNameFromSlug(params.restaurante);
+  const { restaurant, loading: restaurantLoading } = useRestaurantDetails(restaurantName || '');
+
   // Check if product has variations
   const hasVariations = hasValidVariations(product);
-  const canAddToCart = !hasVariations || (hasVariations && variationSelection?.isValid);
+
+  // Check availability conditions
+  const isProductNotAvailableToday = product.disponible_hoy === false;
+  const isRestaurantClosed = restaurant ? (!restaurant.abierto || !restaurant.disponible) : false;
+  const isOutOfStock = product.stock === 0;
+  const isRestaurantDataLoading = restaurantLoading;
+
+  const canAddToCart = !isOutOfStock && !isProductNotAvailableToday && !isRestaurantClosed &&
+                      !isRestaurantDataLoading &&
+                      (!hasVariations || (hasVariations && variationSelection?.isValid));
   const finalPrice = variationSelection?.finalPrice || product.precio;
 
   // Debug log for variations
@@ -148,9 +162,17 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
       return;
     }
 
-    // Validate variations if product has them
-    if (hasVariations && (!variationSelection || !variationSelection.isValid)) {
-      toast.error(t('notifications.selectAllOptions'));
+    // Check availability conditions
+    if (!canAddToCart) {
+      if (isOutOfStock) {
+        toast.error(t('catalog.addToCartButton.productOutOfStock'));
+      } else if (isProductNotAvailableToday) {
+        toast.error(t('catalog.addToCartButton.productNotAvailableToday'));
+      } else if (isRestaurantClosed) {
+        toast.error(t('catalog.addToCartButton.restaurantClosed'));
+      } else if (hasVariations && (!variationSelection || !variationSelection.isValid)) {
+        toast.error(t('notifications.selectAllOptions'));
+      }
       return;
     }
 
@@ -390,17 +412,17 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
                   size="icon"
                   className="h-8 w-8"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  disabled={quantity <= 1}
+                  disabled={quantity <= 1 || isRestaurantDataLoading}
                 >
                   -
                 </Button>
-                <span className="w-8 text-center text-sm">{quantity}</span>
+                <span className="w-8 text-center text-sm">{isRestaurantDataLoading ? '-' : quantity}</span>
                 <Button
                   variant="outline"
                   size="icon"
                   className="h-8 w-8"
                   onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                  disabled={quantity >= product.stock}
+                  disabled={quantity >= product.stock || isRestaurantDataLoading}
                 >
                   +
                 </Button>
@@ -426,22 +448,38 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
           </div>
 
           <div className="flex gap-2">
-            <Button 
+            <Button
               className={cn("flex-1 h-10", colors.button)}
               onClick={handleAddToCart}
-              disabled={product.stock === 0 || isLoading || !canAddToCart}
+              disabled={!canAddToCart || isLoading}
+              variant={isRestaurantDataLoading ? "outline" : "default"}
             >
               {isLoading ? (
                 <span className="flex items-center">
                   <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                   {t('catalog.productCard.addingToCart')}
                 </span>
-              ) : product.stock === 0 ? (
+              ) : isRestaurantDataLoading ? (
+                <span className="flex items-center text-white">
+                  <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  {t('catalog.addToCartButton.checkingRestaurant')}
+                </span>
+              ) : isOutOfStock ? (
                 <>
                   <ShoppingCart className="h-4 w-4 mr-2" />
-                  {t('catalog.productCard.outOfStock')}
+                  {t('catalog.addToCartButton.outOfStock')}
                 </>
-              ) : !canAddToCart ? (
+              ) : isProductNotAvailableToday ? (
+                <>
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  {t('catalog.addToCartButton.productNotAvailableToday')}
+                </>
+              ) : isRestaurantClosed ? (
+                <>
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  {t('catalog.addToCartButton.restaurantClosed')}
+                </>
+              ) : hasVariations && (!variationSelection || !variationSelection.isValid) ? (
                 <>
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   {t('catalog.variations.selectOption')}

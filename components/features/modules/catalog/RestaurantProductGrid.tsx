@@ -217,6 +217,11 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
                     showRating={true}
                     showSubcategory={false}
                     className="h-full"
+                    restaurantStatus={restaurant ? {
+                      abierto: restaurant.abierto,
+                      disponible: restaurant.disponible
+                    } : undefined}
+                    restaurantLoading={restaurantLoading}
                   />
                 </motion.div>
               ))}

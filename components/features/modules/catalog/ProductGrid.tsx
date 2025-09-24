@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { useTranslation, useOptimizedSearch } from '@/hooks';
 import { useProducts, useProductsByCategory } from '@/hooks/useProducts';
 import { useSubcategories } from '@/hooks/useCategories';
+import { useRestaurantDetails } from '@/hooks/useRestaurantDetails';
 import { ProductCard } from './ProductCard';
 import { Product, ProductFilters } from '@/lib/services/products';
 import { Subcategory } from '@/lib/services/categories';
@@ -69,15 +70,17 @@ interface ProductGridProps {
   initialSubcategory?: number | null;
   initialSearch?: string;
   showHeader?: boolean;
+  restaurantName?: string; // Para obtener datos del restaurante cuando es necesario
 }
 
-export function ProductGrid({ 
-  categoryId, 
-  categoryName, 
-  title, 
+export function ProductGrid({
+  categoryId,
+  categoryName,
+  title,
   initialSubcategory = null,
   initialSearch,
-  showHeader = true 
+  showHeader = true,
+  restaurantName
 }: ProductGridProps) {
   const { t } = useTranslation();
   const translateSubcategory = useSubcategoryTranslation(t);
@@ -312,10 +315,17 @@ export function ProductGrid({
   }, [shouldUseLocalSearch, products, filters.limit, filters.page]);
   
   // Obtener subcategorías para filtros
-  const { 
-    subcategories, 
-    loading: subcategoriesLoading 
+  const {
+    subcategories,
+    loading: subcategoriesLoading
   } = useSubcategories(typeof categoryId === 'string' ? parseInt(categoryId) : categoryId);
+
+  // Obtener detalles del restaurante si se proporciona restaurantName
+  const {
+    restaurant,
+    loading: restaurantLoading,
+    error: restaurantError
+  } = useRestaurantDetails(restaurantName || null);
 
   const colors = categoryColors[categoryName];
   const Icon = categoryIcons[categoryName];
@@ -848,6 +858,11 @@ export function ProductGrid({
                       showRating={true}
                       showSubcategory={categoryName === 'comidas'}
                       className="h-full"
+                      restaurantStatus={restaurant ? {
+                        abierto: restaurant.abierto,
+                        disponible: restaurant.disponible
+                      } : undefined}
+                      restaurantLoading={restaurantLoading}
                     />
                   ))}
                 </div>
@@ -871,6 +886,11 @@ export function ProductGrid({
                           showRating={true}
                           showSubcategory={categoryName === 'comidas'}
                           className="h-full"
+                          restaurantStatus={restaurant ? {
+                            abierto: restaurant.abierto,
+                            disponible: restaurant.disponible
+                          } : undefined}
+                          restaurantLoading={restaurantLoading}
                         />
                       </motion.div>
                     ))}
