@@ -828,7 +828,7 @@ export default function DeliveryOptionsComponent({
                 ) : (
                   <>
                     <Check className="h-4 w-4 mr-2" />
-                    {t('common.save')} {t('cart.delivery.notes')}
+                    {t('common.save')} {t('cart.delivery.notesLabel')}
                   </>
                 )}
               </Button>

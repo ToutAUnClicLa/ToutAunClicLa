@@ -273,7 +273,8 @@ export default {
         viewText: "Explorar colección",
         subcategoria_id: "ropa"
       },
-    ]  },  auth: {
+    ]  },  
+    auth: {
     // Títulos de modales
     loginTitle: "Iniciar Sesión",
     registerTitle: "Crear Cuenta",
