@@ -470,74 +470,104 @@ export function ProductCard({
               )}
 
               {/* Botones de acción */}
-              <div className="flex gap-[0.25rem]">
-                <Button
-                  className="text-xs sm:text-sm h-8 sm:h-10"
-                  onClick={handleAddToCart}
-                  disabled={!productData.canAddToCart || isAddingToCart || cartLoading || productData.isRestaurantDataLoading}
-                  variant={productData.inCart ? "outline" : productData.isRestaurantDataLoading ? "outline" : "default"}
-                >
-                  {isAddingToCart ? (
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span className="hidden sm:inline">{t('catalog.addToCartButton.addingToCart')}</span>
-                      <span className="sm:hidden">...</span>
-                    </div>
-                  ) : productData.isRestaurantDataLoading ? (
-                    <div className="flex items-center gap-1 sm:gap-2 text-white">
-                      <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span className="hidden sm:inline text-xs sm:text-sm">{t('catalog.addToCartButton.checkingRestaurant')}</span>
-                      <span className="sm:hidden text-[10px]">...</span>
-                    </div>
-                  ) : productData.isOutOfStock ? (
-                    <div className="flex items-center gap-1 sm:gap-2 justify-center min-w-0">
-                      <span className="text-[10px] sm:text-xs truncate">{t('catalog.addToCartButton.outOfStock')}</span>
-                    </div>
-                  ) : productData.isProductNotAvailableToday ? (
-                    <div className="flex items-center gap-1 sm:gap-2 justify-center min-w-0">
-                      <span className="text-[10px] sm:text-xs truncate">{t('catalog.addToCartButton.productNotAvailableToday')}</span>
-                    </div>
-                  ) : productData.isRestaurantClosed ? (
-                    <div className="flex items-center gap-1 justify-center min-w-0">
-                      <span className="text-[10px] sm:text-xs truncate">{t('catalog.addToCartButton.restaurantClosed')}</span>
-                    </div>
-                  ) : product.precio === 0 ? (
-                    <div className="flex items-center gap-1 sm:gap-2 justify-center min-w-0">
-                      <span className="text-[10px] sm:text-xs truncate">{t('catalog.price.notAvailable')}</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1">
-                      <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
-                      <span className="hidden sm:inline text-xs sm:text-sm">
-                        {t('catalog.addToCartButton.addToCart')} {quantityToAdd > 1 ? `(${quantityToAdd})` : ''}
-                      </span>
-                      <span className="sm:hidden text-[10px]">
-                        +{quantityToAdd}
-                      </span>
-                    </div>
-                  )}
-                </Button>
+              {/* Layout condicional: vertical si hay errores de disponibilidad, horizontal si está normal */}
+              {(productData.isOutOfStock || productData.isProductNotAvailableToday || productData.isRestaurantClosed || product.precio === 0) ? (
+                <div className="space-y-2">
+                  {/* Botón principal con mensaje de error */}
+                  <Button
+                    className="w-full text-xs h-8 sm:h-10 bg-blue-200 border-blue-400 text-blue-700 hover:bg-blue-100"
+                    onClick={handleAddToCart}
+                    disabled={!productData.canAddToCart || isAddingToCart || cartLoading || productData.isRestaurantDataLoading}
+                    variant="outline"
+                  >
+                    {productData.isOutOfStock ? (
+                      <span className="text-xs truncate">{t('catalog.addToCartButton.outOfStock')}</span>
+                    ) : productData.isProductNotAvailableToday ? (
+                      <span className="text-xs  truncate">{t('catalog.addToCartButton.productNotAvailableToday')}</span>
+                    ) : productData.isRestaurantClosed ? (
+                      <span className="text-xs truncate">{t('catalog.addToCartButton.restaurantClosed')}</span>
+                    ) : (
+                      <span className="text-xs  truncate">{t('catalog.price.notAvailable')}</span>
+                    )}
+                  </Button>
 
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleToggleFavorite}
-                  disabled={favoritesLoading}
-                  className={cn(
-                    "h-8 w-[1.75rem] sm:h-10 sm:w-[2rem] flex-shrink-0",
-                    productData.isProductFavorite && 'border-red-300 bg-red-50'
-                  )}
-                >
-                  <Heart 
+                  {/* Botón de favoritos con texto */}
+                  <Button
+                    variant="outline"
+                    onClick={handleToggleFavorite}
+                    disabled={favoritesLoading}
                     className={cn(
-                      "h-3 w-3 sm:h-4 sm:w-4",
-                      productData.isProductFavorite 
-                        ? 'fill-red-500 text-red-500' 
-                        : 'text-gray-600'
-                    )} 
-                  />
-                </Button>
-              </div>
+                      "w-full h-8 sm:h-10 flex items-center justify-between px-3",
+                      productData.isProductFavorite && 'border-red-300 bg-red-50'
+                    )}
+                  >
+                    <span className="text-xs">
+                      {t('catalog.productCard.addToFavorites')}
+                    </span>
+                    <Heart
+                      className={cn(
+                        "h-3 w-3 sm:h-4 sm:w-4",
+                        productData.isProductFavorite
+                          ? 'fill-red-500 text-red-500'
+                          : 'text-gray-600'
+                      )}
+                    />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex  gap-[0.25rem]">
+                  <Button
+                    className="text-xs h-8 sm:h-10 w-full"
+                    onClick={handleAddToCart}
+                    disabled={!productData.canAddToCart || isAddingToCart || cartLoading || productData.isRestaurantDataLoading}
+                    variant={productData.inCart ? "outline" : productData.isRestaurantDataLoading ? "outline" : "default"}
+                  >
+                    {isAddingToCart ? (
+                      <div className="flex items-center gap-1 sm:gap-2">
+                        <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span className="hidden sm:inline">{t('catalog.addToCartButton.addingToCart')}</span>
+                        <span className="sm:hidden">...</span>
+                      </div>
+                    ) : productData.isRestaurantDataLoading ? (
+                      <div className="flex items-center gap-1 sm:gap-2 text-white">
+                        <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span className="hidden sm:inline text-xs sm:text-sm">{t('catalog.addToCartButton.checkingRestaurant')}</span>
+                        <span className="sm:hidden text-[10px]">...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <span className="hidden sm:inline text-xs sm:text-sm">
+                          {t('catalog.addToCartButton.addToCart')} {quantityToAdd > 1 ? `(${quantityToAdd})` : ''}
+                        </span>
+                        <span className="sm:hidden text-[10px]">
+                          +{quantityToAdd}
+                        </span>
+                      </div>
+                    )}
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleToggleFavorite}
+                    disabled={favoritesLoading}
+                    className={cn(
+                      "h-8 w-[1.75rem] sm:h-10 sm:w-[2rem] flex-shrink-0",
+                      productData.isProductFavorite && 'border-red-300 bg-red-50'
+                    )}
+                  >
+                    <Heart
+                      className={cn(
+                        "h-3 w-3 sm:h-4 sm:w-4",
+                        productData.isProductFavorite
+                          ? 'fill-red-500 text-red-500'
+                          : 'text-gray-600'
+                      )}
+                    />
+                  </Button>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
