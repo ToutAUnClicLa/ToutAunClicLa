@@ -337,9 +337,6 @@ export default {
       title: "Delivery Options",
       subtitle: "Configure your delivery details",
       addressNote: "You can configure your delivery options now. An address will be required to proceed to checkout.",
-      timeLabel: "Preferred delivery time",
-      timePlaceholder: "Select a time",
-      timeHelper: "Deliveries available from 11:00 AM to 9:00 PM",
       methodLabel: "Delivery method",
       methodHelper: "How would you like to receive your order?",
       notesLabel: "Notes for the delivery person",
@@ -376,7 +373,6 @@ export default {
         }
       },
       validation: {
-        timeRequired: "You must select a delivery time",
         methodRequired: "You must select a delivery method",
         timeInvalid: "Time must be between 12:00 PM and 9:00 PM",
         timeTooEarly: "Delivery time must be at least 1 hour from now. Minimum available time: {time}",
@@ -384,6 +380,10 @@ export default {
         notesUnsafe: "Notes contain content not allowed for security reasons",
         notesEmpty: "Notes cannot be empty or contain only spaces"
       },
+      notesOptional: "optional",
+      apply: "Apply changes",
+      applying: "Applying...",
+      estimatedTime: "Estimated delivery time: 30-45 minutes once order is confirmed",
       success: "Delivery options updated",
       schedule: "Deliveries available from 11:00 AM to 9:00 PM daily",
       alternativeHours: {
@@ -405,7 +405,6 @@ export default {
       selectAddress: "You must select an address",
       addAddressRequired: "Please add an address to calculate shipping",
       emptyCart: "Your cart is empty",
-      deliveryTimeRequired: "You must select a delivery time",
       deliveryMethodRequired: "You must select a delivery method",
       sessionExpired: "Session expired. Please log in again",
       couponError: "Error with applied coupon. Please apply the coupon again."
@@ -440,7 +439,6 @@ export default {
       couponExpired: "Coupon has expired",
       couponRateLimit: "Too many attempts. Wait 10 minutes and try again.",
       couponApplyError: "Error applying coupon. Try again.",
-      deliveryTimeError: "Delivery time must be between 11:00 AM and 8:00 PM",
       deliveryMethodError: "Invalid delivery method",
       deliveryUpdateError: "Error updating delivery options",
       deliveryUpdateSuccess: "Delivery options updated",

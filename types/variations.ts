@@ -116,7 +116,6 @@ export interface CartItemWithVariations {
   baseSubtotal: number; // Base price × quantity
   variationModifier: number; // Total variation cost modifier
   finalSubtotal: number; // Base subtotal + variation modifier
-  horaEntregaPreferida?: string;
   metodoEntrega?: 'puerta' | 'manos' | 'recepcion';
   notasEntrega?: string;
 }
@@ -129,7 +128,6 @@ export interface AddToCartWithVariationsRequest {
     variationId: number;
     quantity: number;
   }>;
-  horaEntregaPreferida?: string;
   metodoEntrega?: 'puerta' | 'manos' | 'recepcion';
   notasEntrega?: string;
 }

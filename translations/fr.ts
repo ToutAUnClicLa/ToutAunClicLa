@@ -384,6 +384,10 @@ export default {
         notesUnsafe: "Les notes contiennent du contenu non autorisé pour des raisons de sécurité",
         notesEmpty: "Les notes ne peuvent pas être vides ou contenir uniquement des espaces"
       },
+      notesOptional: "optionnel",
+      apply: "Appliquer les changements",
+      applying: "Application...",
+      estimatedTime: "Temps de livraison estimé: 30-45 minutes une fois la commande confirmée",
       success: "Options de livraison mises à jour",
       schedule: "Livraisons disponibles de 11h00 à 21h00 tous les jours",
       alternativeHours: {
@@ -405,7 +409,6 @@ export default {
       selectAddress: "Vous devez sélectionner une adresse",
       addAddressRequired: "Ajoutez une adresse pour calculer la livraison",
       emptyCart: "Votre panier est vide",
-      deliveryTimeRequired: "Vous devez sélectionner une heure de livraison",
       deliveryMethodRequired: "Vous devez sélectionner une méthode de livraison",
       sessionExpired: "Session expirée. Veuillez vous reconnecter",
       couponError: "Erreur avec le coupon appliqué. Veuillez appliquer le coupon à nouveau."
@@ -440,7 +443,6 @@ export default {
       couponExpired: "Le coupon a expiré",
       couponRateLimit: "Trop de tentatives. Attendez 10 minutes et réessayez.",
       couponApplyError: "Erreur lors de l'application du coupon. Réessayez.",
-      deliveryTimeError: "L'heure de livraison doit être entre 11h00 et 20h00",
       deliveryMethodError: "Méthode de livraison invalide",
       deliveryUpdateError: "Erreur lors de la mise à jour des options de livraison",
       deliveryUpdateSuccess: "Options de livraison mises à jour",

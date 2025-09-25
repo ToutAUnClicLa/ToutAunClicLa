@@ -234,10 +234,9 @@ export function useCart(options: UseCartOptions = {}) {
 
   // Agregar producto al carrito (optimizado)
   const addToCart = useCallback(async (
-    productId: number, 
+    productId: number,
     quantity: number = 1,
     deliveryOptions?: {
-      horaEntregaPreferida?: string;
       metodoEntrega?: 'puerta' | 'manos' | 'recepcion';
       notasEntrega?: string;
     },
@@ -519,7 +518,7 @@ export function useCart(options: UseCartOptions = {}) {
       setError('Error al actualizar opciones de entrega');
       
       if (err.message?.includes('hora de entrega')) {
-        toast.error(t('cart.notifications.deliveryTimeError'));
+        toast.error(t('cart.delivery.error'));
       } else if (err.message?.includes('método de entrega')) {
         toast.error(t('cart.notifications.deliveryMethodError'));
       } else {

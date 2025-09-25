@@ -110,7 +110,6 @@ export default function CartPage() {
   const [verifyingAddress, setVerifyingAddress] = useState(false);
   const [expandedVariations, setExpandedVariations] = useState<Set<string>>(new Set());
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOptionsType & { isValid: boolean }>({
-    horaEntregaPreferida: '18:00',
     metodoEntrega: 'puerta',
     notasEntrega: '',
     aplicarATodos: true,
@@ -312,9 +311,9 @@ export default function CartPage() {
       
       // Reiniciar las opciones de entrega a los valores por defecto
       setDeliveryOptions({
-        horaEntregaPreferida: '18:00',
         metodoEntrega: 'puerta',
         notasEntrega: '',
+        aplicarATodos: true,
         isValid: true
       });
     }
@@ -580,11 +579,6 @@ export default function CartPage() {
     }
 
     // Validar opciones de entrega
-    if (!deliveryOptions.horaEntregaPreferida) {
-      toast.error(t('cart.errors.deliveryTimeRequired'));
-      return;
-    }
-
     if (!deliveryOptions.metodoEntrega) {
       toast.error(t('cart.errors.deliveryMethodRequired'));
       return;

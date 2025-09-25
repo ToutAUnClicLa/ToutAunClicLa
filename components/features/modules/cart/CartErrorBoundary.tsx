@@ -92,7 +92,7 @@ export class CartErrorBoundary extends React.Component<
 
       // Default cart error UI
       return (
-        <Card className="mx-auto max-w-md">
+        <Card className="mx-auto max-w-md p-6 mt-10">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center text-center space-y-4">
               <div className="p-3 bg-red-50 rounded-full">

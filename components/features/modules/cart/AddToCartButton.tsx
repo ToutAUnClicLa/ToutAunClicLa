@@ -26,7 +26,6 @@ interface AddToCartButtonProps {
   }>;
   // ✅ AÑADIDO: Opciones de entrega según backend
   deliveryOptions?: {
-    horaEntregaPreferida?: string;
     metodoEntrega?: 'puerta' | 'manos' | 'recepcion';
     notasEntrega?: string;
   };

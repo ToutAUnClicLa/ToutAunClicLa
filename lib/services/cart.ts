@@ -73,10 +73,8 @@ export interface CartItem {
   usuario_id: string;
   producto_id: number;
   cantidad: number;
-  hora_entrega_preferida?: string;
   metodo_entrega?: 'puerta' | 'manos' | 'recepcion';
   notas_entrega?: string;
-  tipo_entrega?: 'hoy' | 'siguiente_dia';
   productos: CartProduct;
   addedAt?: string;
   // Variations from backend - matches backend response structure
@@ -152,15 +150,12 @@ export interface Coupon {
 }
 
 export interface DeliveryOptions {
-  horaEntregaPreferida: string;  // "HH:MM" format (11:00-20:00)
   metodoEntrega: 'puerta' | 'manos' | 'recepcion';
   notasEntrega?: string | null;
   aplicarATodos?: boolean;
-  tipoEntrega?: 'estandar' | 'siguiente_dia';
 }
 
 export interface DeliveryInfo {
-  type: 'estandar' | 'siguiente_dia';
   description: string;
 }
 
@@ -418,10 +413,9 @@ export async function getCartWithCoupon(couponCode: string): Promise<CartWithCou
  * Incluye deduplicación de requests y reintentos con backoff
  */
 export async function addToCart(
-  productId: number, 
+  productId: number,
   quantity: number = 1,
   deliveryOptions?: {
-    horaEntregaPreferida?: string;
     metodoEntrega?: 'puerta' | 'manos' | 'recepcion';
     notasEntrega?: string;
   },
@@ -433,9 +427,6 @@ export async function addToCart(
   const payload: any = { productId, quantity };
   
   // Agregar opciones de entrega si se proporcionan
-  if (deliveryOptions?.horaEntregaPreferida) {
-    payload.horaEntregaPreferida = deliveryOptions.horaEntregaPreferida;
-  }
   if (deliveryOptions?.metodoEntrega) {
     payload.metodoEntrega = deliveryOptions.metodoEntrega;
   }

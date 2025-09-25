@@ -1370,14 +1370,15 @@ export default {
         }
       },
       validation: {
-        timeRequired: "Debes seleccionar una hora de entrega",
         methodRequired: "Debes seleccionar un método de entrega",
-        timeInvalid: "La hora debe estar entre 11:00 AM y 9:00 PM",
-        timeTooEarly: "La hora de entrega debe ser al menos 1 hora después de ahora. Hora mínima disponible: {time}",
         notesTooLong: "Las notas no pueden exceder 500 caracteres",
         notesUnsafe: "Las notas contienen contenido no permitido por razones de seguridad",
         notesEmpty: "Las notas no pueden estar vacías o contener solo espacios"
       },
+      notesOptional: "opcional",
+      apply: "Aplicar cambios",
+      applying: "Aplicando...",
+      estimatedTime: "Tiempo estimado de entrega: 30-45 minutos una vez confirmado el pedido",
       success: "Opciones de entrega actualizadas",
       schedule: "Entregas disponibles de 11:00 AM a 9:00 PM todos los días",
       alternativeHours: {
@@ -1399,7 +1400,6 @@ export default {
       selectAddress: "Debes seleccionar una dirección",
       addAddressRequired: "Agrega una dirección para calcular el envío",
       emptyCart: "Tu carrito está vacío",
-      deliveryTimeRequired: "Debes seleccionar una hora de entrega",
       deliveryMethodRequired: "Debes seleccionar un método de entrega",
       sessionExpired: "Sesión expirada. Por favor inicia sesión nuevamente",
       couponError: "Error con el cupón aplicado. Por favor, aplica el cupón nuevamente."
@@ -1434,7 +1434,6 @@ export default {
       couponExpired: "El cupón ha expirado",
       couponRateLimit: "Demasiados intentos. Espera 10 minutos e intenta nuevamente.",
       couponApplyError: "Error al aplicar el cupón. Intenta nuevamente.",
-      deliveryTimeError: "La hora de entrega debe estar entre 11:00 AM y 8:00 PM",
       deliveryMethodError: "Método de entrega inválido",
       deliveryUpdateError: "Error al actualizar opciones de entrega",
       deliveryUpdateSuccess: "Opciones de entrega actualizadas",
