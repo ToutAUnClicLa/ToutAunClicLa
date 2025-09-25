@@ -94,10 +94,9 @@ export default function CancelPage() {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => router.push('/support')}
                 className="border-yellow-600 text-yellow-700 hover:bg-yellow-100"
               >
-                {t('checkout.cancel.support.contactButton')}
+                <a href="mailto:serviceclient@toutaunclicla.com">{t('checkout.cancel.support.contactButton')}</a>
               </Button>
             </div>
           </div>
