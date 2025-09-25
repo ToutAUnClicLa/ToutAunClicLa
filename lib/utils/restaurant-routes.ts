@@ -35,7 +35,7 @@ export const RESTAURANT_SLUGS: Record<string, string> = {
   "La Maison Du Grand Poulet": "la-maison-du-grand-poulet",
   "Ricuras Colombianas": "ricuras-colombianas",
   "Herencia Café": "herencia-cafe",
-  "Assiette Akay": "assiette-akay",
+  "Assiette Lakay": "assiette-lakay",
   "Herencia RestoBar": "herencia-restobar",
   "Anita Empanadas": "anita-empanadas",
   // Agregar más restaurantes según sea necesario
@@ -51,7 +51,7 @@ export const RESTAURANT_SUBCATEGORY_IDS: Record<string, number> = {
   "La Maison Du Grand Poulet": 13,
   "Ricuras Colombianas": 14,
   "Herencia Café": 15,
-  "Assiette Akay": 16,
+  "Assiette Lakay": 16,
   "Herencia RestoBar": 17,
   "Anita Empanadas": 18,
 };
