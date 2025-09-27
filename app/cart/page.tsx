@@ -60,6 +60,12 @@ const getCategoryMap = (t: any) => ({
 
 // Función para determinar la categoría de un item
 const getItemCategory = (item: CartItem): string => {
+  // 🚨 VALIDACIÓN DEFENSIVA: Verificar item antes de acceder a propiedades
+  if (!item?.productos) {
+    console.warn('⚠️ Item sin productos en getItemCategory, usando categoría por defecto');
+    return 'productos';
+  }
+
   const categoryName = item.productos?.categorias?.nombre?.toLowerCase() || '';
   
   // Lógica para mapear categorías
@@ -121,34 +127,62 @@ export default function CartPage() {
   
   // Helper function to calculate item price including variations
   const calculateItemFinalPrice = useCallback((item: CartItem) => {
+    // 🚨 VALIDACIÓN DEFENSIVA: Verificar que item y productos existan
+    if (!item?.productos?.precio) {
+      console.error('❌ CartErrorBoundary Prevention: Item sin productos o precio:', item);
+      return 0;
+    }
+
     const basePrice = item.productos.precio;
-    
+
     let variationModifier = 0;
     if (item.variations && item.variations.length > 0) {
       variationModifier = item.variations.reduce((varSum, variation) => {
+        // 🚨 VALIDACIÓN DEFENSIVA: Verificar cada variación
+        if (!variation) {
+          console.warn('⚠️ Variación nula encontrada, ignorando');
+          return varSum;
+        }
         const modifier = variation.price_at_time ?? variation.product_variations?.price_modifier ?? 0;
-        return varSum + (modifier * variation.quantity);
+        const quantity = variation.quantity ?? 0;
+        return varSum + (modifier * quantity);
       }, 0);
     }
-    
+
     return basePrice + variationModifier;
   }, []);
 
   // Helper function to get detailed pricing breakdown for display
   const getItemPricingDetails = useCallback((item: CartItem) => {
+    // 🚨 VALIDACIÓN DEFENSIVA: Verificar que item y productos existan
+    if (!item?.productos?.precio) {
+      console.error('❌ CartErrorBoundary Prevention: Item sin productos o precio en pricing details:', item);
+      return {
+        baseSubtotal: 0,
+        variationModifier: 0,
+        finalSubtotal: 0
+      };
+    }
+
     const basePrice = item.productos.precio;
     const baseSubtotal = basePrice;
-    
+
     let variationModifier = 0;
     if (item.variations && item.variations.length > 0) {
       variationModifier = item.variations.reduce((varSum, variation) => {
+        // 🚨 VALIDACIÓN DEFENSIVA: Verificar cada variación
+        if (!variation) {
+          console.warn('⚠️ Variación nula encontrada en pricing details, ignorando');
+          return varSum;
+        }
         const modifier = variation.price_at_time ?? variation.product_variations?.price_modifier ?? 0;
-        return varSum + (modifier * variation.quantity);
+        const quantity = variation.quantity ?? 0;
+        return varSum + (modifier * quantity);
       }, 0);
     }
-    
+
     const finalSubtotal = basePrice + variationModifier;
-    
+
     return {
       baseSubtotal,
       variationModifier,
@@ -429,15 +463,21 @@ export default function CartPage() {
   // Agrupar items por categoría
   const groupedItems = useMemo(() => {
     const grouped: { [key: string]: CartItem[] } = {};
-    
+
     items.forEach(item => {
+      // 🚨 VALIDACIÓN DEFENSIVA: Solo procesar items válidos
+      if (!item?.id || !item?.productos) {
+        console.warn('⚠️ Item inválido encontrado al agrupar, ignorando:', item);
+        return;
+      }
+
       const category = getItemCategory(item);
       if (!grouped[category]) {
         grouped[category] = [];
       }
       grouped[category].push(item);
     });
-    
+
     return grouped;
   }, [items]);
 
@@ -709,18 +749,18 @@ export default function CartPage() {
       });
 
       // Log information about variations in cart
-      const itemsWithVariations = items.filter(item => item.variations && item.variations.length > 0);
+      const itemsWithVariations = items.filter(item => item?.variations && item.variations.length > 0);
       if (itemsWithVariations.length > 0) {
         console.log('🎨 Items con variaciones en checkout:', itemsWithVariations.map(item => ({
-          productId: item.producto_id,
-          productName: item.productos.nombre,
-          quantity: item.cantidad,
-          variations: item.variations?.map(v => ({
-            name: v.product_variations.name,
-            quantity: v.quantity,
-            modifier: v.product_variations.price_modifier,
-            priceAtTime: v.price_at_time
-          }))
+          productId: item?.producto_id,
+          productName: item?.productos?.nombre || 'Sin nombre',
+          quantity: item?.cantidad ?? 0,
+          variations: item?.variations?.map(v => ({
+            name: v?.product_variations?.name || 'Sin nombre',
+            quantity: v?.quantity ?? 0,
+            modifier: v?.product_variations?.price_modifier ?? 0,
+            priceAtTime: v?.price_at_time ?? 0
+          })) || []
         })));
       }
       
@@ -803,10 +843,16 @@ export default function CartPage() {
 
   // Función para renderizar badges de impuestos (memoizada)
   const renderTaxBadges = useCallback((item: CartItem) => {
+    // 🚨 VALIDACIÓN DEFENSIVA: Verificar que productos exista
+    if (!item?.productos) {
+      console.warn('⚠️ Item sin productos en renderTaxBadges, retornando badges vacíos');
+      return [];
+    }
+
     const badges = [];
-    
+
     // Determinar si es taxable basado en si tiene TPS o TVQ
-    const isTaxable = (item.productos.TPS && item.productos.TPS > 0) || 
+    const isTaxable = (item.productos.TPS && item.productos.TPS > 0) ||
                       (item.productos.TVQ && item.productos.TVQ > 0);
     
     // Badge de Non Taxable (si no tiene TPS ni TVQ)
@@ -847,7 +893,7 @@ export default function CartPage() {
     
     // Badge de Consigne (si tiene consigne) - este sí se muestra en dólares
     if (item.productos.consigne && item.productos.consigne > 0) {
-      const consigneAmount = item.productos.consigne * item.cantidad;
+      const consigneAmount = item.productos.consigne * (item.cantidad ?? 0);
       badges.push(
         <Badge 
           key="consigne"
@@ -863,9 +909,15 @@ export default function CartPage() {
 
   // Renderizar item del carrito con diseño responsive (memoizada)
   const renderCartItem = useCallback((item: CartItem) => {
+    // 🚨 VALIDACIÓN DEFENSIVA: Verificar item completo antes de renderizar
+    if (!item?.id || !item?.productos) {
+      console.error('❌ CartErrorBoundary Prevention: Item inválido, saltando render:', item);
+      return null;
+    }
+
     const isItemLoading = loadingItems.has(item.id);
     const itemPriceWithVariations = calculateItemFinalPrice(item);
-    const itemTotal = item.cantidad * itemPriceWithVariations;
+    const itemTotal = (item.cantidad ?? 0) * itemPriceWithVariations;
     
     return (
       <motion.div
@@ -881,8 +933,8 @@ export default function CartPage() {
               {/* Imagen del producto - responsive */}
               <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg md:rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-sm">
                 <Image
-                  src={item.productos.imagen_principal}
-                  alt={item.productos.nombre}
+                  src={item?.productos?.imagen_principal || '/placeholder-product.svg'}
+                  alt={item?.productos?.nombre || 'Producto'}
                   fill
                   className="object-cover"
                   sizes="(max-width: 640px) 64px, (max-width: 768px) 80px, 96px"
@@ -897,7 +949,7 @@ export default function CartPage() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1 pr-2 sm:pr-4">
                     <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 mb-1 line-clamp-2">
-                      {item.productos.nombre}
+                      {item?.productos?.nombre || 'Producto sin nombre'}
                     </h3>
                     
                     {/* Mostrar variaciones seleccionadas */}
@@ -941,7 +993,7 @@ export default function CartPage() {
                     )}
                     
                     <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
-                      {item.productos.categorias?.nombre || t('cart.noCategory')}
+                      {item?.productos?.categorias?.nombre || t('cart.noCategory')}
                     </p>
                     
                     <div className="flex items-center gap-2 sm:gap-4 mb-2">
@@ -949,13 +1001,13 @@ export default function CartPage() {
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <span className="text-xs text-gray-500">
-                              {t('cart.variationDetails.customized')} ({item.cantidad} × {formatPrice(item.productos.precio)})
+                              {t('cart.variationDetails.customized')} ({item.cantidad ?? 0} × {formatPrice(item?.productos?.precio ?? 0)})
                             </span>
                             <div className="flex items-baseline gap-2">
                               <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
                                 {formatPrice(getItemPricingDetails(item).finalSubtotal)}
                               </span>
-                              {item.productos.ecoprecio && (
+                              {item?.productos?.ecoprecio && (
                                 <span className="text-xs text-emerald-600 font-medium">
                                   {t('cart.ecoFee')}
                                 </span>
@@ -967,9 +1019,9 @@ export default function CartPage() {
                         <>
                           <div className="flex items-baseline gap-2">
                             <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
-                              {formatPrice(item.productos.precio)}
+                              {formatPrice(item?.productos?.precio ?? 0)}
                             </span>
-                            {item.productos.ecoprecio && (
+                            {item?.productos?.ecoprecio && (
                               <span className="text-xs text-emerald-600 font-medium">
                                 {t('cart.ecoFee')}
                               </span>
@@ -1007,20 +1059,20 @@ export default function CartPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleQuantityChange(item.id, item.cantidad - 1)}
-                        disabled={isItemLoading || item.cantidad <= 1}
+                        onClick={() => handleQuantityChange(item.id, (item.cantidad ?? 1) - 1)}
+                        disabled={isItemLoading || (item.cantidad ?? 1) <= 1}
                         className="h-6 w-6 sm:h-8 sm:w-8 p-0 rounded-r-none"
                       >
                         <Minus className="h-3 w-3" />
                       </Button>
                       <span className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium min-w-[2rem] sm:min-w-[3rem] text-center">
-                        {item.cantidad}
+                        {item.cantidad ?? 0}
                       </span>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleQuantityChange(item.id, item.cantidad + 1)}
-                        disabled={isItemLoading || item.cantidad >= item.productos.stock}
+                        onClick={() => handleQuantityChange(item.id, (item.cantidad ?? 0) + 1)}
+                        disabled={isItemLoading || (item.cantidad ?? 0) >= (item?.productos?.stock ?? 0)}
                         className="h-6 w-6 sm:h-8 sm:w-8 p-0 rounded-l-none"
                       >
                         <Plus className="h-3 w-3" />
@@ -1033,7 +1085,7 @@ export default function CartPage() {
                       {formatPrice(itemTotal)}
                     </p>
                     <p className="text-xs sm:text-sm text-gray-500 hidden sm:block">
-                      {item.cantidad} × {formatPrice(itemPriceWithVariations)}
+                      {item.cantidad ?? 0} × {formatPrice(itemPriceWithVariations)}
                     </p>
                   </div>
                 </div>
@@ -1072,7 +1124,7 @@ export default function CartPage() {
             </div>
             <div className="ml-auto">
               <Badge className={`${categoryInfo.badgeColor} border-0 text-xs sm:text-sm`}>
-                {items.reduce((sum, item) => sum + item.cantidad, 0)} {t('cart.products')}
+                {items.reduce((sum, item) => sum + (item?.cantidad ?? 0), 0)} {t('cart.products')}
               </Badge>
             </div>
           </div>
