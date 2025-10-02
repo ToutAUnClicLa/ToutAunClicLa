@@ -106,6 +106,9 @@ export default {
       description: "Conectando las Américas a través de productos auténticos y experiencias únicas. Entrega en la zona metropolitana de Montreal.",
       cta: "Registrate Para Distrutar de todas las americas!"
     },
+    workWithUs: {
+      buttonText: "¿Quieres trabajar con nosotros?"
+    },
     search: {
       title: "¿Qué estás buscando?",
       placeholder: "Buscar productos, marcas, categorías...",

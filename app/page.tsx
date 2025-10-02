@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useTranslation } from '@/hooks/useTranslation';
 import AuthModal from '@/components/features/auth/AuthModal';
 import HomeSearchBar from '@/components/features/modules/search/HomeSearchBar';
+import WorkWithUsButton from '@/components/features/landing/WorkWithUsButton';
 
 // Types
 interface CategoryCardProps {
@@ -610,11 +611,14 @@ export default function Home() {
       </Section>
       
       {/* Auth Modal */}
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={closeAuthModal} 
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={closeAuthModal}
         initialMode={authModalMode}
       />
+
+      {/* Work With Us Floating Button */}
+      <WorkWithUsButton />
     </div>
   );
 }

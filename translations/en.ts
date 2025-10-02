@@ -105,6 +105,9 @@ export default {
       description: "Connecting the Americas through authentic products and unique experiences. Delivery to the Greater Montreal area.",
       cta: "Register to enjoy all of the Americas"
     },
+    workWithUs: {
+      buttonText: "Want to work with us?"
+    },
     search: {
       title: "What are you looking for?",
       placeholder: "Search products, brands, categories...",

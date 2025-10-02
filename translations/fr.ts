@@ -105,6 +105,9 @@ export default {
       description: "Relier les Amériques grâce à des produits authentiques et des expériences uniques. Livraison dans la grande région de Montréal.",
       cta: "Inscrivez-vous pour profiter de toutes les Amériques"
     },
+    workWithUs: {
+      buttonText: "Vous voulez travailler avec nous?"
+    },
     search: {
       title: "Que recherchez-vous ?",
       placeholder: "Rechercher produits, marques, catégories...",
