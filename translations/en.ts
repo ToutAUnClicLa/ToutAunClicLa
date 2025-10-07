@@ -1157,7 +1157,7 @@ export default {
     checkYourEmail: "Check your email",
 
     // Password reset
-    resetPasswordDescription: "Enter your email and we'll send you a code",
+    resetPasswordDescription: "Enter your email address and we will send you a verification code to identify your account and reset your password",
     resetPasswordFormTitle: "Recover your account",
     resetPasswordFormDescription: "We'll send you a 6-digit code",
     resetPasswordDescriptionExtended: "Don't worry, we'll help you regain access to your account securely.",

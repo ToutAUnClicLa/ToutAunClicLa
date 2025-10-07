@@ -706,7 +706,7 @@ export default function AuthModal({
                     <div className="space-y-1.5 sm:space-y-2">
                       <h3 className="text-base sm:text-lg font-bold text-gray-900">{t('auth.resetPasswordTitle')}</h3>
                       <p className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-xs sm:max-w-sm mx-auto">
-                        {t('auth.resetPasswordFormDescription')}
+                        {t('auth.resetPasswordDescriptionExtended')}
                       </p>
                     </div>
                   </div>

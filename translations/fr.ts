@@ -106,7 +106,7 @@ export default {
       cta: "Inscrivez-vous pour profiter de toutes les Amériques"
     },
     workWithUs: {
-      buttonText: "Vous voulez travailler avec nous?"
+      buttonText: "Voulez-Vous travailler avec nous?"
     },
     search: {
       title: "Que recherchez-vous ?",
@@ -1161,7 +1161,7 @@ export default {
     checkYourEmail: "Vérifiez votre e-mail",
 
     // Réinitialisation du mot de passe
-    resetPasswordDescription: "Entrez votre email et nous vous enverrons un code",
+    resetPasswordDescription: "Saisissez votre adresse e-mail et nous vous enverrons un code de vérification pour identifier votre compte et réinitialiser votre mot de passe.",
     resetPasswordFormTitle: "Récupérez votre compte",
     resetPasswordFormDescription: "Nous vous enverrons un code à 6 chiffres",
     resetPasswordDescriptionExtended: "Ne vous inquiétez pas, nous vous aidons à récupérer l'accès à votre compte en toute sécurité.",

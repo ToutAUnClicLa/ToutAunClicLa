@@ -405,7 +405,7 @@ export default {
     checkYourEmail: "Revisa tu correo electrónico",
 
     // Reset de contraseña
-    resetPasswordDescription: "Ingresa tu email y te enviaremos un código",
+    resetPasswordDescription: "Ingrese su correo electrónico y le enviaremos un código de verificación para identificar su cuenta y restablecer su contraseña.",
     resetPasswordFormTitle: "Recupera tu cuenta",
     resetPasswordFormDescription: "Te enviaremos un código de 6 dígitos",
     resetPasswordDescriptionExtended: "No te preocupes, te ayudamos a recuperar el acceso a tu cuenta de forma segura.",
