@@ -772,7 +772,7 @@ export default function AuthModal({
                     <div className="space-y-1.5 sm:space-y-2">
                       <h3 className="text-base sm:text-lg font-bold text-gray-900">{t('auth.resetCodeInstructions')}</h3>
                       <p className="text-xs text-gray-500">
-                        Enviado a: <span className="font-semibold text-gray-700">{resetEmail}</span>
+                        {t('auth.resetSendTo')} <span className="font-semibold text-gray-700">{resetEmail}</span>
                       </p>
                     </div>
                   </div>

@@ -1168,6 +1168,7 @@ export default {
     resetCodeLabel: "Code de réinitialisation",
     resetCodePlaceholder: "123456",
     resetCodeInstructions: "Entrez le code à 6 chiffres envoyé à votre email",
+    resetSendTo: "Envoyé à:",
     newPasswordLabel: "Nouveau mot de passe",
     newPasswordPlaceholder: "Minimum 8 caractères",
     confirmNewPasswordLabel: "Confirmer le nouveau mot de passe",

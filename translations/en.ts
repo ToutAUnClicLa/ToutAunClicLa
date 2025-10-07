@@ -1161,6 +1161,7 @@ export default {
     resetPasswordFormTitle: "Recover your account",
     resetPasswordFormDescription: "We'll send you a 6-digit code",
     resetPasswordDescriptionExtended: "Don't worry, we'll help you regain access to your account securely.",
+    resetSendTo: "Send To:",
     resetCodeLabel: "Reset code",
     resetCodePlaceholder: "123456",
     resetCodeInstructions: "Enter the 6-digit code sent to your email",

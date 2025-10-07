@@ -412,6 +412,7 @@ export default {
     resetCodeLabel: "Código de restablecimiento",
     resetCodePlaceholder: "123456",
     resetCodeInstructions: "Ingresa el código de 6 dígitos enviado a tu email",
+    resetSendTo: "Enviado a:",
     newPasswordLabel: "Nueva contraseña",
     newPasswordPlaceholder: "Mínimo 8 caracteres",
     confirmNewPasswordLabel: "Confirmar nueva contraseña",
