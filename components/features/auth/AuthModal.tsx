@@ -28,7 +28,7 @@ import { useRouter } from 'next/navigation';
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode?: 'login' | 'register' | 'forgotPassword' | 'verification';
+  initialMode?: 'login' | 'register' | 'forgotPassword' | 'resetPassword' | 'verification';
   redirectUrl?: string;
   onLoginSuccess?: () => void;
 }
@@ -59,6 +59,12 @@ export default function AuthModal({
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [showEmailForm, setShowEmailForm] = useState(false);
+  const [resetCode, setResetCode] = useState('');
+  const [resetEmail, setResetEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
 
   // Restablecer los estados cuando cambia el modo
   useEffect(() => {
@@ -72,12 +78,24 @@ export default function AuthModal({
         password: '',
         confirmPassword: ''
       }));
+    } else if (mode === 'forgotPassword') {
+      // Mantener solo el email para forgot password
+      setResetEmail(formData.email || '');
+    } else if (mode === 'resetPassword') {
+      // Mantener el email para reset password
+      const currentEmail = resetEmail || formData.email || '';
+      setResetEmail(currentEmail);
     }
     setError(null);
     setVerificationCode('');
+    setResetCode('');
+    setNewPassword('');
+    setConfirmNewPassword('');
     setAcceptTerms(false);
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmNewPassword(false);
     // Solo resetear showEmailForm si no estamos en modo registro
     if (mode !== 'register') {
       setShowEmailForm(false);
@@ -100,9 +118,15 @@ export default function AuthModal({
       setError(null);
       setIsLoading(false);
       setVerificationCode('');
+      setResetCode('');
+      setResetEmail('');
+      setNewPassword('');
+      setConfirmNewPassword('');
       setAcceptTerms(false);
       setShowPassword(false);
       setShowConfirmPassword(false);
+      setShowNewPassword(false);
+      setShowConfirmNewPassword(false);
       setShowEmailForm(false);
     }
   }, [isOpen, initialMode]);
@@ -119,7 +143,7 @@ export default function AuthModal({
 
   const validateForm = (): boolean => {
     setError(null);
-    
+
     // Validación para modo verificación
     if (mode === 'verification') {
       if (!verificationCode || verificationCode.length !== 6) {
@@ -129,7 +153,46 @@ export default function AuthModal({
       return true;
     }
 
-    // Validación común para todos los modos excepto verificación
+    // Validación para modo forgot password
+    if (mode === 'forgotPassword') {
+      if (!resetEmail?.trim()) {
+        setError(t('auth.emailRequired'));
+        return false;
+      }
+
+      if (!validateEmail(resetEmail.trim())) {
+        setError(t('auth.emailInvalid'));
+        return false;
+      }
+      return true;
+    }
+
+    // Validación para modo reset password
+    if (mode === 'resetPassword') {
+      if (!resetCode || resetCode.length !== 6) {
+        setError(t('auth.enterSixDigitCode'));
+        return false;
+      }
+
+      if (!newPassword) {
+        setError(t('auth.passwordRequired'));
+        return false;
+      }
+
+      if (!validatePassword(newPassword)) {
+        setError(t('auth.passwordInvalid'));
+        return false;
+      }
+
+      if (newPassword !== confirmNewPassword) {
+        setError(t('auth.passwordsMismatch'));
+        return false;
+      }
+
+      return true;
+    }
+
+    // Validación común para todos los modos excepto verificación, forgot y reset
     if (!formData.email?.trim()) {
       setError(t('auth.emailRequired'));
       return false;
@@ -181,11 +244,11 @@ export default function AuthModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const isValid = validateForm();
       if (!isValid) {
         setIsLoading(false);
@@ -198,6 +261,10 @@ export default function AuthModal({
         await handleRegister();
       } else if (mode === 'verification') {
         await handleVerification();
+      } else if (mode === 'forgotPassword') {
+        await handleForgotPassword();
+      } else if (mode === 'resetPassword') {
+        await handleResetPassword();
       }
     } catch (err: any) {
       console.error('Error en handleSubmit:', err);
@@ -298,7 +365,7 @@ export default function AuthModal({
     try {
       setIsLoading(true);
       const emailToResend = formData.email.trim() || localStorage.getItem('pending_verification_email') || '';
-      
+
       if (!emailToResend) {
         setError(t('auth.emailNotFoundForResend'));
         return;
@@ -313,6 +380,117 @@ export default function AuthModal({
       setError(error.message || t('auth.resendCodeError'));
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    try {
+      if (!resetEmail.trim()) {
+        setError(t('auth.emailRequired'));
+        return;
+      }
+
+      if (!validateEmail(resetEmail.trim())) {
+        setError(t('auth.emailInvalid'));
+        return;
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: resetEmail.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 400 && data.error === 'Social authentication account') {
+          throw new Error(t('auth.socialAuthNoReset'));
+        }
+        throw new Error(data.message || t('auth.sendResetCodeError'));
+      }
+
+      toast.success(t('auth.resetCodeSent'), {
+        description: t('auth.resetCodeSentDescription')
+      });
+
+      setMode('resetPassword');
+      setError(null);
+    } catch (error: any) {
+      console.error('Error en forgot password:', error);
+      setError(error.message || t('auth.sendResetCodeError'));
+    }
+  };
+
+  const handleResetPassword = async () => {
+    try {
+      if (!resetCode || resetCode.length !== 6) {
+        setError(t('auth.enterSixDigitCode'));
+        return;
+      }
+
+      if (!newPassword) {
+        setError(t('auth.passwordRequired'));
+        return;
+      }
+
+      if (!validatePassword(newPassword)) {
+        setError(t('auth.passwordInvalid'));
+        return;
+      }
+
+      if (newPassword !== confirmNewPassword) {
+        setError(t('auth.passwordsMismatch'));
+        return;
+      }
+
+      if (newPassword.length < 8) {
+        setError('La contraseña debe tener al menos 8 caracteres');
+        return;
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: resetEmail.trim(),
+          code: resetCode,
+          newPassword: newPassword
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.error === 'Invalid reset code') {
+          throw new Error(t('auth.invalidResetCode'));
+        } else if (data.error === 'Code expired') {
+          throw new Error(t('auth.resetCodeExpired'));
+        }
+        throw new Error(data.message || t('auth.resetPasswordError'));
+      }
+
+      toast.success(t('auth.passwordResetSuccess'), {
+        description: t('auth.passwordResetSuccessDescription')
+      });
+
+      // Cambiar a modo login después de 1.5 segundos
+      setTimeout(() => {
+        setMode('login');
+        setFormData(prev => ({
+          ...prev,
+          email: resetEmail,
+          password: ''
+        }));
+      }, 1500);
+
+    } catch (error: any) {
+      console.error('Error en reset password:', error);
+      setError(error.message || t('auth.resetPasswordError'));
     }
   };
 
@@ -351,8 +529,12 @@ export default function AuthModal({
         return t('auth.registerTitle');
       case 'verification':
         return t('auth.verificationTitle');
-      default:
+      case 'forgotPassword':
         return t('auth.forgotPasswordTitle');
+      case 'resetPassword':
+        return t('auth.resetPasswordTitle');
+      default:
+        return t('auth.loginTitle');
     }
   };
 
@@ -364,13 +546,17 @@ export default function AuthModal({
         return t('auth.createFreeAccount');
       case 'verification':
         return t('auth.verifyYourEmail');
+      case 'forgotPassword':
+        return t('auth.resetPasswordDescription');
+      case 'resetPassword':
+        return t('auth.enterResetCode');
       default:
         return '';
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={mode === 'verification' ? undefined : onClose}>
+    <Dialog open={isOpen} onOpenChange={(mode === 'verification' || mode === 'resetPassword') ? undefined : onClose}>
       <DialogContent className="sm:max-w-[420px] max-w-[92vw] max-h-[92vh] sm:max-h-[90vh] p-0 overflow-hidden bg-white border-0 shadow-2xl rounded-xl sm:rounded-2xl">
         {/* Header con gradiente moderno */}
         <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 px-3 sm:px-4 py-3 sm:py-4 text-white rounded-t-xl sm:rounded-t-2xl">
@@ -387,6 +573,8 @@ export default function AuthModal({
                     <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   ) : mode === 'register' ? (
                     <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  ) : mode === 'forgotPassword' || mode === 'resetPassword' ? (
+                    <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   ) : (
                     <User className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   )}
@@ -397,8 +585,8 @@ export default function AuthModal({
                   </DialogTitle>
                 </div>
               </div>
-              {/* Solo mostrar botón de cerrar si NO está en modo verification */}
-              {mode !== 'verification' && (
+              {/* Solo mostrar botón de cerrar si NO está en modo verification o resetPassword */}
+              {mode !== 'verification' && mode !== 'resetPassword' && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -457,7 +645,7 @@ export default function AuthModal({
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-1.5 sm:space-y-2">
                     <Label htmlFor="verification-code" className="text-xs sm:text-sm font-semibold text-gray-700">
                       {t('auth.verificationCodeLabel')}
@@ -474,9 +662,9 @@ export default function AuthModal({
                     />
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full h-10 sm:h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base" 
+                  <Button
+                    type="submit"
+                    className="w-full h-10 sm:h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base"
                     disabled={isLoading || verificationCode.length !== 6}
                   >
                     {isLoading ? (
@@ -501,6 +689,194 @@ export default function AuthModal({
                       className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 font-medium"
                     >
                       {t('auth.resendCode')}
+                    </Button>
+                  </div>
+                </motion.div>
+              ) : mode === 'forgotPassword' ? (
+                <motion.div
+                  key="forgotPassword"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-4 sm:space-y-5"
+                >
+                  {/* Forgot Password content */}
+                  <div className="text-center space-y-3 sm:space-y-4">
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <h3 className="text-base sm:text-lg font-bold text-gray-900">{t('auth.resetPasswordTitle')}</h3>
+                      <p className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-xs sm:max-w-sm mx-auto">
+                        {t('auth.resetPasswordFormDescription')}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="reset-email" className="text-xs sm:text-sm font-semibold text-gray-700">
+                      {t('auth.email')}
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 sm:h-5 sm:w-5" />
+                      <Input
+                        id="reset-email"
+                        type="email"
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                        placeholder={t('auth.emailPlaceholder')}
+                        className="pl-9 sm:pl-11 h-10 sm:h-12 bg-gray-50 border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl transition-all duration-200 text-sm sm:text-base"
+                        autoFocus
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {t('auth.resetPasswordFormDescription')}
+                    </p>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full h-10 sm:h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                        <span>{t('auth.sendingResetCode')}</span>
+                      </div>
+                    ) : (
+                      <span>{t('auth.sendResetCodeButton')}</span>
+                    )}
+                  </Button>
+
+                  <div className="text-center pt-3 sm:pt-4 border-t border-gray-100">
+                    <Button
+                      type="button"
+                      variant="link"
+                      onClick={() => setMode('login')}
+                      className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 font-medium"
+                    >
+                      {t('auth.backToLogin')}
+                    </Button>
+                  </div>
+                </motion.div>
+              ) : mode === 'resetPassword' ? (
+                <motion.div
+                  key="resetPassword"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-4 sm:space-y-5"
+                >
+                  {/* Reset Password content */}
+                  <div className="text-center space-y-3 sm:space-y-4">
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <h3 className="text-base sm:text-lg font-bold text-gray-900">{t('auth.resetCodeInstructions')}</h3>
+                      <p className="text-xs text-gray-500">
+                        Enviado a: <span className="font-semibold text-gray-700">{resetEmail}</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="reset-code" className="text-xs sm:text-sm font-semibold text-gray-700">
+                      {t('auth.resetCodeLabel')}
+                    </Label>
+                    <Input
+                      id="reset-code"
+                      type="text"
+                      value={resetCode}
+                      onChange={(e) => setResetCode(e.target.value)}
+                      placeholder="000000"
+                      maxLength={6}
+                      className="text-center text-xl sm:text-2xl tracking-wider font-mono h-12 sm:h-14 bg-gray-50 border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl transition-all duration-200"
+                      autoFocus
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="new-password" className="text-xs sm:text-sm font-semibold text-gray-700">
+                      {t('auth.newPasswordLabel')}
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 sm:h-5 sm:w-5" />
+                      <Input
+                        id="new-password"
+                        type={showNewPassword ? 'text' : 'password'}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder={t('auth.newPasswordPlaceholder')}
+                        className="pl-9 sm:pl-11 pr-9 sm:pr-11 h-10 sm:h-12 bg-gray-50 border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl transition-all duration-200 text-sm sm:text-base"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-gray-100 rounded-lg"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                      >
+                        {showNewPassword ? (
+                          <EyeOff className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
+                        ) : (
+                          <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="confirm-new-password" className="text-xs sm:text-sm font-semibold text-gray-700">
+                      {t('auth.confirmNewPasswordLabel')}
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 sm:h-5 sm:w-5" />
+                      <Input
+                        id="confirm-new-password"
+                        type={showConfirmNewPassword ? 'text' : 'password'}
+                        value={confirmNewPassword}
+                        onChange={(e) => setConfirmNewPassword(e.target.value)}
+                        placeholder={t('auth.confirmNewPasswordPlaceholder')}
+                        className="pl-9 sm:pl-11 pr-9 sm:pr-11 h-10 sm:h-12 bg-gray-50 border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl transition-all duration-200 text-sm sm:text-base"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-gray-100 rounded-lg"
+                        onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
+                      >
+                        {showConfirmNewPassword ? (
+                          <EyeOff className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
+                        ) : (
+                          <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-400" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full h-10 sm:h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base"
+                    disabled={isLoading || resetCode.length !== 6 || !newPassword || !confirmNewPassword}
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                        <span>{t('auth.resettingPassword')}</span>
+                      </div>
+                    ) : (
+                      <span>{t('auth.resetPasswordButton')}</span>
+                    )}
+                  </Button>
+
+                  <div className="text-center">
+                    <Button
+                      type="button"
+                      variant="link"
+                      onClick={() => setMode('forgotPassword')}
+                      disabled={isLoading}
+                      className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 font-medium"
+                    >
+                      {t('auth.backToResetForm')}
                     </Button>
                   </div>
                 </motion.div>

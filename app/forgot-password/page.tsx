@@ -4,15 +4,15 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 /**
- * Esta página redirige al home con el modal de reset password abierto
+ * Esta página redirige al home con el modal de recuperación de contraseña abierto
  * El flujo completo ahora se maneja a través del AuthModal
  */
-export default function ResetPasswordPage() {
+export default function ForgotPasswordPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirigir al home donde se abrirá el AuthModal en modo resetPassword
-    router.push('/?auth=reset');
+    // Redirigir al home donde se abrirá el AuthModal en modo forgotPassword
+    router.push('/?auth=forgot');
   }, [router]);
 
   return (
