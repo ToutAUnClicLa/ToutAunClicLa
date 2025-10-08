@@ -39,6 +39,7 @@ export const RESTAURANT_SLUGS: Record<string, string> = {
   "Herencia RestoBar": "herencia-restobar",
   "Anita Empanadas": "anita-empanadas",
   // Agregar más restaurantes según sea necesario
+  "Cake Bakery Bro":"Cake-Bakery-Bro"
 };
 
 /**
@@ -46,7 +47,6 @@ export const RESTAURANT_SLUGS: Record<string, string> = {
  */
 export const RESTAURANT_SUBCATEGORY_IDS: Record<string, number> = {
   "L'Arepa Express": 4,
-  "Rue 20": 5,
   "Bistro l'Arepa": 11,
   "La Maison Du Grand Poulet": 13,
   "Ricuras Colombianas": 14,
@@ -54,6 +54,7 @@ export const RESTAURANT_SUBCATEGORY_IDS: Record<string, number> = {
   "Assiette Lakay": 16,
   "Herencia RestoBar": 17,
   "Anita Empanadas": 18,
+  "Cake Bakery Bro" : 19
 };
 
 /**
