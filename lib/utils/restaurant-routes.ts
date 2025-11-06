@@ -20,7 +20,7 @@ export function generateRestaurantSlug(restaurantName: string): string {
  * Ejemplo: "Maison de Poulet" -> "/comidas/maison-de-poulet"
  */
 export function getRestaurantUrl(restaurantName: string): string {
-  const slug = generateRestaurantSlug(restaurantName);
+  const slug = generateRestaurantSlugNormalized(restaurantName);
   return `/comidas/${slug}`;
 }
 
@@ -37,8 +37,8 @@ export const RESTAURANT_SLUGS: Record<string, string> = {
   "Herencia Café": "herencia-cafe",
   "Assiette Lakay": "assiette-lakay",
   "Herencia RestoBar": "herencia-restobar",
-  "Anita Empanadas": "anita-empanadas",
-  // Agregar más restaurantes según sea necesario
+  "Encanto Cafe et Boutique": "Encanto-Cafe-et-Boutique",
+  "Encanto Café et Boutique": "Encanto-Cafe-et-Boutique",
   "Cake Bakery Bro":"Cake-Bakery-Bro"
 };
 
@@ -53,7 +53,7 @@ export const RESTAURANT_SUBCATEGORY_IDS: Record<string, number> = {
   "Herencia Café": 15,
   "Assiette Lakay": 16,
   "Herencia RestoBar": 17,
-  "Anita Empanadas": 18,
+  "Encanto Cafe et Boutique": 18,
   "Cake Bakery Bro" : 19
 };
 
@@ -61,7 +61,9 @@ export const RESTAURANT_SUBCATEGORY_IDS: Record<string, number> = {
  * Obtiene la URL usando slugs predefinidos o genera uno automáticamente
  */
 export function getRestaurantUrlWithFallback(restaurantName: string): string {
-  const predefinedSlug = RESTAURANT_SLUGS[restaurantName];
+  const normalizedName = normalizeRestaurantName(restaurantName);
+  const predefinedSlug = Object.entries(RESTAURANT_SLUGS)
+    .find(([name]) => normalizeRestaurantName(name) === normalizedName)?.[1];
   if (predefinedSlug) {
     return `/comidas/${predefinedSlug}`;
   }
@@ -103,5 +105,32 @@ export function filterProductsByRestaurant(products: any[], restaurantName: stri
  * Obtiene el ID de subcategoría de un restaurante por su nombre
  */
 export function getRestaurantSubcategoryId(restaurantName: string): number | null {
-  return RESTAURANT_SUBCATEGORY_IDS[restaurantName] || null;
+  const normalizedName = normalizeRestaurantName(restaurantName);
+  const entry = Object.entries(RESTAURANT_SUBCATEGORY_IDS)
+    .find(([name]) => normalizeRestaurantName(name) === normalizedName);
+  return entry ? entry[1] : null;
+}
+
+/**
+ * Normaliza un nombre y genera un slug sin acentos ni guiones al inicio/fin
+ */
+function generateRestaurantSlugNormalized(restaurantName: string): string {
+  return normalizeRestaurantName(restaurantName)
+    .replace(/\s+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * Normaliza un nombre de restaurante para comparaciones insensibles a acentos, mayúsculas y espacios extra
+ */
+function normalizeRestaurantName(name: string): string {
+  return name
+    .normalize('NFD') // separar diacríticos
+    .replace(/[\u0300-\u036f]/g, '') // remover diacríticos
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '') // remover caracteres especiales
+    .replace(/\s+/g, ' ') // colapsar espacios
+    .replace(/-+/g, '-') // colapsar guiones
+    .trim();
 }
