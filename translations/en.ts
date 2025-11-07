@@ -32,7 +32,7 @@ export default {
   nav: {
     home: "Home",
     products: "Grocery",
-    foods: "Foods",
+    foods: "Restaurants",
     boutique: "Souvenirs",
     login: "Login",
     aboutUs: "About Us",
@@ -56,7 +56,7 @@ export default {
       title: "Explore",
       home: "Home",
       products: "Products",
-      foods: "Foods",
+      foods: "Restaurants",
       boutique: "Souvenirs"
     },
     popularProducts: {
@@ -148,7 +148,7 @@ export default {
         description: "Unique products from Latin America, from crafts to modern innovations."
       },
       foods: {
-        title: "Foods",
+        title: "Restaurants",
         description: "Latin American gastronomy with authentic recipes and traditional flavors."
       },
       boutique: {
@@ -213,7 +213,7 @@ export default {
     ],
     panamericanFood: {
       id: 1,
-      name: "Pan-American Cuisine",
+      name: "Restaurants",
       description: "Discover our partner restaurants that bring you authentic food from across the American continent, prepared with traditional recipes and unique flavors.",
       color: "from-amber-600 to-yellow-600",
       viewText: "Explore restaurants"
