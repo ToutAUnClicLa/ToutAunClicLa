@@ -91,7 +91,10 @@ export function getRestaurantNameFromSlug(slug: string): string | null {
  * Verifica si un producto pertenece a un restaurante específico
  */
 export function isProductFromRestaurant(product: any, restaurantName: string): boolean {
-  return product.subcategorias?.nombre === restaurantName;
+  if (!product?.subcategorias?.nombre || !restaurantName) return false;
+  const productName = normalizeRestaurantName(product.subcategorias.nombre);
+  const targetName = normalizeRestaurantName(restaurantName);
+  return productName === targetName;
 }
 
 /**
