@@ -34,6 +34,7 @@ export default {
     products: "Épicerie",
     foods: "Restaurants",
     boutique: "Souvenirs",
+    services: "Services",
     login: "Se connecter",
     aboutUs: "À propos",
     profile: {
@@ -154,6 +155,10 @@ export default {
       boutique: {
         title: "Souvenirs",
         description: "Souvenirs et cadeaux uniques qui capturent l'essence de chaque pays."
+      },
+      services: {
+        title: "Services",
+        description: "Trouvez des avocats, dentistes et comptables bilingues sans quitter Montréal."
       }
     },
     sections: {
@@ -171,6 +176,11 @@ export default {
         title: "Collection Souvenirs",
         description: "Découvrez notre collection exclusive d'articles artisanaux des Amériques",
         viewAll: "Voir catalogue complet"
+      },
+      services: {
+        title: "Services Professionnels",
+        description: "Nous créons un réseau d’avocats, de dentistes, de comptables et de spécialistes qui comprennent la communauté latino-américaine.",
+        viewAll: "Rencontrer les professionnels"
       }
     },
     productCategories: [
@@ -274,6 +284,41 @@ export default {
         color: "from-purple-600 to-indigo-600",
         viewText: "Explorer la collection",
         subcategoria_id: "ropa"
+      }
+    ],
+    serviceHighlights: [
+      {
+        id: 1,
+        name: "Droit & Immigration",
+        description: "Avocats, notaires et consultants en immigration spécialisés dans les dossiers latino-américains et l’enregistrement d’entreprises.",
+        color: "from-indigo-600 to-blue-600",
+        badge: "Bientôt",
+        href: "/servicios#abogados",
+        icon: "law",
+        cta: "Demander la disponibilité",
+        languages: ["Espagnol", "Anglais", "Français"]
+      },
+      {
+        id: 2,
+        name: "Soins Dentaires & Santé",
+        description: "Dentistes et professionnels de la santé offrant soins préventifs, urgences et références avec une approche culturelle.",
+        color: "from-emerald-600 to-teal-600",
+        badge: "Bientôt",
+        href: "/servicios#salud",
+        icon: "health",
+        cta: "Je veux être informé",
+        languages: ["Espagnol", "Anglais"]
+      },
+      {
+        id: 3,
+        name: "Comptabilité & Impôts",
+        description: "Comptables et fiscalistes certifiés pour accompagner travailleurs, familles et entrepreneurs au Québec et au Canada.",
+        color: "from-purple-600 to-fuchsia-600",
+        badge: "Lancement bientôt",
+        href: "/servicios#contadores",
+        icon: "finance",
+        cta: "Prévenez-moi du lancement",
+        languages: ["Espagnol", "Anglais", "Français"]
       }
     ]
   },
@@ -2098,6 +2143,21 @@ export default {
       testing: "Tests en attente",
       launch: "Lancement bientôt"
     }
+  },
+
+  servicesPage: {
+    heroTitle: "Services professionnels à portée de clic",
+    heroSubtitle: "Avocats, dentistes et comptables bilingues pour la communauté latino de Montréal.",
+    heroBadge: "Disponibles très bientôt",
+    heroCta: "Découvrir les professionnels",
+    comingSoon: "Lancement très bientôt",
+    description: "Nous sélectionnons un réseau de professionnels de confiance afin de répondre à vos besoins juridiques, de santé et comptables dans votre langue.",
+    highlightsTitle: "Professions mises en avant",
+    highlightsSubtitle: "Choisissez le profil souhaité et nous vous informerons dès que les consultations seront ouvertes.",
+    contactTitle: "Besoin d’un autre professionnel ?",
+    contactDescription: "Expliquez-nous votre besoin et nous vous mettrons en relation avec l’expert approprié dès l’ouverture du répertoire.",
+    contactButton: "Prévenez-moi",
+    languagesLabel: "Langues"
   },
 
   aboutUs: {

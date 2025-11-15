@@ -34,6 +34,7 @@ export default {
     products: "Productos",
     foods: "Restaurantes",
     boutique: "Souvenirs",
+    services: "Servicios",
     login: "Iniciar Sesión",
     aboutUs: "Sobre Nosotros",
     profile: {
@@ -155,6 +156,10 @@ export default {
       boutique: {
         title: "Souvenirs",
         description: "Souvenirs y regalos únicos que capturan la esencia de cada país."
+      },
+      services: {
+        title: "Servicios",
+        description: "Conecta con abogados, dentistas y contadores bilingües sin salir de Montreal."
       }
     },
     sections: {
@@ -172,6 +177,11 @@ export default {
         title: "Colección de Souvenirs",
         description: "Descubre nuestra colección exclusiva de artículos artesanales de las Américas",
         viewAll: "Ver catálogo completo"
+      },
+      services: {
+        title: "Servicios Profesionales",
+        description: "Estamos construyendo una red de abogados, dentistas, contadores y especialistas que entienden a la comunidad latina.",
+        viewAll: "Conoce a los profesionales"
       }
     },
     productCategories: [
@@ -276,7 +286,43 @@ export default {
         viewText: "Explorar colección",
         subcategoria_id: "ropa"
       },
-    ]  },  
+    ],
+    serviceHighlights: [
+      {
+        id: 1,
+        name: "Abogados e Inmigración",
+        description: "Abogados, notarios y consultores migratorios especializados en trámites latinoamericanos y registro de negocios.",
+        color: "from-indigo-600 to-blue-600",
+        badge: "Próximamente",
+        href: "/servicios#abogados",
+        icon: "law",
+        cta: "Avísenme cuando abran",
+        languages: ["Español", "Inglés", "Francés"]
+      },
+      {
+        id: 2,
+        name: "Odontología y Salud",
+        description: "Dentistas y profesionales de la salud que ofrecen cuidado preventivo, emergencias y referidos con enfoque cultural.",
+        color: "from-emerald-600 to-emerald-400",
+        badge: "Próximamente",
+        href: "/servicios#salud",
+        icon: "health",
+        cta: "Quiero estar en la lista",
+        languages: ["Español", "Inglés", "Francés"]
+      },
+      {
+        id: 3,
+        name: "Contabilidad e Impuestos",
+        description: "Contadores y asesores fiscales certificados para ayudar a trabajadores, familias y emprendedores en Quebec y Canadá.",
+        color: "from-purple-600 to-fuchsia-600",
+        badge: "Muy pronto",
+        href: "/servicios#contadores",
+        icon: "finance",
+        cta: "Deseo recibir novedades",
+        languages: ["Español", "Inglés", "Francés"]
+      }
+    ]
+  },  
     auth: {
     // Títulos de modales
     loginTitle: "Iniciar Sesión",
@@ -2135,6 +2181,21 @@ export default {
       testing: "Pruebas pendientes",
       launch: "Lanzamiento próximo"
     }
+  },
+
+  servicesPage: {
+    heroTitle: "Servicios profesionales a un clic",
+    heroSubtitle: "Abogados, dentistas y contadores bilingües para la comunidad latina en Montreal.",
+    heroBadge: "Disponibles muy pronto",
+    heroCta: "Conoce a los profesionales",
+    comingSoon: "Lanzamiento muy pronto",
+    description: "Estamos seleccionando una red de profesionales de confianza para que resuelvas temas legales, de salud y contables en tu propio idioma.",
+    highlightsTitle: "Profesiones destacadas",
+    highlightsSubtitle: "Elige el perfil que necesitas y te avisaremos cuando habilitemos agendas y consultas.",
+    contactTitle: "¿Necesitas otro profesional?",
+    contactDescription: "Cuéntanos tu caso y te conectaremos con el experto indicado en cuanto se abra el directorio.",
+    contactButton: "Avísenme",
+    languagesLabel: "Idiomas"
   },
 
   aboutUs: {

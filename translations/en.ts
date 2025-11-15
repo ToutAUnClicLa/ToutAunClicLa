@@ -34,6 +34,7 @@ export default {
     products: "Grocery",
     foods: "Restaurants",
     boutique: "Souvenirs",
+    services: "Services",
     login: "Login",
     aboutUs: "About Us",
     profile: {
@@ -154,6 +155,10 @@ export default {
       boutique: {
         title: "Souvenirs",
         description: "Unique souvenirs and gifts that capture the essence of each country."
+      },
+      services: {
+        title: "Services",
+        description: "Connect with bilingual lawyers, dentists and accountants without leaving Montreal."
       }
     },
     sections: {
@@ -171,6 +176,11 @@ export default {
         title: "Souvenirs Collection",
         description: "Discover our exclusive collection of handcrafted items from the Americas",
         viewAll: "View full catalog"
+      },
+      services: {
+        title: "Professional Services",
+        description: "We are building a trusted network of lawyers, dentists, accountants and specialists who understand the Latin American community.",
+        viewAll: "Meet our professionals"
       }
     },
     productCategories: [
@@ -266,7 +276,7 @@ export default {
         viewText: "View souvenirs",
         subcategoria_id: "souvenirs"
       },
-            {
+      {
         id: 1,
         name: "Clothing",
         description: "Dress with the best traditional American garments and accessories",
@@ -274,6 +284,41 @@ export default {
         color: "from-purple-600 to-indigo-600",
         viewText: "Explore collection",
         subcategoria_id: "ropa"
+      }
+    ],
+    serviceHighlights: [
+      {
+        id: 1,
+        name: "Law & Immigration",
+        description: "Attorneys, notaries and immigration consultants specialized in Latin American cases and business registrations.",
+        color: "from-indigo-600 to-blue-600",
+        badge: "Coming soon",
+        href: "/servicios#abogados",
+        icon: "law",
+        cta: "Request availability",
+        languages: ["Spanish", "English", "French"]
+      },
+      {
+        id: 2,
+        name: "Dental & Health",
+        description: "Dentists and health professionals who offer preventive care, emergencies and referrals with a cultural approach.",
+        color: "from-emerald-600 to-teal-600",
+        badge: "Coming soon",
+        href: "/servicios#salud",
+        icon: "health",
+        cta: "Join the priority list",
+        languages: ["Spanish", "English"]
+      },
+      {
+        id: 3,
+        name: "Accounting & Taxes",
+        description: "Certified accountants and tax advisors to help freelancers, families and entrepreneurs comply in Quebec and Canada.",
+        color: "from-purple-600 to-fuchsia-600",
+        badge: "Launching soon",
+        href: "/servicios#contadores",
+        icon: "finance",
+        cta: "Tell me when it launches",
+        languages: ["Spanish", "English", "French"]
       }
     ]
   },
@@ -2104,6 +2149,21 @@ export default {
       testing: "Testing pending",
       launch: "Launch coming soon"
     }
+  },
+
+  servicesPage: {
+    heroTitle: "Professional services, one click away",
+    heroSubtitle: "Bilingual lawyers, dentists and accountants for our community in Montreal.",
+    heroBadge: "Availability opening soon",
+    heroCta: "Meet the professionals",
+    comingSoon: "Launching very soon",
+    description: "We are curating a network of trusted professionals so you can solve legal, health and accounting needs in your own language.",
+    highlightsTitle: "Featured professions",
+    highlightsSubtitle: "Choose the profile you need and we will notify you as soon as appointments and consultations are available.",
+    contactTitle: "Need a different professional?",
+    contactDescription: "Tell us your case and we will connect you with the right expert as soon as our directory opens.",
+    contactButton: "Notify me",
+    languagesLabel: "Languages"
   },
 
   aboutUs: {

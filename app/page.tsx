@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronDown, Package, Utensils, Store, Shirt, Watch, Gift, GlassWater } from "lucide-react";
+import { ArrowRight, Calculator, ChevronDown, Gavel, Gift, GlassWater, Handshake, Package, Shirt, Sparkles, Stethoscope, Store, Truck, Utensils, Watch } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -199,6 +199,13 @@ export default function Home() {
       description: t('landing.categories.boutique.description'),
       gradient: "from-purple-500/20 to-pink-500/20",
       sectionId: "boutique"
+    },
+    {
+      icon: Sparkles,
+      title: t('landing.categories.services.title'),
+      description: t('landing.categories.services.description'),
+      gradient: "from-emerald-500/20 to-teal-500/20",
+      sectionId: "servicios"
     }
   ];
 
@@ -235,14 +242,41 @@ export default function Home() {
     icon?: React.ReactNode;
   }
 
-  interface PanamericanFood {
-    id: number;
-    name: string;
-    description: string;
-    image: string;
-    color: string;
-    viewText: string;
-  }
+interface PanamericanFood {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  color: string;
+  viewText: string;
+}
+
+interface ServiceHighlightTranslation {
+  id: number;
+  name: string;
+  description: string;
+  color: string;
+  badge: string;
+  href: string;
+  icon: string;
+  cta: string;
+  languages: string[];
+}
+
+interface ServiceHighlight extends Omit<ServiceHighlightTranslation, 'icon'> {
+  icon: React.ElementType;
+}
+
+const SERVICE_ICON_MAP: Record<string, React.ElementType> = {
+  concierge: Sparkles,
+  business: Handshake,
+  logistics: Truck,
+  law: Gavel,
+  health: Stethoscope,
+  finance: Calculator
+};
+
+const getServiceIcon = (type: string) => SERVICE_ICON_MAP[type] ?? Sparkles;
 
   // Obtener categorías de productos de las traducciones
   const productCategories = t<ProductCategory[]>('landing.productCategories').map(category => {
@@ -287,6 +321,12 @@ export default function Home() {
     }
     return { ...category, icon };
   });
+
+  const serviceHighlightsTranslations = t<ServiceHighlightTranslation[]>('landing.serviceHighlights');
+  const serviceHighlights: ServiceHighlight[] = serviceHighlightsTranslations.map((service) => ({
+    ...service,
+    icon: getServiceIcon(service.icon)
+  }));
 
   return (
     <div className="min-h-screen">
@@ -609,7 +649,80 @@ export default function Home() {
           ))}
         </div>
       </Section>
-      
+
+      {/* Services Section */}
+      <Section
+        id="servicios"
+        title={t('landing.sections.services.title')}
+        description={t('landing.sections.services.description')}
+        icon={Sparkles}
+        color="from-emerald-50 via-white to-emerald-50"
+        iconColor="text-emerald-600"
+      >
+        <motion.div
+          className="mb-10 sm:mb-16 text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+        >
+          <Link href="/servicios">
+            <motion.button
+              className="inline-flex items-center rounded-full bg-emerald-600 text-white px-6 py-3 text-base sm:text-lg font-semibold shadow-[0_20px_45px_-20px_rgba(16,185,129,1)] hover:-translate-y-0.5 transition-transform"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              {t('landing.sections.services.viewAll') as string}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </motion.button>
+          </Link>
+        </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {serviceHighlights.map((service, index) => {
+            const Icon = service.icon;
+            return (
+              <Link key={service.id} href={service.href}>
+                <motion.div
+                  className={`group relative overflow-hidden rounded-3xl bg-gradient-to-br ${service.color} p-6 sm:p-8 text-white shadow-xl shadow-emerald-100/60 hover:shadow-2xl transition-shadow`}
+                  whileHover={{ y: -4 }}
+                  whileTap={{ scale: 0.99 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                >
+                  <div className="relative flex flex-col h-full">
+                    <div className="flex items-center justify-between gap-3 mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm">
+                          <Icon className="h-7 w-7" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
+                            {service.badge}
+                          </p>
+                          <h3 className="text-xl sm:text-2xl font-bold leading-tight">{service.name}</h3>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-base sm:text-lg text-white/90 leading-relaxed flex-grow">
+                      {service.description}
+                    </p>
+                    <div className="mt-6 text-xs sm:text-sm font-semibold tracking-wide text-white/90">
+                      <span className="uppercase text-white/70 mr-2">{t('servicesPage.languagesLabel')}:</span>
+                      {service.languages.join(' / ')}
+                    </div>
+                    <div className="mt-6 inline-flex items-center text-base font-semibold text-white">
+                      {t('servicesPage.comingSoon')}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
+            );
+          })}
+        </div>
+      </Section>     
       {/* Auth Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
