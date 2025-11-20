@@ -600,7 +600,7 @@ export default {
       discountedPrice: "Precio con descuento",
       savings: "Ahorras",
       freeShipping: "Envío gratis",
-      limitedStockUnits: "Queda 1 unidad!",
+      limitedStockUnits: "Pocas unidades disponibles",
       newProduct: "Nuevo",
       bestseller: "Más vendido",
       featured: "Destacado"
@@ -674,7 +674,8 @@ export default {
       tps: "TPS",
       tvq: "TVQ",
       consigne: "Consigna",
-      total: "Total con impuestos"
+      total: "Total con impuestos",
+      plusTaxesShort: "+ Impuestos"
     },
 
     // AddToCartButton

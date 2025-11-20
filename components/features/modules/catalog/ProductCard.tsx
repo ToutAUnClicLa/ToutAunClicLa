@@ -42,7 +42,7 @@ export function ProductCard({
   product,
   categoryName = 'productos',
   variant = 'default',
-  showCategory = true,
+  showCategory: _showCategory = true,
   showRating = true,
   showSubcategory = false,
   showDescription = true,
@@ -72,7 +72,7 @@ export function ProductCard({
     const productIdStr = product.id.toString();
     const isProductFavorite = isFavorite(productIdStr);
     const isOutOfStock = product.stock === 0;
-    const isLowStock = product.stock > 0 && product.stock <= 5;
+    const isLowStock = product.stock > 0 && product.stock < 5;
     const inCart = isInCart(product.id);
     const cartQuantity = getProductQuantity(product.id);
     const hasDiscount = product.precio_anterior && product.precio_anterior > product.precio;
@@ -267,16 +267,14 @@ export function ProductCard({
                         {t('catalog.productCard.outOfStock')}
                       </Badge>
                     )}
-                    {productData.isLowStock && !productData.isOutOfStock && (
-                      <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200 text-xs px-1 py-0">
-                        {t('catalog.productCard.limitedStockUnits').replace('{stock}', product.stock.toString())}
-                      </Badge>
-                    )}
-                    {productData.hasDiscount && (
-                      <Badge className="bg-green-500 text-white text-xs px-1 py-0">
-                        -{productData.discountPercentage}%
-                      </Badge>
-                    )}
+                  {productData.isLowStock && !productData.isOutOfStock && (
+                    <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200 text-xs px-1 py-0">
+                      {t('catalog.productCard.limitedStockUnits')}
+                    </Badge>
+                  )}
+                  {productData.hasDiscount && (
+                    null
+                  )}
                   </div>
                 )}
 
@@ -307,11 +305,6 @@ export function ProductCard({
                     variant="compact" 
                     className="flex-1"
                   />
-                  {productData.inCart && (
-                    <Badge variant="outline" className="text-xs px-1 py-0">
-                      {productData.cartQuantity}
-                    </Badge>
-                  )}
                 </div>
               </div>
             </div>
@@ -364,20 +357,12 @@ export function ProductCard({
                 <div className="absolute top-1 sm:top-2 left-1 sm:left-2 flex flex-col gap-1">
                   {productData.isLowStock && !productData.isOutOfStock && (
                     <Badge className="bg-amber-500 text-white text-[10px] sm:text-xs px-1 sm:px-2 py-0.5">
-                      {t('catalog.productCard.limitedStockUnits').replace('{stock}', product.stock.toString())}
+                      {t('catalog.productCard.limitedStockUnits')}
                     </Badge>
                   )}
                   
                   {productData.hasDiscount && (
-                    <Badge className="bg-green-500 text-white text-[10px] sm:text-xs px-1 sm:px-2 py-0.5">
-                      -{productData.discountPercentage}%
-                    </Badge>
-                  )}
-                  
-                  {showCategory && product.categorias && (
-                    <Badge variant="outline" className="bg-white/90 text-[10px] sm:text-xs px-1 sm:px-2 py-0.5 hidden sm:flex">
-                      {product.categorias.nombre}
-                    </Badge>
+                    null
                   )}
                   
                   {showSubcategory && product.subcategorias && (
@@ -389,7 +374,7 @@ export function ProductCard({
               )}
 
               {/* Rating badge */}
-              {showRating && (
+              {/* {showRating && (
                 <div className="absolute top-1 sm:top-2 right-1 sm:right-2 bg-white/90 rounded-full px-1.5 sm:px-2 py-0.5 sm:py-1 flex items-center gap-1">
                   <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-yellow-400 fill-current" />
                   {(product.averageRating || product.rating) && ((product.averageRating || 0) > 0 || (product.rating || 0) > 0) && (
@@ -398,7 +383,7 @@ export function ProductCard({
                     </span>
                   )}
                 </div>
-              )}
+              )} */}
             </div>
 
             <CardContent className="p-2 sm:p-4 flex flex-col flex-grow">
@@ -424,11 +409,6 @@ export function ProductCard({
                   className="flex-1"
                 />
                 
-                {productData.inCart && (
-                  <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 text-[10px] sm:text-xs px-1 sm:px-2">
-                    {productData.cartQuantity} en carrito
-                  </Badge>
-                )}
               </div>
 
               {/* Selector de cantidad */}
@@ -520,7 +500,7 @@ export function ProductCard({
                     className="text-xs h-8 sm:h-10 w-full"
                     onClick={handleAddToCart}
                     disabled={!productData.canAddToCart || isAddingToCart || cartLoading || productData.isRestaurantDataLoading}
-                    variant={productData.inCart ? "outline" : productData.isRestaurantDataLoading ? "outline" : "default"}
+                    variant={productData.isRestaurantDataLoading ? "outline" : "default"}
                   >
                     {isAddingToCart ? (
                       <div className="flex items-center gap-1 sm:gap-2">

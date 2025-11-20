@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { Badge } from '@/components/common/ui/badge';
-import { formatPrice, calculateCanadianTaxes, getTaxStatus } from '@/lib/utils';
+import { formatPrice, calculateCanadianTaxes, getTaxStatus, getDiscountPercentage } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
 import { SelectedVariation } from '@/types/variations';
 
@@ -43,8 +43,12 @@ export function ProductPriceDisplay({
   
   const priceData = useMemo(() => {
     const hasDiscount = product.precio_anterior && product.precio_anterior > product.precio;
+    const discountPercentage = hasDiscount
+      ? getDiscountPercentage(product.precio_anterior!, product.precio)
+      : 0;
     const taxCalculation = calculateCanadianTaxes(product.precio, product.TPS, product.TVQ, product.consigne);
     const taxStatus = getTaxStatus(product.categoria_id, product.TPS, product.TVQ, product.consigne);
+    const hasTaxesOrFees = Boolean(product.TPS || product.TVQ || product.consigne);
     
     // Calculate variation-based pricing
     let displayPrice = product.precio;
@@ -70,8 +74,10 @@ export function ProductPriceDisplay({
 
     return {
       hasDiscount,
+      discountPercentage,
       taxCalculation,
       taxStatus,
+      hasTaxesOrFees,
       displayPrice,
       priceLabel,
       hasVariations,
@@ -96,10 +102,15 @@ export function ProductPriceDisplay({
     <div className={`space-y-2 ${className}`}>
       {/* Precio anterior (con descuento) */}
       {priceData.hasDiscount && (
-        <div className="text-sm text-gray-500 line-through">
-          {formatPrice(product.precio_anterior!)}
+        <div className="flex items-center gap-2 text-sm text-gray-500">
+          <span className="line-through">{formatPrice(product.precio_anterior!)}</span>
+          <Badge className="bg-green-100 text-green-700 border-green-200 text-[11px]">
+            -{priceData.discountPercentage}%
+          </Badge>
         </div>
       )}
+
+      
 
       {/* Precio base (siempre en azul) */}
       <div className="space-y-1">
@@ -144,38 +155,17 @@ export function ProductPriceDisplay({
           </div>
         )}
 
-        {/* Información de impuestos - para todas las categorías */}
-        {variant !== 'compact' && (
-          <>
-            {priceData.taxCalculation.hasTaxes ? (
-              <div className="space-y-1 text-xs text-gray-600">
-                {product.TPS && (
-                  <div>
-                    {t('catalog.tax.tps')} ({product.TPS}%): +{formatPrice(priceData.taxCalculation.tpsAmount)}
-                  </div>
-                )}
-                {product.TVQ && (
-                  <div>
-                    {t('catalog.tax.tvq')} ({product.TVQ}%): +{formatPrice(priceData.taxCalculation.tvqAmount)}
-                  </div>
-                )}
-              </div>
-            ) : (
-              // Badge para productos sin impuestos (sin TPS ni TVQ)
-              !product.TPS && !product.TVQ && (
-                <Badge variant="outline" className="text-green-700 bg-green-50 border-green-200 text-xs">
-                  {t('catalog.tax.nonTaxable')}
-                </Badge>
-              )
-            )}
-          </>
-        )}
-
-        {/* Consigne - mostrar siempre si existe, independiente de si es taxable o no */}
-        {product.consigne && variant !== 'compact' && (
-          <div className="text-xs text-gray-600">
-            {t('catalog.tax.consigne')}: +{formatPrice(priceData.taxCalculation.consigneAmount)}
+        {/* Mensaje simple de impuestos/consignas */}
+        {priceData.hasTaxesOrFees ? (
+          <div className={`text-xs ${variant === 'compact' ? 'text-gray-500' : 'text-gray-600'}`}>
+            {t('catalog.tax.plusTaxesShort')}
           </div>
+        ) : (
+          variant !== 'compact' && (
+            <Badge variant="outline" className="text-green-700 bg-green-50 border-green-200 text-xs">
+              {t('catalog.tax.nonTaxable')}
+            </Badge>
+          )
         )}
       </div>
     </div>

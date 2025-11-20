@@ -1343,7 +1343,7 @@ export default {
       addToFavorites: "Add to favorites",
       removeFromFavorites: "Remove from favorites",
       outOfStock: "Out of stock",
-      limitedStockUnits: "Only {stock} left!",
+      limitedStockUnits: "Few units available",
       rating: "Rating",
       reviews: "reviews",
       quickView: "Quick view",
@@ -1426,7 +1426,8 @@ export default {
       tps: "TPS",
       tvq: "TVQ",
       consigne: "Deposit",
-      total: "Total with taxes"
+      total: "Total with taxes",
+      plusTaxesShort: "+ Taxes"
     },
 
     // AddToCartButton
