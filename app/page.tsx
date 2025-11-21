@@ -413,7 +413,7 @@ const getServiceIcon = (type: string) => SERVICE_ICON_MAP[type] ?? Sparkles;
 
                 {/* Mobile Categories */}
                 <motion.div className="md:hidden w-full  " initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
-                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     {categories.map((cat, i) => (
                       <div key={i} onClick={() => scrollToSection(cat.sectionId)} className="cursor-pointer">
                         <MobileCategoryCard key={i} icon={cat.icon} title={cat.title} gradient={cat.gradient} />

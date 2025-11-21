@@ -52,9 +52,9 @@ export default function WorkWithUsButton() {
           >
             <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </motion.div>
-          <span className="font-medium text-[10px] sm:text-xs max-w-[100px] sm:max-w-[130px] leading-tight">
+          {/* <span className="font-medium text-[8px] sm:text-xs max-w-[100px] sm:max-w-[130px] leading-tight">
             {t('landing.workWithUs.buttonText')}
-          </span>
+          </span> */}
           <svg
             className="w-3 h-3 sm:w-3.5 sm:h-3.5 ml-0.5"
             fill="none"
