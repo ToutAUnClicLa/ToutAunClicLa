@@ -23,7 +23,7 @@ import { ProductPriceDisplay } from '@/components/features/modules/catalog/Produ
 import { ProductVariations } from '@/components/features/modules/product/ProductVariations';
 import { ProductWithVariations, VariationSelection } from '@/types/variations';
 import { hasValidVariations, formatSelectedVariations, logVariationDebug } from '@/lib/utils/variations';
-import { getRestaurantNameFromSlug, getRestaurantUrlWithFallback } from '@/lib/utils/restaurant-routes';
+import { getRestaurantNameFromSlug, getRestaurantUrlWithFallback, isProductFromRestaurant } from '@/lib/utils/restaurant-routes';
 import { useRestaurantDetails } from '@/hooks/useRestaurantDetails';
 
 // Dynamically import heavy components
@@ -592,8 +592,8 @@ export default function RestaurantProductPage() {
       try {
         const data = await getProductDetail(Number(params.id));
         
-        // Verify product belongs to the restaurant
-        if (data.subcategorias?.nombre !== restaurantName) {
+        // Verify product belongs to the restaurant (accent/case insensitive)
+        if (!isProductFromRestaurant(data, restaurantName || '')) {
           toast.error(t('notifications.productNotFromRestaurant'));
           router.push('/comidas');
           return;

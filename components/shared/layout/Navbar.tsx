@@ -57,7 +57,8 @@ const LINKS = [
   { href: "/", label: "nav.home", icon: Home },
   { href: "/productos", label: "nav.products", icon: Package },
   { href: "/comidas", label: "nav.foods", icon: ShoppingBag },
-  { href: "/boutique", label: "nav.boutique", icon: Store }
+  { href: "/boutique", label: "nav.boutique", icon: Store },
+  { href: "/servicios", label: "nav.services", icon: Layers }
 ];
 
 const PROFILE_MENU_ITEMS = [

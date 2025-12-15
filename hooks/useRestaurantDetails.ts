@@ -50,6 +50,16 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { DiaAbierto } from '@/lib/services/restaurants';
 import { apiCache, generateCacheKey } from '@/lib/utils/cache';
 
+// Normalizar nombres para comparar sin acentos/mayúsculas/espacios extra
+const normalizeName = (name: string) =>
+  name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // quitar acentos
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // remover caracteres especiales no ASCII
+    .replace(/\s+/g, ' ') // colapsar espacios internos
+    .trim();
+
 interface RestaurantDetails {
   id: number;
   nombre: string;
@@ -73,7 +83,7 @@ interface UseRestaurantDetailsReturn {
 // Utilidad para precargar restaurantes populares
 export const preloadRestaurant = async (restaurantName: string): Promise<void> => {
   try {
-    const normalizedName = restaurantName.toLowerCase().trim();
+    const normalizedName = normalizeName(restaurantName);
     const cacheKey = generateCacheKey('restaurant_details', { name: normalizedName });
 
     // Solo precargar si no está en cache
@@ -90,7 +100,7 @@ export const preloadRestaurant = async (restaurantName: string): Promise<void> =
 
       if (response.ok && data.restaurants) {
         const foundRestaurant = data.restaurants.find(
-          (r: RestaurantDetails) => r.nombre.toLowerCase() === normalizedName
+          (r: RestaurantDetails) => normalizeName(r.nombre) === normalizedName
         );
 
         if (foundRestaurant) {
@@ -107,7 +117,7 @@ export const preloadRestaurant = async (restaurantName: string): Promise<void> =
 // Utilidad para limpiar cache de restaurantes
 export const clearRestaurantCache = (restaurantName?: string): void => {
   if (restaurantName) {
-    const cacheKey = generateCacheKey('restaurant_details', { name: restaurantName.toLowerCase() });
+    const cacheKey = generateCacheKey('restaurant_details', { name: normalizeName(restaurantName) });
     apiCache.delete(cacheKey);
     console.log(`🗑️ Cache limpiado para: ${restaurantName}`);
   } else {
@@ -176,7 +186,7 @@ export function useRestaurantDetails(restaurantName: string | null): UseRestaura
 
   // Función para obtener restaurante desde cache o API con stale-while-revalidate
   const getRestaurantWithCache = useCallback(async (name: string): Promise<RestaurantDetails | null> => {
-    const normalizedName = name.toLowerCase().trim();
+    const normalizedName = normalizeName(name);
     const cacheKey = generateCacheKey('restaurant_details', { name: normalizedName });
 
     // 1. Verificar cache individual del restaurante
@@ -195,7 +205,7 @@ export function useRestaurantDetails(restaurantName: string | null): UseRestaura
 
     if (cachedRestaurantsList?.restaurants) {
       const foundInList = cachedRestaurantsList.restaurants.find(
-        (r: RestaurantDetails) => r.nombre.toLowerCase() === normalizedName
+        (r: RestaurantDetails) => normalizeName(r.nombre) === normalizedName
       );
 
       if (foundInList) {
@@ -224,7 +234,7 @@ export function useRestaurantDetails(restaurantName: string | null): UseRestaura
 
   // Función para fetch desde API con deduplicación de requests
   const fetchRestaurantFromAPI = useCallback(async (name: string, cacheKey: string): Promise<RestaurantDetails | null> => {
-    const normalizedName = name.toLowerCase().trim();
+    const normalizedName = normalizeName(name);
 
     // Deduplicar requests simultáneos
     if (pendingRequests.has(cacheKey)) {
@@ -254,7 +264,7 @@ export function useRestaurantDetails(restaurantName: string | null): UseRestaura
 
         // Buscar el restaurante específico
         const foundRestaurant = data.restaurants?.find(
-          (r: RestaurantDetails) => r.nombre.toLowerCase() === normalizedName
+          (r: RestaurantDetails) => normalizeName(r.nombre) === normalizedName
         );
 
         if (!foundRestaurant) {
@@ -267,7 +277,7 @@ export function useRestaurantDetails(restaurantName: string | null): UseRestaura
         // Pre-cachear otros restaurantes populares para mejor performance
         if (data.restaurants?.length > 0) {
           data.restaurants.slice(0, 5).forEach((r: RestaurantDetails) => {
-            const otherCacheKey = generateCacheKey('restaurant_details', { name: r.nombre.toLowerCase() });
+            const otherCacheKey = generateCacheKey('restaurant_details', { name: normalizeName(r.nombre) });
             if (!apiCache.has(otherCacheKey)) {
               apiCache.set(otherCacheKey, r, RESTAURANT_CACHE_TTL);
             }
@@ -301,7 +311,7 @@ export function useRestaurantDetails(restaurantName: string | null): UseRestaura
       const trimmedName = restaurantName.trim();
 
       // Evitar re-requests innecesarios
-      if (lastRequestRef.current === trimmedName && restaurant?.nombre.toLowerCase() === trimmedName.toLowerCase()) {
+      if (lastRequestRef.current === trimmedName && normalizeName(restaurant?.nombre || '') === normalizeName(trimmedName)) {
         return;
       }
 
@@ -311,7 +321,7 @@ export function useRestaurantDetails(restaurantName: string | null): UseRestaura
         setError(null);
 
         // Verificar cache inmediatamente - si existe, mostrar sin loading
-        const cacheKey = generateCacheKey('restaurant_details', { name: trimmedName.toLowerCase() });
+        const cacheKey = generateCacheKey('restaurant_details', { name: normalizeName(trimmedName) });
         const cachedData = apiCache.get<RestaurantDetails>(cacheKey);
 
         if (cachedData) {

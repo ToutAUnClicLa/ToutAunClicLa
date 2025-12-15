@@ -44,6 +44,7 @@ export interface CartProduct {
   nombre: string;
   descripcion: string;
   precio: number;
+  precio_anterior?: number;
   imagen_principal: string;
   imagen_secundaria?: string;
   imagen_terciaria?: string;

@@ -32,8 +32,9 @@ export default {
   nav: {
     home: "Accueil",
     products: "Épicerie",
-    foods: "Cuisine",
+    foods: "Restaurants",
     boutique: "Souvenirs",
+    services: "Services",
     login: "Se connecter",
     aboutUs: "À propos",
     profile: {
@@ -56,7 +57,7 @@ export default {
       title: "Explorer",
       home: "Accueil",
       products: "Produits",
-      foods: "Cuisine",
+      foods: "Restaurants",
       boutique: "Souvenirs"
     },
     popularProducts: {
@@ -105,6 +106,9 @@ export default {
       description: "Relier les Amériques grâce à des produits authentiques et des expériences uniques. Livraison dans la grande région de Montréal.",
       cta: "Inscrivez-vous pour profiter de toutes les Amériques"
     },
+    workWithUs: {
+      buttonText: "Voulez-Vous travailler avec nous?"
+    },
     search: {
       title: "Que recherchez-vous ?",
       placeholder: "Rechercher produits, marques, catégories...",
@@ -145,12 +149,16 @@ export default {
         description: "Produits uniques d'Amérique Latine, de l'artisanat aux innovations modernes."
       },
       foods: {
-        title: "Cuisine",
+        title: "Restaurants",
         description: "Gastronomie latino-américaine avec des recettes authentiques et des saveurs traditionnelles."
       },
       boutique: {
         title: "Souvenirs",
         description: "Souvenirs et cadeaux uniques qui capturent l'essence de chaque pays."
+      },
+      services: {
+        title: "Services",
+        description: "Trouvez des avocats, dentistes et comptables bilingues sans quitter Montréal."
       }
     },
     sections: {
@@ -168,6 +176,11 @@ export default {
         title: "Collection Souvenirs",
         description: "Découvrez notre collection exclusive d'articles artisanaux des Amériques",
         viewAll: "Voir catalogue complet"
+      },
+      services: {
+        title: "Services Professionnels",
+        description: "Nous créons un réseau d’avocats, de dentistes, de comptables et de spécialistes qui comprennent la communauté latino-américaine.",
+        viewAll: "Rencontrer les professionnels"
       }
     },
     productCategories: [
@@ -210,7 +223,7 @@ export default {
     ],
     panamericanFood: {
       id: 1,
-      name: "Cuisine Panaméricaine",
+      name: "Restaurants",
       description: "Découvrez nos restaurants partenaires qui vous apportent la cuisine authentique de tout le continent américain, préparée avec des recettes traditionnelles et des saveurs uniques.",
       color: "from-amber-600 to-yellow-600",
       viewText: "Explorer restaurants"
@@ -271,6 +284,41 @@ export default {
         color: "from-purple-600 to-indigo-600",
         viewText: "Explorer la collection",
         subcategoria_id: "ropa"
+      }
+    ],
+    serviceHighlights: [
+      {
+        id: 1,
+        name: "Droit & Immigration",
+        description: "Avocats, notaires et consultants en immigration spécialisés dans les dossiers latino-américains et l’enregistrement d’entreprises.",
+        color: "from-indigo-600 to-blue-600",
+        badge: "Bientôt",
+        href: "/servicios#abogados",
+        icon: "law",
+        cta: "Demander la disponibilité",
+        languages: ["Espagnol", "Anglais", "Français"]
+      },
+      {
+        id: 2,
+        name: "Soins Dentaires & Santé",
+        description: "Dentistes et professionnels de la santé offrant soins préventifs, urgences et références avec une approche culturelle.",
+        color: "from-emerald-600 to-teal-600",
+        badge: "Bientôt",
+        href: "/servicios#salud",
+        icon: "health",
+        cta: "Je veux être informé",
+        languages: ["Espagnol", "Anglais"]
+      },
+      {
+        id: 3,
+        name: "Comptabilité & Impôts",
+        description: "Comptables et fiscalistes certifiés pour accompagner travailleurs, familles et entrepreneurs au Québec et au Canada.",
+        color: "from-purple-600 to-fuchsia-600",
+        badge: "Lancement bientôt",
+        href: "/servicios#contadores",
+        icon: "finance",
+        cta: "Prévenez-moi du lancement",
+        languages: ["Espagnol", "Anglais", "Français"]
       }
     ]
   },
@@ -1157,6 +1205,35 @@ export default {
     invalidVerificationCode: "Code de vérification invalide",
     accountRequiresVerification: "Votre compte nécessite une vérification. Nous vous avons envoyé un nouveau code à votre e-mail.",
     checkYourEmail: "Vérifiez votre e-mail",
+
+    // Réinitialisation du mot de passe
+    resetPasswordDescription: "Saisissez votre adresse e-mail et nous vous enverrons un code de vérification pour identifier votre compte et réinitialiser votre mot de passe.",
+    resetPasswordFormTitle: "Récupérez votre compte",
+    resetPasswordFormDescription: "Nous vous enverrons un code à 6 chiffres",
+    resetPasswordDescriptionExtended: "Ne vous inquiétez pas, nous vous aidons à récupérer l'accès à votre compte en toute sécurité.",
+    resetCodeLabel: "Code de réinitialisation",
+    resetCodePlaceholder: "123456",
+    resetCodeInstructions: "Entrez le code à 6 chiffres envoyé à votre email",
+    resetSendTo: "Envoyé à:",
+    newPasswordLabel: "Nouveau mot de passe",
+    newPasswordPlaceholder: "Minimum 8 caractères",
+    confirmNewPasswordLabel: "Confirmer le nouveau mot de passe",
+    confirmNewPasswordPlaceholder: "Répétez votre nouveau mot de passe",
+    resetPasswordButton: "Réinitialiser le mot de passe",
+    sendResetCodeButton: "Envoyer le code",
+    resettingPassword: "Réinitialisation...",
+    sendingResetCode: "Envoi du code...",
+    resetCodeSent: "Code envoyé!",
+    resetCodeSentDescription: "Consultez votre email pour le code de réinitialisation",
+    passwordResetSuccess: "Mot de passe réinitialisé!",
+    passwordResetSuccessDescription: "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe",
+    invalidResetCode: "Code invalide ou expiré",
+    resetCodeExpired: "Le code a expiré. Demandez-en un nouveau",
+    resetPasswordError: "Erreur lors de la réinitialisation du mot de passe",
+    sendResetCodeError: "Erreur lors de l'envoi du code",
+    backToResetForm: "Retour au formulaire",
+    enterResetCode: "Entrez le code de réinitialisation",
+    socialAuthNoReset: "Ce compte utilise l'authentification sociale. Connectez-vous avec Google.",
     
     // En-têtes de modal
     createFreeAccount: "Créez votre compte gratuit",
@@ -1256,7 +1333,7 @@ export default {
       addToFavorites: "Ajouter aux favoris",
       removeFromFavorites: "Retirer des favoris",
       outOfStock: "En rupture de stock",
-      limitedStockUnits: "Seulement {stock} restant!",
+      limitedStockUnits: "Peu d'unités disponibles",
       rating: "Note",
       reviews: "avis",
       quickView: "Aperçu rapide",
@@ -1339,7 +1416,8 @@ export default {
       tps: "TPS",
       tvq: "TVQ",
       consigne: "Consigne",
-      total: "Total avec taxes"
+      total: "Total avec taxes",
+      plusTaxesShort: "+ Taxes"
     },
 
     // AddToCartButton
@@ -2067,6 +2145,21 @@ export default {
       testing: "Tests en attente",
       launch: "Lancement bientôt"
     }
+  },
+
+  servicesPage: {
+    heroTitle: "Services professionnels à portée de clic",
+    heroSubtitle: "Avocats, dentistes et comptables bilingues pour la communauté latino de Montréal.",
+    heroBadge: "Disponibles très bientôt",
+    heroCta: "Découvrir les professionnels",
+    comingSoon: "Lancement très bientôt",
+    description: "Nous sélectionnons un réseau de professionnels de confiance afin de répondre à vos besoins juridiques, de santé et comptables dans votre langue.",
+    highlightsTitle: "Professions mises en avant",
+    highlightsSubtitle: "Choisissez le profil souhaité et nous vous informerons dès que les consultations seront ouvertes.",
+    contactTitle: "Besoin d’un autre professionnel ?",
+    contactDescription: "Expliquez-nous votre besoin et nous vous mettrons en relation avec l’expert approprié dès l’ouverture du répertoire.",
+    contactButton: "Prévenez-moi",
+    languagesLabel: "Langues"
   },
 
   aboutUs: {

@@ -24,6 +24,7 @@ import type { DeliveryOptions as DeliveryOptionsType } from '@/lib/services/cart
 import { useTranslation } from '@/hooks/useTranslation';
 // Removed unused import: formatCartItemVariations
 import { logBackendDataQuality } from '@/lib/utils/cart-validation';
+import { getDiscountPercentage } from '@/lib/utils';
 import { CartItemVariations } from '@/components/features/modules/cart/CartItemVariations';
 import { verifyAddressForCheckout } from '@/lib/services/addresses';
  
@@ -916,8 +917,18 @@ export default function CartPage() {
     }
 
     const isItemLoading = loadingItems.has(item.id);
-    const itemPriceWithVariations = calculateItemFinalPrice(item);
+    const priceDetails = getItemPricingDetails(item);
+    const itemPriceWithVariations = priceDetails.finalSubtotal;
     const itemTotal = (item.cantidad ?? 0) * itemPriceWithVariations;
+    const currentPrice = item.productos.precio ?? 0;
+    const previousPrice = item.productos.precio_anterior ?? 0;
+    const hasDiscount = previousPrice > currentPrice && currentPrice > 0;
+    const discountPercentage = hasDiscount 
+      ? getDiscountPercentage(previousPrice, currentPrice)
+      : 0;
+    const variationModifier = priceDetails.variationModifier;
+    const originalUnitPrice = hasDiscount ? previousPrice + variationModifier : null;
+    const finalUnitPrice = itemPriceWithVariations;
     
     return (
       <motion.div
@@ -1003,9 +1014,19 @@ export default function CartPage() {
                             <span className="text-xs text-gray-500">
                               {t('cart.variationDetails.customized')} ({item.cantidad ?? 0} × {formatPrice(item?.productos?.precio ?? 0)})
                             </span>
-                            <div className="flex items-baseline gap-2">
+                            <div className="flex items-center gap-2">
+                              {hasDiscount && originalUnitPrice !== null && (
+                                <span className="text-[11px] text-gray-500 line-through">
+                                  {formatPrice(originalUnitPrice)}
+                                </span>
+                              )}
+                              {hasDiscount && (
+                                <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">
+                                  -{discountPercentage}%
+                                </Badge>
+                              )}
                               <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
-                                {formatPrice(getItemPricingDetails(item).finalSubtotal)}
+                                {formatPrice(finalUnitPrice)}
                               </span>
                               {item?.productos?.ecoprecio && (
                                 <span className="text-xs text-emerald-600 font-medium">
@@ -1017,9 +1038,19 @@ export default function CartPage() {
                         </div>
                       ) : (
                         <>
-                          <div className="flex items-baseline gap-2">
+                          <div className="flex items-center gap-2">
+                            {hasDiscount && originalUnitPrice !== null && (
+                              <span className="text-xs text-gray-500 line-through">
+                                {formatPrice(originalUnitPrice)}
+                              </span>
+                            )}
+                            {hasDiscount && (
+                              <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">
+                                -{discountPercentage}%
+                              </Badge>
+                            )}
                             <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
-                              {formatPrice(item?.productos?.precio ?? 0)}
+                              {formatPrice(finalUnitPrice)}
                             </span>
                             {item?.productos?.ecoprecio && (
                               <span className="text-xs text-emerald-600 font-medium">
@@ -1096,7 +1127,7 @@ export default function CartPage() {
       </motion.div>
     );
   }, [
-    loadingItems, calculateItemFinalPrice, getItemPricingDetails, 
+    loadingItems, getItemPricingDetails, 
     formatPrice, renderTaxBadges, 
     handleRemoveItem, handleQuantityChange, t, expandedVariations, toggleVariationExpansion
   ]);

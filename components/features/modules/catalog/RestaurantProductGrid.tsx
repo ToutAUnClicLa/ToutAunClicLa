@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Truck } from 'lucide-react';
 import { useTranslation, useOptimizedSearch } from '@/hooks';
@@ -75,6 +75,22 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
   };
 
   const { products, pagination, loading, error, refetch } = useProducts(filters);
+
+  // Ordenar: disponibles hoy primero (precio desc), luego no disponibles (precio desc)
+  const sortedProducts = useMemo(() => {
+    const today = new Date().getDay();
+    const isAvailableToday = (p: any) => {
+      if (typeof p?.disponible_hoy === 'boolean') return p.disponible_hoy;
+      if (Array.isArray(p?.dias_disponibles)) return p.dias_disponibles.includes(today);
+      return true; // si no hay info, considerarlo disponible para no penalizarlo
+    };
+
+    const byPriceDesc = (a: any, b: any) => (b?.precio ?? 0) - (a?.precio ?? 0);
+
+    const available = products.filter(isAvailableToday).sort(byPriceDesc);
+    const unavailable = products.filter(p => !isAvailableToday(p)).sort(byPriceDesc);
+    return [...available, ...unavailable];
+  }, [products]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -207,7 +223,7 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
               role="grid"
               aria-label={`Cuadrícula de ${products.length} productos de ${restaurantName}`}
             >
-              {products.map((product, index) => (
+              {sortedProducts.map((product, index) => (
                 <motion.div key={product.id} variants={item}>
                   <ProductCard
                     product={product}

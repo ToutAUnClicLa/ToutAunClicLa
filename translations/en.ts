@@ -32,8 +32,9 @@ export default {
   nav: {
     home: "Home",
     products: "Grocery",
-    foods: "Foods",
+    foods: "Restaurants",
     boutique: "Souvenirs",
+    services: "Services",
     login: "Login",
     aboutUs: "About Us",
     profile: {
@@ -56,7 +57,7 @@ export default {
       title: "Explore",
       home: "Home",
       products: "Products",
-      foods: "Foods",
+      foods: "Restaurants",
       boutique: "Souvenirs"
     },
     popularProducts: {
@@ -105,6 +106,9 @@ export default {
       description: "Connecting the Americas through authentic products and unique experiences. Delivery to the Greater Montreal area.",
       cta: "Register to enjoy all of the Americas"
     },
+    workWithUs: {
+      buttonText: "Want to work with us?"
+    },
     search: {
       title: "What are you looking for?",
       placeholder: "Search products, brands, categories...",
@@ -145,12 +149,16 @@ export default {
         description: "Unique products from Latin America, from crafts to modern innovations."
       },
       foods: {
-        title: "Foods",
+        title: "Restaurants",
         description: "Latin American gastronomy with authentic recipes and traditional flavors."
       },
       boutique: {
         title: "Souvenirs",
         description: "Unique souvenirs and gifts that capture the essence of each country."
+      },
+      services: {
+        title: "Services",
+        description: "Connect with bilingual lawyers, dentists and accountants without leaving Montreal."
       }
     },
     sections: {
@@ -168,6 +176,11 @@ export default {
         title: "Souvenirs Collection",
         description: "Discover our exclusive collection of handcrafted items from the Americas",
         viewAll: "View full catalog"
+      },
+      services: {
+        title: "Professional Services",
+        description: "We are building a trusted network of lawyers, dentists, accountants and specialists who understand the Latin American community.",
+        viewAll: "Meet our professionals"
       }
     },
     productCategories: [
@@ -210,7 +223,7 @@ export default {
     ],
     panamericanFood: {
       id: 1,
-      name: "Pan-American Cuisine",
+      name: "Restaurants",
       description: "Discover our partner restaurants that bring you authentic food from across the American continent, prepared with traditional recipes and unique flavors.",
       color: "from-amber-600 to-yellow-600",
       viewText: "Explore restaurants"
@@ -263,7 +276,7 @@ export default {
         viewText: "View souvenirs",
         subcategoria_id: "souvenirs"
       },
-            {
+      {
         id: 1,
         name: "Clothing",
         description: "Dress with the best traditional American garments and accessories",
@@ -271,6 +284,41 @@ export default {
         color: "from-purple-600 to-indigo-600",
         viewText: "Explore collection",
         subcategoria_id: "ropa"
+      }
+    ],
+    serviceHighlights: [
+      {
+        id: 1,
+        name: "Law & Immigration",
+        description: "Attorneys, notaries and immigration consultants specialized in Latin American cases and business registrations.",
+        color: "from-indigo-600 to-blue-600",
+        badge: "Coming soon",
+        href: "/servicios#abogados",
+        icon: "law",
+        cta: "Request availability",
+        languages: ["Spanish", "English", "French"]
+      },
+      {
+        id: 2,
+        name: "Dental & Health",
+        description: "Dentists and health professionals who offer preventive care, emergencies and referrals with a cultural approach.",
+        color: "from-emerald-600 to-teal-600",
+        badge: "Coming soon",
+        href: "/servicios#salud",
+        icon: "health",
+        cta: "Join the priority list",
+        languages: ["Spanish", "English"]
+      },
+      {
+        id: 3,
+        name: "Accounting & Taxes",
+        description: "Certified accountants and tax advisors to help freelancers, families and entrepreneurs comply in Quebec and Canada.",
+        color: "from-purple-600 to-fuchsia-600",
+        badge: "Launching soon",
+        href: "/servicios#contadores",
+        icon: "finance",
+        cta: "Tell me when it launches",
+        languages: ["Spanish", "English", "French"]
       }
     ]
   },
@@ -1153,6 +1201,35 @@ export default {
     invalidVerificationCode: "Invalid verification code",
     accountRequiresVerification: "Your account requires verification. We sent you a new code to your email.",
     checkYourEmail: "Check your email",
+
+    // Password reset
+    resetPasswordDescription: "Enter your email address and we will send you a verification code to identify your account and reset your password",
+    resetPasswordFormTitle: "Recover your account",
+    resetPasswordFormDescription: "We'll send you a 6-digit code",
+    resetPasswordDescriptionExtended: "Don't worry, we'll help you regain access to your account securely.",
+    resetSendTo: "Send To:",
+    resetCodeLabel: "Reset code",
+    resetCodePlaceholder: "123456",
+    resetCodeInstructions: "Enter the 6-digit code sent to your email",
+    newPasswordLabel: "New password",
+    newPasswordPlaceholder: "Minimum 8 characters",
+    confirmNewPasswordLabel: "Confirm new password",
+    confirmNewPasswordPlaceholder: "Repeat your new password",
+    resetPasswordButton: "Reset password",
+    sendResetCodeButton: "Send code",
+    resettingPassword: "Resetting...",
+    sendingResetCode: "Sending code...",
+    resetCodeSent: "Code sent!",
+    resetCodeSentDescription: "Check your email for the reset code",
+    passwordResetSuccess: "Password reset!",
+    passwordResetSuccessDescription: "You can now log in with your new password",
+    invalidResetCode: "Invalid or expired code",
+    resetCodeExpired: "The code has expired. Request a new one",
+    resetPasswordError: "Error resetting password",
+    sendResetCodeError: "Error sending code",
+    backToResetForm: "Back to form",
+    enterResetCode: "Enter the reset code",
+    socialAuthNoReset: "This account uses social authentication. Sign in with Google.",
     
     // Modal headers
     createFreeAccount: "Create your free account",
@@ -1267,7 +1344,7 @@ export default {
       addToFavorites: "Add to favorites",
       removeFromFavorites: "Remove from favorites",
       outOfStock: "Out of stock",
-      limitedStockUnits: "Only {stock} left!",
+      limitedStockUnits: "Few units available",
       rating: "Rating",
       reviews: "reviews",
       quickView: "Quick view",
@@ -1350,7 +1427,8 @@ export default {
       tps: "TPS",
       tvq: "TVQ",
       consigne: "Deposit",
-      total: "Total with taxes"
+      total: "Total with taxes",
+      plusTaxesShort: "+ Taxes"
     },
 
     // AddToCartButton
@@ -2073,6 +2151,21 @@ export default {
       testing: "Testing pending",
       launch: "Launch coming soon"
     }
+  },
+
+  servicesPage: {
+    heroTitle: "Professional services, one click away",
+    heroSubtitle: "Bilingual lawyers, dentists and accountants for our community in Montreal.",
+    heroBadge: "Availability opening soon",
+    heroCta: "Meet the professionals",
+    comingSoon: "Launching very soon",
+    description: "We are curating a network of trusted professionals so you can solve legal, health and accounting needs in your own language.",
+    highlightsTitle: "Featured professions",
+    highlightsSubtitle: "Choose the profile you need and we will notify you as soon as appointments and consultations are available.",
+    contactTitle: "Need a different professional?",
+    contactDescription: "Tell us your case and we will connect you with the right expert as soon as our directory opens.",
+    contactButton: "Notify me",
+    languagesLabel: "Languages"
   },
 
   aboutUs: {
