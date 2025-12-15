@@ -1414,7 +1414,8 @@ export default {
     checkout: {
       redirectingToStripe: "Redirigiendo a Stripe...",
       emptyCart: "Carrito vacío",
-      savingsShipping: "Ahorro en envío"
+      savingsShipping: "Ahorro en envío",
+      unavailable: "Estamos actualizando nuestro sistema, en este momento no estamos disponibles."
     },
     notifications: {
       networkError: "Sin conexión a internet. Verifica tu conexión.",

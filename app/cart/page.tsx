@@ -1333,10 +1333,13 @@ export default function CartPage() {
                   </div>
                   
                   <div className="space-y-2 sm:space-y-3 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
+                    {/* Temporarily forcing checkout button enabled; original disabled logic is commented in onClick */}
                     <Button 
                       size="lg" 
                       className="w-full bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base h-10 sm:h-12"
                       onClick={() => {
+                        /* 
+                        // 🔙 Flujo original de checkout (temporalmente deshabilitado por mantenimiento):
                         console.log('🚨 CHECKOUT BUTTON CLICKED - Debug completo:', {
                           timestamp: new Date().toISOString(),
                           authState: {
@@ -1371,7 +1374,6 @@ export default function CartPage() {
                             verifyingAddress,
                             allConditionsMet: isAuthenticated && hasAddresses && selectedAddress?.id && deliveryOptions.isValid && !isEmpty
                           },
-                          // NEW: Critical validation checks
                           criticalChecks: {
                             passedAuth: isAuthenticated,
                             passedAddresses: hasAddresses,
@@ -1388,10 +1390,12 @@ export default function CartPage() {
                                              !selectedAddress?.id ? 'NO_SELECTED_ADDRESS' :
                                              needsAddress ? 'BACKEND_NEEDS_ADDRESS' : 'NONE'
                           }
-                        })
-                        handleCheckout()
+                        });
+                        handleCheckout();
+                        */
+                        toast.info(t('cart.checkout.unavailable'));
                       }}
-                      disabled={!isAuthenticated || isEmpty || checkoutLoading || verifyingAddress || !deliveryOptions.isValid || !hasAddresses || !selectedAddress?.id || needsAddress}
+                      disabled={false}
                     >
                       {checkoutLoading ? (
                         <span className="flex items-center justify-center gap-2">

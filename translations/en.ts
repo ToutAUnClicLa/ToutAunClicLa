@@ -419,7 +419,8 @@ export default {
     checkout: {
       redirectingToStripe: "Redirecting to Stripe...",
       emptyCart: "Empty cart",
-      savingsShipping: "Shipping savings"
+      savingsShipping: "Shipping savings",
+      unavailable: "We're updating our system right now. Checkout is temporarily unavailable."
     },
     notifications: {
       networkError: "No internet connection. Check your connection.",

@@ -423,7 +423,8 @@ export default {
     checkout: {
       redirectingToStripe: "Redirection vers Stripe...",
       emptyCart: "Panier vide",
-      savingsShipping: "Économies sur la livraison"
+      savingsShipping: "Économies sur la livraison",
+      unavailable: "Nous mettons notre système à jour. Le paiement est temporairement indisponible."
     },
     notifications: {
       networkError: "Pas de connexion internet. Vérifiez votre connexion.",
