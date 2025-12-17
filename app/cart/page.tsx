@@ -1369,8 +1369,6 @@ export default function CartPage() {
                       size="lg" 
                       className="w-full bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base h-10 sm:h-12"
                       onClick={() => {
-                        /* 
-                        // 🔙 Flujo original de checkout (temporalmente deshabilitado por mantenimiento):
                         console.log('🚨 CHECKOUT BUTTON CLICKED - Debug completo:', {
                           timestamp: new Date().toISOString(),
                           authState: {
@@ -1423,8 +1421,7 @@ export default function CartPage() {
                           }
                         });
                         handleCheckout();
-                        */
-                        toast.info(t('cart.checkout.unavailable'));
+                        // toast.info(t('cart.checkout.unavailable'));
                       }}
                       disabled={false}
                     >
