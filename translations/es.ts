@@ -1494,7 +1494,9 @@ export default {
       redirectingToStripe: "Redirigiendo a Stripe...",
       emptyCart: "Carrito vacío",
       savingsShipping: "Ahorro en envío",
-      unavailable: "Estamos actualizando nuestro sistema, en este momento no estamos disponibles."
+      unavailable: "Estamos actualizando nuestro sistema, en este momento no estamos disponibles.",
+      closedToday: "¡El día de hoy no estamos recibiendo pedidos! Mira nuestros horarios en @toutaunclicla",
+      cutoff: "9:00 PM es nuestro límite de pedidos (hora de Montreal, Canadá). Revisa nuestros horarios en Instagram @toutaunclicla"
     },
     notifications: {
       networkError: "Sin conexión a internet. Verifica tu conexión.",

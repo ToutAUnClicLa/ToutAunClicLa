@@ -535,6 +535,32 @@ export default function CartPage() {
 
   // Función para proceder al checkout (memoizada)
   const handleCheckout = useCallback(async () => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const isBlockedWeekday = dayOfWeek === 1 || dayOfWeek === 2; // Monday or Tuesday
+    const isDecember = now.getMonth() === 11;
+    const isJanuary = now.getMonth() === 0;
+    const isBlockedDecemberDate = isDecember &&  now.getDate() === 25;
+    const isBlockedJanuary = isJanuary &&  now.getDate() === 1;
+
+    if (isBlockedWeekday || isBlockedDecemberDate || isBlockedJanuary) {
+      toast.info(t('cart.checkout.closedToday'));
+      return;
+    }
+
+    const montrealParts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Toronto',
+      hour12: false,
+      hour: 'numeric',
+      minute: 'numeric'
+    }).formatToParts(now);
+    const montrealHour = Number(montrealParts.find(part => part.type === 'hour')?.value ?? NaN);
+
+    if (!Number.isNaN(montrealHour) && montrealHour >= 21) {
+      toast.info(t('cart.checkout.cutoff'));
+      return;
+    }
+
     if (!isAuthenticated) {
       setShowAuthModal(true);
       return;

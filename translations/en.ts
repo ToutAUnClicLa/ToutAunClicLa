@@ -468,7 +468,9 @@ export default {
       redirectingToStripe: "Redirecting to Stripe...",
       emptyCart: "Empty cart",
       savingsShipping: "Shipping savings",
-      unavailable: "We're updating our system right now. Checkout is temporarily unavailable."
+      unavailable: "We're updating our system right now. Checkout is temporarily unavailable.",
+      closedToday: "We're not receiving orders today! Check our schedule at @toutaunclicla",
+      cutoff: "9:00 PM is the order cutoff (Montreal, Canada time). Please check our hours on Instagram @toutaunclicla"
     },
     notifications: {
       networkError: "No internet connection. Check your connection.",

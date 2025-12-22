@@ -472,7 +472,9 @@ export default {
       redirectingToStripe: "Redirection vers Stripe...",
       emptyCart: "Panier vide",
       savingsShipping: "Économies sur la livraison",
-      unavailable: "Nous mettons notre système à jour. Le paiement est temporairement indisponible."
+      unavailable: "Nous mettons notre système à jour. Le paiement est temporairement indisponible.",
+      closedToday: "Nous ne recevons pas de commandes aujourd'hui ! Consulte nos horaires sur @toutaunclicla",
+      cutoff: "21 h est l'heure limite de commande (heure de Montréal, Canada). Consultez nos horaires sur Instagram @toutaunclicla"
     },
     notifications: {
       networkError: "Pas de connexion internet. Vérifiez votre connexion.",
