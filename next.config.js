@@ -29,6 +29,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'fthunnrkcpzygyspynus.supabase.co',
       },
+      {
+        protocol: 'https',
+        hostname: 'toutaunclicla.com',
+      },
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -37,7 +41,6 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    domains: ['toutaunclicla.com'],
     // Optimización adicional
     unoptimized: false, // Asegurar que las imágenes estén optimizadas
     loader: 'default'

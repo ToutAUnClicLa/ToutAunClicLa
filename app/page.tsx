@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Calculator, ChevronDown, Gavel, Gift, GlassWater, Handshake, Package, Shirt, Sparkles, Stethoscope, Store, Truck, Utensils, Watch } from "lucide-react";
+import { ArrowRight, Calculator, Car, ChevronDown, Gavel, Gift, GlassWater, Globe2, Handshake, Home as HomeIcon, Languages, Package, PiggyBank, Scissors, Shirt, Sparkles, Stethoscope, Store, Truck, Utensils, Watch } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -255,6 +255,7 @@ interface ServiceHighlightTranslation {
   id: number;
   name: string;
   description: string;
+  subservices?: string[];
   color: string;
   badge: string;
   href: string;
@@ -264,6 +265,7 @@ interface ServiceHighlightTranslation {
 }
 
 interface ServiceHighlight extends Omit<ServiceHighlightTranslation, 'icon'> {
+  subservices: string[];
   icon: React.ElementType;
 }
 
@@ -273,7 +275,13 @@ const SERVICE_ICON_MAP: Record<string, React.ElementType> = {
   logistics: Truck,
   law: Gavel,
   health: Stethoscope,
-  finance: Calculator
+  accounting: Calculator,
+  finance: PiggyBank,
+  realEstate: HomeIcon,
+  remittances: Globe2,
+  auto: Car,
+  beauty: Scissors,
+  translation: Languages
 };
 
 const getServiceIcon = (type: string) => SERVICE_ICON_MAP[type] ?? Sparkles;
@@ -325,6 +333,7 @@ const getServiceIcon = (type: string) => SERVICE_ICON_MAP[type] ?? Sparkles;
   const serviceHighlightsTranslations = t<ServiceHighlightTranslation[]>('landing.serviceHighlights');
   const serviceHighlights: ServiceHighlight[] = serviceHighlightsTranslations.map((service) => ({
     ...service,
+    subservices: service.subservices ?? [],
     icon: getServiceIcon(service.icon)
   }));
 
@@ -681,9 +690,9 @@ const getServiceIcon = (type: string) => SERVICE_ICON_MAP[type] ?? Sparkles;
           {serviceHighlights.map((service, index) => {
             const Icon = service.icon;
             return (
-              <Link key={service.id} href={service.href}>
+              <Link key={service.id} href='/servicios'>
                 <motion.div
-                  className={`group relative overflow-hidden rounded-3xl bg-gradient-to-br ${service.color} p-6 sm:p-8 text-white shadow-xl shadow-emerald-100/60 hover:shadow-2xl transition-shadow`}
+                  className="group relative overflow-hidden rounded-3xl bg-white border border-emerald-100 shadow-lg shadow-emerald-100/80 hover:-translate-y-1 transition-transform"
                   whileHover={{ y: -4 }}
                   whileTap={{ scale: 0.99 }}
                   initial={{ opacity: 0, y: 20 }}
@@ -691,30 +700,42 @@ const getServiceIcon = (type: string) => SERVICE_ICON_MAP[type] ?? Sparkles;
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
                 >
-                  <div className="relative flex flex-col h-full">
-                    <div className="flex items-center justify-between gap-3 mb-6">
+                  <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${service.color}`}></div>
+                  <div className="relative flex flex-col h-full p-6 sm:p-7 space-y-4">
+                    <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm">
+                        <div className={`p-3 rounded-2xl bg-gradient-to-br ${service.color} text-white shadow-md`}>
                           <Icon className="h-7 w-7" />
                         </div>
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
+                          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">
                             {service.badge}
                           </p>
-                          <h3 className="text-xl sm:text-2xl font-bold leading-tight">{service.name}</h3>
+                          <h3 className="text-xl sm:text-2xl font-bold leading-tight text-gray-900">{service.name}</h3>
                         </div>
                       </div>
                     </div>
-                    <p className="text-base sm:text-lg text-white/90 leading-relaxed flex-grow">
+                    <p className="text-base sm:text-lg text-gray-700 leading-relaxed flex-grow">
                       {service.description}
                     </p>
-                    <div className="mt-6 text-xs sm:text-sm font-semibold tracking-wide text-white/90">
-                      <span className="uppercase text-white/70 mr-2">{t('servicesPage.languagesLabel')}:</span>
-                      {service.languages.join(' / ')}
-                    </div>
-                    <div className="mt-6 inline-flex items-center text-base font-semibold text-white">
-                      {t('servicesPage.comingSoon')}
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                    {service.subservices.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {service.subservices.slice(0, 4).map((subservice) => (
+                          <span key={subservice} className="rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
+                            {subservice}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs sm:text-sm font-semibold text-gray-700">
+                        <span className="uppercase text-gray-500 mr-2">{t('servicesPage.languagesLabel')}:</span>
+                        {service.languages.join(' / ')}
+                      </div>
+                      <div className="inline-flex items-center text-base font-semibold text-emerald-700">
+                        {t('servicesPage.comingSoon')}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </div>
                     </div>
                   </div>
                 </motion.div>
