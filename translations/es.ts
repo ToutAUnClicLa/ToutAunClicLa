@@ -1,4 +1,98 @@
 export default {
+  services: {
+    hero: {
+      badge: "NUESTRA RED",
+      title: "Servicios Profesionales",
+      subtitle: "A Tu Alcance",
+      description: "Conectamos a la comunidad latina en Montreal con profesionales de confianza. Encuentra expertos que hablan tu idioma y entienden tu cultura."
+    },
+    search: {
+      placeholder: "Buscar por servicio (ej. abogado, dentista)...",
+      button: "Buscar",
+      popular: "Populares"
+    },
+    grid: {
+      title: "Explora Nuestros Servicios",
+      subtitle: "Una selección curada de profesionales listos para ayudarte."
+    },
+    card: {
+      comingSoon: "Próximamente",
+      viewMore: "Ver más detalles",
+      subservices: "Servicios disponibles"
+    },
+    categories: {
+      lawyers: {
+        title: "Servicios Legales",
+        description: "Asesoría legal experta en inmigración, leyes corporativas y derecho civil.",
+        short: "Legal"
+      },
+      health: {
+        title: "Salud y Bienestar",
+        description: "Cuidado médico integral con doctores y especialistas que hablan tu idioma.",
+        short: "Salud"
+      },
+      accounting: {
+        title: "Contabilidad e Impuestos",
+        description: "Gestión fiscal y contable para particulares y empresas.",
+        short: "Contabilidad"
+      },
+      finance: {
+        title: "Servicios Financieros",
+        description: "Planificación financiera, seguros e inversiones para tu futuro."
+      },
+      realestate: {
+        title: "Bienes Raíces",
+        description: "Compra, venta y renta de propiedades con asesoría experta."
+      },
+      cars: {
+        title: "Automotriz",
+        description: "Venta, reparación y mantenimiento de vehículos."
+      },
+      beauty: {
+        title: "Belleza y Estética",
+        description: "Estilistas y profesionales de belleza para lucir increíble."
+      },
+      translation: {
+        title: "Traducción Oficial",
+        description: "Servicios de traducción certificada para tus documentos importantes."
+      },
+      money: {
+        title: "Envíos de Dinero",
+        description: "Soluciones rápidas y seguras para enviar dinero a tu país."
+      }
+    },
+    subservices: {
+      notaries: "Notarios",
+      migration: "Migración",
+      civil: "Civil",
+      dentists: "Dentistas",
+      psychologists: "Psicólogos",
+      doctors: "Médicos",
+      taxes: "Impuestos",
+      payroll: "Nómina",
+      bookkeeping: "Libros",
+      insurance: "Seguros",
+      investments: "Inversiones",
+      buying: "Compra",
+      renting: "Renta",
+      commercial: "Comercial",
+      dealerships: "Concesionarios",
+      mechanics: "Mecánica",
+      stylists: "Estilistas",
+      nails: "Uñas",
+      barber: "Barbería",
+      official: "Oficial",
+      interpretation: "Interpretación",
+      remittances: "Remesas",
+      exchange: "Cambio de Divisas"
+    },
+    cta: {
+      title: "¿Eres un profesional?",
+      description: "Únete a nuestra red y conecta con miles de clientes potenciales en la comunidad latina.",
+      notifyButton: "Unirme a la red",
+      suggestButton: "Sugerir un servicio"
+    }
+  },
   // Traducciones comunes
   common: {
     loading: "Cargando",
@@ -40,7 +134,7 @@ export default {
     profile: {
       myProfile: "Mi Perfil",
       addresses: "Direcciones",
-      favorites: "Favoritos", 
+      favorites: "Favoritos",
       myOrders: "Pedidos",
       security: "Seguridad",
       notifications: "Notificaciones",
@@ -82,7 +176,7 @@ export default {
     },
     boutique: {
       clothing: "Ropa",
-      accessories: "Accesorios", 
+      accessories: "Accesorios",
       souvenirs: "Souvenirs"
     },
     company: {
@@ -277,7 +371,7 @@ export default {
         viewText: "Ver souvenirs",
         subcategoria_id: "souvenirs"
       },
-           {
+      {
         id: 1,
         name: "Ropa",
         description: "Viste con las mejores prendas tradicionales americanas",
@@ -397,50 +491,50 @@ export default {
         languages: ["Español", "Inglés", "Francés"]
       }
     ]
-  },  
-    auth: {
+  },
+  auth: {
     // Títulos de modales
     loginTitle: "Iniciar Sesión",
     registerTitle: "Crear Cuenta",
     forgotPasswordTitle: "Recuperar Contraseña",
-    
+
     // Títulos para formularios en desktop
     loginFormTitle: "Accede a tu cuenta",
     registerFormTitle: "Únete a nosotros",
     forgotPasswordFormTitle: "Restablecer contraseña",
-    
+
     // Descripciones
     loginDescription: "Bienvenido de vuelta a Tout À un clic là",
     registerDescription: "Únete a nuestra comunidad",
     forgotPasswordDescription: "Te enviaremos un enlace para restablecer tu contraseña",
-    
+
     // Descripciones para formularios en desktop
     loginFormDescription: "Ingresa tus credenciales para acceder",
     registerFormDescription: "Completa tus datos para comenzar",
     forgotPasswordFormDescription: "Ingresa tu email para recuperar el acceso",
-    
+
     // Descripciones extendidas para columna izquierda en desktop
     loginDescriptionExtended: "Accede a tu cuenta y disfruta de la mejor experiencia de compra en línea con productos latinos en Montreal.",
     registerDescriptionExtended: "Únete a nuestra comunidad y descubre la mejor selección de productos latinos en Montreal con entrega rápida.",
     forgotPasswordDescriptionExtended: "No te preocupes, te ayudamos a recuperar el acceso a tu cuenta de forma segura.",
-    
+
     // Títulos para columna izquierda en desktop
     welcomeBack: "¡Bienvenido de vuelta!",
     joinOurCommunity: "Únete a nuestra comunidad",
     resetPasswordTitle: "Recupera tu cuenta",
-    
+
     // Características destacadas
     feature1: "Productos latinos auténticos",
     feature2: "Entrega rápida en Montreal",
     feature3: "Precios competitivos",
-    
+
     // Labels de campos
     fullName: "Nombre completo",
     email: "Correo electrónico",
     phone: "Teléfono",
     password: "Contraseña",
     confirmPassword: "Confirmar contraseña",
-    
+
     // Placeholders
     fullNamePlaceholder: "Tu nombre completo",
     emailPlaceholder: "tu@ejemplo.com",
@@ -448,7 +542,7 @@ export default {
     passwordPlaceholder: "Tu contraseña",
     passwordRegisterPlaceholder: "Mínimo 6 caracteres",
     confirmPasswordPlaceholder: "Repite tu contraseña",
-    
+
     // Botones
     loginButton: "Iniciar sesión",
     registerButton: "Crear cuenta",
@@ -456,15 +550,15 @@ export default {
     continueWithGoogle: "Continuar con Google",
     continueWithGoogleRegister: "Registrarse con Google",
     registerWithEmail: "Registrarse con correo electrónico",
-    
+
     // Estados de carga
     loggingIn: "Iniciando sesión...",
     creatingAccount: "Creando cuenta...",
     sendingLink: "Enviando enlace...",
-    
+
     // Separador
     orContinueWith: "O continúa con",
-    
+
     // Checkbox y términos
     acceptTerms: "Acepto los",
     termsAndConditions: "Términos y Condiciones",
@@ -473,14 +567,14 @@ export default {
     acceptTermsRequired: "Debes aceptar los términos y condiciones para continuar",
     rememberMe: "Recuérdame",
     forgotPassword: "¿Olvidaste tu contraseña?",
-    
+
     // Enlaces del footer
     noAccount: "¿No tienes una cuenta?",
     alreadyHaveAccount: "¿Ya tienes una cuenta?",
     signUp: "Regístrate",
     signIn: "Inicia sesión",
     backToLogin: "Volver a inicio de sesión",
-    
+
     // Mensajes de error comunes
     emailRequired: "El email es requerido",
     emailInvalid: "Email inválido",
@@ -492,13 +586,13 @@ export default {
     emailNotRegistered: "Este email no está registrado. Intenta crear una cuenta.",
     errorCheckingEmail: "Error al verificar email",
     generalError: "Ha ocurrido un error",
-    
+
     // Mensajes de éxito
     accountCreated: "Cuenta creada exitosamente. Por favor, verifica tu email.",
     passwordResetSent: "Se ha enviado un enlace a tu correo para restablecer tu contraseña",
     redirecting: "Redirigiendo...",
     googleAuthError: "Error al iniciar sesión con Google",
-    
+
     // Verificación
     verificationRequired: "Tu cuenta requiere verificación. Por favor, revisa tu correo electrónico para completar el proceso o solicita un nuevo correo de verificación.",
     invalidCredentials: "Credenciales inválidas. Verifica tu email y contraseña.",
@@ -553,16 +647,16 @@ export default {
     backToResetForm: "Volver al formulario",
     enterResetCode: "Ingresa el código de restablecimiento",
     socialAuthNoReset: "Esta cuenta usa autenticación social. Inicia sesión con Google.",
-    
+
     // Modal headers
     createFreeAccount: "Crea tu cuenta gratis",
     verifyYourEmail: "Verifica tu email",
-    
+
     // Estados del modal
     processing: "Procesando...",
     orText: "o",
     optionalText: "(opcional)",
-    
+
     // Toast mensajes
     welcomeMessage: "¡Bienvenido!",
     loginSuccessDescription: "Has iniciado sesión correctamente",
@@ -570,16 +664,16 @@ export default {
     verificationCodeSent: "Te enviamos un código de verificación a tu email",
     comingSoon: "Próximamente",
     googleLoginComingSoon: "El login con Google estará disponible pronto",
-    
+
     // Errores específicos del modal
     loginError: "Error al iniciar sesión",
     registrationError: "Error al registrar usuario",
-    
+
     // Aria labels
     closeModal: "Cerrar",
     showPassword: "Mostrar contraseña",
     hidePassword: "Ocultar contraseña",
-    
+
     // Callback page
     callback: {
       processing: "Procesando...",
@@ -602,29 +696,29 @@ export default {
       redirectingToDashboard: "Te estamos redirigiendo a tu cuenta"
     }
   },
-    // Nuevas traducciones para el navbar móvil
+  // Nuevas traducciones para el navbar móvil
   navbar: {
     welcome: "¡Bienvenid@!",
     accessYourAccount: "Accede a tu cuenta para comenzar",
     loginButton: "Iniciar Sesión",
     createAccountButton: "Crear Cuenta",
     logoutButton: "Cerrar sesión",
-    
+
     // Estados de verificación
     pendingVerification: "Pendiente de verificación",
     unverifiedAccount: "Cuenta sin verificar",
     accountNeedsVerification: "Tu cuenta necesita verificación",
-    
+
     // Secciones del menú
     mainMenu: "Menú Principal",
     myAccount: "Mi Cuenta",
     quickAccess: "Accesos Rápidos",
-    
+
     // Enlaces rápidos
     favorites: "Favoritos",
     orders: "Pedidos",
     addresses: "Direcciones",
-    
+
     // Nuevas traducciones para el refactor móvil
     mobile: {
       menu: "Menú",
@@ -643,13 +737,13 @@ export default {
       myAccount: "Mi Cuenta",
       logout: "Cerrar Sesión"
     },
-    
-      // Mensajes de sistema
+
+    // Mensajes de sistema
     logoutSuccess: "Sesión cerrada correctamente",
     logoutError: "Error al cerrar sesión",
     languageChanged: "Idioma cambiado a"
   },
-  
+
   // Traducciones para catálogo de productos
   catalog: {
     // Restaurant Banner
@@ -770,7 +864,7 @@ export default {
       productNotAvailableToday: "Hoy no disponible",
       restaurantClosed: "Restaurante cerrado"
     },
-    
+
     // ProductList
     productList: {
       // Títulos de páginas
@@ -780,7 +874,7 @@ export default {
       comidasSubtitle: "Sabores auténticos de toda América Latina - Gastronomía tradicional en Montreal",
       boutiqueTitle: "Boutique",
       boutiqueSubtitle: "Artesanías y souvenirs únicos - Productos artesanales latinoamericanos",
-      
+
       // Filtros
       filters: "Filtros",
       search: "Buscar productos",
@@ -797,7 +891,7 @@ export default {
       applyFilters: "Aplicar filtros",
       hideFilters: "Ocultar filtros",
       showFilters: "Mostrar filtros",
-      
+
       // Opciones de ordenamiento
       sortOptions: {
         nameAsc: "Nombre (A-Z)",
@@ -808,7 +902,7 @@ export default {
         newest: "Más recientes",
         bestselling: "Más vendidos"
       },
-      
+
       // Estados de carga y vacío
       loading: "Cargando productos...",
       searching: "Buscando...",
@@ -818,7 +912,7 @@ export default {
       loadMore: "Cargar más",
       error: "Error al cargar productos",
       retry: "Intentar de nuevo",
-      
+
       // Búsqueda
       searchMinLength: "Escribe al menos 2 caracteres para buscar",
       searchResults: "{count} resultados encontrados",
@@ -827,7 +921,7 @@ export default {
       tryOtherTerms: "Intenta con otros términos de búsqueda",
       noProductsAvailable: "No hay productos disponibles en {restaurant}",
       restaurantNoProducts: "Este restaurante no tiene productos disponibles en este momento",
-      
+
       // Notificaciones
       notifications: {
         filtersApplied: "Filtros aplicados correctamente",
@@ -836,7 +930,7 @@ export default {
         noResultsFound: "No se encontraron resultados",
         errorOccurred: "Ocurrió un error al cargar los productos"
       },
-      
+
       // Filtros mobile
       mobileFilters: {
         title: "Filtros",
@@ -845,7 +939,7 @@ export default {
         reset: "Restablecer"
       },
       showingResults: "Mostrando {count} de {total} productos",
-      
+
       // Beneficios
       benefits: {
         fastDelivery: {
@@ -869,7 +963,7 @@ export default {
           description: "Estamos aquí para ayudarte"
         }
       },
-      
+
       // Mensajes de éxito y error
       messages: {
         addedToCart: "Producto agregado al carrito",
@@ -879,15 +973,15 @@ export default {
         errorTogglingFavorite: "Error al gestionar favoritos",
         loginRequired: "Debes iniciar sesión para continuar"
       },
-      
+
       // Subcategorías
       subcategories: {
         // Productos
         "1": "Harinas y Masas",
         "12": "Bebidas",
-        "3": "Paquetes y Snacks", 
+        "3": "Paquetes y Snacks",
         "2": "Salsas y Aderezos",
-        
+
         // Boutique
         "8": "Accesorios",
         "7": "Ropa",
@@ -923,7 +1017,7 @@ export default {
       selectedRestaurant: "Restaurante seleccionado",
       searchPlaceholder: "Buscar restaurantes...",
       sortByRating: "Por rating",
-      sortByName: "Por nombre", 
+      sortByName: "Por nombre",
       sortByTime: "Por tiempo",
       filterAll: "Todos",
       filterNew: "Nuevos",
@@ -966,7 +1060,7 @@ export default {
         closedToday: "Cerrado hoy"
       }
     },
-    
+
     // ProductDetail
     productDetail: {
       // Información del producto
@@ -976,14 +1070,14 @@ export default {
       reviews: "Reseñas",
       shipping: "Envío",
       returns: "Devoluciones",
-      
+
       // Acciones
       addToCart: "Agregar al carrito",
       buyNow: "Comprar ahora",
       addToFavorites: "Agregar a favoritos",
       removeFromFavorites: "Eliminar de favoritos",
       shareProduct: "Compartir producto",
-      
+
       // Detalles
       price: "Precio",
       originalPrice: "Precio original",
@@ -994,13 +1088,13 @@ export default {
       brand: "Marca",
       weight: "Peso",
       dimensions: "Dimensiones",
-      
+
       // Estados
       inStock: "En stock",
       outOfStock: "Agotado",
       limitedStock: "Stock limitado",
       preOrder: "Pre-orden",
-      
+
       // Cantidad
       quantity: "Cantidad",
       increase: "Aumentar cantidad",
@@ -1008,28 +1102,28 @@ export default {
       maxQuantity: "Cantidad máxima disponible: {max}",
       unitsAvailable: "unidades disponibles",
       optionGroupsAvailable: "Este producto tiene {count} grupos de opciones disponibles",
-      
+
       // Galería de imágenes
       mainImage: "Imagen principal",
       additionalImages: "Imágenes adicionales",
       zoomImage: "Ampliar imagen",
       previousImage: "Imagen anterior",
       nextImage: "Siguiente imagen",
-      
+
       // Productos relacionados
       relatedProducts: "Productos relacionados",
       youMayAlsoLike: "También te puede gustar",
       similarProducts: "Productos similares",
       seeMore: "Ver más",
       loading: "Cargando...",
-      
+
       // Beneficios específicos del producto
       authentic: "100% Auténtico",
       originalProduct: "Producto original",
       securePayment: "Pago seguro",
       fastShipping: "Envío rápido",
       qualityGuaranteed: "Calidad garantizada",
-      
+
       // Reseñas
       customerReviews: "Reseñas de clientes",
       writeReview: "Escribir reseña",
@@ -1037,17 +1131,17 @@ export default {
       helpful: "Útil",
       notHelpful: "No útil",
       verifiedPurchase: "Compra verificada",
-      
+
       // Envío
       shippingInfo: "Información de envío",
       estimatedDelivery: "Entrega estimada",
       shippingCost: "Costo de envío",
       freeShippingOn: "Envío gratis en pedidos de",
-      
+
       // Breadcrumbs
       home: "Inicio",
       backToCategory: "Volver a {category}",
-      
+
       // Mensajes
       addedToCart: "Producto agregado al carrito exitosamente",
       errorAddingToCart: "Error al agregar el producto al carrito",
@@ -1059,7 +1153,7 @@ export default {
       errorLoadingProduct: "Error al cargar el producto",
       productNotFound: "Producto no encontrado"
     },
-    
+
     // RestaurantGrid
     restaurantGrid: {
       selectRestaurant: "Elige tu restaurante",
@@ -1093,7 +1187,7 @@ export default {
     },
     navigation: {
       profile: "Perfil",
-      favorites: "Favoritos", 
+      favorites: "Favoritos",
       addresses: "Direcciones",
       orders: "Pedidos",
       security: "Seguridad",
@@ -1210,7 +1304,7 @@ export default {
       },
       tracking: {
         orderPlaced: "Pedido Realizado",
-        paymentConfirmed: "Pago Confirmado", 
+        paymentConfirmed: "Pago Confirmado",
         processing: "Procesando",
         shipped: "Enviado",
         delivered: "Entregado"
@@ -1279,7 +1373,7 @@ export default {
       },
       statuses: {
         pendiente: "Pendiente",
-        pagado: "Pagado", 
+        pagado: "Pagado",
         procesando: "Procesando",
         enviado: "Enviado",
         entregado: "Entregado",
@@ -1334,7 +1428,7 @@ export default {
           description: "Recibirás un email con los detalles de tu pedido"
         },
         orderPreparation: {
-          title: "Preparación del Envío", 
+          title: "Preparación del Envío",
           description: "Procesaremos tu pedido en aproximadamente 1 hora"
         },
         shippingDelivery: {
@@ -1344,7 +1438,7 @@ export default {
       },
       actions: {
         viewOrderDetails: "Ver Detalles del Pedido",
-        viewAllOrders: "Ver Todos Mis Pedidos", 
+        viewAllOrders: "Ver Todos Mis Pedidos",
         continueShopping: "Continuar Comprando"
       },
       support: {
@@ -1445,7 +1539,7 @@ export default {
     },
     categories: {
       productos: "Productos",
-      comidas: "Comidas", 
+      comidas: "Comidas",
       boutique: "Boutique"
     },
     summary: {
@@ -1499,7 +1593,7 @@ export default {
         description: "11:00 AM - 9:00 PM (mismo día con 1 hora mínima)"
       },
       tomorrow: {
-        title: "Entrega Mañana", 
+        title: "Entrega Mañana",
         description: "11:00 AM - 9:00 PM (día siguiente)"
       },
       todaySelected: "Entrega hoy seleccionada - Pedidos hasta 8:00 PM",
@@ -1665,33 +1759,33 @@ export default {
   notifications: {
     // Errores comunes
     loadError: "Error al cargar",
-    saveError: "Error al guardar", 
+    saveError: "Error al guardar",
     deleteError: "Error al eliminar",
     updateError: "Error al actualizar",
     networkError: "Error de conexión",
     unexpectedError: "Error inesperado",
-    
+
     // Éxitos comunes
     saveSuccess: "Guardado correctamente",
-    deleteSuccess: "Eliminado correctamente", 
+    deleteSuccess: "Eliminado correctamente",
     updateSuccess: "Actualizado correctamente",
-    
+
     // Autenticación
     authRequired: "Debes iniciar sesión para usar esta función",
     accountVerificationRequired: "Debes verificar tu cuenta para realizar esta acción",
-    
+
     // Estados
     loading: "Cargando...",
     processing: "Procesando...",
-    
+
     // Acciones comunes
     actionError: "Error al realizar la acción",
     actionSuccess: "Acción completada correctamente",
-    
+
     // Validación
     selectAllOptions: "Por favor selecciona todas las opciones requeridas",
     selectRating: "Por favor selecciona una calificación",
-    
+
     // Específicas del sistema
     commentDeletedSuccess: "Comentario eliminado exitosamente",
     reviewSubmitSuccess: "Reseña enviada exitosamente",
@@ -1706,7 +1800,7 @@ export default {
     perfectContinue: "¡Perfecto! Ahora puedes continuar",
     optionSelectionError: "Error con las opciones seleccionadas",
     addedToCartWith: "agregado al carrito con",
-    
+
     // Mensajes de éxito y error específicos
     success: {
       reviewDeleted: "Comentario eliminado exitosamente"
@@ -1749,7 +1843,7 @@ export default {
     },
     stats: {
       favorites: "Favoritos",
-      categories: "Categorías", 
+      categories: "Categorías",
       available: "Disponibles",
       product: "producto",
       products: "productos"
@@ -1788,7 +1882,7 @@ export default {
     noAddresses: "No tienes direcciones guardadas",
     noAddressesDesc: "Agrega tu primera dirección para facilitar tus compras futuras",
     addFirstAddress: "Agregar primera dirección",
-    
+
     // Selector de direcciones
     selector: {
       title: "Dirección de Envío",
@@ -1798,7 +1892,7 @@ export default {
       montrealOnly: "Solo direcciones en el área metropolitana de Montreal",
       validationNote: "Validamos que la ciudad sea Montreal y que el código postal sea válido (H1A-H5B)"
     },
-    
+
     // Formulario
     form: {
       street: "Dirección *",
@@ -1815,7 +1909,7 @@ export default {
       saving: "Guardando...",
       cancel: "Cancelar"
     },
-    
+
     // Validación
     validation: {
       invalid: "Dirección no válida",
@@ -1825,20 +1919,20 @@ export default {
       montrealOnly: "Solo se permiten direcciones en el área metropolitana de Montreal y Rivera Sur",
       validationInfo: "Validamos que la dirección esté dentro del área metropolitana de Montreal y Rivera Sur"
     },
-    
+
     // Mensajes de éxito
     success: {
       created: "Dirección agregada correctamente",
       createdDesc: "La dirección se ha creado correctamente",
       firstAddressCreated: "✅ Primera dirección configurada - ¡Ya puedes proceder al pago!",
-      updated: "Dirección actualizada correctamente", 
+      updated: "Dirección actualizada correctamente",
       updatedDesc: "La dirección se ha actualizada correctamente",
       deleted: "Dirección eliminada correctamente",
       deletedDesc: "La dirección se ha eliminado correctamente",
       primarySet: "Dirección principal actualizada correctamente",
       primarySetDesc: "La dirección se ha marcado como principal"
     },
-    
+
     // Mensajes de error
     errors: {
       loadFailed: "Error al cargar direcciones",
@@ -1851,7 +1945,7 @@ export default {
       primaryFailedDesc: "No pudimos establecer la dirección como principal",
       selectFailed: "Error al seleccionar dirección"
     },
-    
+
     // Estadísticas
     stats: {
       total: "Total de direcciones",
@@ -1862,7 +1956,7 @@ export default {
     // Acciones
     actions: {
       edit: "Editar",
-      delete: "Eliminar", 
+      delete: "Eliminar",
       addressTitle: "Dirección",
       setPrimary: "Establecer como principal",
       primary: "Principal"
@@ -2172,24 +2266,24 @@ export default {
     commentPlaceholder: "Comparte tu experiencia con este producto...",
     submitReview: "Enviar reseña"
   },
-  
+
   // Traducciones para páginas de checkout
   checkout: {
     cancel: {
       title: "Pago Cancelado",
       subtitle: "No te preocupes, no se ha realizado ningún cargo",
       toastMessage: "Pago cancelado - Tu carrito sigue guardado",
-      
+
       whatHappened: {
         title: "¿Qué pasó?",
         reasons: [
           "Cancelaste el proceso de pago en Stripe Checkout",
-          "Tu carrito sigue guardado con todos tus productos", 
+          "Tu carrito sigue guardado con todos tus productos",
           "Puedes intentar el pago nuevamente cuando gustes",
           "No se ha realizado ningún cargo a tu tarjeta"
         ]
       },
-      
+
       whatCanYouDo: {
         title: "¿Qué puedes hacer ahora?",
         reviewCart: {
@@ -2197,7 +2291,7 @@ export default {
           description: "Verifica los productos antes de continuar"
         },
         tryAgain: {
-          title: "Intentar de Nuevo", 
+          title: "Intentar de Nuevo",
           description: "El proceso de pago es seguro y rápido"
         },
         keepShopping: {
@@ -2205,13 +2299,13 @@ export default {
           description: "Explora más productos"
         }
       },
-      
+
       buttons: {
         backToCart: "Volver a Mi Carrito",
         tryPaymentAgain: "Intentar Pago Nuevamente",
         continueShopping: "Continuar Comprando"
       },
-      
+
       support: {
         title: "¿Tuviste problemas con el pago?",
         description: "Si experimentaste algún problema técnico durante el proceso de pago, nuestro equipo de soporte está aquí para ayudarte.",

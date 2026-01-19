@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Calculator, Car, ChevronDown, Gavel, Gift, GlassWater, Globe2, Handshake, Home as HomeIcon, Languages, Package, PiggyBank, Scissors, Shirt, Sparkles, Stethoscope, Store, Truck, Utensils, Watch } from "lucide-react";
+import { ArrowRight, Calculator, Car, ChevronDown, Gavel, Gift, GlassWater, Globe2, Handshake, Home as HomeIcon, Languages, Package, PiggyBank, Scissors, Shirt, Sparkles, Stethoscope, Store, Truck, Utensils, Watch, TrendingUp, BadgeDollarSign } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -9,6 +9,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import AuthModal from '@/components/features/auth/AuthModal';
 import HomeSearchBar from '@/components/features/modules/search/HomeSearchBar';
 import WorkWithUsButton from '@/components/features/landing/WorkWithUsButton';
+import ServiceCard from '@/components/features/services/ServiceCard';
 
 // Types
 interface CategoryCardProps {
@@ -122,7 +123,7 @@ export default function Home() {
   // Función para formatear la descripción del hero con texto destacado
   const formatHeroDescription = () => {
     const description = t('landing.hero.description');
-    
+
     // Buscar y reemplazar los días de la semana en los diferentes idiomas
     if (description.includes('sábado y domingo')) {
       const parts = description.split('sábado y domingo');
@@ -158,7 +159,7 @@ export default function Home() {
         </>
       );
     }
-    
+
     // Si no encuentra los días, devolver el texto normal
     return description;
   };
@@ -170,7 +171,7 @@ export default function Home() {
       // Altura del navbar: 64px (h-16) + margen adicional para móviles
       const navbarHeight = window.innerWidth < 768 ? 80 : 64; // Más espacio en móviles
       const elementPosition = element.offsetTop - navbarHeight;
-      
+
       window.scrollTo({
         top: elementPosition,
         behavior: 'smooth'
@@ -242,49 +243,14 @@ export default function Home() {
     icon?: React.ReactNode;
   }
 
-interface PanamericanFood {
-  id: number;
-  name: string;
-  description: string;
-  image: string;
-  color: string;
-  viewText: string;
-}
-
-interface ServiceHighlightTranslation {
-  id: number;
-  name: string;
-  description: string;
-  subservices?: string[];
-  color: string;
-  badge: string;
-  href: string;
-  icon: string;
-  cta: string;
-  languages: string[];
-}
-
-interface ServiceHighlight extends Omit<ServiceHighlightTranslation, 'icon'> {
-  subservices: string[];
-  icon: React.ElementType;
-}
-
-const SERVICE_ICON_MAP: Record<string, React.ElementType> = {
-  concierge: Sparkles,
-  business: Handshake,
-  logistics: Truck,
-  law: Gavel,
-  health: Stethoscope,
-  accounting: Calculator,
-  finance: PiggyBank,
-  realEstate: HomeIcon,
-  remittances: Globe2,
-  auto: Car,
-  beauty: Scissors,
-  translation: Languages
-};
-
-const getServiceIcon = (type: string) => SERVICE_ICON_MAP[type] ?? Sparkles;
+  interface PanamericanFood {
+    id: number;
+    name: string;
+    description: string;
+    image: string;
+    color: string;
+    viewText: string;
+  }
 
   // Obtener categorías de productos de las traducciones
   const productCategories = t<ProductCategory[]>('landing.productCategories').map(category => {
@@ -330,12 +296,72 @@ const getServiceIcon = (type: string) => SERVICE_ICON_MAP[type] ?? Sparkles;
     return { ...category, icon };
   });
 
-  const serviceHighlightsTranslations = t<ServiceHighlightTranslation[]>('landing.serviceHighlights');
-  const serviceHighlights: ServiceHighlight[] = serviceHighlightsTranslations.map((service) => ({
-    ...service,
-    subservices: service.subservices ?? [],
-    icon: getServiceIcon(service.icon)
-  }));
+  // Services definition consistent with Services Page
+  const services = [
+    {
+      id: 'lawyers',
+      icon: Gavel,
+      titleKey: 'services.categories.lawyers.title',
+      descKey: 'services.categories.lawyers.description',
+      subServices: ['services.subservices.notaries', 'services.subservices.migration', 'services.subservices.civil'],
+    },
+    {
+      id: 'health',
+      icon: Stethoscope,
+      titleKey: 'services.categories.health.title',
+      descKey: 'services.categories.health.description',
+      subServices: ['services.subservices.dentists', 'services.subservices.psychologists', 'services.subservices.doctors'],
+    },
+    {
+      id: 'accounting',
+      icon: Calculator,
+      titleKey: 'services.categories.accounting.title',
+      descKey: 'services.categories.accounting.description',
+      subServices: ['services.subservices.taxes', 'services.subservices.payroll', 'services.subservices.bookkeeping'],
+    },
+    {
+      id: 'finance',
+      icon: TrendingUp,
+      titleKey: 'services.categories.finance.title',
+      descKey: 'services.categories.finance.description',
+      subServices: ['services.subservices.insurance', 'services.subservices.investments'],
+    },
+    {
+      id: 'realestate',
+      icon: HomeIcon,
+      titleKey: 'services.categories.realestate.title',
+      descKey: 'services.categories.realestate.description',
+      subServices: ['services.subservices.buying', 'services.subservices.renting', 'services.subservices.commercial'],
+    },
+    {
+      id: 'cars',
+      icon: Car,
+      titleKey: 'services.categories.cars.title',
+      descKey: 'services.categories.cars.description',
+      subServices: ['services.subservices.dealerships', 'services.subservices.mechanics'],
+    },
+    {
+      id: 'beauty',
+      icon: Scissors,
+      titleKey: 'services.categories.beauty.title',
+      descKey: 'services.categories.beauty.description',
+      subServices: ['services.subservices.stylists', 'services.subservices.nails', 'services.subservices.barber'],
+    },
+    {
+      id: 'translation',
+      icon: Languages,
+      titleKey: 'services.categories.translation.title',
+      descKey: 'services.categories.translation.description',
+      subServices: ['services.subservices.official', 'services.subservices.interpretation'],
+    },
+    {
+      id: 'money',
+      icon: BadgeDollarSign,
+      titleKey: 'services.categories.money.title',
+      descKey: 'services.categories.money.description',
+      subServices: ['services.subservices.remittances', 'services.subservices.exchange'],
+    },
+  ];
 
   return (
     <div className="min-h-screen">
@@ -429,7 +455,7 @@ const getServiceIcon = (type: string) => SERVICE_ICON_MAP[type] ?? Sparkles;
                       </div>
                     ))}
                   </div>
-                  
+
                 </motion.div>
               </div>
             </div>
@@ -524,23 +550,23 @@ const getServiceIcon = (type: string) => SERVICE_ICON_MAP[type] ?? Sparkles;
       >
         <div className="w-full">
           <motion.div
-          className="mb-10 sm:mb-16 text-center"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-        >
-          <Link href="/comidas">
-            <motion.button
-              className="inline-flex items-center bg-amber-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-amber-700 transition-colors shadow-lg shadow-amber-500/30"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {t('landing.sections.foods.viewAll') as string}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </motion.button>
-          </Link>
-        </motion.div>
+            className="mb-10 sm:mb-16 text-center"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 }}
+          >
+            <Link href="/comidas">
+              <motion.button
+                className="inline-flex items-center bg-amber-600 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-amber-700 transition-colors shadow-lg shadow-amber-500/30"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {t('landing.sections.foods.viewAll') as string}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </motion.button>
+            </Link>
+          </motion.div>
           <Link href="/comidas">
             <motion.div
               className="relative overflow-hidden rounded-xl shadow-lg cursor-pointer group h-64 sm:h-64 md:h-80 w-full"
@@ -686,64 +712,21 @@ const getServiceIcon = (type: string) => SERVICE_ICON_MAP[type] ?? Sparkles;
             </motion.button>
           </Link>
         </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {serviceHighlights.map((service, index) => {
-            const Icon = service.icon;
-            return (
-              <Link key={service.id} href='/servicios'>
-                <motion.div
-                  className="group relative overflow-hidden rounded-3xl bg-white border border-emerald-100 shadow-lg shadow-emerald-100/80 hover:-translate-y-1 transition-transform"
-                  whileHover={{ y: -4 }}
-                  whileTap={{ scale: 0.99 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                >
-                  <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${service.color}`}></div>
-                  <div className="relative flex flex-col h-full p-6 sm:p-7 space-y-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-3 rounded-2xl bg-gradient-to-br ${service.color} text-white shadow-md`}>
-                          <Icon className="h-7 w-7" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">
-                            {service.badge}
-                          </p>
-                          <h3 className="text-xl sm:text-2xl font-bold leading-tight text-gray-900">{service.name}</h3>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-base sm:text-lg text-gray-700 leading-relaxed flex-grow">
-                      {service.description}
-                    </p>
-                    {service.subservices.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {service.subservices.slice(0, 4).map((subservice) => (
-                          <span key={subservice} className="rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
-                            {subservice}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <div className="text-xs sm:text-sm font-semibold text-gray-700">
-                        <span className="uppercase text-gray-500 mr-2">{t('servicesPage.languagesLabel')}:</span>
-                        {service.languages.join(' / ')}
-                      </div>
-                      <div className="inline-flex items-center text-base font-semibold text-emerald-700">
-                        {t('servicesPage.comingSoon')}
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              </Link>
-            );
-          })}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {services.map((service) => (
+            <ServiceCard
+              key={service.id}
+              icon={service.icon}
+              title={t(service.titleKey)}
+              description={t(service.descKey)}
+              subServices={service.subServices.map(key => t(key))}
+              comingSoonText={t('services.card.comingSoon')}
+              subServicesText={t('services.card.subservices')}
+              viewMoreText={t('services.card.viewMore')}
+            />
+          ))}
         </div>
-      </Section>     
+      </Section>
       {/* Auth Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}

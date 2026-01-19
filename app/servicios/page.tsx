@@ -17,8 +17,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
-
-// Professional UI Components matching the requested design
+import ServiceCard from '@/components/features/services/ServiceCard';
 
 export default function ServicesPage() {
   const { t } = useTranslation();
@@ -158,46 +157,16 @@ export default function ServicesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service) => (
-            <div key={service.id} className="group flex flex-col bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-              <div className="flex justify-between items-start mb-5">
-                <div className="p-3 rounded-xl bg-green-50 dark:bg-green-900/20 text-[#00875A] group-hover:bg-[#00875A] group-hover:text-white transition-colors duration-300">
-                  <service.icon className="w-8 h-8" />
-                </div>
-                <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded text-[10px] font-bold uppercase tracking-wide">
-                  {t('services.card.comingSoon')}
-                </span>
-              </div>
-
-              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 group-hover:text-[#00875A] transition-colors">
-                {t(service.titleKey)}
-              </h3>
-
-              <p className="text-slate-600 dark:text-slate-400 text-sm mb-6 flex-grow leading-relaxed">
-                {t(service.descKey)}
-              </p>
-
-              <div className="border-t border-gray-100 dark:border-gray-700 pt-5 mt-auto">
-                <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">{t('services.card.subservices')}</p>
-                <div className="flex flex-wrap gap-2 mb-5">
-                  {service.subServices.map((sub, idx) => (
-                    <span key={idx} className="px-2.5 py-1 bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded text-xs text-gray-600 dark:text-gray-300">
-                      {t(sub)}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex space-x-2 text-xs font-bold text-gray-400">
-                    <span className="text-[#00875A]">ES</span>
-                    <span>EN</span>
-                    <span>FR</span>
-                  </div>
-                  <button className="text-[#00875A] hover:text-green-700 font-medium text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
-                    {t('services.card.viewMore')} <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
+            <ServiceCard
+              key={service.id}
+              icon={service.icon}
+              title={t(service.titleKey)}
+              description={t(service.descKey)}
+              subServices={service.subServices.map(key => t(key))}
+              comingSoonText={t('services.card.comingSoon')}
+              subServicesText={t('services.card.subservices')}
+              viewMoreText={t('services.card.viewMore')}
+            />
           ))}
         </div>
 

@@ -1,4 +1,98 @@
 export default {
+  services: {
+    hero: {
+      badge: "OUR NETWORK",
+      title: "Professional Services",
+      subtitle: "Within Your Reach",
+      description: "We connect the Latino community in Montreal with trusted professionals. Find experts who speak your language and understand your culture."
+    },
+    search: {
+      placeholder: "Search for a service (e.g. lawyer, dentist)...",
+      button: "Search",
+      popular: "Popular"
+    },
+    grid: {
+      title: "Explore Our Services",
+      subtitle: "A curated selection of professionals ready to help you."
+    },
+    card: {
+      comingSoon: "Coming Soon",
+      viewMore: "View details",
+      subservices: "Available services"
+    },
+    categories: {
+      lawyers: {
+        title: "Legal Services",
+        description: "Expert legal advice on immigration, corporate law, and civil law.",
+        short: "Legal"
+      },
+      health: {
+        title: "Health & Wellness",
+        description: "Comprehensive medical care with doctors and specialists who speak your language.",
+        short: "Health"
+      },
+      accounting: {
+        title: "Accounting & Taxes",
+        description: "Tax and accounting management for individuals and businesses.",
+        short: "Accounting"
+      },
+      finance: {
+        title: "Financial Services",
+        description: "Financial planning, insurance, and investments for your future."
+      },
+      realestate: {
+        title: "Real Estate",
+        description: "Buying, selling, and renting properties with expert advice."
+      },
+      cars: {
+        title: "Automotive",
+        description: "Vehicle sales, repair, and maintenance."
+      },
+      beauty: {
+        title: "Beauty & Aesthetics",
+        description: "Stylists and beauty professionals to make you look amazing."
+      },
+      translation: {
+        title: "Official Translation",
+        description: "Certified translation services for your important documents."
+      },
+      money: {
+        title: "Money Transfers",
+        description: "Fast and secure solutions to send money to your country."
+      }
+    },
+    subservices: {
+      notaries: "Notaries",
+      migration: "Migration",
+      civil: "Civil",
+      dentists: "Dentists",
+      psychologists: "Psychologists",
+      doctors: "Doctors",
+      taxes: "Taxes",
+      payroll: "Payroll",
+      bookkeeping: "Bookkeeping",
+      insurance: "Insurance",
+      investments: "Investments",
+      buying: "Buying",
+      renting: "Renting",
+      commercial: "Commercial",
+      dealerships: "Dealerships",
+      mechanics: "Mechanics",
+      stylists: "Stylists",
+      nails: "Nails",
+      barber: "Barber",
+      official: "Official",
+      interpretation: "Interpretation",
+      remittances: "Remittances",
+      exchange: "Currency Exchange"
+    },
+    cta: {
+      title: "Are you a professional?",
+      description: "Join our network and connect with thousands of potential clients in the Latino community.",
+      notifyButton: "Join the network",
+      suggestButton: "Suggest a service"
+    }
+  },
   // Common translations
   common: {
     loading: "Loading",
@@ -42,7 +136,7 @@ export default {
       addresses: "Addresses",
       favorites: "Favorites",
       myOrders: "Orders",
-      security: "Security", 
+      security: "Security",
       notifications: "Notifications",
       settings: "Settings",
       logout: "Logout"
@@ -73,7 +167,7 @@ export default {
       southAmerica: "South America",
       authenticRecipes: "Authentic Recipes",
       specialIngredients: "Special Ingredients"
-    },    contact: {
+    }, contact: {
       title: "Contact",
       address: "620 Rue Saint-Thomas, Longueuil, QC J4H 3A7",
       email: "serviceclient@toutaunclicla.com",
@@ -81,7 +175,7 @@ export default {
     },
     boutique: {
       clothing: "Clothing",
-      accessories: "Accessories", 
+      accessories: "Accessories",
       souvenirs: "Souvenirs"
     },
     company: {
@@ -471,7 +565,7 @@ export default {
         description: "11:00 AM - 9:00 PM (same day with 1 hour minimum)"
       },
       tomorrow: {
-        title: "Delivery Tomorrow", 
+        title: "Delivery Tomorrow",
         description: "11:00 AM - 9:00 PM (next day)"
       },
       todaySelected: "Today delivery selected - Orders until 8:00 PM",
@@ -653,7 +747,7 @@ export default {
     noAddresses: "You have no saved addresses",
     noAddressesDesc: "Add your first address to make future purchases easier",
     addFirstAddress: "Add first address",
-    
+
     // Address selector
     selector: {
       title: "Shipping Address",
@@ -663,7 +757,7 @@ export default {
       montrealOnly: "Montreal metropolitan area addresses only",
       validationNote: "We validate that the city is Montreal and the postal code is valid (H1A-H5B)"
     },
-    
+
     // Form
     form: {
       street: "Address *",
@@ -682,7 +776,7 @@ export default {
       saving: "Saving...",
       cancel: "Cancel"
     },
-    
+
     // Validation
     validation: {
       invalid: "Invalid address",
@@ -692,19 +786,19 @@ export default {
       montrealOnly: "Only addresses in Montreal metropolitan area and South Shore allowed",
       validationInfo: "We validate that the address is within Montreal metropolitan area and South Shore"
     },
-    
+
     // Success messages
     success: {
       created: "Address added successfully",
       createdDesc: "The address has been created successfully",
       updated: "Address updated successfully",
-      updatedDesc: "The address has been updated successfully", 
+      updatedDesc: "The address has been updated successfully",
       deleted: "Address deleted successfully",
       deletedDesc: "The address has been deleted successfully",
       primarySet: "Primary address updated successfully",
       primarySetDesc: "The address has been marked as primary"
     },
-    
+
     // Error messages
     errors: {
       loadFailed: "Error loading addresses",
@@ -717,7 +811,7 @@ export default {
       primaryFailedDesc: "We couldn't set the address as primary",
       selectFailed: "Error selecting address"
     },
-    
+
     // Statistics
     stats: {
       total: "Total addresses",
@@ -841,32 +935,32 @@ export default {
     // Common errors
     loadError: "Error loading",
     saveError: "Error saving",
-    deleteError: "Error deleting", 
+    deleteError: "Error deleting",
     updateError: "Error updating",
     networkError: "Connection error",
     unexpectedError: "Unexpected error",
-    
+
     // Common successes
     saveSuccess: "Saved successfully",
     deleteSuccess: "Deleted successfully",
     updateSuccess: "Updated successfully",
-    
+
     // Authentication
     authRequired: "You must sign in to use this feature",
     accountVerificationRequired: "You must verify your account to perform this action",
-    
+
     // States
     loading: "Loading...",
     processing: "Processing...",
-    
+
     // Common actions
     actionError: "Error performing action",
     actionSuccess: "Action completed successfully",
-    
+
     // Validation
     selectAllOptions: "Please select all required options",
     selectRating: "Please select a rating",
-    
+
     // System specific
     commentDeletedSuccess: "Comment deleted successfully",
     reviewSubmitSuccess: "Review submitted successfully",
@@ -881,7 +975,7 @@ export default {
     perfectContinue: "Perfect! Now you can continue",
     optionSelectionError: "Error with selected options",
     addedToCartWith: "added to cart with",
-    
+
     // Success and error messages
     success: {
       reviewDeleted: "Comment deleted successfully"
@@ -910,7 +1004,7 @@ export default {
     navigation: {
       profile: "Profile",
       favorites: "Favorites",
-      addresses: "Addresses", 
+      addresses: "Addresses",
       orders: "Orders",
       security: "Security",
       settings: "Settings"
@@ -1107,7 +1201,7 @@ export default {
         emailDescription: "Receive important notifications by email",
         orders: "Order updates",
         ordersDescription: "Receive updates about your order status",
-        promotions: "Offers and promotions", 
+        promotions: "Offers and promotions",
         promotionsDescription: "Receive special offers and promotions",
         newsletter: "Newsletter",
         manage: "Manage notifications"
@@ -1157,44 +1251,44 @@ export default {
     loginTitle: "Sign In",
     registerTitle: "Create Account",
     forgotPasswordTitle: "Reset Password",
-    
+
     // Desktop form titles
     loginFormTitle: "Access your account",
     registerFormTitle: "Join us",
     forgotPasswordFormTitle: "Reset password",
-    
+
     // Descriptions
     loginDescription: "Welcome back to Tout À un clic là",
     registerDescription: "Join our community",
     forgotPasswordDescription: "We'll send you a link to reset your password",
-    
+
     // Desktop form descriptions
     loginFormDescription: "Enter your credentials to access",
     registerFormDescription: "Complete your details to get started",
     forgotPasswordFormDescription: "Enter your email to recover access",
-    
+
     // Extended descriptions for left column on desktop
     loginDescriptionExtended: "Access your account and enjoy the best online shopping experience with Latino products in Montreal.",
     registerDescriptionExtended: "Join our community and discover the best selection of Latino products in Montreal with fast delivery.",
     forgotPasswordDescriptionExtended: "Don't worry, we'll help you recover access to your account securely.",
-    
+
     // Titles for left column on desktop
     welcomeBack: "Welcome back!",
     joinOurCommunity: "Join our community",
     resetPasswordTitle: "Recover your account",
-    
+
     // Featured characteristics
     feature1: "Authentic Latino products",
     feature2: "Fast delivery in Montreal",
     feature3: "Competitive prices",
-    
+
     // Field labels
     fullName: "Full name",
     email: "Email address",
     phone: "Phone",
     password: "Password",
     confirmPassword: "Confirm password",
-    
+
     // Placeholders
     fullNamePlaceholder: "Your full name",
     emailPlaceholder: "you@example.com",
@@ -1202,7 +1296,7 @@ export default {
     passwordPlaceholder: "Your password",
     passwordRegisterPlaceholder: "Minimum 6 characters",
     confirmPasswordPlaceholder: "Repeat your password",
-    
+
     // Buttons
     loginButton: "Sign in",
     registerButton: "Create account",
@@ -1210,15 +1304,15 @@ export default {
     continueWithGoogle: "Continue with Google",
     continueWithGoogleRegister: "Sign up with Google",
     registerWithEmail: "Sign up with email",
-    
+
     // Loading states
     loggingIn: "Signing in...",
     creatingAccount: "Creating account...",
     sendingLink: "Sending link...",
-    
+
     // Separator
     orContinueWith: "Or continue with",
-    
+
     // Checkbox and terms
     acceptTerms: "I accept the",
     termsAndConditions: "Terms and Conditions",
@@ -1227,14 +1321,14 @@ export default {
     acceptTermsRequired: "You must accept the terms and conditions to continue",
     rememberMe: "Remember me",
     forgotPassword: "Forgot your password?",
-    
+
     // Footer links
     noAccount: "Don't have an account?",
     alreadyHaveAccount: "Already have an account?",
     signUp: "Sign up",
     signIn: "Sign in",
     backToLogin: "Back to sign in",
-    
+
     // Common error messages
     emailRequired: "Email is required",
     emailInvalid: "Invalid email",
@@ -1246,13 +1340,13 @@ export default {
     emailNotRegistered: "This email is not registered. Try creating an account.",
     errorCheckingEmail: "Error verifying email",
     generalError: "An error occurred",
-    
+
     // Success messages
     accountCreated: "Account created successfully. Please verify your email.",
     passwordResetSent: "A link has been sent to your email to reset your password",
     redirecting: "Redirecting...",
     googleAuthError: "Error signing in with Google",
-    
+
     // Verification
     verificationRequired: "Your account requires verification. Please check your email to complete the process or request a new verification email.",
     invalidCredentials: "Invalid credentials. Check your email and password.",
@@ -1307,16 +1401,16 @@ export default {
     backToResetForm: "Back to form",
     enterResetCode: "Enter the reset code",
     socialAuthNoReset: "This account uses social authentication. Sign in with Google.",
-    
+
     // Modal headers
     createFreeAccount: "Create your free account",
     verifyYourEmail: "Verify your email",
-    
+
     // Modal states
     processing: "Processing...",
     orText: "or",
     optionalText: "(optional)",
-    
+
     // Toast messages
     welcomeMessage: "Welcome!",
     loginSuccessDescription: "You have signed in successfully",
@@ -1324,16 +1418,16 @@ export default {
     verificationCodeSent: "We sent you a verification code to your email",
     comingSoon: "Coming soon",
     googleLoginComingSoon: "Google login will be available soon",
-    
+
     // Modal specific errors
     loginError: "Error signing in",
     registrationError: "Error registering user",
-    
+
     // Aria labels
     closeModal: "Close",
     showPassword: "Show password",
     hidePassword: "Hide password",
-    
+
     // Callback page
     callback: {
       processing: "Processing...",
@@ -1356,29 +1450,29 @@ export default {
       redirectingToDashboard: "We're redirecting you to your account"
     }
   },
-    // New translations for mobile navbar
+  // New translations for mobile navbar
   navbar: {
     welcome: "Welcome!",
     accessYourAccount: "Access your account to get started",
     loginButton: "Sign In",
     createAccountButton: "Create Account",
     logoutButton: "Sign out",
-    
+
     // Verification states
     pendingVerification: "Pending verification",
     unverifiedAccount: "Unverified account",
     accountNeedsVerification: "Your account needs verification",
-    
+
     // Menu sections
     mainMenu: "Main Menu",
     myAccount: "My Account",
     quickAccess: "Quick Access",
-    
+
     // Quick links
     favorites: "Favorites",
     orders: "Orders",
     addresses: "Addresses",
-    
+
     // New translations for mobile refactor
     mobile: {
       menu: "Menu",
@@ -1397,13 +1491,13 @@ export default {
       myAccount: "My Account",
       logout: "Sign Out"
     },
-    
-      // System messages
+
+    // System messages
     logoutSuccess: "Successfully signed out",
     logoutError: "Error signing out",
     languageChanged: "Language changed to"
   },
-  
+
   // Product catalog translations
   catalog: {
     // Restaurant Banner
@@ -1536,7 +1630,7 @@ export default {
       addedToCart: "Product added to cart",
       errorAddingToCart: "Error adding to cart"
     },
-    
+
     // ProductList
     productList: {
       // Page titles
@@ -1546,7 +1640,7 @@ export default {
       comidasSubtitle: "Authentic flavors from all across Latin America - Traditional gastronomy in Montreal",
       boutiqueTitle: "Boutique",
       boutiqueSubtitle: "Unique crafts and souvenirs - Latin American handmade products",
-      
+
       // Filters
       filters: "Filters",
       search: "Search products",
@@ -1563,7 +1657,7 @@ export default {
       applyFilters: "Apply filters",
       hideFilters: "Hide filters",
       showFilters: "Show filters",
-      
+
       // Sort options
       sortOptions: {
         nameAsc: "Name (A-Z)",
@@ -1574,7 +1668,7 @@ export default {
         newest: "Newest",
         bestselling: "Best selling"
       },
-      
+
       // Loading and empty states
       loading: "Loading products...",
       searching: "Searching...",
@@ -1585,7 +1679,7 @@ export default {
       showingResults: "Showing {count} of {total} products",
       error: "Error loading products",
       retry: "Try again",
-      
+
       // Search
       searchMinLength: "Type at least 2 characters to search",
       searchResults: "{count} results found",
@@ -1594,7 +1688,7 @@ export default {
       tryOtherTerms: "Try other search terms",
       noProductsAvailable: "No products available in {restaurant}",
       restaurantNoProducts: "This restaurant has no products available at the moment",
-      
+
       // Notifications
       notifications: {
         filtersApplied: "Filters applied successfully",
@@ -1603,7 +1697,7 @@ export default {
         noResultsFound: "No results found",
         errorOccurred: "An error occurred while loading products"
       },
-      
+
       // Mobile filters
       mobileFilters: {
         title: "Filters",
@@ -1611,7 +1705,7 @@ export default {
         cancel: "Cancel",
         reset: "Reset"
       },
-      
+
       // Pagination
       pagination: {
         loadingResults: "Loading results...",
@@ -1627,7 +1721,7 @@ export default {
         of: "of",
         results: "results"
       },
-      
+
       // Benefits
       benefits: {
         fastDelivery: {
@@ -1651,7 +1745,7 @@ export default {
           description: "We're here to help"
         }
       },
-      
+
       // Success and error messages
       messages: {
         addedToCart: "Product added to cart",
@@ -1663,22 +1757,22 @@ export default {
         outOfStock: "Product out of stock",
         productNotFound: "Product not found"
       },
-      
+
       // Subcategorías
       subcategories: {
         // Productos
         "1": "Flours and Doughs",
         "12": "Beverages",
-        "3": "Packages and Snacks", 
+        "3": "Packages and Snacks",
         "2": "Sauces and Dressings",
-        
+
         // Boutique
         "8": "Accessories",
         "7": "Clothing",
         "9": "Souvenirs"
       },
-  
-    // Prices and taxes
+
+      // Prices and taxes
       price: {
         notAvailable: "Not available",
         basePrice: "Base price",
@@ -1686,7 +1780,7 @@ export default {
         savings: "You save",
         originalPrice: "Original price"
       },
-      
+
       tax: {
         nonTaxable: "Non-Taxable",
         taxable: "Taxable",
@@ -1694,7 +1788,7 @@ export default {
         tps: "GST",
         tvq: "QST"
       },
-      
+
       product: {
         supplier: "Supplier",
         category: "Category",
@@ -1775,7 +1869,7 @@ export default {
         closedToday: "Closed today"
       }
     },
-    
+
     // ProductDetail
     productDetail: {
       // Product information
@@ -1785,14 +1879,14 @@ export default {
       reviews: "Reviews",
       shipping: "Shipping",
       returns: "Returns",
-      
+
       // Actions
       addToCart: "Add to cart",
       buyNow: "Buy now",
       addToFavorites: "Add to favorites",
       removeFromFavorites: "Remove from favorites",
       shareProduct: "Share product",
-      
+
       // Details
       price: "Price",
       originalPrice: "Original price",
@@ -1803,13 +1897,13 @@ export default {
       brand: "Brand",
       weight: "Weight",
       dimensions: "Dimensions",
-      
+
       // States
       inStock: "In stock",
       outOfStock: "Out of stock",
       limitedStock: "Limited stock",
       preOrder: "Pre-order",
-      
+
       // Quantity
       quantity: "Quantity",
       increase: "Increase quantity",
@@ -1817,28 +1911,28 @@ export default {
       maxQuantity: "Maximum available quantity: {max}",
       unitsAvailable: "units available",
       optionGroupsAvailable: "This product has {count} option groups available",
-      
+
       // Image gallery
       mainImage: "Main image",
       additionalImages: "Additional images",
       zoomImage: "Zoom image",
       previousImage: "Previous image",
       nextImage: "Next image",
-      
+
       // Related products
       relatedProducts: "Related products",
       youMayAlsoLike: "You may also like",
       similarProducts: "Similar products",
       seeMore: "See more",
       loading: "Loading...",
-      
+
       // Product-specific benefits
       authentic: "100% Authentic",
       originalProduct: "Original product",
       securePayment: "Secure payment",
       fastShipping: "Fast shipping",
       qualityGuaranteed: "Quality guaranteed",
-      
+
       // Reviews
       customerReviews: "Customer reviews",
       writeReview: "Write review",
@@ -1846,17 +1940,17 @@ export default {
       helpful: "Helpful",
       notHelpful: "Not helpful",
       verifiedPurchase: "Verified purchase",
-      
+
       // Shipping
       shippingInfo: "Shipping information",
       estimatedDelivery: "Estimated delivery",
       shippingCost: "Shipping cost",
       freeShippingOn: "Free shipping on orders of",
-      
+
       // Breadcrumbs
       home: "Home",
       backToCategory: "Back to {category}",
-      
+
       // Messages
       addedToCart: "Product successfully added to cart",
       errorAddingToCart: "Error adding product to cart",
@@ -1868,7 +1962,7 @@ export default {
       errorLoadingProduct: "Error loading product",
       productNotFound: "Product not found"
     },
-    
+
     // RestaurantGrid
     restaurantGrid: {
       selectRestaurant: "Choose your restaurant",
@@ -2140,24 +2234,24 @@ export default {
     commentPlaceholder: "Share your experience with this product...",
     submitReview: "Submit review"
   },
-  
+
   // Checkout pages translations
   checkout: {
     cancel: {
       title: "Payment Canceled",
       subtitle: "Don't worry, no charge has been made",
       toastMessage: "Payment canceled - Your cart is still saved",
-      
+
       whatHappened: {
         title: "What happened?",
         reasons: [
           "You canceled the payment process in Stripe Checkout",
-          "Your cart is still saved with all your products", 
+          "Your cart is still saved with all your products",
           "You can try payment again whenever you want",
           "No charge has been made to your card"
         ]
       },
-      
+
       whatCanYouDo: {
         title: "What can you do now?",
         reviewCart: {
@@ -2165,7 +2259,7 @@ export default {
           description: "Check products before continuing"
         },
         tryAgain: {
-          title: "Try Again", 
+          title: "Try Again",
           description: "The payment process is secure and fast"
         },
         keepShopping: {
@@ -2173,13 +2267,13 @@ export default {
           description: "Explore more products"
         }
       },
-      
+
       buttons: {
         backToCart: "Back to My Cart",
         tryPaymentAgain: "Try Payment Again",
         continueShopping: "Continue Shopping"
       },
-      
+
       support: {
         title: "Did you have payment problems?",
         description: "If you experienced any technical issues during the payment process, our support team is here to help you.",
