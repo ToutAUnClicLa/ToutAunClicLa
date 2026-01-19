@@ -1,188 +1,223 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowRight, Calculator, Gavel, Handshake, Sparkles, Stethoscope, Truck } from "lucide-react";
-import Link from "next/link";
+import React, { useState } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
+import {
+  Search,
+  ArrowRight,
+  Gavel,
+  Stethoscope,
+  Calculator,
+  TrendingUp,
+  Home,
+  Car,
+  Scissors,
+  Languages,
+  BadgeDollarSign,
+  CheckCircle2
+} from 'lucide-react';
+import Link from 'next/link';
 
-interface ServiceHighlightTranslation {
-  id: number;
-  name: string;
-  description: string;
-  color: string;
-  badge: string;
-  href: string;
-  icon: string;
-  cta: string;
-  languages: string[];
-}
+// Professional UI Components matching the requested design
 
-interface ServiceHighlight extends Omit<ServiceHighlightTranslation, 'icon'> {
-  icon: React.ElementType;
-}
-
-const SERVICE_ICON_MAP: Record<string, React.ElementType> = {
-  concierge: Sparkles,
-  business: Handshake,
-  logistics: Truck,
-  law: Gavel,
-  health: Stethoscope,
-  finance: Calculator
-};
-
-const getServiceIcon = (type: string) => SERVICE_ICON_MAP[type] ?? Sparkles;
-
-export default function ServiciosPage() {
+export default function ServicesPage() {
   const { t } = useTranslation();
-  const rawServices = t<ServiceHighlightTranslation[]>('landing.serviceHighlights');
-  const serviceHighlights: ServiceHighlight[] = rawServices.map(service => ({
-    ...service,
-    icon: getServiceIcon(service.icon)
-  }));
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const anchorFromHref = (href: string) => {
-    const [, anchor] = href.split('#');
-    return anchor;
-  };
+  const services = [
+    {
+      id: 'lawyers',
+      icon: Gavel,
+      titleKey: 'services.categories.lawyers.title',
+      descKey: 'services.categories.lawyers.description',
+      subServices: ['services.subservices.notaries', 'services.subservices.migration', 'services.subservices.civil'],
+    },
+    {
+      id: 'health',
+      icon: Stethoscope,
+      titleKey: 'services.categories.health.title',
+      descKey: 'services.categories.health.description',
+      subServices: ['services.subservices.dentists', 'services.subservices.psychologists', 'services.subservices.doctors'],
+    },
+    {
+      id: 'accounting',
+      icon: Calculator,
+      titleKey: 'services.categories.accounting.title',
+      descKey: 'services.categories.accounting.description',
+      subServices: ['services.subservices.taxes', 'services.subservices.payroll', 'services.subservices.bookkeeping'],
+    },
+    {
+      id: 'finance',
+      icon: TrendingUp,
+      titleKey: 'services.categories.finance.title',
+      descKey: 'services.categories.finance.description',
+      subServices: ['services.subservices.insurance', 'services.subservices.investments'],
+    },
+    {
+      id: 'realestate',
+      icon: Home,
+      titleKey: 'services.categories.realestate.title',
+      descKey: 'services.categories.realestate.description',
+      subServices: ['services.subservices.buying', 'services.subservices.renting', 'services.subservices.commercial'],
+    },
+    {
+      id: 'cars',
+      icon: Car,
+      titleKey: 'services.categories.cars.title',
+      descKey: 'services.categories.cars.description',
+      subServices: ['services.subservices.dealerships', 'services.subservices.mechanics'],
+    },
+    {
+      id: 'beauty',
+      icon: Scissors,
+      titleKey: 'services.categories.beauty.title',
+      descKey: 'services.categories.beauty.description',
+      subServices: ['services.subservices.stylists', 'services.subservices.nails', 'services.subservices.barber'],
+    },
+    {
+      id: 'translation',
+      icon: Languages,
+      titleKey: 'services.categories.translation.title',
+      descKey: 'services.categories.translation.description',
+      subServices: ['services.subservices.official', 'services.subservices.interpretation'],
+    },
+    {
+      id: 'money',
+      icon: BadgeDollarSign,
+      titleKey: 'services.categories.money.title',
+      descKey: 'services.categories.money.description',
+      subServices: ['services.subservices.remittances', 'services.subservices.exchange'],
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-white">
-      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-900 via-emerald-700 to-slate-900 py-20 text-white">
-        <div className="absolute inset-0 opacity-20 bg-[url('/noise.png')]"></div>
-        <div className="container relative px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="max-w-4xl mx-auto text-center space-y-5"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-5 py-2 text-sm font-semibold">
-              <Sparkles className="h-4 w-4 text-emerald-200" />
-              <span>{t('servicesPage.heroBadge')}</span>
-            </div>
-            <p className="text-xs uppercase tracking-[0.35em] text-emerald-200">
-              {t('servicesPage.heroSubtitle')}
-            </p>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold leading-tight">
-              {t('servicesPage.heroTitle')}
-            </h1>
-            <p className="text-base sm:text-lg text-emerald-50/90 leading-relaxed">
-              {t('servicesPage.description')}
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link
-                href="#profesiones"
-                className="inline-flex items-center gap-2 rounded-full bg-white text-emerald-900 px-6 py-3 text-base font-semibold shadow-xl hover:-translate-y-0.5 transition-transform"
-              >
-                {t('servicesPage.heroCta')}
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/40 px-5 py-2 text-sm font-semibold text-white/80">
-                <span className="h-2 w-2 rounded-full bg-emerald-300"></span>
-                {t('servicesPage.comingSoon')}
-              </div>
-            </div>
-          </motion.div>
+    <div className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans transition-colors duration-200 min-h-screen">
+
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-br from-[#004d40] to-[#0f172a] text-white overflow-hidden">
+        <div className="absolute inset-0 opacity-10 dark:opacity-20 pointer-events-none">
+          <svg className="h-full w-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+            <path d="M0 100 C 20 0 50 0 100 100 Z" fill="currentColor"></path>
+          </svg>
         </div>
-      </section>
 
-      <section id="profesiones" className="py-14 sm:py-20 bg-gradient-to-b from-white to-emerald-50/40">
-        <div className="container px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="max-w-4xl mx-auto text-center mb-12 sm:mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
-              {t('servicesPage.highlightsTitle')}
-            </h2>
-            <p className="text-base sm:text-lg text-gray-600">
-              {t('servicesPage.highlightsSubtitle')}
-            </p>
-          </motion.div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-6 animate-fade-in-up">
+            <CheckCircle2 className="w-4 h-4 text-green-300" />
+            <span className="text-xs font-medium tracking-wide text-green-100 uppercase">
+              {t('services.hero.badge')}
+            </span>
+          </div>
 
-          <div className="grid gap-6 lg:gap-8 md:grid-cols-2">
-            {serviceHighlights.map((service, index) => {
-              const Icon = service.icon;
-              return (
-                <motion.div
-                  key={service.id}
-                  id={anchorFromHref(service.href)}
-                  className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${service.color} text-white p-7 sm:p-8 shadow-[0_25px_50px_-20px_rgba(16,185,129,0.6)]`}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                >
-                  <div className="relative flex flex-col h-full space-y-5">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm">
-                          <Icon className="h-7 w-7" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
-                            {service.badge}
-                          </p>
-                          <h3 className="text-xl sm:text-2xl font-semibold leading-tight">
-                            {service.name}
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-sm sm:text-base text-white/90 leading-relaxed flex-grow">
-                      {service.description}
-                    </p>
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.3em] text-white/70">
-                        {t('servicesPage.languagesLabel')}
-                      </p>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {service.languages.map((language) => (
-                          <span key={language} className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold">
-                            {language}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 text-base font-semibold">
-                      {t('servicesPage.comingSoon')}
-                      <ArrowRight className="h-4 w-4" />
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+            {t('services.hero.title')} <br className="hidden md:block" /> {t('services.hero.subtitle')}
+          </h1>
+
+          <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-300 mb-10 leading-relaxed">
+            {t('services.hero.description')}
+          </p>
+
+          {/* Search Box */}
+          <div className="max-w-3xl mx-auto relative group z-10">
+            <div className="absolute inset-0 bg-primary opacity-20 blur-xl rounded-full group-hover:opacity-30 transition-opacity"></div>
+            <div className="relative flex flex-col sm:flex-row items-center bg-white dark:bg-slate-800 p-2 rounded-2xl shadow-2xl border border-white/10">
+              <div className="flex-grow flex items-center w-full px-4 py-2">
+                <Search className="text-gray-400 w-6 h-6 mr-3" />
+                <input
+                  className="w-full bg-transparent border-none focus:ring-0 text-slate-800 dark:text-slate-100 placeholder-gray-400 text-base outline-none"
+                  placeholder={t('services.search.placeholder')}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <div className="hidden sm:block w-px h-8 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+              <button className="w-full sm:w-auto mt-2 sm:mt-0 bg-[#00875A] hover:bg-green-700 text-white px-8 py-3 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                <span>{t('services.search.button')}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-8 flex justify-center gap-4 text-sm text-gray-400">
+            <span>{t('services.search.popular')}:</span>
+            <Link href="#" className="text-white hover:underline decoration-[#00875A] underline-offset-4">{t('services.categories.lawyers.short')}</Link>
+            <Link href="#" className="text-white hover:underline decoration-[#00875A] underline-offset-4">{t('services.categories.health.short')}</Link>
+            <Link href="#" className="text-white hover:underline decoration-[#00875A] underline-offset-4">{t('services.categories.accounting.short')}</Link>
           </div>
         </div>
-      </section>
+      </div>
 
-      <section className="py-14 bg-white">
-        <div className="container px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="max-w-3xl mx-auto text-center bg-emerald-50/80 rounded-3xl p-8 sm:p-10 border border-emerald-100"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-4">
-              {t('servicesPage.contactTitle')}
-            </h2>
-            <p className="text-base sm:text-lg text-gray-600 mb-6">
-              {t('servicesPage.contactDescription')}
-            </p>
-            <Link
-              href="mailto:serviceclient@toutaunclicla.com"
-              className="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-emerald-200/80 hover:-translate-y-0.5 transition-transform"
-            >
-              {t('servicesPage.contactButton')}
-            </Link>
-          </motion.div>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 sm:text-4xl mb-4">{t('services.grid.title')}</h2>
+          <p className="max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-400">
+            {t('services.grid.subtitle')}
+          </p>
         </div>
-      </section>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {services.map((service) => (
+            <div key={service.id} className="group flex flex-col bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="flex justify-between items-start mb-5">
+                <div className="p-3 rounded-xl bg-green-50 dark:bg-green-900/20 text-[#00875A] group-hover:bg-[#00875A] group-hover:text-white transition-colors duration-300">
+                  <service.icon className="w-8 h-8" />
+                </div>
+                <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded text-[10px] font-bold uppercase tracking-wide">
+                  {t('services.card.comingSoon')}
+                </span>
+              </div>
+
+              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 group-hover:text-[#00875A] transition-colors">
+                {t(service.titleKey)}
+              </h3>
+
+              <p className="text-slate-600 dark:text-slate-400 text-sm mb-6 flex-grow leading-relaxed">
+                {t(service.descKey)}
+              </p>
+
+              <div className="border-t border-gray-100 dark:border-gray-700 pt-5 mt-auto">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">{t('services.card.subservices')}</p>
+                <div className="flex flex-wrap gap-2 mb-5">
+                  {service.subServices.map((sub, idx) => (
+                    <span key={idx} className="px-2.5 py-1 bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded text-xs text-gray-600 dark:text-gray-300">
+                      {t(sub)}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex space-x-2 text-xs font-bold text-gray-400">
+                    <span className="text-[#00875A]">ES</span>
+                    <span>EN</span>
+                    <span>FR</span>
+                  </div>
+                  <button className="text-[#00875A] hover:text-green-700 font-medium text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                    {t('services.card.viewMore')} <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-24">
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-[#002f24] dark:to-[#0f2441] border border-green-100 dark:border-green-900/30 rounded-3xl p-8 md:p-12 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4">{t('services.cta.title')}</h2>
+            <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8">
+              {t('services.cta.description')}
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <button className="bg-[#00875A] hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all">
+                {t('services.cta.notifyButton')}
+              </button>
+              <button className="bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 border border-gray-200 dark:border-gray-700 px-8 py-3 rounded-lg font-medium transition-colors">
+                {t('services.cta.suggestButton')}
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
