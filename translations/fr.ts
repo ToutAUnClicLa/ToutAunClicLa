@@ -1516,7 +1516,8 @@ export default {
       limitedStock: "Stock limité",
       newProduct: "Nouveau",
       bestseller: "Bestseller",
-      featured: "En vedette"
+      featured: "En vedette",
+      weekendsOnly: "Samedis - Dimanches"
     },
 
     // Prix

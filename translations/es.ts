@@ -772,7 +772,8 @@ export default {
       limitedStockUnits: "Pocas unidades disponibles",
       newProduct: "Nuevo",
       bestseller: "Más vendido",
-      featured: "Destacado"
+      featured: "Destacado",
+      weekendsOnly: "Sábados - Domingos"
     },
 
     // Precios
