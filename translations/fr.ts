@@ -1316,6 +1316,7 @@ export default {
 
     // Séparateur
     orContinueWith: "Ou continuer avec",
+    requiredForCart: "Vous devez vous connecter pour accéder au panier",
 
     // Checkbox et conditions
     acceptTerms: "J'accepte les",

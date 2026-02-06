@@ -23,9 +23,9 @@ const CART_BASE_URL = getCartBaseUrl();
 // Headers comunes para todas las requests
 const getHeaders = () => {
   const token = localStorage.getItem('auth_token');
-  const isLocalhost = typeof window !== 'undefined' && 
+  const isLocalhost = typeof window !== 'undefined' &&
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-    
+
   return {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -78,22 +78,6 @@ export interface CartItem {
   notas_entrega?: string;
   productos: CartProduct;
   addedAt?: string;
-  // Variations from backend - matches backend response structure
-  variations?: Array<{
-    cart_item_id: string;
-    quantity: number;
-    price_at_time: number;
-    product_variations: {
-      id: number;
-      name: string;
-      description: string;
-      price_modifier: number;
-    };
-  }>;
-  // Computed fields for convenience
-  baseSubtotal?: number;
-  variationModifier?: number;
-  finalSubtotal?: number;
 }
 
 export interface CartSummary {
@@ -208,7 +192,7 @@ export interface StripeCheckoutResponse {
  */
 export async function getCart(page: number = 1, limit: number = 20): Promise<CartResponse> {
   const url = `${CART_BASE_URL}?page=${page}&limit=${limit}`;
-  
+
   return deduplicateRequest('GET', url, async (abortSignal) => {
     return retryWithBackoff(
       async (signal) => {
@@ -220,21 +204,10 @@ export async function getCart(page: number = 1, limit: number = 20): Promise<Car
 
         const data = await response.json();
 
-        // Log cart data for variations debugging
+        // Log cart data
         if (data.cartItems && data.cartItems.length > 0) {
           console.log('🛒 Datos del carrito recibidos del backend:', {
-            itemCount: data.cartItems.length,
-            variations: data.cartItems
-              .filter((item: any) => item.variations && item.variations.length > 0)
-              .map((item: any) => ({
-                productName: item.productos.nombre,
-                variationCount: item.variations.length,
-                variations: item.variations.map((v: any) => ({
-                  name: v.product_variations?.name,
-                  modifier: v.price_at_time || v.product_variations?.price_modifier,
-                  quantity: v.quantity
-                }))
-              }))
+            itemCount: data.cartItems.length
           });
         }
 
@@ -244,15 +217,15 @@ export async function getCart(page: number = 1, limit: number = 20): Promise<Car
             console.warn('Backend shippingThreshold error, using fallback');
             throw new Error('FALLBACK_CART_NEEDED');
           }
-          
+
           if (response.status >= 500) {
             throw new Error(`Server error: ${data.message || data.error || 'Internal server error'}`);
           }
-          
+
           if (response.status === 429) {
             throw new Error('Rate limit exceeded. Please try again later.');
           }
-          
+
           throw new Error(data.message || data.error || 'Error al obtener carrito');
         }
 
@@ -274,7 +247,7 @@ export async function getCart(page: number = 1, limit: number = 20): Promise<Car
     );
   }).catch((error: any) => {
     console.error('🚨 Final error in getCart after retries:', error);
-    
+
     // Return fallback cart for specific errors
     if (error.message?.includes('FALLBACK_CART_NEEDED') || error.message?.includes('shippingThreshold')) {
       console.warn('Returning fallback cart due to backend field issues');
@@ -306,7 +279,7 @@ export async function getCart(page: number = 1, limit: number = 20): Promise<Car
         }
       };
     }
-    
+
     throw error;
   });
 }
@@ -318,7 +291,7 @@ export async function getCart(page: number = 1, limit: number = 20): Promise<Car
  */
 export async function getCartWithCoupon(couponCode: string): Promise<CartWithCouponResponse> {
   const url = `${CART_BASE_URL}/with-coupon?couponCode=${encodeURIComponent(couponCode)}`;
-  
+
   return deduplicateRequest('GET', url, async (abortSignal) => {
     return retryWithBackoff(
       async (signal) => {
@@ -336,19 +309,19 @@ export async function getCartWithCoupon(couponCode: string): Promise<CartWithCou
             console.warn('Backend shippingThreshold error in getCartWithCoupon, using fallback');
             throw new Error('FALLBACK_COUPON_CART_NEEDED');
           }
-          
+
           if (response.status === 400 && (data.message?.includes('Personal usage limit reached') || data.message?.includes('límite personal de uso') || data.message?.includes('userUsageCount'))) {
             throw new Error('Ya has usado este cupón el máximo número de veces permitido');
           }
-          
+
           if (response.status >= 500) {
             throw new Error(`Server error: ${data.message || data.error || 'Internal server error'}`);
           }
-          
+
           if (response.status === 429) {
             throw new Error('Rate limit exceeded. Please try again later.');
           }
-          
+
           throw new Error(data.message || data.error || 'Error al obtener carrito con cupón');
         }
 
@@ -370,7 +343,7 @@ export async function getCartWithCoupon(couponCode: string): Promise<CartWithCou
     );
   }).catch((error: any) => {
     console.error('🚨 Final error in getCartWithCoupon after retries:', error);
-    
+
     // Return fallback cart for specific errors
     if (error.message?.includes('FALLBACK_COUPON_CART_NEEDED') || error.message?.includes('shippingThreshold')) {
       console.warn('Returning fallback cart with coupon due to backend field issues');
@@ -404,7 +377,7 @@ export async function getCartWithCoupon(couponCode: string): Promise<CartWithCou
         }
       };
     }
-    
+
     throw error;
   });
 }
@@ -419,14 +392,10 @@ export async function addToCart(
   deliveryOptions?: {
     metodoEntrega?: 'puerta' | 'manos' | 'recepcion';
     notasEntrega?: string;
-  },
-  variations?: Array<{
-    variationId: number;
-    quantity: number;
-  }>
+  }
 ): Promise<{ cartItem: CartItem; deliveryInfo?: any }> {
   const payload: any = { productId, quantity };
-  
+
   // Agregar opciones de entrega si se proporcionan
   if (deliveryOptions?.metodoEntrega) {
     payload.metodoEntrega = deliveryOptions.metodoEntrega;
@@ -434,18 +403,9 @@ export async function addToCart(
   if (deliveryOptions?.notasEntrega) {
     payload.notasEntrega = deliveryOptions.notasEntrega;
   }
-  
-  // Agregar variaciones si se proporcionan
-  if (variations && variations.length > 0) {
-    payload.variations = variations;
-    console.log('🛒 Agregando variaciones al payload del carrito:', {
-      variations,
-      payload
-    });
-  }
 
   const url = `${CART_BASE_URL}/items`;
-  
+
   return deduplicateRequest('POST', url, async (abortSignal) => {
     return retryWithBackoff(
       async (signal) => {
@@ -474,17 +434,6 @@ export async function addToCart(
           throw new Error(data.message || data.error || 'Error al agregar al carrito');
         }
 
-        // Log successful cart addition with variations
-        if (variations && variations.length > 0) {
-          console.log('✅ Producto agregado al carrito con variaciones exitosamente:', {
-            cartItem: data.cartItem,
-            variationsDetected: data.cartItem?.selectedVariations?.length || 0,
-            baseSubtotal: data.cartItem?.baseSubtotal,
-            variationModifier: data.cartItem?.variationModifier,
-            finalSubtotal: data.cartItem?.finalSubtotal
-          });
-        }
-
         return {
           cartItem: data.cartItem,
           deliveryInfo: data.deliveryInfo
@@ -509,7 +458,7 @@ export async function addToCart(
 export async function updateCartItem(itemId: string, quantity: number): Promise<CartItem> {
   const payload = { quantity };
   const url = `${CART_BASE_URL}/items/${itemId}`;
-  
+
   return deduplicateRequest('PUT', url, async (abortSignal) => {
     return retryWithBackoff(
       async (signal) => {
@@ -561,7 +510,7 @@ export async function updateCartItem(itemId: string, quantity: number): Promise<
  */
 export async function removeFromCart(itemId: string): Promise<void> {
   const url = `${CART_BASE_URL}/items/${itemId}`;
-  
+
   return deduplicateRequest('DELETE', url, async (abortSignal) => {
     return retryWithBackoff(
       async (signal) => {
@@ -678,7 +627,7 @@ export async function updateDeliveryOptions(options: DeliveryOptions): Promise<D
       method: 'PUT',
       payload: options
     });
-    
+
     const response = await fetch(`${CART_BASE_URL}/delivery-options`, {
       method: 'PUT',
       headers: getHeaders(),

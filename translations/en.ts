@@ -1353,6 +1353,7 @@ export default {
     resendVerification: "Would you like us to send a new verification email?",
     verificationSent: "New verification email sent. Please check your inbox.",
     verificationError: "Error sending verification email",
+    requiredForCart: "You must log in to access the cart",
     verificationTitle: "Verify Email",
     verificationDescription: "Verify your email",
     verificationCodeLabel: "Verification code",

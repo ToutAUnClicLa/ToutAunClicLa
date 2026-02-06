@@ -7,8 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/common/ui/button';
-import {ReviewForm} from '@/components/features/modules/reviews/ReviewForm';
-import {ReviewList} from '@/components/features/modules/reviews/ReviewList';
+import { ReviewForm } from '@/components/features/modules/reviews/ReviewForm';
+import { ReviewList } from '@/components/features/modules/reviews/ReviewList';
 import { getProductDetail } from '@/lib/services/products';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toast } from 'sonner';
@@ -20,9 +20,6 @@ import AuthModal from '@/components/features/auth/AuthModal';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
 import { ProductPriceDisplay } from '@/components/features/modules/catalog/ProductPriceDisplay';
-import { ProductVariations } from '@/components/features/modules/product/ProductVariations';
-import { ProductWithVariations, VariationSelection } from '@/types/variations';
-import { hasValidVariations, formatSelectedVariations, logVariationDebug } from '@/lib/utils/variations';
 
 // Dynamically import heavy components
 const MotionImage = motion(Image);
@@ -65,10 +62,10 @@ const LoadingState = () => (
   </div>
 );
 
-function ProductDetail({ product, colors, params, onReviewDeleted }: { 
-  product: ProductWithVariations; 
-  colors: any; 
-  params: any; 
+function ProductDetail({ product, colors, params, onReviewDeleted }: {
+  product: any;
+  colors: any;
+  params: any;
   onReviewDeleted: (reviewId: string) => void;
 }) {
   const { t } = useTranslation();
@@ -77,20 +74,11 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [variationSelection, setVariationSelection] = useState<VariationSelection | null>(null);
   const { user } = useAuth();
-  
-  // Check if product has variations
-  const hasVariations = hasValidVariations(product);
-  const canAddToCart = !hasVariations || (hasVariations && variationSelection?.isValid);
-  const finalPrice = variationSelection?.finalPrice || product.precio;
+  // Check if product is in stock
+  const canAddToCart = product.stock > 0;
+  const finalPrice = product.precio;
 
-  // Debug log for variations
-  useEffect(() => {
-    if (hasVariations && product.variations) {
-      logVariationDebug(product.id, product.nombre, variationSelection, product.variations);
-    }
-  }, [product.id, product.nombre, hasVariations, product.variations, variationSelection]);
 
   const benefits = useMemo(() => [
     {
@@ -147,41 +135,12 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
       return;
     }
 
-    // Validate variations if product has them
-    if (hasVariations && (!variationSelection || !variationSelection.isValid)) {
-      toast.error(t('notifications.selectAllOptions'));
-      return;
-    }
-
     try {
       setIsLoading(true);
-      
-      if (hasVariations && variationSelection) {
-        // Add to cart with variations
-        const variations = variationSelection.variations.map(v => ({
-          variationId: v.variationId,
-          quantity: v.quantity
-        }));
-        
-        console.log('🍔 Enviando producto al carrito con variaciones:', {
-          productId: product.id,
-          quantity,
-          variations,
-          finalPrice: variationSelection.finalPrice,
-          totalPriceModifier: variationSelection.totalPriceModifier
-        });
-        
-        await addToCart(product.id, quantity, undefined, variations);
-        
-        // Show detailed success message with variations info
-        const variationNames = formatSelectedVariations(variationSelection, product.variations || []);
-        
-        toast.success(`${product.nombre} ${t('notifications.addedToCartWith')}: ${variationNames}`);
-      } else {
-        // Regular add to cart without variations
-        await addToCart(product.id, quantity);
-        toast.success(t('catalog.productDetail.addedToCart'));
-      }
+
+      // Regular add to cart without variations
+      await addToCart(product.id, quantity);
+      toast.success(t('catalog.productDetail.addedToCart'));
     } catch (error) {
       console.error('Error al agregar al carrito:', error);
       toast.error(t('catalog.productDetail.errorAddingToCart'));
@@ -189,10 +148,7 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
       setIsLoading(false);
     }
   };
-  
-  const handleVariationChange = useCallback((selection: VariationSelection) => {
-    setVariationSelection(selection);
-  }, []);
+
 
   const handleToggleFavorite = async () => {
     if (!user) {
@@ -201,7 +157,7 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
     }
 
     const previousState = isFavorited;
-    
+
     try {
       setIsFavorited(!previousState);
       if (previousState) {
@@ -222,7 +178,7 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
     <>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16">
         {/* Product Images */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="space-y-4"
@@ -268,7 +224,7 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
         </motion.div>
 
         {/* Product Info */}
-        <motion.div 
+        <motion.div
           className="space-y-6 lg:space-y-8"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -290,15 +246,14 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
             </div>
 
             <h1 className="text-xl sm:text-2xl font-bold mb-2">{product.nombre}</h1>
-            
+
             <div className="flex items-center gap-3">
               <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-4 w-4 ${
-                      i < (product.rating || 0) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
-                    }`}
+                    className={`h-4 w-4 ${i < (product.rating || 0) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                      }`}
                   />
                 ))}
                 <span className="ml-1 text-xs text-gray-600">
@@ -323,27 +278,6 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
           </div>
 
           <div className="space-y-3">
-            <ProductPriceDisplay 
-              product={{
-                ...product,
-                hasVariations,
-                precio: finalPrice
-              }} 
-              variant="detailed"
-              selectedVariations={variationSelection?.variations}
-              showBreakdown={hasVariations}
-            />
-            <p className="text-sm text-gray-600 leading-relaxed">{product.descripcion}</p>
-            
-            {/* Show variation count if product has variations */}
-            {hasVariations && (
-              <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 p-3 rounded-lg">
-                <span>⚙️</span>
-                <span>
-                  {t('catalog.productDetail.optionGroupsAvailable', { count: product.variations?.length || 0 })}
-                </span>
-              </div>
-            )}
           </div>
 
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -363,22 +297,15 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
             ))}
           </div>
 
-          {/* Product Variations Section */}
-          {hasVariations && product.variations && (
-            <div className="py-6 border-y border-gray-200">
-              <h3 className="text-xl font-semibold mb-6 flex items-center gap-3 text-gray-900">
-                <span className="text-2xl">⚙️</span>
-                {t('catalog.variations.customizeProduct')}
-              </h3>
-              <ProductVariations
-                product={product}
-                onSelectionChange={handleVariationChange}
-                showPriceBreakdown={true}
-                className=""
-              />
-            </div>
-          )}
-          
+          <ProductPriceDisplay
+            product={{
+              ...product,
+              precio: finalPrice
+            }}
+            variant="detailed"
+          />
+          <p className="text-sm text-gray-600 leading-relaxed">{product.descripcion}</p>
+
           {/* Quantity and Stock Section */}
           <div className="space-y-6 py-6 border-y border-gray-200">
             <div className="flex items-center justify-between">
@@ -405,27 +332,11 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
                 </Button>
               </div>
             </div>
-            
-            {/* Variation selection status */}
-            {hasVariations && (
-              <div className="text-sm">
-                {variationSelection?.isValid ? (
-                  <div className="text-green-600 bg-green-50 p-2 rounded-lg flex items-center gap-2">
-                    <Check className="w-4 h-4" />
-                    <span>{t('catalog.variations.validSelection')}</span>
-                  </div>
-                ) : (
-                  <div className="text-amber-600 bg-amber-50 p-2 rounded-lg flex items-center gap-2">
-                    <span>ℹ️</span>
-                    <span>{t('catalog.variations.selectAllRequired')}</span>
-                  </div>
-                )}
-              </div>
-            )}
+
           </div>
 
           <div className="flex gap-2">
-            <Button 
+            <Button
               className={cn("flex-1 h-10", colors.button)}
               onClick={handleAddToCart}
               disabled={product.stock === 0 || isLoading || !canAddToCart}
@@ -440,15 +351,10 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   {t('catalog.productCard.outOfStock')}
                 </>
-              ) : !canAddToCart ? (
-                <>
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  {t('catalog.variations.selectOption')}
-                </>
               ) : (
                 <>
                   <ShoppingCart className="h-4 w-4 mr-2" />
-                  {hasVariations ? t('catalog.variations.addCustomized') : t('catalog.productCard.addToCart')}
+                  {t('catalog.productCard.addToCart')}
                   {quantity > 1 && ` (${quantity})`}
                 </>
               )}
@@ -460,9 +366,7 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
               onClick={handleToggleFavorite}
             >
               <Heart
-                className={`h-4 w-4 ${
-                  isFavorited ? 'fill-red-500 text-red-500' : ''
-                }`}
+                className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`}
               />
             </Button>
           </div>
@@ -472,8 +376,8 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
             <h3 className="text-lg font-semibold mb-4">{t('catalog.productDetail.reviews')}</h3>
             <Suspense fallback={<div>{t('catalog.productDetail.loading')}</div>}>
               <ReviewForm productId={product.id.toString()} />
-              <ReviewList 
-                reviews={product.reviews || []} 
+              <ReviewList
+                reviews={product.reviews || []}
                 onReviewDeleted={onReviewDeleted}
               />
             </Suspense>
@@ -517,10 +421,10 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
         </div>
       )}
 
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
-        initialMode="login" 
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode="login"
       />
     </>
   );
@@ -594,10 +498,10 @@ export default function ProductDetailPage() {
             <span className="text-gray-900 font-medium truncate">{product.nombre}</span>
           </div>
 
-          <ProductDetail 
-            product={product} 
-            colors={colors} 
-            params={params} 
+          <ProductDetail
+            product={product}
+            colors={colors}
+            params={params}
             onReviewDeleted={handleReviewDeleted}
           />
         </div>

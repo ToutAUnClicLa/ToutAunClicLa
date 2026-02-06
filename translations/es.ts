@@ -599,6 +599,7 @@ export default {
     resendVerification: "¿Deseas que enviemos un nuevo correo de verificación?",
     verificationSent: "Nuevo correo de verificación enviado. Por favor, revisa tu bandeja de entrada.",
     verificationError: "Error al enviar el correo de verificación",
+    requiredForCart: "Debes iniciar sesión para acceder al carrito",
     verificationTitle: "Verificar Email",
     verificationDescription: "Verifica tu email",
     verificationCodeLabel: "Código de verificación",

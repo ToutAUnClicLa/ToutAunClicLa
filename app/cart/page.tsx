@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -22,35 +22,31 @@ import { toast } from 'sonner';
 import { CartItem } from '@/lib/services/cart';
 import type { DeliveryOptions as DeliveryOptionsType } from '@/lib/services/cart';
 import { useTranslation } from '@/hooks/useTranslation';
-// Removed unused import: formatCartItemVariations
-import { logBackendDataQuality } from '@/lib/utils/cart-validation';
-import { getDiscountPercentage } from '@/lib/utils';
-import { CartItemVariations } from '@/components/features/modules/cart/CartItemVariations';
 import { verifyAddressForCheckout } from '@/lib/services/addresses';
- 
+
 // Mapeo de categorías con estilos modernos
 const getCategoryMap = (t: any) => ({
-  productos: { 
-    name: t('cart.categories.productos'), 
-    icon: Package, 
+  productos: {
+    name: t('cart.categories.productos'),
+    icon: Package,
     color: 'text-indigo-600',
     bgColor: 'bg-gradient-to-r from-indigo-50 to-indigo-100',
     borderColor: 'border-indigo-200',
     badgeColor: 'bg-indigo-100 text-indigo-700',
     iconBg: 'bg-indigo-100'
   },
-  comidas: { 
-    name: t('cart.categories.comidas'), 
-    icon: Utensils, 
+  comidas: {
+    name: t('cart.categories.comidas'),
+    icon: Utensils,
     color: 'text-amber-600',
     bgColor: 'bg-gradient-to-r from-amber-50 to-amber-100',
     borderColor: 'border-amber-200',
     badgeColor: 'bg-amber-100 text-amber-700',
     iconBg: 'bg-amber-100'
   },
-  boutique: { 
-    name: t('cart.categories.boutique'), 
-    icon: Store, 
+  boutique: {
+    name: t('cart.categories.boutique'),
+    icon: Store,
     color: 'text-purple-600',
     bgColor: 'bg-gradient-to-r from-purple-50 to-purple-100',
     borderColor: 'border-purple-200',
@@ -68,7 +64,7 @@ const getItemCategory = (item: CartItem): string => {
   }
 
   const categoryName = item.productos?.categorias?.nombre?.toLowerCase() || '';
-  
+
   // Lógica para mapear categorías
   if (categoryName.includes('comida') || categoryName.includes('food') || categoryName.includes('snack')) {
     return 'comidas';
@@ -86,11 +82,11 @@ export default function CartPage() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { t } = useTranslation();
-  const { 
-    items, 
+  const {
+    items,
     totalQuantity,
-    isLoading, 
-    updateQuantity, 
+    isLoading,
+    updateQuantity,
     removeFromCart,
     clearCart,
     isEmpty,
@@ -98,126 +94,83 @@ export default function CartPage() {
     applyCoupon,
     removeCoupon,
     appliedCoupon,
-    summary 
+    summary
   } = useCart();
-  
-  const { 
-    selectedAddress, 
-    hasAddresses, 
-    addresses, 
-    isSyncingWithBackend, 
+
+  const {
+    selectedAddress,
+    hasAddresses,
+    addresses,
+    isSyncingWithBackend,
     lastSyncedAddressId,
     isAddressSafeForCheckout,
-    refreshAddresses 
+    refreshAddresses
   } = useAddresses();
-  
+
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [verifyingAddress, setVerifyingAddress] = useState(false);
-  const [expandedVariations, setExpandedVariations] = useState<Set<string>>(new Set());
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOptionsType & { isValid: boolean }>({
     metodoEntrega: 'puerta',
     notasEntrega: '',
     aplicarATodos: true,
     isValid: true
   });
-  
+
   // Estado para manejar la habilitación inmediata de opciones de entrega
   const [hasValidAddress, setHasValidAddress] = useState(false);
-  
-  // Helper function to calculate item price including variations
-  const calculateItemFinalPrice = useCallback((item: CartItem) => {
-    // 🚨 VALIDACIÓN DEFENSIVA: Verificar que item y productos existan
-    if (!item?.productos?.precio) {
-      console.error('❌ CartErrorBoundary Prevention: Item sin productos o precio:', item);
-      return 0;
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // Ref para evitar múltiples toasts de redirección
+  const hasNotifiedAuth = useRef(false);
+
+  // Redirigir si no está autenticado
+  useEffect(() => {
+    // Si ya sabemos que no está autenticado y no está cargando el carrito
+    if (!isAuthenticated && !isLoading) {
+      if (!hasNotifiedAuth.current) {
+        toast.error(t('auth.requiredForCart'));
+        hasNotifiedAuth.current = true;
+      }
+      router.push('/?auth=login');
+    } else if (isAuthenticated) {
+      // Resetear el ref si el usuario se autentica
+      hasNotifiedAuth.current = false;
+      setIsCheckingAuth(false);
     }
+  }, [isAuthenticated, isLoading, router, t]);
 
-    const basePrice = item.productos.precio;
 
-    let variationModifier = 0;
-    if (item.variations && item.variations.length > 0) {
-      variationModifier = item.variations.reduce((varSum, variation) => {
-        // 🚨 VALIDACIÓN DEFENSIVA: Verificar cada variación
-        if (!variation) {
-          console.warn('⚠️ Variación nula encontrada, ignorando');
-          return varSum;
-        }
-        const modifier = variation.price_at_time ?? variation.product_variations?.price_modifier ?? 0;
-        const quantity = variation.quantity ?? 0;
-        return varSum + (modifier * quantity);
-      }, 0);
-    }
 
-    return basePrice + variationModifier;
-  }, []);
 
-  // Helper function to get detailed pricing breakdown for display
-  const getItemPricingDetails = useCallback((item: CartItem) => {
-    // 🚨 VALIDACIÓN DEFENSIVA: Verificar que item y productos existan
-    if (!item?.productos?.precio) {
-      console.error('❌ CartErrorBoundary Prevention: Item sin productos o precio en pricing details:', item);
-      return {
-        baseSubtotal: 0,
-        variationModifier: 0,
-        finalSubtotal: 0
-      };
-    }
-
-    const basePrice = item.productos.precio;
-    const baseSubtotal = basePrice;
-
-    let variationModifier = 0;
-    if (item.variations && item.variations.length > 0) {
-      variationModifier = item.variations.reduce((varSum, variation) => {
-        // 🚨 VALIDACIÓN DEFENSIVA: Verificar cada variación
-        if (!variation) {
-          console.warn('⚠️ Variación nula encontrada en pricing details, ignorando');
-          return varSum;
-        }
-        const modifier = variation.price_at_time ?? variation.product_variations?.price_modifier ?? 0;
-        const quantity = variation.quantity ?? 0;
-        return varSum + (modifier * quantity);
-      }, 0);
-    }
-
-    const finalSubtotal = basePrice + variationModifier;
-
-    return {
-      baseSubtotal,
-      variationModifier,
-      finalSubtotal
-    };
-  }, []);
-  
   // 🚨 BACKEND AS SINGLE SOURCE OF TRUTH - Minimal local calculations for offline fallback only
   const calculatedSubtotal = useMemo(() => {
     // Only calculate when backend data is unavailable
     if (summary?.subtotal !== undefined) return summary.subtotal;
-    
+
     return items.reduce((sum, item) => {
-      const finalItemPrice = calculateItemFinalPrice(item) * item.cantidad;
+      const finalItemPrice = (item.productos?.precio || 0) * item.cantidad;
       return sum + finalItemPrice;
     }, 0);
-  }, [items, calculateItemFinalPrice, summary?.subtotal]);
+  }, [items, summary?.subtotal]);
 
   // Emergency fallback for taxes calculation
   const calculatedTaxes = useMemo(() => {
     if (summary?.totalTaxes !== undefined) return summary.totalTaxes;
-    
+
     return items.reduce((sum, item) => {
-      const finalItemPrice = calculateItemFinalPrice(item) * item.cantidad;
+      const finalItemPrice = (item.productos?.precio || 0) * item.cantidad;
       const tpsAmount = item.productos.TPS ? (finalItemPrice * item.productos.TPS / 100) : 0;
       const tvqAmount = item.productos.TVQ ? (finalItemPrice * item.productos.TVQ / 100) : 0;
       return sum + tpsAmount + tvqAmount;
     }, 0);
-  }, [items, calculateItemFinalPrice, summary?.totalTaxes]);
+  }, [items, summary?.totalTaxes]);
 
   // Emergency fallback for consigne calculation
   const calculatedConsigne = useMemo(() => {
     if (summary?.totalConsigne !== undefined) return summary.totalConsigne;
-    
+
     return items.reduce((sum, item) => {
       const consigneAmount = item.productos.consigne ? item.productos.consigne * item.cantidad : 0;
       return sum + consigneAmount;
@@ -226,37 +179,25 @@ export default function CartPage() {
 
   // 🚨 BACKEND VALUES FIRST - NO FALLBACKS for pricing, only for display
   // The backend calculates ALL prices based on user location, products, and business logic
-  
+
   // Always use backend values, NO local calculations for pricing
   const displaySubtotal = summary?.subtotal ?? calculatedSubtotal;
   const displayTaxes = summary?.totalTaxes ?? calculatedTaxes;
   const displayConsigne = summary?.totalConsigne ?? calculatedConsigne;
   const shippingThreshold = summary?.shippingThreshold ?? 200; // Only fallback for display
-  
+
   // 🚨 CRITICAL: Backend total is ALWAYS authoritative - NO fallback calculations
   const finalTotal = summary?.total ?? 0; // If no backend total, show 0 until loaded
   const savingsAmount = summary?.savings ?? 0;
   const finalShippingCost = summary?.shippingCost ?? 0; // Backend determines shipping cost
   const isFreeShippingApplied = summary?.freeShippingApplied ?? false;
 
-  // Functions for variation expansion
-  const toggleVariationExpansion = useCallback((itemId: string) => {
-    setExpandedVariations(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(itemId)) {
-        newSet.delete(itemId);
-      } else {
-        newSet.add(itemId);
-      }
-      return newSet;
-    });
-  }, []);
-  
+
   // 🚚 CRITICAL FIX: New shipping state management from backend
   // Always use the latest values from summary, with proper fallbacks
   const shippingMessage = summary?.shippingMessage || null;
   const needsAddress = summary?.needsAddress || false;
-  
+
   // 🔍 Debug logging for shipping state changes
   useEffect(() => {
     if (summary?.shippingMessage || summary?.needsAddress) {
@@ -272,9 +213,6 @@ export default function CartPage() {
   // 🚨 Backend-first state monitoring using validation utilities (optimized)
   useEffect(() => {
     if (summary) {
-      // Use validation utility for consistent monitoring
-      logBackendDataQuality(summary, 'cart page');
-      
       // Calculate values inside useEffect to avoid dependency issues
       const currentDisplaySubtotal = summary?.subtotal ?? calculatedSubtotal;
       const currentDisplayTaxes = summary?.totalTaxes ?? calculatedTaxes;
@@ -286,7 +224,7 @@ export default function CartPage() {
       const currentShippingThreshold = summary?.shippingThreshold ?? 200;
       const currentNeedsAddress = summary?.needsAddress || false;
       const currentShippingMessage = summary?.shippingMessage || null;
-      
+
       // Additional cart page specific logging
       console.log('🛒 Cart page final state:', {
         displayValues: {
@@ -314,7 +252,7 @@ export default function CartPage() {
       });
     }
   }, [summary, appliedCoupon, items.length, calculatedSubtotal, calculatedTaxes, calculatedConsigne]);
-  
+
   const formatPrice = useCallback((price: number) => {
     return new Intl.NumberFormat('es-US', {
       style: 'currency',
@@ -333,7 +271,7 @@ export default function CartPage() {
         hasSelectedAddress: !!selectedAddress?.id,
         hasCoupon: !!appliedCoupon
       });
-      
+
       // Cargar carrito inicial o cuando cambia dirección válida
       refreshCart();
     }
@@ -343,7 +281,7 @@ export default function CartPage() {
   useEffect(() => {
     if (selectedAddress?.id) {
       console.log('📍 Nueva dirección seleccionada, reiniciando opciones de entrega');
-      
+
       // Reiniciar las opciones de entrega a los valores por defecto
       setDeliveryOptions({
         metodoEntrega: 'puerta',
@@ -357,7 +295,7 @@ export default function CartPage() {
   // 🚨 CRITICAL FIX: Validación agresiva de dirección válida con logs detallados
   useEffect(() => {
     const addressValid = Boolean(isAuthenticated && hasAddresses && selectedAddress?.id);
-    
+
     console.log('🔍 VALIDACIÓN DE DIRECCIÓN (DETALLADA):', {
       isAuthenticated,
       hasAddresses,
@@ -369,14 +307,14 @@ export default function CartPage() {
       prevValid: hasValidAddress,
       timestamp: new Date().toISOString()
     });
-    
+
     // SIEMPRE actualizar el estado, incluso si parece igual (para forzar re-renders)
     setHasValidAddress(addressValid);
-    
+
     // 🚨 CRITICAL: Si se habilitó una dirección válida, refrescar carrito INMEDIATAMENTE
     if (addressValid && (!hasValidAddress || hasValidAddress !== addressValid)) {
       console.log('🚨 DIRECCIÓN VÁLIDA DETECTADA - REFRESCANDO CARRITO INMEDIATAMENTE');
-      
+
       // Múltiples intentos para asegurar éxito
       setTimeout(async () => {
         try {
@@ -401,29 +339,29 @@ export default function CartPage() {
         isPrimary: address?.isPrimary,
         timestamp: new Date().toISOString()
       });
-      
+
       // 🚨 CRITICAL: Las recargas ahora las maneja useCart - aquí solo monitoreamos
       // Esto previene doble recarga y race conditions
-      
+
       const actionsRequiringMonitoring = [
         'created',
-        'creada', 
+        'creada',
         'primera dirección creada',
-        'establecida como principal', 
+        'establecida como principal',
         'establecida como principal (directa)',
         'actualizada',
         'seleccionada'
       ];
-      
+
       if (actionsRequiringMonitoring.includes(action)) {
         console.log('🏠 PÁGINA CARRITO: Monitoreando cambio importante:', action);
-        
+
         // Para direcciones recién creadas, mostrar feedback al usuario
         if (action === 'created' || action === 'creada' || action === 'primera dirección creada') {
           toast.success('Dirección agregada. Actualizando carrito...', {
             duration: 2000,
           });
-          
+
           // 🚨 CRITICAL: Refresh both addresses and cart for complete sync
           setTimeout(async () => {
             console.log('🏠 PÁGINA CARRITO: Refrescando direcciones y carrito después de creación');
@@ -485,9 +423,9 @@ export default function CartPage() {
   // Función para manejar cambios de cantidad (memoizada)
   const handleQuantityChange = useCallback(async (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    
+
     setLoadingItems(prev => new Set(prev).add(itemId));
-    
+
     try {
       await updateQuantity(itemId, newQuantity);
       toast.success(t('cart.success.quantityUpdated'));
@@ -506,7 +444,7 @@ export default function CartPage() {
   // Función para eliminar item del carrito (memoizada)
   const handleRemoveItem = useCallback(async (itemId: string) => {
     setLoadingItems(prev => new Set(prev).add(itemId));
-    
+
     try {
       await removeFromCart(itemId);
       toast.success(t('cart.success.productRemoved'));
@@ -540,8 +478,8 @@ export default function CartPage() {
     const isBlockedWeekday = dayOfWeek === 1 || dayOfWeek === 2; // Monday or Tuesday
     const isDecember = now.getMonth() === 11;
     const isJanuary = now.getMonth() === 0;
-    const isBlockedDecemberDate = isDecember &&  now.getDate() === 25;
-    const isBlockedJanuary = isJanuary &&  now.getDate() === 1;
+    const isBlockedDecemberDate = isDecember && now.getDate() === 25;
+    const isBlockedJanuary = isJanuary && now.getDate() === 1;
 
     if (isBlockedWeekday || isBlockedDecemberDate || isBlockedJanuary) {
       toast.info(t('cart.checkout.closedToday'));
@@ -573,7 +511,7 @@ export default function CartPage() {
       console.log('❌ Checkout blocked: Backend requires address (needsAddress=true)');
       return;
     }
-    
+
     // Priority 2: Local validation for address selection
     if (!selectedAddress || !selectedAddress.id) {
       toast.error(t('cart.errors.selectAddress'));
@@ -585,7 +523,7 @@ export default function CartPage() {
       });
       return;
     }
-    
+
     // ✅ BALANCED: Solo bloquear si realmente hay un problema crítico
     if (isSyncingWithBackend) {
       console.log('⏳ CHECKOUT: Esperando sincronización rápida', {
@@ -599,14 +537,14 @@ export default function CartPage() {
         console.log('⚡ CHECKOUT: Procediendo a pesar de sincronización activa');
       }
     }
-    
+
     // ✅ SIMPLIFIED: Verificar que hay dirección seleccionada  
     if (!selectedAddress?.id) {
       console.log('⚠️ No hay dirección seleccionada para checkout');
       toast.error('Por favor selecciona una dirección de envío');
       return;
     }
-    
+
     console.log('✅ Address validation passed with race condition protection:', {
       selectedAddressId: selectedAddress.id,
       selectedAddressCity: selectedAddress.city,
@@ -619,23 +557,23 @@ export default function CartPage() {
     // 🚨 CRITICAL NEW: Robust address verification with backend before proceeding to Stripe
     console.log('🔍 Iniciando verificación robusta de dirección con backend antes de Stripe...');
     setVerifyingAddress(true);
-    
+
     try {
       const isAddressReady = await verifyAddressForCheckout(selectedAddress.id, 3, 500);
-      
+
       if (!isAddressReady) {
         console.error('❌ Dirección no verificada después de intentos, bloqueando checkout');
         toast.error('La dirección no está lista aún. Por favor, intenta en unos segundos.');
         return;
       }
-      
+
       console.log('✅ Dirección verificada con backend, procediendo al checkout');
-      
+
     } catch (verificationError) {
       console.error('❌ Error durante verificación de dirección:', verificationError);
       toast.error('Error verificando la dirección. Por favor, intenta nuevamente.');
       return;
-      
+
     } finally {
       setVerifyingAddress(false);
     }
@@ -669,7 +607,7 @@ export default function CartPage() {
 
     try {
       setCheckoutLoading(true);
-      
+
       // Llamar directamente al backend para crear checkout session
       const token = localStorage.getItem('auth_token');
       if (!token) {
@@ -679,14 +617,14 @@ export default function CartPage() {
       }
 
       console.log('🛒 Iniciando checkout directo con Stripe...');
-      
+
       const successUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.toutaunclicla.com'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
       const cancelUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.toutaunclicla.com'}/checkout/cancel`;
-      
+
       console.log('🔗 Success URL:', successUrl);
       console.log('🔗 Cancel URL:', cancelUrl);
       console.log('🌐 NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
-      
+
       // Preparar payload incluyendo cupón si está aplicado
       const payload: {
         shipping_address_id: string;
@@ -698,18 +636,16 @@ export default function CartPage() {
         success_url: successUrl,
         cancel_url: cancelUrl
       };
-      
-      // Añadir cupón solo si está realmente aplicado
+
       if (appliedCoupon && (appliedCoupon.code || appliedCoupon.codigo)) {
         payload.coupon_code = appliedCoupon.code || appliedCoupon.codigo;
         console.log('🎟️ Cupón incluido en checkout:', {
           code: payload.coupon_code,
           type: appliedCoupon.type,
-          discount: appliedCoupon.discount || appliedCoupon.valor,
           savings: savingsAmount
         });
       }
-      
+
       // 🚨 CRITICAL DEBUG: Log all address and user info before sending
       console.log('🔍 CHECKOUT PAYLOAD DEBUG - CRITICAL ANALYSIS:', {
         selectedAddress: {
@@ -738,15 +674,13 @@ export default function CartPage() {
           addressesCount: addresses?.length || 0,
           hasSelectedAddress: !!selectedAddress,
           selectedAddressId: selectedAddress?.id,
-          isAddressSafeForCheckout: isAddressSafeForCheckout(),
-          isSyncingWithBackend,
-          lastSyncedAddressId
+          isSyncingWithBackend
         }
       });
 
       console.log('📦 Payload completo para Stripe:', JSON.stringify(payload, null, 2));
       console.log('💰 Total esperado en checkout:', finalTotal, '(del backend)');
-      
+
       // 🚨 DEBUG: Detailed total breakdown
       console.log('🔍 DETALLE COMPLETO DEL TOTAL:', {
         'Backend summary total': summary?.total,
@@ -754,14 +688,14 @@ export default function CartPage() {
         'Frontend calculated': displaySubtotal + displayTaxes + displayConsigne + finalShippingCost,
         'Breakdown': {
           displaySubtotal,
-          displayTaxes, 
+          displayTaxes,
           displayConsigne,
           finalShippingCost,
           savingsAmount
         },
         'Summary object': summary
       });
-      
+
       console.log('🏠 Dirección para cálculo de shipping:', {
         id: selectedAddress.id,
         city: selectedAddress.city,
@@ -775,22 +709,7 @@ export default function CartPage() {
         envioGratis: isFreeShippingApplied
       });
 
-      // Log information about variations in cart
-      const itemsWithVariations = items.filter(item => item?.variations && item.variations.length > 0);
-      if (itemsWithVariations.length > 0) {
-        console.log('🎨 Items con variaciones en checkout:', itemsWithVariations.map(item => ({
-          productId: item?.producto_id,
-          productName: item?.productos?.nombre || 'Sin nombre',
-          quantity: item?.cantidad ?? 0,
-          variations: item?.variations?.map(v => ({
-            name: v?.product_variations?.name || 'Sin nombre',
-            quantity: v?.quantity ?? 0,
-            modifier: v?.product_variations?.price_modifier ?? 0,
-            priceAtTime: v?.price_at_time ?? 0
-          })) || []
-        })));
-      }
-      
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/stripe/checkout/create-session`, {
         method: 'POST',
         headers: {
@@ -801,10 +720,10 @@ export default function CartPage() {
       });
 
       const data = await response.json();
-      
+
       console.log('🔍 Response status:', response.status);
       console.log('🔍 Response data:', data);
-      
+
       if (!response.ok) {
         console.error('❌ Backend error details:', {
           status: response.status,
@@ -812,7 +731,7 @@ export default function CartPage() {
           data: data,
           payload: payload
         });
-        
+
         // Errores específicos de cupones
         if (data.message?.includes('coupon') || data.message?.includes('cupón')) {
           console.error('❌ Error relacionado con cupón:', data.message);
@@ -826,10 +745,10 @@ export default function CartPage() {
       console.log('✅ Checkout session creada exitosamente!');
       console.log('Session ID:', data.sessionId);
       console.log('URL de Stripe:', data.url);
-      
+
       // 🔍 FULL DEBUG - Mostrar todo el orderSummary que regresa del backend
       console.log('📦 COMPLETE orderSummary from backend:', JSON.stringify(data.orderSummary, null, 2));
-      
+
       // ✨ NEW - Log específico para promociones de Maison de Poulet
       if (data.orderSummary?.promotionApplied) {
         console.log('🎉 Promoción Maison de Poulet detectada en Stripe checkout!', {
@@ -840,7 +759,7 @@ export default function CartPage() {
           totalSavings: data.orderSummary.savings
         });
       }
-      
+
       if (data.orderSummary?.coupon) {
         console.log('🎟️ Cupón procesado en Stripe:', {
           codigo: data.orderSummary.coupon.codigo,
@@ -849,20 +768,20 @@ export default function CartPage() {
           ahorros: data.orderSummary.savings
         });
       }
-      
+
       console.log('💰 Total final en Stripe:', data.orderSummary?.total);
       console.log('🔗 Redirigiendo a Stripe Checkout...');
-      
+
       // Redirigir DIRECTAMENTE a Stripe Checkout
       window.location.href = data.url;
-      
+
     } catch (error: any) {
       console.error('❌ Error en checkout:', error);
       toast.error(error.message || 'Error procesando el pago. Intenta nuevamente.');
       setCheckoutLoading(false);
     }
   }, [
-    isAuthenticated, needsAddress, hasValidAddress, selectedAddress, isEmpty, 
+    isAuthenticated, needsAddress, hasValidAddress, selectedAddress, isEmpty,
     deliveryOptions, appliedCoupon, finalTotal, savingsAmount, isFreeShippingApplied, t,
     displayConsigne, displaySubtotal, displayTaxes, finalShippingCost, items, summary,
     isSyncingWithBackend, isAddressSafeForCheckout, addresses, hasAddresses, lastSyncedAddressId
@@ -880,12 +799,12 @@ export default function CartPage() {
 
     // Determinar si es taxable basado en si tiene TPS o TVQ
     const isTaxable = (item.productos.TPS && item.productos.TPS > 0) ||
-                      (item.productos.TVQ && item.productos.TVQ > 0);
-    
+      (item.productos.TVQ && item.productos.TVQ > 0);
+
     // Badge de Non Taxable (si no tiene TPS ni TVQ)
     if (!isTaxable) {
       badges.push(
-        <Badge 
+        <Badge
           key="non-taxable"
           className="bg-green-100 text-green-700 border-green-200 text-xs"
         >
@@ -893,11 +812,11 @@ export default function CartPage() {
         </Badge>
       );
     }
-    
+
     // Badge de TPS (si tiene TPS) - mostrar porcentaje
     if (item.productos.TPS && item.productos.TPS > 0) {
       badges.push(
-        <Badge 
+        <Badge
           key="tps"
           className="bg-blue-100 text-blue-700 border-blue-200 text-xs"
         >
@@ -905,11 +824,11 @@ export default function CartPage() {
         </Badge>
       );
     }
-    
+
     // Badge de TVQ (si tiene TVQ) - mostrar porcentaje
     if (item.productos.TVQ && item.productos.TVQ > 0) {
       badges.push(
-        <Badge 
+        <Badge
           key="tvq"
           className="bg-purple-100 text-purple-700 border-purple-200 text-xs"
         >
@@ -917,12 +836,12 @@ export default function CartPage() {
         </Badge>
       );
     }
-    
+
     // Badge de Consigne (si tiene consigne) - este sí se muestra en dólares
     if (item.productos.consigne && item.productos.consigne > 0) {
       const consigneAmount = item.productos.consigne * (item.cantidad ?? 0);
       badges.push(
-        <Badge 
+        <Badge
           key="consigne"
           className="bg-amber-100 text-amber-700 border-amber-200 text-xs"
         >
@@ -930,7 +849,7 @@ export default function CartPage() {
         </Badge>
       );
     }
-    
+
     return badges;
   }, [formatPrice, t]);
 
@@ -943,23 +862,19 @@ export default function CartPage() {
     }
 
     const isItemLoading = loadingItems.has(item.id);
-    const priceDetails = getItemPricingDetails(item);
-    const itemPriceWithVariations = priceDetails.finalSubtotal;
-    const itemTotal = (item.cantidad ?? 0) * itemPriceWithVariations;
+    const itemTotal = (item.cantidad ?? 0) * (item.productos.precio ?? 0);
     const currentPrice = item.productos.precio ?? 0;
     const previousPrice = item.productos.precio_anterior ?? 0;
     const hasDiscount = previousPrice > currentPrice && currentPrice > 0;
-    const discountPercentage = hasDiscount 
-      ? getDiscountPercentage(previousPrice, currentPrice)
+    const discountPercentage = hasDiscount
+      ? Math.round(((previousPrice - currentPrice) / previousPrice) * 100)
       : 0;
-    const variationModifier = priceDetails.variationModifier;
-    const originalUnitPrice = hasDiscount ? previousPrice + variationModifier : null;
-    const finalUnitPrice = itemPriceWithVariations;
-    
+    const finalUnitPrice = currentPrice;
+
     return (
       <motion.div
         key={item.id}
-        initial={{ opacity: 0, y: 0}}
+        initial={{ opacity: 0, y: 0 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, x: -100 }}
         transition={{ duration: 0.2 }}
@@ -988,115 +903,44 @@ export default function CartPage() {
                     <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 mb-1 line-clamp-2">
                       {item?.productos?.nombre || 'Producto sin nombre'}
                     </h3>
-                    
-                    {/* Mostrar variaciones seleccionadas */}
-                    {item.variations && item.variations.length > 0 && (
-                      <div className="mb-3 space-y-2">
-                        <CartItemVariations 
-                          item={item} 
-                          showDetailed={false}
-                          className=""
-                        />
-                        
-                        {/* Botón para expandir detalles */}
-                        <button
-                          onClick={() => toggleVariationExpansion(item.id)}
-                          className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 transition-colors"
-                        >
-                          {expandedVariations.has(item.id) ? (
-                            <>
-                              <ChevronUp className="w-3 h-3" />
-                              {t('cart.variationDetails.hideDetails')}
-                            </>
-                          ) : (
-                            <>
-                              <ChevronDown className="w-3 h-3" />
-                              {t('cart.variationDetails.showDetails')}
-                            </>
-                          )}
-                        </button>
-                        
-                        {/* Detalles expandidos */}
-                        {expandedVariations.has(item.id) && (
-                          <div className="mt-3">
-                            <CartItemVariations 
-                              item={item} 
-                              showDetailed={true}
-                              className=""
-                            />
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    
+
+
                     <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
                       {item?.productos?.categorias?.nombre || t('cart.noCategory')}
                     </p>
-                    
+
                     <div className="flex items-center gap-2 sm:gap-4 mb-2">
-                      {item.variations && item.variations.length > 0 ? (
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">
-                              {t('cart.variationDetails.customized')} ({item.cantidad ?? 0} × {formatPrice(item?.productos?.precio ?? 0)})
-                            </span>
-                            <div className="flex items-center gap-2">
-                              {hasDiscount && originalUnitPrice !== null && (
-                                <span className="text-[11px] text-gray-500 line-through">
-                                  {formatPrice(originalUnitPrice)}
-                                </span>
-                              )}
-                              {hasDiscount && (
-                                <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">
-                                  -{discountPercentage}%
-                                </Badge>
-                              )}
-                              <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
-                                {formatPrice(finalUnitPrice)}
-                              </span>
-                              {item?.productos?.ecoprecio && (
-                                <span className="text-xs text-emerald-600 font-medium">
-                                  {t('cart.ecoFee')}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-2">
-                            {hasDiscount && originalUnitPrice !== null && (
-                              <span className="text-xs text-gray-500 line-through">
-                                {formatPrice(originalUnitPrice)}
-                              </span>
-                            )}
-                            {hasDiscount && (
-                              <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">
-                                -{discountPercentage}%
-                              </Badge>
-                            )}
-                            <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
-                              {formatPrice(finalUnitPrice)}
-                            </span>
-                            {item?.productos?.ecoprecio && (
-                              <span className="text-xs text-emerald-600 font-medium">
-                                {t('cart.ecoFee')}
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-xs sm:text-sm text-gray-500">
-                            {t('cart.perUnit')}
+                      <div className="flex items-center gap-2">
+                        {hasDiscount && previousPrice > 0 && (
+                          <span className="text-xs text-gray-500 line-through">
+                            {formatPrice(previousPrice)}
                           </span>
-                        </>
-                      )}
+                        )}
+                        {hasDiscount && (
+                          <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">
+                            -{discountPercentage}%
+                          </Badge>
+                        )}
+                        <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
+                          {formatPrice(finalUnitPrice)}
+                        </span>
+                        {item?.productos?.ecoprecio && (
+                          <span className="text-xs text-emerald-600 font-medium">
+                            {t('cart.ecoFee')}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs sm:text-sm text-gray-500">
+                        {t('cart.perUnit')}
+                      </span>
                     </div>
-                    
+
                     {/* Badges de impuestos - debajo del precio */}
                     <div className="flex flex-wrap gap-1">
                       {renderTaxBadges(item)}
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-col items-end gap-1 sm:gap-2">
                     <Button
                       variant="ghost"
@@ -1136,13 +980,13 @@ export default function CartPage() {
                       </Button>
                     </div>
                   </div>
-                  
+
                   <div className="text-right">
                     <p className="text-sm sm:text-base md:text-lg font-bold text-gray-900">
                       {formatPrice(itemTotal)}
                     </p>
                     <p className="text-xs sm:text-sm text-gray-500 hidden sm:block">
-                      {item.cantidad ?? 0} × {formatPrice(itemPriceWithVariations)}
+                      {item.cantidad ?? 0} × {formatPrice(item.productos.precio ?? 0)}
                     </p>
                   </div>
                 </div>
@@ -1153,9 +997,8 @@ export default function CartPage() {
       </motion.div>
     );
   }, [
-    loadingItems, getItemPricingDetails, 
-    formatPrice, renderTaxBadges, 
-    handleRemoveItem, handleQuantityChange, t, expandedVariations, toggleVariationExpansion
+    loadingItems, formatPrice, renderTaxBadges,
+    handleRemoveItem, handleQuantityChange, t
   ]);
 
   // Renderizar grupo de categoría con diseño responsive (memoizada)
@@ -1163,7 +1006,7 @@ export default function CartPage() {
     const categoryMap = getCategoryMap(t);
     const categoryInfo = categoryMap[category as keyof typeof categoryMap];
     const IconComponent = categoryInfo.icon;
-    
+
     return (
       <div key={category} className="space-y-3 sm:space-y-4">
         <div className={`${categoryInfo.bgColor} ${categoryInfo.borderColor} border-2 rounded-xl sm:rounded-2xl p-3 sm:p-4`}>
@@ -1185,7 +1028,7 @@ export default function CartPage() {
               </Badge>
             </div>
           </div>
-          
+
           <div className="space-y-2 sm:space-y-3">
             <AnimatePresence mode="popLayout">
               {items.map(item => renderCartItem(item))}
@@ -1196,7 +1039,11 @@ export default function CartPage() {
     );
   }, [t, renderCartItem]);
 
-  // Estados de carga
+  // Estados de carga y protección de ruta
+  if (!isAuthenticated && !isLoading) {
+    return null;
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -1217,277 +1064,277 @@ export default function CartPage() {
       <div className="min-h-screen bg-gray-50 ">
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
           <div className="max-w-6xl mx-auto">
-          {/* Header responsive */}
-          <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => router.back()}
-                  className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full"
-                >
-                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-                </Button>
-                <div className="p-1.5 sm:p-2 bg-indigo-100 rounded-lg">
-                  <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-indigo-600" />
-                </div>
-                <div>
-                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">{t('cart.title')}</h1>
-                  <p className="text-sm sm:text-base text-gray-600">
-                    {totalQuantity} {totalQuantity === 1 ? t('cart.product') : t('cart.products')}
-                  </p>
-                </div>
-              </div>
-              
-              {!isEmpty && (
+            {/* Header responsive */}
+            <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="text-right hidden sm:block">
-                    <p className="text-xs sm:text-sm text-gray-600">{t('cart.estimatedTotal')}</p>
-                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">
-                      {formatPrice(displaySubtotal + displayTaxes + displayConsigne)}
-                    </p>
-                    <div className="text-xs text-gray-500">
-                      {needsAddress ? (
-                        <span className="text-amber-600 font-medium">
-                          {t('cart.summary.addressRequired')}
-                        </span>
-                      ) : finalShippingCost === 0 ? (
-                        <span className={isFreeShippingApplied ? 'text-green-600 font-medium' : ''}>
-                          {t('cart.freeShipping')}
-                          {isFreeShippingApplied && ' ✓'}
-                        </span>
-                      ) : shippingMessage ? (
-                        <span className="text-orange-600">
-                          + {formatPrice(finalShippingCost)} {t('cart.shipping')} (estimado)
-                        </span>
-                      ) : `+ ${formatPrice(finalShippingCost)} ${t('cart.shipping')}`}
-                    </div>
-                  </div>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={handleClearCart}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 sm:h-10 sm:w-10 p-0"
+                    onClick={() => router.back()}
+                    className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </Button>
+                  <div className="p-1.5 sm:p-2 bg-indigo-100 rounded-lg">
+                    <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">{t('cart.title')}</h1>
+                    <p className="text-sm sm:text-base text-gray-600">
+                      {totalQuantity} {totalQuantity === 1 ? t('cart.product') : t('cart.products')}
+                    </p>
+                  </div>
+                </div>
+
+                {!isEmpty && (
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="text-right hidden sm:block">
+                      <p className="text-xs sm:text-sm text-gray-600">{t('cart.estimatedTotal')}</p>
+                      <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">
+                        {formatPrice(displaySubtotal + displayTaxes + displayConsigne)}
+                      </p>
+                      <div className="text-xs text-gray-500">
+                        {needsAddress ? (
+                          <span className="text-amber-600 font-medium">
+                            {t('cart.summary.addressRequired')}
+                          </span>
+                        ) : finalShippingCost === 0 ? (
+                          <span className={isFreeShippingApplied ? 'text-green-600 font-medium' : ''}>
+                            {t('cart.freeShipping')}
+                            {isFreeShippingApplied && ' ✓'}
+                          </span>
+                        ) : shippingMessage ? (
+                          <span className="text-orange-600">
+                            + {formatPrice(finalShippingCost)} {t('cart.shipping')} (estimado)
+                          </span>
+                        ) : `+ ${formatPrice(finalShippingCost)} ${t('cart.shipping')}`}
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleClearCart}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 sm:h-10 sm:w-10 p-0"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Contenido principal */}
+            {isEmpty ? (
+              <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 text-center">
+                <div className="max-w-md mx-auto">
+                  <div className="p-3 sm:p-4 bg-gray-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4">
+                    <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">{t('cart.empty.title')}</h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+                    {t('cart.empty.description')}
+                  </p>
+                  <Button
+                    onClick={() => router.push('/productos')}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base px-4 sm:px-6"
+                  >
+                    {t('cart.empty.exploreProducts')}
                   </Button>
                 </div>
-              )}
-            </div>
-          </div>
-
-          {/* Contenido principal */}
-          {isEmpty ? (
-            <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 text-center">
-              <div className="max-w-md mx-auto">
-                <div className="p-3 sm:p-4 bg-gray-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4">
-                  <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                {/* Lista de productos */}
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+                  {categoryOrder.map(category => {
+                    const items = groupedItems[category];
+                    if (!items || items.length === 0) return null;
+                    return renderCategoryGroup(category, items);
+                  })}
                 </div>
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">{t('cart.empty.title')}</h3>
-                <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
-                  {t('cart.empty.description')}
-                </p>
-                <Button 
-                  onClick={() => router.push('/productos')}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base px-4 sm:px-6"
-                >
-                  {t('cart.empty.exploreProducts')}
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-              {/* Lista de productos */}
-              <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-                {categoryOrder.map(category => {
-                  const items = groupedItems[category];
-                  if (!items || items.length === 0) return null;
-                  return renderCategoryGroup(category, items);
-                })}
-              </div>
 
-              {/* Resumen del carrito - responsive */}
-              <div className="lg:col-span-1">
-                <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 sticky top-20 sm:top-24">
-                  <div className="flex items-center gap-2 mb-4 sm:mb-6">
-                    <div className="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                      <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                {/* Resumen del carrito - responsive */}
+                <div className="lg:col-span-1">
+                  <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 sticky top-20 sm:top-24">
+                    <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                      <div className="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                        <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                      </div>
+                      <h3 className="text-base sm:text-xl font-semibold text-gray-900">{t('cart.summary.title')}</h3>
                     </div>
-                    <h3 className="text-base sm:text-xl font-semibold text-gray-900">{t('cart.summary.title')}</h3>
-                  </div>
-                  
-                  <div className="space-y-3 sm:space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.subtotal')}</span>
-                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displaySubtotal)}</span>
-                    </div>
-                    <div className="flex justify-between items-start gap-8">
-                      <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.shipping')}</span>
-                      <div className="text-right text-sm ">
-                        <ShippingStatus summary={summary} />
+
+                    <div className="space-y-3 sm:space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.subtotal')}</span>
+                        <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displaySubtotal)}</span>
+                      </div>
+                      <div className="flex justify-between items-start gap-8">
+                        <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.shipping')}</span>
+                        <div className="text-right text-sm ">
+                          <ShippingStatus summary={summary} />
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.taxes')}</span>
+                        <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displayTaxes)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.consigne')}</span>
+                        <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displayConsigne)}</span>
+                      </div>
+                      {!isFreeShippingApplied && displaySubtotal < shippingThreshold && finalShippingCost > 0 && (
+                        <div className="text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 sm:p-3 rounded-lg">
+                          {t('cart.summary.shippingThreshold').replace('{amount}', formatPrice(shippingThreshold - displaySubtotal))}
+                        </div>
+                      )}
+
+                      {/* Componente de cupón */}
+                      <div className="pt-2 sm:pt-3">
+                        <CouponInput
+                          onApplyCoupon={applyCoupon}
+                          onRemoveCoupon={removeCoupon}
+                          appliedCoupon={appliedCoupon}
+                          disabled={isLoading || isEmpty}
+                        />
+                      </div>
+
+                      {/* Mostrar descuento/ahorros si hay cupón aplicado */}
+                      {appliedCoupon && savingsAmount > 0 && (
+                        <div className="flex justify-between items-center text-green-600">
+                          <span className="text-sm sm:text-base font-medium">
+                            {appliedCoupon.type === 'free_shipping'
+                              ? t('cart.checkout.savingsShipping')
+                              : t('cart.summary.coupon.discount')}
+                          </span>
+                          <span className="text-sm sm:text-base font-medium">
+                            -{formatPrice(savingsAmount)}
+                          </span>
+                        </div>
+                      )}
+
+                      <Separator />
+                      <div className="flex justify-between items-center">
+                        <span className="text-base sm:text-lg font-semibold text-gray-900">{t('cart.summary.total')}</span>
+                        <span className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">{formatPrice(finalTotal)}</span>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.taxes')}</span>
-                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displayTaxes)}</span>
+
+                    {/* Selector de direcciones */}
+                    <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
+                      <AddressSelector />
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.consigne')}</span>
-                      <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displayConsigne)}</span>
-                    </div>
-                    {!isFreeShippingApplied && displaySubtotal < shippingThreshold && finalShippingCost > 0 && (
-                      <div className="text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 sm:p-3 rounded-lg">
-                        {t('cart.summary.shippingThreshold').replace('{amount}', formatPrice(shippingThreshold - displaySubtotal))}
-                      </div>
-                    )}
-                    
-                    {/* Componente de cupón */}
-                    <div className="pt-2 sm:pt-3">
-                      <CouponInput
-                        onApplyCoupon={applyCoupon}
-                        onRemoveCoupon={removeCoupon}
-                        appliedCoupon={appliedCoupon}
-                        disabled={isLoading || isEmpty}
+
+                    {/* Opciones de entrega - ahora integradas en el resumen */}
+                    <div className="mt-4 sm:mt-6">
+                      <DeliveryOptions
+                        key={selectedAddress?.id || 'no-address'}
+                        onOptionsChange={setDeliveryOptions}
+                        disabled={false}
+                        className="border-0 shadow-none bg-transparent p-0"
+                        showAddressNote={!hasValidAddress}
                       />
                     </div>
-                    
-                    {/* Mostrar descuento/ahorros si hay cupón aplicado */}
-                    {appliedCoupon && savingsAmount > 0 && (
-                      <div className="flex justify-between items-center text-green-600">
-                        <span className="text-sm sm:text-base font-medium">
-                          {appliedCoupon.type === 'free_shipping' 
-                            ? t('cart.checkout.savingsShipping') 
-                            : t('cart.summary.coupon.discount')}
-                        </span>
-                        <span className="text-sm sm:text-base font-medium">
-                          -{formatPrice(savingsAmount)}
-                        </span>
-                      </div>
-                    )}
-                    
-                    <Separator />
-                    <div className="flex justify-between items-center">
-                      <span className="text-base sm:text-lg font-semibold text-gray-900">{t('cart.summary.total')}</span>
-                      <span className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">{formatPrice(finalTotal)}</span>
+
+                    <div className="space-y-2 sm:space-y-3 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
+                      {/* Temporarily forcing checkout button enabled; original disabled logic is commented in onClick */}
+                      <Button
+                        size="lg"
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base h-10 sm:h-12"
+                        onClick={() => {
+                          console.log('🚨 CHECKOUT BUTTON CLICKED - Debug completo:', {
+                            timestamp: new Date().toISOString(),
+                            authState: {
+                              isAuthenticated
+                            },
+                            addressState: {
+                              hasAddresses,
+                              addressesCount: addresses?.length || 0,
+                              selectedAddressId: selectedAddress?.id,
+                              selectedAddressCity: selectedAddress?.city,
+                              selectedAddressPrimary: selectedAddress?.isPrimary,
+                              hasValidAddress
+                            },
+                            cartState: {
+                              isEmpty,
+                              itemsCount: items.length,
+                              totalQuantity
+                            },
+                            deliveryState: {
+                              isValid: deliveryOptions.isValid,
+                              deliveryOptions
+                            },
+                            shippingState: {
+                              needsAddress,
+                              shippingMessage,
+                              finalShippingCost,
+                              isFreeShippingApplied
+                            },
+                            buttonState: {
+                              disabled: !isAuthenticated || isEmpty || checkoutLoading || verifyingAddress || !deliveryOptions.isValid || !hasAddresses || !selectedAddress?.id,
+                              checkoutLoading,
+                              verifyingAddress,
+                              allConditionsMet: isAuthenticated && hasAddresses && selectedAddress?.id && deliveryOptions.isValid && !isEmpty
+                            },
+                            criticalChecks: {
+                              passedAuth: isAuthenticated,
+                              passedAddresses: hasAddresses,
+                              passedSelectedAddress: !!selectedAddress?.id,
+                              passedDelivery: deliveryOptions.isValid,
+                              passedCart: !isEmpty,
+                              passedBackendAddress: !needsAddress,
+                              blockingCondition: !isAuthenticated ? 'AUTH' :
+                                isEmpty ? 'EMPTY_CART' :
+                                  checkoutLoading ? 'LOADING' :
+                                    verifyingAddress ? 'VERIFYING_ADDRESS' :
+                                      !deliveryOptions.isValid ? 'DELIVERY_OPTIONS' :
+                                        !hasAddresses ? 'NO_ADDRESSES' :
+                                          !selectedAddress?.id ? 'NO_SELECTED_ADDRESS' :
+                                            needsAddress ? 'BACKEND_NEEDS_ADDRESS' : 'NONE'
+                            }
+                          });
+                          handleCheckout();
+                          // toast.info(t('cart.checkout.unavailable'));
+                        }}
+                        disabled={false}
+                      >
+                        {checkoutLoading ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            {t('cart.checkout.redirectingToStripe')}
+                          </span>
+                        ) : verifyingAddress ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            Verificando dirección...
+                          </span>
+                        ) : !isAuthenticated ? t('cart.summary.authRequired') :
+                          isEmpty ? t('cart.checkout.emptyCart') :
+                            !hasAddresses ? t('cart.summary.addressRequired') :
+                              !selectedAddress?.id ? t('cart.errors.selectAddress') :
+                                needsAddress ? 'Procesando dirección...' :
+                                  isSyncingWithBackend ? 'Procesando...' :
+                                    !deliveryOptions.isValid ? t('cart.delivery.error') :
+                                      t('cart.summary.proceed')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="w-full text-sm sm:text-base h-10 sm:h-12"
+                        onClick={() => router.push('/productos')}
+                      >
+                        {t('cart.summary.continue')}
+                      </Button>
                     </div>
-                  </div>
-                  
-                  {/* Selector de direcciones */}
-                  <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
-                    <AddressSelector />
-                  </div>
-                  
-                  {/* Opciones de entrega - ahora integradas en el resumen */}
-                  <div className="mt-4 sm:mt-6">
-                    <DeliveryOptions 
-                      key={selectedAddress?.id || 'no-address'}
-                      onOptionsChange={setDeliveryOptions}
-                      disabled={false}
-                      className="border-0 shadow-none bg-transparent p-0"
-                      showAddressNote={!hasValidAddress}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2 sm:space-y-3 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
-                    {/* Temporarily forcing checkout button enabled; original disabled logic is commented in onClick */}
-                    <Button 
-                      size="lg" 
-                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base h-10 sm:h-12"
-                      onClick={() => {
-                        console.log('🚨 CHECKOUT BUTTON CLICKED - Debug completo:', {
-                          timestamp: new Date().toISOString(),
-                          authState: {
-                            isAuthenticated
-                          },
-                          addressState: {
-                            hasAddresses,
-                            addressesCount: addresses?.length || 0,
-                            selectedAddressId: selectedAddress?.id,
-                            selectedAddressCity: selectedAddress?.city,
-                            selectedAddressPrimary: selectedAddress?.isPrimary,
-                            hasValidAddress
-                          },
-                          cartState: {
-                            isEmpty,
-                            itemsCount: items.length,
-                            totalQuantity
-                          },
-                          deliveryState: {
-                            isValid: deliveryOptions.isValid,
-                            deliveryOptions
-                          },
-                          shippingState: {
-                            needsAddress,
-                            shippingMessage,
-                            finalShippingCost,
-                            isFreeShippingApplied
-                          },
-                          buttonState: {
-                            disabled: !isAuthenticated || isEmpty || checkoutLoading || verifyingAddress || !deliveryOptions.isValid || !hasAddresses || !selectedAddress?.id,
-                            checkoutLoading,
-                            verifyingAddress,
-                            allConditionsMet: isAuthenticated && hasAddresses && selectedAddress?.id && deliveryOptions.isValid && !isEmpty
-                          },
-                          criticalChecks: {
-                            passedAuth: isAuthenticated,
-                            passedAddresses: hasAddresses,
-                            passedSelectedAddress: !!selectedAddress?.id,
-                            passedDelivery: deliveryOptions.isValid,
-                            passedCart: !isEmpty,
-                            passedBackendAddress: !needsAddress,
-                            blockingCondition: !isAuthenticated ? 'AUTH' : 
-                                             isEmpty ? 'EMPTY_CART' : 
-                                             checkoutLoading ? 'LOADING' : 
-                                             verifyingAddress ? 'VERIFYING_ADDRESS' :
-                                             !deliveryOptions.isValid ? 'DELIVERY_OPTIONS' : 
-                                             !hasAddresses ? 'NO_ADDRESSES' : 
-                                             !selectedAddress?.id ? 'NO_SELECTED_ADDRESS' :
-                                             needsAddress ? 'BACKEND_NEEDS_ADDRESS' : 'NONE'
-                          }
-                        });
-                        handleCheckout();
-                        // toast.info(t('cart.checkout.unavailable'));
-                      }}
-                      disabled={false}
-                    >
-                      {checkoutLoading ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          {t('cart.checkout.redirectingToStripe')}
-                        </span>
-                      ) : verifyingAddress ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          Verificando dirección...
-                        </span>
-                      ) : !isAuthenticated ? t('cart.summary.authRequired') : 
-                       isEmpty ? t('cart.checkout.emptyCart') :
-                       !hasAddresses ? t('cart.summary.addressRequired') :
-                       !selectedAddress?.id ? t('cart.errors.selectAddress') :
-                       needsAddress ? 'Procesando dirección...' :
-                       isSyncingWithBackend ? 'Procesando...' :
-                       !deliveryOptions.isValid ? t('cart.delivery.error') : 
-                       t('cart.summary.proceed')}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="lg" 
-                      className="w-full text-sm sm:text-base h-10 sm:h-12"
-                      onClick={() => router.push('/productos')}
-                    >
-                      {t('cart.summary.continue')}
-                    </Button>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
-      
-        <AuthModal 
-          isOpen={showAuthModal} 
+
+        <AuthModal
+          isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
           redirectUrl="/cart"
         />

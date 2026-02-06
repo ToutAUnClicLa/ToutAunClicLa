@@ -1,10 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowRight, Calculator, Car, ChevronDown, Gavel, Gift, GlassWater, Globe2, Handshake, Home as HomeIcon, Languages, Package, PiggyBank, Scissors, Shirt, Sparkles, Stethoscope, Store, Truck, Utensils, Watch, TrendingUp, BadgeDollarSign } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, BadgeDollarSign, Calculator, Car, ChevronDown, Gavel, Gift, GlassWater, Globe2, Handshake, Home as HomeIcon, Languages, Package, PiggyBank, Scissors, Shirt, Sparkles, Stethoscope, Store, TrendingUp, Truck, Utensils, Watch } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from '@/hooks/useTranslation';
 import AuthModal from '@/components/features/auth/AuthModal';
 import HomeSearchBar from '@/components/features/modules/search/HomeSearchBar';
@@ -110,11 +111,27 @@ export default function Home() {
   const { t } = useTranslation();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgotPassword'>('register');
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const openAuthModal = (mode: 'login' | 'register' | 'forgotPassword' = 'register') => {
+  const openAuthModal = useCallback((mode: 'login' | 'register' | 'forgotPassword' = 'register') => {
     setAuthModalMode(mode);
     setIsAuthModalOpen(true);
-  };
+  }, []);
+
+  // Open modal if redirected from cart (or other protected pages)
+  useEffect(() => {
+    const authParam = searchParams.get('auth');
+    if (authParam === 'login') {
+      openAuthModal('login');
+
+      // Clean up URL to avoid reopening on refresh
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('auth');
+      const newPath = window.location.pathname + (params.toString() ? `?${params.toString()}` : '');
+      window.history.replaceState(null, '', newPath);
+    }
+  }, [searchParams, openAuthModal]);
 
   const closeAuthModal = () => {
     setIsAuthModalOpen(false);
@@ -251,6 +268,7 @@ export default function Home() {
     color: string;
     viewText: string;
   }
+
 
   // Obtener categorías de productos de las traducciones
   const productCategories = t<ProductCategory[]>('landing.productCategories').map(category => {
