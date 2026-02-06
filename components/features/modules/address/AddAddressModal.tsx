@@ -61,20 +61,20 @@ export function AddAddressModal({
 
   const validateAddress = (data: FormData): boolean => {
     const validation = validateMontrealAddress(data.city, data.zipCode);
-    
+
     if (!validation.isValid) {
       toast.error(t('addresses.validation.invalid'), {
         description: validation.error
       });
       return false;
     }
-    
+
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateAddress(formData)) {
       return;
     }
@@ -83,13 +83,13 @@ export function AddAddressModal({
       await onSubmit(formData);
       setFormData(initialFormData);
       onOpenChange(false);
-      
+
       // Disparar evento para actualizar el carrito inmediatamente
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('addressChanged', {
-          detail: { 
+          detail: {
             action: 'created',
-            address: formData 
+            address: formData
           }
         }));
       }
@@ -100,7 +100,7 @@ export function AddAddressModal({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     // Formatear código postal automáticamente
     if (name === 'zipCode') {
       const formattedValue = formatCanadianPostalCode(value);
@@ -141,7 +141,7 @@ export function AddAddressModal({
               {t('addresses.validation.validationInfo')}
             </p>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="street" className="text-sm font-medium">{t('addresses.form.street')} *</Label>
             <Input
@@ -154,7 +154,7 @@ export function AddAddressModal({
               required
             />
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="city" className="text-sm font-medium">{t('addresses.form.city')} *</Label>
@@ -166,22 +166,25 @@ export function AddAddressModal({
                   <SelectItem value="Montreal">Montreal</SelectItem>
                   <SelectItem value="Mont-Royal">Mont-Royal</SelectItem>
                   <SelectItem value="Westmount">Westmount</SelectItem>
-                  <SelectItem value="Côté-Saint-Luc">Côté-Saint-Luc</SelectItem>
+                  <SelectItem value="Côte-Saint-Luc">Côte-Saint-Luc</SelectItem>
                   <SelectItem value="Montreal-Ouest">Montreal-Ouest</SelectItem>
                   <SelectItem value="Hampstead">Hampstead</SelectItem>
-                  <SelectItem value="Point-Claire">Point-Claire</SelectItem>
+                  <SelectItem value="Pointe-Claire">Pointe-Claire</SelectItem>
                   <SelectItem value="Dollard-Des Ormeaux">Dollard-Des Ormeaux</SelectItem>
                   <SelectItem value="Dorval">Dorval</SelectItem>
                   <SelectItem value="Longueuil">Longueuil</SelectItem>
                   <SelectItem value="Boucherville">Boucherville</SelectItem>
                   <SelectItem value="Saint-Lambert">Saint-Lambert</SelectItem>
                   <SelectItem value="Brossard">Brossard</SelectItem>
+                  <SelectItem value="Saint-Hubert">Saint-Hubert</SelectItem>
+                  <SelectItem value="Greenfield Park">Greenfield Park</SelectItem>
                   <SelectItem value="La Prairie">La Prairie</SelectItem>
                   <SelectItem value="Candiac">Candiac</SelectItem>
+                  <SelectItem value="Châteauguay">Châteauguay</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="state" className="text-sm font-medium">{t('addresses.form.state')} *</Label>
               <Select value={formData.state} onValueChange={(value) => handleSelectChange('state', value)}>
@@ -194,7 +197,7 @@ export function AddAddressModal({
               </Select>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="zipCode" className="text-sm font-medium">{t('addresses.form.zipCode')} *</Label>
@@ -208,7 +211,7 @@ export function AddAddressModal({
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="country" className="text-sm font-medium">{t('addresses.form.country')} *</Label>
               <Select value={formData.country} onValueChange={(value) => handleSelectChange('country', value)}>
@@ -221,19 +224,19 @@ export function AddAddressModal({
               </Select>
             </div>
           </div>
-          
+
           <div className="flex gap-3 pt-4">
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               className="flex-1 h-10 text-sm"
               onClick={() => onOpenChange(false)}
               disabled={isSubmitting}
             >
               {t('addresses.form.cancel')}
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 h-10 text-sm"
               disabled={isSubmitting}
             >

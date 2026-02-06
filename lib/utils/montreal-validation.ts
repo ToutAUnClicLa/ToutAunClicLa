@@ -8,20 +8,20 @@ export const MONTREAL_FSA_CODES = [
   // Montreal específicos (según README backend)
   'H1N', 'H1M', 'H1P', 'H1H', 'H1R', 'H1S', 'H1T', 'H1V', 'H1W', 'H1X',
   // Códigos H2* (todos los que comienzan con H2)
-  'H2A', 'H2B', 'H2C', 'H2E', 'H2G', 'H2H', 'H2J', 'H2K', 'H2L', 'H2M', 
+  'H2A', 'H2B', 'H2C', 'H2E', 'H2G', 'H2H', 'H2J', 'H2K', 'H2L', 'H2M',
   'H2N', 'H2P', 'H2R', 'H2S', 'H2T', 'H2V', 'H2W', 'H2X', 'H2Y', 'H2Z',
   // Códigos H3* (todos los que comienzan con H3)
-  'H3A', 'H3B', 'H3C', 'H3E', 'H3G', 'H3H', 'H3J', 'H3K', 'H3L', 'H3M', 
+  'H3A', 'H3B', 'H3C', 'H3E', 'H3G', 'H3H', 'H3J', 'H3K', 'H3L', 'H3M',
   'H3N', 'H3P', 'H3R', 'H3S', 'H3T', 'H3V', 'H3W', 'H3X', 'H3Y', 'H3Z',
   // Códigos H4* (todos los que comienzan con H4)
-  'H4A', 'H4B', 'H4C', 'H4E', 'H4G', 'H4H', 'H4J', 'H4K', 'H4L', 'H4M', 
+  'H4A', 'H4B', 'H4C', 'H4E', 'H4G', 'H4H', 'H4J', 'H4K', 'H4L', 'H4M',
   'H4N', 'H4P', 'H4R', 'H4S', 'H4T', 'H4V', 'H4W', 'H4X', 'H4Y', 'H4Z',
   // Códigos adicionales Montreal
   'H8Z', 'H8Y', 'H8T', 'H8S', 'H8R', 'H8N', 'H8P',
   // Códigos H9
   'H9R', 'H9S', 'H9G', 'H9A', 'H9B', 'H9P',
   // Rivera Sur códigos
-  'J5R', 'J4B', 'J3Y', 'J4N', 'J4M', 'J4G', 'J4L', 'J4J', 'J4H', 'J4K', 
+  'J5R', 'J4B', 'J3Y', 'J4N', 'J4M', 'J4G', 'J4L', 'J4J', 'J4H', 'J4K',
   'J4T', 'J4V', 'J4R', 'J4Z', 'J4S', 'J4W', 'J4X', 'J4Y', 'J3Z'
 ];
 
@@ -32,18 +32,19 @@ export const MONTREAL_FSA_CODES = [
  */
 export function isValidServiceCity(city: string): boolean {
   const cityLower = city.toLowerCase().trim();
-  // Montreal y variaciones
-  if (cityLower === 'montreal' || cityLower === 'montréal') {
-    return true;
-  }
-  // Ciudades de Rivera Sur
-  const riveraSurCities = [
-    'longueuil', 'saint-lambert', 'brossard', 'saint-hubert', 
+  // Montreal island municipalities and South Shore cities
+  const validCities = [
+    'montreal', 'montréal',
+    'mont-royal', 'westmount', 'côté-saint-luc', 'cote-saint-luc',
+    'montreal-ouest', 'montréal-ouest', 'hampstead', 'pointe-claire',
+    'dollard-des ormeaux', 'dorval', 'kirkland', 'beaconsfield',
+    'baie-d\'urfé', 'sainte-anne-de-bellevue', 'senneville',
+    'longueuil', 'saint-lambert', 'brossard', 'saint-hubert',
     'greenfield park', 'la prairie', 'candiac', 'delson',
-    'saint-constant', 'sainte-catherine', 'châteauguay', 
-    'mercier', 'kahnawake'
+    'saint-constant', 'sainte-catherine', 'châteauguay',
+    'mercier', 'kahnawake', 'boucherville'
   ];
-  return riveraSurCities.includes(cityLower);
+  return validCities.includes(cityLower);
 }
 
 /**
@@ -73,7 +74,7 @@ export function isValidCanadianPostalCode(postalCode: string): boolean {
  */
 export function isServiceAreaPostalCode(postalCode: string): boolean {
   const cleanCode = postalCode.toUpperCase().replace(/\s/g, '');
-  
+
   if (!isValidCanadianPostalCode(cleanCode)) {
     return false;
   }
@@ -135,10 +136,10 @@ export function validateMontrealAddress(city: string, postalCode: string) {
  */
 export function formatCanadianPostalCode(postalCode: string): string {
   const cleanCode = postalCode.toUpperCase().replace(/\s/g, '');
-  
+
   if (cleanCode.length === 6) {
     return `${cleanCode.substring(0, 3)} ${cleanCode.substring(3)}`;
   }
-  
+
   return cleanCode;
 }
