@@ -19,11 +19,6 @@ interface AddToCartButtonProps {
   showQuantitySelector?: boolean;
   showFavoriteButton?: boolean;
   size?: 'sm' | 'md' | 'lg';
-  // ✅ AÑADIDO: Soporte para variaciones según backend
-  selectedVariations?: Array<{
-    variationId: number;
-    quantity: number;
-  }>;
   // ✅ AÑADIDO: Opciones de entrega según backend
   deliveryOptions?: {
     metodoEntrega?: 'puerta' | 'manos' | 'recepcion';
@@ -40,18 +35,17 @@ export function AddToCartButton({
   showQuantitySelector = true,
   showFavoriteButton = true,
   size = 'md',
-  selectedVariations,
   deliveryOptions
 }: AddToCartButtonProps) {
   const { user } = useAuth();
   const { t } = useTranslation();
   const { addToCart, isLoading: cartLoading } = useCart();
-  const { 
-    isFavorite, 
-    toggleFavorite, 
-    isLoading: favoritesLoading 
+  const {
+    isFavorite,
+    toggleFavorite,
+    isLoading: favoritesLoading
   } = useFavorites();
-  
+
   const [quantity, setQuantity] = useState(1);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -74,33 +68,27 @@ export function AddToCartButton({
 
     try {
       setIsAddingToCart(true);
-      // ✅ MEJORADO: Usar addToCart con soporte completo del backend
+      // ✅ MEJORADO: Usar addToCart con soporte completo del backend (variaciones eliminadas)
       const success = await addToCart(
-        productId, 
-        quantity, 
-        deliveryOptions, 
-        selectedVariations
+        productId,
+        quantity,
+        deliveryOptions
       );
-      
+
       if (success) {
         // Resetear cantidad después de agregar exitosamente
         setQuantity(1);
-        
-        // ✅ MEJORADO: Mensaje específico si hay variaciones
-        const variationCount = selectedVariations?.length || 0;
-        if (variationCount > 0) {
-          toast.success(t('catalog.addToCartButton.addedToCart') + ` (${variationCount} opciones)`);
-        }
+
+        // Mensaje de éxito estándar
+        toast.success(t('catalog.addToCartButton.addedToCart'));
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
-      
+
       // ✅ MEJORADO: Manejo de errores específicos del backend
       const errorMessage = error instanceof Error ? error.message : '';
       if (errorMessage.includes('stock')) {
         toast.error(t('catalog.addToCartButton.productOutOfStock'));
-      } else if (errorMessage.includes('variation')) {
-        toast.error(t('notifications.optionSelectionError'));
       } else {
         toast.error(t('catalog.addToCartButton.errorAddingToCart'));
       }
@@ -131,7 +119,7 @@ export function AddToCartButton({
 
   const iconSizes = {
     sm: 'h-3 w-3',
-    md: 'h-4 w-4', 
+    md: 'h-4 w-4',
     lg: 'h-5 w-5'
   };
 
@@ -204,10 +192,9 @@ export function AddToCartButton({
               disabled={favoritesLoading}
               className={`${buttonSizes[size]} w-auto aspect-square`}
             >
-              <Heart 
-                className={`${iconSizes[size]} ${
-                  isProductFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'
-                }`} 
+              <Heart
+                className={`${iconSizes[size]} ${isProductFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'
+                  }`}
               />
             </Button>
           )}
@@ -223,8 +210,8 @@ export function AddToCartButton({
         )}
       </div>
 
-      <AuthModal 
-        isOpen={showAuthModal} 
+      <AuthModal
+        isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
       />
     </>

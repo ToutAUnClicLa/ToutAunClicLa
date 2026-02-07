@@ -17,11 +17,11 @@ import { Card, CardContent } from '@/components/common/ui/card';
 import { Badge } from '@/components/common/ui/badge';
 import { cn, getProductImageUrl, getBlurDataURL, formatPrice, isValidPrice, getDiscountPercentage, calculateCanadianTaxes, getTaxStatus } from '@/lib/utils';
 import { ProductPriceDisplay } from './ProductPriceDisplay';
-import { ProductWithVariations } from '@/types/variations';
+
 import { getRestaurantUrlWithFallback } from '@/lib/utils/restaurant-routes';
 
 interface ProductCardProps {
-  product: Product & Partial<ProductWithVariations>;
+  product: Product;
   categoryName?: string;
   variant?: 'default' | 'compact' | 'detailed' | 'list';
   showCategory?: boolean;
@@ -80,7 +80,7 @@ export function ProductCard({
       ? getDiscountPercentage(product.precio_anterior!, product.precio)
       : 0;
     const hasValidPrice = isValidPrice(product.precio);
-    const hasVariations = product.hasVariations || (product.variations && product.variations.length > 0);
+
     const isProductNotAvailableToday = product.disponible_hoy === false;
     const isWeekendOnly = product.dias_disponibles?.length === 2 &&
       product.dias_disponibles.includes(0) &&
@@ -100,7 +100,7 @@ export function ProductCard({
       hasDiscount,
       discountPercentage,
       hasValidPrice,
-      hasVariations,
+      hasVariations: false,
       isProductNotAvailableToday,
       isWeekendOnly,
       taxCalculation,
@@ -115,8 +115,6 @@ export function ProductCard({
     product.TPS,
     product.TVQ,
     product.consigne,
-    product.hasVariations,
-    product.variations,
     product.disponible_hoy,
     product.dias_disponibles,
     isFavorite,

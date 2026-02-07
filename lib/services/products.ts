@@ -4,7 +4,7 @@
  */
 
 import { apiCache, generateCacheKey } from '@/lib/utils/cache';
-import { VariationGroup } from '@/types/variations';
+
 
 // Control de peticiones en curso para evitar duplicados
 const pendingRequests = new Map<string, Promise<any>>();
@@ -18,13 +18,13 @@ const THROTTLE_WINDOW = 60000; // 1 minuto
 const canMakeRequest = (endpoint: string): boolean => {
   const now = Date.now();
   const history = requestHistory.get(endpoint) || [];
-  
+
   // Filtrar requests dentro de la ventana de tiempo
   const recentRequests = history.filter(timestamp => now - timestamp < THROTTLE_WINDOW);
-  
+
   // Actualizar historial
   requestHistory.set(endpoint, recentRequests);
-  
+
   return recentRequests.length < MAX_REQUESTS_PER_MINUTE;
 };
 
@@ -50,7 +50,7 @@ const isCircuitBreakerOpen = (): boolean => {
 // Función para abrir el circuit breaker
 const openCircuitBreaker = (): void => {
   circuitBreakerOpenUntil = Date.now() + CIRCUIT_BREAKER_TIMEOUT;
-  console.warn(`Circuit breaker opened due to ${consecutiveErrors} consecutive errors. Requests will be blocked for ${CIRCUIT_BREAKER_TIMEOUT/1000} seconds.`);
+  console.warn(`Circuit breaker opened due to ${consecutiveErrors} consecutive errors. Requests will be blocked for ${CIRCUIT_BREAKER_TIMEOUT / 1000} seconds.`);
 };
 
 // Función para manejar errores del circuit breaker
@@ -67,14 +67,14 @@ const handleRequestResult = (success: boolean): void => {
 
 // Configuración de URLs - usar proxy en desarrollo, directo en producción
 const isDev = process.env.NODE_ENV === 'development';
-const PRODUCTS_BASE_URL = isDev 
+const PRODUCTS_BASE_URL = isDev
   ? '/api/backend/products'  // Usar proxy de Next.js en desarrollo
   : 'https://backendtoutaunclicla-production.up.railway.app/api/v1/products'; // Directo en producción
 
 // Headers comunes para todas las requests
 const getHeaders = () => {
   const token = localStorage.getItem('auth_token');
-    
+
   return {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -124,11 +124,11 @@ export interface Product {
   dias_disponibles?: number[];
   fecha_creacion: string;
   fecha_actualizacion?: string;
-  categorias: { 
+  categorias: {
     id: number;
-    nombre: string; 
+    nombre: string;
   };
-  subcategorias?: { 
+  subcategorias?: {
     id: number;
     nombre: string;
     Imagen?: string;
@@ -163,17 +163,7 @@ export interface Product {
     tiempo_entrega: string;
     envio_gratis: boolean;
   };
-  
-  // Variation support
-  hasVariations?: boolean;
-  variations?: VariationGroup[];
-  minPrice?: number;
-  maxPrice?: number;
-  priceRange?: {
-    min: number;
-    max: number;
-  };
-  
+
   // Propiedades computadas para compatibilidad
   rating?: number;
   reviewCount?: number;
@@ -247,7 +237,7 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
   try {
     // Generar clave de cache basada en los filtros
     const cacheKey = generateCacheKey('products', filters);
-    
+
     // Verificar si tenemos datos en cache
     const cachedData = apiCache.get<ProductsResponse>(cacheKey);
     if (cachedData) {
@@ -287,7 +277,7 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
       recordRequest(endpoint);
 
       const params = new URLSearchParams();
-      
+
       // Agregar filtros como query parameters
       if (filters.page) params.append('page', filters.page.toString());
       if (filters.limit) params.append('limit', filters.limit.toString());
@@ -301,7 +291,7 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
       if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
 
       const url = `${PRODUCTS_BASE_URL}?${params.toString()}`;
-      
+
       const response = await fetch(url, {
         method: 'GET',
         headers: getHeaders(),
@@ -327,28 +317,6 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
           averageRating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
         };
 
-        // Process variations if they exist
-        if (product.variations && product.variations.length > 0) {
-          processedProduct.hasVariations = true;
-          
-          // Calculate price range based on variations
-          let minPrice = product.precio;
-          let maxPrice = product.precio;
-          
-          product.variations.forEach((group: any) => {
-            if (group.product_variations) {
-              group.product_variations.forEach((variation: any) => {
-                const priceWithModifier = product.precio + (variation.price_modifier || 0);
-                minPrice = Math.min(minPrice, priceWithModifier);
-                maxPrice = Math.max(maxPrice, priceWithModifier);
-              });
-            }
-          });
-          
-          processedProduct.minPrice = minPrice;
-          processedProduct.maxPrice = maxPrice;
-          processedProduct.priceRange = { min: minPrice, max: maxPrice };
-        }
 
         return processedProduct;
       });
@@ -385,8 +353,8 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
  * Obtener productos por categoría (para compatibilidad)
  */
 export async function getProductsByCategory(
-  categoriaId: number, 
-  page: number = 1, 
+  categoriaId: number,
+  page: number = 1,
   limit: number = 20,
   searchTerm?: string
 ): Promise<ProductsResponse> {
@@ -406,7 +374,7 @@ export async function getProductById(id: number): Promise<Product> {
     // Agregar cache para productos individuales
     const cacheKey = generateCacheKey('product', { id });
     const cachedProduct = apiCache.get<Product>(cacheKey);
-    
+
     if (cachedProduct) {
       console.log(`Using cached product ${id}`);
       return cachedProduct;
@@ -445,7 +413,7 @@ export async function getProductById(id: number): Promise<Product> {
     const fetchPromise = (async () => {
       // Registrar la petición
       recordRequest(endpoint);
-      
+
       console.log(`Fetching product ${id} from server`);
       const response = await fetch(`${PRODUCTS_BASE_URL}/${id}`, {
         method: 'GET',
@@ -478,29 +446,6 @@ export async function getProductById(id: number): Promise<Product> {
         averageRating: product.averageRating || product.estadisticas?.promedio_calificacion || 0,
       } as Product;
 
-      // Process variations if they exist
-      if (product.variations && product.variations.length > 0) {
-        processedProduct.hasVariations = true;
-        
-        // Calculate price range based on variations
-        let minPrice = product.precio;
-        let maxPrice = product.precio;
-        
-        product.variations.forEach((group: any) => {
-          if (group.product_variations) {
-            group.product_variations.forEach((variation: any) => {
-              const priceWithModifier = product.precio + (variation.price_modifier || 0);
-              minPrice = Math.min(minPrice, priceWithModifier);
-              maxPrice = Math.max(maxPrice, priceWithModifier);
-            });
-          }
-        });
-        
-        processedProduct.minPrice = minPrice;
-        processedProduct.maxPrice = maxPrice;
-        processedProduct.priceRange = { min: minPrice, max: maxPrice };
-        processedProduct.variations = product.variations;
-      }
 
       // Guardar en cache por 12 minutos (individual products are more stable)
       apiCache.set(cacheKey, processedProduct, 12 * 60 * 1000);
@@ -551,7 +496,7 @@ export async function getRelatedProducts(
 ): Promise<Product[]> {
   try {
     const response = await getProductsByCategory(categoryId, 1, limit + 5);
-    
+
     // Filtrar el producto actual y limitar resultados
     return response.products
       .filter(product => product.id !== productId)
@@ -569,7 +514,7 @@ export async function getCategories(): Promise<Category[]> {
   try {
     const cacheKey = generateCacheKey('categories', {});
     const cachedCategories = apiCache.get<Category[]>(cacheKey);
-    
+
     if (cachedCategories) {
       return cachedCategories;
     }
@@ -632,7 +577,7 @@ export async function getSubcategories(categoryId?: number): Promise<Subcategory
   try {
     const cacheKey = generateCacheKey('subcategories', { categoryId });
     const cachedSubcategories = apiCache.get<Subcategory[]>(cacheKey);
-    
+
     if (cachedSubcategories) {
       return cachedSubcategories;
     }
@@ -667,7 +612,7 @@ export async function getSubcategories(categoryId?: number): Promise<Subcategory
     }
 
     const url = `${PRODUCTS_BASE_URL}/subcategories?${params.toString()}`;
-    
+
     const response = await fetch(url, {
       method: 'GET',
       headers: getHeaders(),
