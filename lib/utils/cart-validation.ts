@@ -43,7 +43,9 @@ export function validateCartSummary(summary: Partial<CartSummary> | undefined): 
     freeShippingApplied: summary.freeShippingApplied ?? false,
     // Critical shipping state fields
     shippingMessage: summary.shippingMessage ?? null,
-    needsAddress: summary.needsAddress ?? false
+    needsAddress: summary.needsAddress ?? false,
+    isPromotionEligible: summary.isPromotionEligible ?? false,
+    promotionThreshold: summary.promotionThreshold ?? 0
   };
 }
 
@@ -62,7 +64,9 @@ export function createEmptyCartSummary(): CartSummary {
     shippingThreshold: CART_DEFAULTS.SHIPPING_THRESHOLD,
     shippingCost: 0,
     shippingMessage: null,
-    needsAddress: false
+    needsAddress: false,
+    isPromotionEligible: false,
+    promotionThreshold: 0
   };
 }
 
@@ -116,24 +120,24 @@ export function analyzeBackendDataQuality(summary: CartSummary): {
   const essentialFields = ['totalItems', 'totalQuantity', 'subtotal', 'total'];
   const optionalFields = ['totalTaxes', 'totalConsigne', 'shippingCost', 'shippingThreshold'];
   const advancedShippingFields = ['shippingMessage', 'needsAddress'];
-  
+
   const allFields = [...essentialFields, ...optionalFields];
-  const availableFields = allFields.filter(field => 
+  const availableFields = allFields.filter(field =>
     summary[field as keyof CartSummary] !== undefined && summary[field as keyof CartSummary] !== null
   );
-  
-  const availableEssentialFields = essentialFields.filter(field => 
+
+  const availableEssentialFields = essentialFields.filter(field =>
     summary[field as keyof CartSummary] !== undefined
   );
-  
-  const missingCriticalFields = essentialFields.filter(field => 
+
+  const missingCriticalFields = essentialFields.filter(field =>
     summary[field as keyof CartSummary] === undefined
   );
-  
+
   const hasAdvancedShipping = advancedShippingFields.some(field =>
     summary[field as keyof CartSummary] !== undefined && summary[field as keyof CartSummary] !== null
   );
-  
+
   return {
     completeness: Math.round((availableFields.length / allFields.length) * 100),
     hasEssentialData: availableEssentialFields.length === essentialFields.length,
@@ -148,7 +152,7 @@ export function analyzeBackendDataQuality(summary: CartSummary): {
  */
 export function logBackendDataQuality(summary: CartSummary, context: string = '') {
   const quality = analyzeBackendDataQuality(summary);
-  
+
   console.log(`🏛️ Backend Data Quality${context ? ` (${context})` : ''}:`, {
     completeness: `${quality.completeness}%`,
     hasEssentialData: quality.hasEssentialData,
@@ -164,7 +168,7 @@ export function logBackendDataQuality(summary: CartSummary, context: string = ''
       shippingMessage: !!summary.shippingMessage
     }
   });
-  
+
   if (quality.missingCriticalFields.length > 0) {
     console.warn(`🚨 Missing critical backend fields: ${quality.missingCriticalFields.join(', ')}`);
   }

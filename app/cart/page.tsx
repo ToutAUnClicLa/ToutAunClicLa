@@ -1172,7 +1172,7 @@ export default function CartPage() {
                       <div className="flex justify-between items-start gap-8">
                         <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.shipping')}</span>
                         <div className="text-right text-sm ">
-                          <ShippingStatus summary={summary} />
+                          <ShippingStatus summary={summary} variant="inline" />
                         </div>
                       </div>
                       <div className="flex justify-between items-center">
@@ -1183,11 +1183,14 @@ export default function CartPage() {
                         <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.consigne')}</span>
                         <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displayConsigne)}</span>
                       </div>
-                      {!isFreeShippingApplied && displaySubtotal < shippingThreshold && finalShippingCost > 0 && (
+                      {!isFreeShippingApplied && !summary?.isPromotionEligible && displaySubtotal < shippingThreshold && finalShippingCost > 0 && (
                         <div className="text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 sm:p-3 rounded-lg">
                           {t('cart.summary.shippingThreshold').replace('{amount}', formatPrice(shippingThreshold - displaySubtotal))}
                         </div>
                       )}
+
+                      {/* Promoción Herencia u otras promociones especiales */}
+                      <ShippingStatus summary={summary} variant="box" className="mt-2" />
 
                       {/* Componente de cupón */}
                       <div className="pt-2 sm:pt-3">

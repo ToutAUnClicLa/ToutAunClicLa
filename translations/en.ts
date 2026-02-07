@@ -622,8 +622,9 @@ export default {
         savings: "Savings: {amount}"
       },
       herencia: {
-        minimumOrder: "Minimum order for free shipping in this zone: {amount}",
-        exclusiveNote: "Applies only to Herencia Cafe and Herencia Restrobar products (Feb 7-8)."
+        title: "Herencia",
+        minimumOrder: "Minimum order for this direction in herencia promotion: {amount}",
+        exclusiveNote: "Only Herencia Cafe and Restrobar products (Feb 7-8)."
       }
     },
     errors: {

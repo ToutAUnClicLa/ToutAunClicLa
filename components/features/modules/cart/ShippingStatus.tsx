@@ -10,125 +10,102 @@ import { CartSummary } from '@/lib/services/cart';
 interface ShippingStatusProps {
   summary: CartSummary;
   className?: string;
+  variant?: 'box' | 'inline';
 }
 
-export function ShippingStatus({ summary, className = '' }: ShippingStatusProps) {
+export function ShippingStatus({ summary, className = '', variant = 'box' }: ShippingStatusProps) {
   const router = useRouter();
   const { t } = useTranslation();
 
-  // ✅ MEJORA: Manejo completo de estados de shipping según backend
+  // ✅ Inline variant: Solo muestra el costo o "Gratis" como un badge
+  if (variant === 'inline') {
+    const isFree = summary.freeShippingApplied ||
+      (summary.promotionApplied && summary.shippingDiscount && summary.shippingDiscount > 0) ||
+      (summary.shippingCost === 0);
+
+    if (summary.needsAddress) {
+      return (
+        <span className="text-sm sm:text-base font-medium text-amber-600">
+          {t('cart.summary.addressRequired')}
+        </span>
+      );
+    }
+
+    if (isFree) {
+      return (
+        <span className="text-sm sm:text-base font-medium text-green-600 whitespace-nowrap">
+          {t('cart.summary.freeShipping')}
+        </span>
+      );
+    }
+
+    return (
+      <div className="flex items-center gap-1">
+        <span className="text-sm sm:text-base font-medium text-gray-900 whitespace-nowrap">
+          {formatPrice(summary.shippingCost || 0)}
+        </span>
+      </div>
+    );
+  }
+
+  // ✅ Box variant: Muestra información detallada (alertas, promociones, etc.)
+
+  // 1. Necesita dirección
   if (summary.needsAddress) {
     return (
-      <div className={`bg-amber-50 border border-amber-200 rounded-lg p-2 ${className}`}>
-        <div className="flex items-start justify-center">
-          <MapPin className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <h3 className="font-medium text-amber-800 mb-1">
-              {t('cart.summary.addressRequiredForShipping')}
-            </h3>
-          </div>
+      <div className={`bg-amber-50/50 border border-amber-200/50 rounded-lg p-2 ${className}`}>
+        <div className="flex items-center gap-2">
+          <MapPin className="h-4 w-4 text-amber-600 flex-shrink-0" />
+          <span className="text-xs font-medium text-amber-800">
+            {t('cart.summary.addressRequiredForShipping')}
+          </span>
         </div>
       </div>
     );
   }
 
-  // ✅ MEJORA: Envío gratis aplicado (incluye promoción Maison de Poulet y envío gratis regular)
-  // IMPORTANTE: Esta verificación debe ir ANTES que shippingMessage para que la promoción tenga prioridad
   const isFreeShipping = summary.freeShippingApplied ||
     (summary.promotionApplied && summary.shippingDiscount && summary.shippingDiscount > 0) ||
     (summary.shippingCost === 0);
 
-  console.log('🔍 ShippingStatus DEBUG:', {
-    promotionApplied: summary.promotionApplied,
-    shippingDiscount: summary.shippingDiscount,
-    shippingCost: summary.shippingCost,
-    freeShippingApplied: summary.freeShippingApplied,
-    isFreeShipping: isFreeShipping,
-    hasShippingMessage: !!summary.shippingMessage
-  });
-
-  if (isFreeShipping) {
-    // Si es promoción Maison de Poulet, mostrar banner especial
-    if (summary.promotionApplied && summary.shippingDiscount && summary.shippingDiscount > 0) {
-      return (
-        <div className={`bg-green-50 border border-green-200 rounded-lg p-3 ${className}`}>
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <span className="text-sm font-medium text-green-800">
-                {t('cart.promotions.maisonPoulet.freeShipping')}
-              </span>
-            </div>
-          </div>
-          <div className="text-xs text-green-700 bg-green-100 rounded px-2 py-1">
-            <div className="flex items-center gap-1">
-              <Gift className="h-3 w-3" />
-              <span className="font-medium">
-                {t('cart.promotions.maisonPoulet.title')}
-              </span>
-            </div>
-            <div className="mt-1">
-              {t('cart.promotions.maisonPoulet.savings', { amount: formatPrice(summary.shippingDiscount) })}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // Envío gratis regular (cupones o monto mínimo)
+  // 2. Envío gratis aplicado (con banner especial de Maison de Poulet)
+  if (isFreeShipping && summary.promotionApplied && summary.shippingDiscount && summary.shippingDiscount > 0) {
     return (
       <div className={`bg-green-50 border border-green-200 rounded-lg p-3 ${className}`}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-green-600" />
-            <span className="text-sm font-medium text-green-800">
-              {t('cart.summary.freeShipping')}
-            </span>
-          </div>
+        <div className="flex items-center gap-2">
+          <CheckCircle className="h-4 w-4 text-green-600" />
+          <span className="text-sm font-medium text-green-800">
+            {t('cart.promotions.maisonPoulet.freeShipping')}
+          </span>
+        </div>
+        <div className="text-[10px] text-green-700 bg-green-100/50 rounded px-2 py-0.5 mt-2 flex items-center gap-1 w-fit">
+          <Gift className="h-3 w-3" />
+          <span>{t('cart.promotions.maisonPoulet.title')}</span>
         </div>
       </div>
     );
   }
 
-
-  // ✅ NUEVO: Mensaje de pedido mínimo para promoción Herencia
+  // 3. Nudge para promoción (especialmente Herencia)
   if (summary.isPromotionEligible && !isFreeShipping && summary.promotionThreshold) {
-    const remainingAmount = Math.max(0, summary.promotionThreshold - (summary.subtotal || 0));
-
     return (
-      <div className={`bg-amber-50 border border-amber-200 rounded-lg p-3 ${className}`}>
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <span className="text-sm font-medium text-amber-800">
-              {remainingAmount > 0
-                ? t('cart.summary.shippingThreshold').replace('{amount}', formatPrice(remainingAmount))
-                : t('cart.promotions.herencia.minimumOrder', { amount: formatPrice(summary.promotionThreshold) })}
+      <div className={`bg-amber-50 border border-amber-100 rounded-md p-2 ${className}`}>
+        <div className="flex items-center gap-2">
+          <Info className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
+          <div className="flex-1 leading-tight">
+            <span className="text-[11px] sm:text-xs font-medium text-amber-900">
+              {t('cart.promotions.herencia.minimumOrder', { amount: formatPrice(summary.promotionThreshold) })}
             </span>
-            <p className="text-xs text-amber-700 mt-1">
+            <p className="text-[9px] text-amber-700/70 italic mt-0.5">
               {t('cart.promotions.herencia.exclusiveNote')}
             </p>
-            <div className="mt-2 flex items-center justify-between">
-              <span className="text-xs font-medium text-amber-900">
-                {t('cart.summary.subtotal')}: {formatPrice(summary.subtotal || 0)}
-              </span>
-              <span className="text-xs font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded">
-                Min: {formatPrice(summary.promotionThreshold)}
-              </span>
-            </div>
-            {summary.shippingCost && summary.shippingCost > 0 && (
-              <div className="mt-1 text-xs font-semibold text-amber-900 border-t border-amber-100 pt-1">
-                {t('cart.summary.shipping')}: {formatPrice(summary.shippingCost)}
-              </div>
-            )}
           </div>
         </div>
       </div>
     );
   }
 
-  // ✅ MEJORA: Estado de shipping con mensaje (cálculo con error pero estimado)
-  // SOLO si NO es envío gratis
+  // 4. Mensaje de error/estimado del backend
   if (summary.shippingMessage && !isFreeShipping) {
     return (
       <div className={`bg-orange-50 border border-orange-200 rounded-lg p-3 ${className}`}>
@@ -152,29 +129,10 @@ export function ShippingStatus({ summary, className = '' }: ShippingStatusProps)
     );
   }
 
-  // ✅ MEJORA: Shipping normal con costo
-  if (summary.shippingCost && summary.shippingCost > 0) {
+  // 5. Envío gratis regular
+  if (isFreeShipping) {
     return (
-      <div className={`bg-blue-50 border border-blue-200 rounded-lg p-3 ${className}`}>
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Truck className="h-5 w-5 text-blue-600" />
-            <span className="text-sm font-medium text-blue-800">
-              {t('cart.summary.shipping')}
-            </span>
-          </div>
-          <span className="text-sm font-semibold text-blue-900">
-            {formatPrice(summary.shippingCost)}
-          </span>
-        </div>
-      </div>
-    );
-  }
-
-  // ✅ MEJORA: Envío gratis por monto mínimo
-  return (
-    <div className={`bg-green-50 border border-green-200 rounded-lg p-3 ${className}`}>
-      <div className="flex items-center justify-between">
+      <div className={`bg-green-50 border border-green-200 rounded-lg p-3 ${className}`}>
         <div className="flex items-center gap-2">
           <CheckCircle className="h-5 w-5 text-green-600" />
           <span className="text-sm font-medium text-green-800">
@@ -182,6 +140,9 @@ export function ShippingStatus({ summary, className = '' }: ShippingStatusProps)
           </span>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // Default: Mostrar solo si hay costo relevante pero no promoción
+  return null;
 }

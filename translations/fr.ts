@@ -626,8 +626,9 @@ export default {
         savings: "Économie : {amount}"
       },
       herencia: {
-        minimumOrder: "Commande minimale pour livraison gratuite dans cette zone : {amount}",
-        exclusiveNote: "S'applique uniquement aux produits Herencia Cafe et Herencia Restrobar (7-8 fév)."
+        title: "Herencia",
+        minimumOrder: "Commande minimum pour cette direction en promotion herencia: {amount}",
+        exclusiveNote: "Produits Herencia Cafe et Restrobar uniquement (7-8 fév)."
       }
     },
     errors: {

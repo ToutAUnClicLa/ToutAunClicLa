@@ -1650,8 +1650,9 @@ export default {
         savings: "Ahorro: {amount}"
       },
       herencia: {
-        minimumOrder: "Pedido mínimo para domicilio gratis en esta zona: {amount}",
-        exclusiveNote: "Aplica solo para productos de Herencia Cafe y Herencia Restrobar (Feb 7-8)."
+        title: "Herencia",
+        minimumOrder: "Orden mínimo para esta dirección en promoción herencia: {amount}",
+        exclusiveNote: "Aplica solo productos Herencia Cafe y Restrobar (Feb 7-8)."
       }
     },
     errors: {
