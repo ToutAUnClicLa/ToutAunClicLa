@@ -93,19 +93,31 @@ export function ShippingStatus({ summary, className = '' }: ShippingStatusProps)
 
   // ✅ NUEVO: Mensaje de pedido mínimo para promoción Herencia
   if (summary.isPromotionEligible && !isFreeShipping && summary.promotionThreshold) {
+    const remainingAmount = Math.max(0, summary.promotionThreshold - (summary.subtotal || 0));
+
     return (
       <div className={`bg-amber-50 border border-amber-200 rounded-lg p-3 ${className}`}>
         <div className="flex items-start gap-3">
           <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <span className="text-sm font-medium text-amber-800">
-              {t('cart.promotions.herencia.minimumOrder', { amount: formatPrice(summary.promotionThreshold) })}
+              {remainingAmount > 0
+                ? t('cart.summary.shippingThreshold').replace('{amount}', formatPrice(remainingAmount))
+                : t('cart.promotions.herencia.minimumOrder', { amount: formatPrice(summary.promotionThreshold) })}
             </span>
             <p className="text-xs text-amber-700 mt-1">
               {t('cart.promotions.herencia.exclusiveNote')}
             </p>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-xs font-medium text-amber-900">
+                {t('cart.summary.subtotal')}: {formatPrice(summary.subtotal || 0)}
+              </span>
+              <span className="text-xs font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded">
+                Min: {formatPrice(summary.promotionThreshold)}
+              </span>
+            </div>
             {summary.shippingCost && summary.shippingCost > 0 && (
-              <div className="mt-2 text-xs font-semibold text-amber-900">
+              <div className="mt-1 text-xs font-semibold text-amber-900 border-t border-amber-100 pt-1">
                 {t('cart.summary.shipping')}: {formatPrice(summary.shippingCost)}
               </div>
             )}
