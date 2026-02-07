@@ -619,6 +619,17 @@ export default {
       productRemoved: "Produit supprimé",
       cartCleared: "Panier vidé"
     },
+    promotions: {
+      maisonPoulet: {
+        title: "Promotion Maison de Poulet - Rive-Sud",
+        freeShipping: "Livraison GRATUITE 🎉",
+        savings: "Économie : {amount}"
+      },
+      herencia: {
+        minimumOrder: "Commande minimale pour livraison gratuite dans cette zone : {amount}",
+        exclusiveNote: "S'applique uniquement aux produits Herencia Cafe et Herencia Restrobar (7-8 fév)."
+      }
+    },
     errors: {
       updateQuantity: "Erreur lors de la mise à jour de la quantité",
       removeProduct: "Erreur lors de la suppression du produit",

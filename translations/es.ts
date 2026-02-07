@@ -1643,6 +1643,17 @@ export default {
       productRemoved: "Producto eliminado",
       cartCleared: "Carrito vaciado"
     },
+    promotions: {
+      maisonPoulet: {
+        title: "Promoción Maison de Poulet - Riviera Sur",
+        freeShipping: "Envío GRATIS 🎉",
+        savings: "Ahorro: {amount}"
+      },
+      herencia: {
+        minimumOrder: "Pedido mínimo para domicilio gratis en esta zona: {amount}",
+        exclusiveNote: "Aplica solo para productos de Herencia Cafe y Herencia Restrobar (Feb 7-8)."
+      }
+    },
     errors: {
       updateQuantity: "Error al actualizar cantidad",
       removeProduct: "Error al eliminar producto",

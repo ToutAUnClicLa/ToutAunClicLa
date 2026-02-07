@@ -615,6 +615,17 @@ export default {
       productRemoved: "Product removed",
       cartCleared: "Cart cleared"
     },
+    promotions: {
+      maisonPoulet: {
+        title: "Maison de Poulet Promotion - South Shore",
+        freeShipping: "FREE Shipping 🎉",
+        savings: "Savings: {amount}"
+      },
+      herencia: {
+        minimumOrder: "Minimum order for free shipping in this zone: {amount}",
+        exclusiveNote: "Applies only to Herencia Cafe and Herencia Restrobar products (Feb 7-8)."
+      }
+    },
     errors: {
       updateQuantity: "Error updating quantity",
       removeProduct: "Error removing product",

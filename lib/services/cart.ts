@@ -103,6 +103,8 @@ export interface CartSummary {
   // New fields for backend shipping calculation system
   shippingMessage?: string | null;
   needsAddress?: boolean;
+  promotionThreshold?: number;     // ✨ NEW - Threshold for Herencia promotion
+  isPromotionEligible?: boolean;    // ✨ NEW - Eligibility for Herencia promotion
 }
 
 export interface CartPagination {
