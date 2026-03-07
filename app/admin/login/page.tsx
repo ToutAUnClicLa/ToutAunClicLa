@@ -24,7 +24,8 @@ export default function SuperAdminLoginPage() {
         try {
             await login({ email, password });
             toast.success("Bienvenido, Super Admin");
-            router.push("/admin");
+            // Force a hard reload to ensure the layout middleware captures the newly set local storage token
+            window.location.href = "/admin";
         } catch (error: any) {
             toast.error(error.message || "Error al iniciar sesión");
         } finally {

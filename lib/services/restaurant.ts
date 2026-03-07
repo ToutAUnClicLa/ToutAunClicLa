@@ -51,6 +51,16 @@ export const restaurantAdminService = {
         return data.profile;
     },
 
+    deleteOwnRestaurant: async () => {
+        const res = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.RESTAURANTS.PROFILE), {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || data.error || 'Failed to delete restaurant');
+        return data;
+    },
+
     getProducts: async (page: number = 1, limit: number = 10, search: string = '') => {
         const queryParams = new URLSearchParams({
             page: page.toString(),

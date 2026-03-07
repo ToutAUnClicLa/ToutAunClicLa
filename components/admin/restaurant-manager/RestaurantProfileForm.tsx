@@ -1,15 +1,26 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { restaurantAdminService } from "@/lib/services/restaurant";
 import { countryFlags } from "@/lib/services/restaurants";
-import { Loader2, Store, UploadCloud, X } from "lucide-react";
+import { Loader2, Store, UploadCloud, X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/common/ui/button";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
 import { Textarea } from "@/components/common/ui/textarea";
 import { superAdminService } from "@/lib/services/superAdmin";
+import {
+    AlertDialog,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/common/ui/alert-dialog";
 
 const DAYS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
@@ -18,8 +29,11 @@ interface RestaurantProfileFormProps {
 }
 
 export default function RestaurantProfileForm({ restauranteId }: RestaurantProfileFormProps) {
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [deleteConfirmText, setDeleteConfirmText] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
     const [profile, setProfile] = useState<any>({
         nombre: "",
         Descripcion: "",
@@ -91,6 +105,30 @@ export default function RestaurantProfileForm({ restauranteId }: RestaurantProfi
             toast.error("Hubo un error al guardar");
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleDeleteRestaurant = async () => {
+        if (deleteConfirmText !== profile.nombre) {
+            toast.error("El nombre no coincide. Operación cancelada.");
+            return;
+        }
+
+        setIsDeleting(true);
+        try {
+            if (restauranteId) {
+                await superAdminService.deleteRestaurant(restauranteId);
+                toast.success("Restaurante eliminado permanentemente");
+                router.push('/admin/restaurantes');
+            } else {
+                await restaurantAdminService.deleteOwnRestaurant();
+                toast.success("Tu cuenta y restaurante han sido eliminados");
+                localStorage.removeItem('auth_token');
+                router.push('/restaurante/login');
+            }
+        } catch (error: any) {
+            toast.error(error.message || "Error al eliminar el restaurante");
+            setIsDeleting(false);
         }
     };
 
@@ -305,6 +343,66 @@ export default function RestaurantProfileForm({ restauranteId }: RestaurantProfi
                             )}
                         </div>
                     ))}
+                </div>
+            </div>
+
+            {/* Zona de Peligro */}
+            <div className="bg-red-50/50 rounded-3xl border border-red-100 p-5 sm:p-8 space-y-5 sm:space-y-6">
+                <div className="flex items-center gap-3 sm:gap-4 border-b border-red-100 pb-4 sm:pb-5">
+                    <div className="p-2 sm:p-2.5 bg-red-100 text-red-600 rounded-xl">
+                        <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </div>
+                    <div>
+                        <h2 className="text-lg sm:text-xl font-bold text-red-900">Zona de Peligro</h2>
+                        <p className="text-red-500 text-xs sm:text-sm mt-1">Acciones irreversibles para este restaurante.</p>
+                    </div>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 className="text-sm font-semibold text-slate-900">Eliminar Restaurante</h3>
+                        <p className="text-xs text-slate-500 mt-1 max-w-md flex-1">
+                            Una vez eliminado, se borrarán todos sus productos, configuración de cuenta y estadísticas de manera permanente. Esta acción no se puede deshacer.
+                        </p>
+                    </div>
+                    
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive" className="shrink-0">
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Eliminar Restaurante
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="w-[90vw] sm:w-[32rem]">
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Esta acción no se puede deshacer. Se eliminará permanentemente la cuenta, productos y toda la información asociada a <strong className="text-slate-900">{profile.nombre}</strong>.
+                                    <br/><br/>
+                                    Por favor, escribe el nombre del restaurante exacto para confirmar:
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <div className="my-2">
+                                <Input 
+                                    placeholder={profile.nombre}
+                                    value={deleteConfirmText}
+                                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                                    className="border-red-200 focus-visible:ring-red-500"
+                                />
+                            </div>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel onClick={() => setDeleteConfirmText("")}>Cancelar</AlertDialogCancel>
+                                <Button 
+                                    variant="destructive" 
+                                    disabled={deleteConfirmText !== profile.nombre || isDeleting}
+                                    onClick={handleDeleteRestaurant}
+                                >
+                                    {isDeleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}
+                                    Sí, eliminar permanentemente
+                                </Button>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </div>
             </div>
 

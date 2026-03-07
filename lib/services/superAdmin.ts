@@ -47,6 +47,16 @@ export const superAdminService = {
         return data.restaurant;
     },
 
+    deleteRestaurant: async (id: number | string) => {
+        const res = await fetch(buildApiUrl(`${API_CONFIG.ENDPOINTS.SUPER_ADMIN.RESTAURANTS_LIST}/${id}`), {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || data.error || 'Error deleting restaurant');
+        return data;
+    },
+
     uploadImage: async (file: File) => {
         const formData = new FormData();
         formData.append('file', file);
