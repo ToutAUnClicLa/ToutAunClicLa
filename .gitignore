@@ -39,3 +39,7 @@ claude.md
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#Skills
+.agents
+skills-lock.json

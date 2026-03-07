@@ -5,8 +5,10 @@
  * Este servicio está preparado para funcionar tanto con localStorage como con cookies HttpOnly
  */
 
-// Configuración para usar siempre el backend de producción
-const AUTH_BASE_URL = 'https://backendtoutaunclicla-production.up.railway.app/api/v1/auth';
+import { API_CONFIG } from '../config/api';
+
+// Configuración para usar la URL del entorno adecuado
+const AUTH_BASE_URL = `${API_CONFIG.BASE_URL}/auth`;
 
 // Configuración de autenticación
 const AUTH_CONFIG = {
@@ -17,11 +19,14 @@ const AUTH_CONFIG = {
 
 // Headers comunes para todas las requests
 const getHeaders = () => {
+  const isDev = process.env.NODE_ENV === 'development';
   return {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Origin': 'https://www.toutaunclicla.com',
-    'Referer': 'https://www.toutaunclicla.com',
+    ...(isDev ? {} : {
+      'Origin': 'https://www.toutaunclicla.com',
+      'Referer': 'https://www.toutaunclicla.com',
+    })
   };
 };
 
@@ -264,7 +269,7 @@ export async function checkVerificationStatus(email: string): Promise<{ verified
 export async function getUserProfile(): Promise<{ user: User }> {
   try {
     const token = TokenManager.retrieveToken();
-    
+
     if (!token) {
       throw new Error('No hay token de autenticación');
     }
@@ -381,7 +386,7 @@ export function clearPendingVerificationEmail(): void {
  */
 export async function initiateGoogleAuth(): Promise<{ url: string }> {
   const { supabase, AUTH_CONFIG } = await import('@/lib/config/supabase');
-  
+
   try {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -416,26 +421,26 @@ export async function initiateGoogleAuth(): Promise<{ url: string }> {
  */
 export async function handleGoogleCallback(): Promise<AuthResponse> {
   const { supabase } = await import('@/lib/config/supabase');
-  
+
   try {
     // Verificar si hay un código en la URL (desde Google)
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
-    
+
     if (code) {
       // Intercambiar el código por una sesión
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-      
+
       if (error) {
         console.error('Error intercambiando código:', error);
         throw new Error(`Error procesando autenticación: ${error.message}`);
       }
-      
+
       if (data.session && data.user) {
         return await syncUserWithBackend(data.session, data.user);
       }
     }
-    
+
     // Si no hay código, intentar obtener la sesión actual
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
@@ -504,11 +509,11 @@ export async function checkSupabaseAuth(): Promise<{ session: any; user: any } |
   try {
     const { supabase } = await import('@/lib/config/supabase');
     const { data: { session }, error } = await supabase.auth.getSession();
-    
+
     if (error || !session || !session.user) {
       return null;
     }
-    
+
     return { session, user: session.user };
   } catch (error) {
     console.error('Error verificando auth de Supabase:', error);
@@ -523,7 +528,7 @@ export async function signOutFromSupabase(): Promise<void> {
   try {
     const { supabase } = await import('@/lib/config/supabase');
     const { error } = await supabase.auth.signOut();
-    
+
     if (error) {
       console.error('Error cerrando sesión en Supabase:', error);
     }

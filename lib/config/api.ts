@@ -3,7 +3,9 @@
  */
 
 export const API_CONFIG = {
-  BASE_URL: 'https://backendtoutaunclicla-production.up.railway.app/api/v1',
+  BASE_URL: process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5500/api/v1'
+    : 'https://backendtoutaunclicla-production.up.railway.app/api/v1',
   ENDPOINTS: {
     // Auth endpoints
     AUTH: {
@@ -73,6 +75,28 @@ export const API_CONFIG = {
       CONFIRM_PAYMENT: '/stripe/confirm-payment',
       WEBHOOKS: '/stripe/webhooks',
     },
+    // Restaurant Admin endpoints
+    RESTAURANTS: {
+      LOGIN: '/restaurants/login',
+      SESSION: '/restaurants/session',
+      PROFILE: '/restaurants/profile',
+      PRODUCTS: '/restaurants/products',
+      ORDERS: '/restaurants/orders',
+      STATS: '/restaurants/stats',
+    },
+    // Super Admin endpoints (Requiere token user normal + ser admin)
+    SUPER_ADMIN: {
+      RESTAURANTS_LIST: '/super-admin/restaurants',
+      RESTAURANT_PROFILE: '/super-admin/restaurants/:id/profile',
+      RESTAURANTS_CREATE: '/super-admin/restaurants',
+      CREDENTIALS_CREATE: '/super-admin/restaurants/credentials',
+      CREDENTIALS_UPDATE: '/super-admin/restaurants/credentials',
+      STATS: '/super-admin/stats',
+    },
+    // Subida de archivos (Restaurantes)
+    UPLOAD: {
+      IMAGE: '/upload/image',
+    }
   },
 } as const;
 
