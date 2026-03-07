@@ -182,7 +182,7 @@ export function Navbar() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden lg:flex items-center space-x-4 xl:space-x-8">
               {LINKS.map((link) => {
                 const isActive = pathname === link.href;
                 return (
@@ -214,7 +214,7 @@ export function Navbar() {
             </div>            {/* Actions */}
             <div className="flex items-center space-x-2 sm:space-x-3">
               {/* Language Selector - Desktop */}
-              <div className="hidden md:flex">
+              <div className="hidden lg:flex">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -276,7 +276,7 @@ export function Navbar() {
               </Button>
 
               {/* Language Selector - Mobile (visible only on mobile) */}
-              <div className="md:hidden">
+              <div className="lg:hidden">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -306,7 +306,7 @@ export function Navbar() {
               </div>
 
               {/* Autenticación */}
-              <div className="hidden md:flex">
+              <div className="hidden lg:flex">
                 {isAuthenticated ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -413,7 +413,7 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden h-9 w-9 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors duration-200"
+                className="lg:hidden h-9 w-9 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors duration-200"
                 onClick={() => setIsMobileMenuOpen(true)}
               >
                 <Menu className="h-5 w-5" />
@@ -427,7 +427,7 @@ export function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            className="fixed inset-0 bg-white z-50 md:hidden flex flex-col w-full overflow-hidden"
+            className="fixed inset-0 bg-white z-50 lg:hidden flex flex-col w-full overflow-hidden"
             initial={{ opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}

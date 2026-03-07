@@ -208,34 +208,37 @@ export function Footer() {
             ))}
           </div>
         </div>        {/* Cambiador de idioma y copyright */}
+        {/* Cambiador de idioma y copyright */}
         <div className="border-t border-gray-800 mt-8 pt-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center">
-            <div className="flex space-x-4 mb-4 sm:mb-0">
-              <Link href="/es" className="text-gray-500 hover:text-white transition-colors duration-200 text-sm">
-                {t('footer.languages.spanish')}
-              </Link>
-              <span className="text-gray-700">|</span>
-              <Link href="/fr" className="text-gray-500 hover:text-white transition-colors duration-200 text-sm">
-                {t('footer.languages.french')}
-              </Link>
-              <span className="text-gray-700">|</span>
-              <Link href="/en" className="text-gray-500 hover:text-white transition-colors duration-200 text-sm">
-                {t('footer.languages.english')}
-              </Link>
-            </div>
-            
-            {/* Accesos de Administración */}
-            <div className="flex space-x-4 mb-4 sm:mb-0">
-              <Link href="/admin" className="text-gray-600 hover:text-indigo-400 transition-colors duration-200 text-xs flex items-center gap-1 opacity-70 hover:opacity-100">
-                <span>{t('portals.footer.admin')}</span>
-              </Link>
-              <span className="text-gray-800">|</span>
-              <Link href="/restaurante" className="text-gray-600 hover:text-indigo-400 transition-colors duration-200 text-xs flex items-center gap-1 opacity-70 hover:opacity-100">
-                <span>{t('portals.footer.restaurantAdmin')}</span>
-              </Link>
+          <div className="flex flex-col xl:flex-row justify-between items-center gap-4">
+            <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center">
+              <div className="flex space-x-4">
+                <Link href="/es" className="text-gray-500 hover:text-white transition-colors duration-200 text-sm">
+                  {t('footer.languages.spanish')}
+                </Link>
+                <span className="text-gray-700">|</span>
+                <Link href="/fr" className="text-gray-500 hover:text-white transition-colors duration-200 text-sm">
+                  {t('footer.languages.french')}
+                </Link>
+                <span className="text-gray-700">|</span>
+                <Link href="/en" className="text-gray-500 hover:text-white transition-colors duration-200 text-sm">
+                  {t('footer.languages.english')}
+                </Link>
+              </div>
+              
+              {/* Accesos de Administración */}
+              <div className="flex space-x-4 items-center">
+                <Link href="/admin" className="text-gray-600 hover:text-indigo-400 transition-colors duration-200 text-xs flex items-center gap-1 opacity-70 hover:opacity-100">
+                  <span>{t('portals.footer.admin')}</span>
+                </Link>
+                <span className="text-gray-800">|</span>
+                <Link href="/restaurante" className="text-gray-600 hover:text-indigo-400 transition-colors duration-200 text-xs flex items-center gap-1 opacity-70 hover:opacity-100">
+                  <span>{t('portals.footer.restaurantAdmin')}</span>
+                </Link>
+              </div>
             </div>
 
-            <p className="text-gray-500 text-xs md:text-sm">
+            <p className="text-gray-500 text-xs md:text-sm text-center">
               {t('footer.copyright').replace('{year}', currentYear.toString())}
             </p>
           </div>
