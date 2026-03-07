@@ -37,7 +37,7 @@ export default function SuperAdminIndex() {
                 <div className="bg-white p-4 rounded-2xl shadow-xl border border-slate-100 flex flex-col gap-1.5 z-50">
                     <p className="font-semibold text-slate-500 text-xs tracking-wide uppercase">{formattedDate}</p>
                     <p className="text-indigo-600 font-black text-lg tracking-tight">
-                        Volumen C$', ${Number(payload[0].value).toFixed(2)}
+                        Volumen C&apos;, ${Number(payload[0].value).toFixed(2)}
                     </p>
                     {payload[0].payload.orders !== undefined && (
                         <p className="text-emerald-500 font-semibold text-sm">

@@ -58,7 +58,7 @@ export const superAdminService = {
         }
         
         // El endpoint es común, pero el middleware de autenticación valida ambos tokens
-        const res = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.RESTAURANTS.UPLOAD), {
+        const res = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.UPLOAD.IMAGE), {
             method: 'POST',
             headers,
             body: formData
