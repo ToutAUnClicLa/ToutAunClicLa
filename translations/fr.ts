@@ -193,6 +193,37 @@ export default {
     },
     copyright: "© {year} Tout à un Clic LA. Tous droits réservés."
   },
+  portals: {
+    footer: {
+      admin: "Administrateur",
+      restaurantAdmin: "Administrateur de Restaurants"
+    },
+    adminLogin: {
+      title: "Centre de Contrôle",
+      subtitle: "Panneau d'administration du système",
+      emailLabel: "Email Administrateur",
+      emailPlaceholder: "admin@exemple.com",
+      passwordLabel: "Mot de passe",
+      passwordPlaceholder: "••••••••",
+      verifying: "Vérification...",
+      loginButton: "Entrer dans le Système",
+      loginSuccess: "Connexion réussie",
+      loginError: "Identifiants invalides",
+      restrictedAccess: "Accès Restreint"
+    },
+    restaurantLogin: {
+      title: "Portail Partenaires",
+      subtitle: "Connectez-vous pour gérer votre restaurant",
+      usernameLabel: "Nom d'utilisateur du Restaurant",
+      usernamePlaceholder: "Ex: mamarque",
+      passwordLabel: "Mot de passe",
+      passwordPlaceholder: "••••••••",
+      verifying: "Vérification...",
+      loginButton: "Entrer dans le Panneau",
+      loginSuccess: "Bienvenue dans votre panneau d'affaires",
+      loginError: "Nom d'utilisateur ou mot de passe incorrect"
+    }
+  },
   landing: {
     hero: {
       title: "Découvrez l'Amérique Latine",

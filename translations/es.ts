@@ -194,6 +194,37 @@ export default {
     },
     copyright: "© {year} Tout à un Clic LA. Todos los derechos reservados."
   },
+  portals: {
+    footer: {
+      admin: "Administrador",
+      restaurantAdmin: "Administrador de Restaurantes"
+    },
+    adminLogin: {
+      title: "Centro de Control",
+      subtitle: "Panel de administración del sistema",
+      emailLabel: "Correo de Administrador",
+      emailPlaceholder: "admin@ejemplo.com",
+      passwordLabel: "Contraseña",
+      passwordPlaceholder: "••••••••",
+      verifying: "Verificando...",
+      loginButton: "Ingresar al Sistema",
+      loginSuccess: "Inicio de sesión exitoso",
+      loginError: "Credenciales inválidas",
+      restrictedAccess: "Acceso Restringido"
+    },
+    restaurantLogin: {
+      title: "Portal de Socios",
+      subtitle: "Inicia sesión para administrar tu restaurante",
+      usernameLabel: "Usuario del Restaurante",
+      usernamePlaceholder: "Ej: mimarca",
+      passwordLabel: "Contraseña",
+      passwordPlaceholder: "••••••••",
+      verifying: "Verificando...",
+      loginButton: "Ingresar al Panel",
+      loginSuccess: "Bienvenido a tu panel empresarial",
+      loginError: "Usuario o contraseña incorrectos"
+    }
+  },
   landing: {
     hero: {
       title: "Descubre América Latina",

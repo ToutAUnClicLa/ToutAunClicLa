@@ -9,8 +9,10 @@ import { Label } from "@/components/common/ui/label";
 import { ShieldAlert, Loader2, Lock, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function SuperAdminLoginPage() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -23,11 +25,11 @@ export default function SuperAdminLoginPage() {
 
         try {
             await login({ email, password });
-            toast.success("Bienvenido, Super Admin");
+            toast.success(t('portals.adminLogin.loginSuccess'));
             // Force a hard reload to ensure the layout middleware captures the newly set local storage token
             window.location.href = "/admin";
         } catch (error: any) {
-            toast.error(error.message || "Error al iniciar sesión");
+            toast.error(error.message || t('portals.adminLogin.loginError'));
         } finally {
             setIsLoading(false);
         }
@@ -52,10 +54,10 @@ export default function SuperAdminLoginPage() {
                                 <ShieldAlert className="w-10 h-10 text-white" />
                             </div>
                             <h1 className="text-3xl font-black font-heading text-slate-900 tracking-tight">
-                                Tout A Un Clic La Admin
+                                {t('portals.adminLogin.title')}
                             </h1>
                             <p className="text-slate-500 font-medium text-sm">
-                                Ingresa con tus credenciales maestras.
+                                {t('portals.adminLogin.subtitle')}
                             </p>
                         </div>
 
@@ -63,7 +65,7 @@ export default function SuperAdminLoginPage() {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-5">
                                 <div className="space-y-2">
-                                    <Label className="text-slate-700 font-semibold ml-1">Correo Electrónico</Label>
+                                    <Label className="text-slate-700 font-semibold ml-1">{t('portals.adminLogin.emailLabel')}</Label>
                                     <div className="relative group">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
                                             <Mail className="w-5 h-5" />
@@ -73,14 +75,14 @@ export default function SuperAdminLoginPage() {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             className="w-full pl-11 h-14 rounded-2xl bg-slate-50 border-slate-200 focus-visible:ring-slate-900 focus-visible:border-slate-900 font-medium transition-all"
-                                            placeholder="admin@ejemplo.com"
+                                            placeholder={t('portals.adminLogin.emailPlaceholder')}
                                             required
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-slate-700 font-semibold ml-1">Contraseña</Label>
+                                    <Label className="text-slate-700 font-semibold ml-1">{t('portals.adminLogin.passwordLabel')}</Label>
                                     <div className="relative group">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
                                             <Lock className="w-5 h-5" />
@@ -90,7 +92,7 @@ export default function SuperAdminLoginPage() {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             className="w-full pl-11 h-14 rounded-2xl bg-slate-50 border-slate-200 focus-visible:ring-slate-900 focus-visible:border-slate-900 font-medium transition-all"
-                                            placeholder="••••••••"
+                                            placeholder={t('portals.adminLogin.passwordPlaceholder')}
                                             required
                                         />
                                     </div>
@@ -103,16 +105,16 @@ export default function SuperAdminLoginPage() {
                                 className="w-full h-14 text-base font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-2xl shadow-lg shadow-slate-900/20 transition-all hover:-translate-y-0.5"
                             >
                                 {isLoading ? (
-                                    <><Loader2 className="w-5 h-5 mr-3 animate-spin" /> Verificando...</>
+                                    <><Loader2 className="w-5 h-5 mr-3 animate-spin" /> {t('portals.adminLogin.verifying')}</>
                                 ) : (
-                                    "Ingresar al Panel"
+                                    t('portals.adminLogin.loginButton')
                                 )}
                             </Button>
                         </form>
                     </div>
                     <div className="bg-slate-50 p-6 text-center border-t border-slate-100">
                         <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
-                            Acceso Restringido
+                            {t('portals.adminLogin.restrictedAccess')}
                         </p>
                     </div>
                 </div>

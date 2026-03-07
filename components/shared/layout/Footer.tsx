@@ -222,7 +222,20 @@ export function Footer() {
               <Link href="/en" className="text-gray-500 hover:text-white transition-colors duration-200 text-sm">
                 {t('footer.languages.english')}
               </Link>
-            </div>            <p className="text-gray-500 text-xs md:text-sm">
+            </div>
+            
+            {/* Accesos de Administración */}
+            <div className="flex space-x-4 mb-4 sm:mb-0">
+              <Link href="/admin" className="text-gray-600 hover:text-indigo-400 transition-colors duration-200 text-xs flex items-center gap-1 opacity-70 hover:opacity-100">
+                <span>{t('portals.footer.admin')}</span>
+              </Link>
+              <span className="text-gray-800">|</span>
+              <Link href="/restaurante" className="text-gray-600 hover:text-indigo-400 transition-colors duration-200 text-xs flex items-center gap-1 opacity-70 hover:opacity-100">
+                <span>{t('portals.footer.restaurantAdmin')}</span>
+              </Link>
+            </div>
+
+            <p className="text-gray-500 text-xs md:text-sm">
               {t('footer.copyright').replace('{year}', currentYear.toString())}
             </p>
           </div>

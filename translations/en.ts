@@ -193,6 +193,37 @@ export default {
     },
     copyright: "© {year} Tout à un Clic LA. All rights reserved."
   },
+  portals: {
+    footer: {
+      admin: "Administrator",
+      restaurantAdmin: "Restaurant Administrator"
+    },
+    adminLogin: {
+      title: "Control Center",
+      subtitle: "System administration panel",
+      emailLabel: "Administrator Email",
+      emailPlaceholder: "admin@example.com",
+      passwordLabel: "Password",
+      passwordPlaceholder: "••••••••",
+      verifying: "Verifying...",
+      loginButton: "Enter System",
+      loginSuccess: "Login successful",
+      loginError: "Invalid credentials",
+      restrictedAccess: "Restricted Access"
+    },
+    restaurantLogin: {
+      title: "Partner Portal",
+      subtitle: "Log in to manage your restaurant",
+      usernameLabel: "Restaurant Username",
+      usernamePlaceholder: "Ex: mybrand",
+      passwordLabel: "Password",
+      passwordPlaceholder: "••••••••",
+      verifying: "Verifying...",
+      loginButton: "Enter Panel",
+      loginSuccess: "Welcome to your business panel",
+      loginError: "Incorrect username or password"
+    }
+  },
   landing: {
     hero: {
       title: "Discover Latin America",
