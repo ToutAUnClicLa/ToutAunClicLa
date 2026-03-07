@@ -33,10 +33,10 @@ export default function AdminLayout({
                 if (user.email?.includes('admin') || user.email === 'aunclicla@gmail.com') {
                     setIsAdmin(true);
                 } else {
-                    router.replace("/");
+                    router.replace("/admin/login");
                 }
             } catch (error) {
-                router.replace("/login");
+                router.replace("/admin/login");
             } finally {
                 setLoading(false);
             }
