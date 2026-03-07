@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Globe2, Mail, MapPin, Phone, ShoppingBag, Instagram, Twitter, Facebook, Youtube } from "lucide-react";
 import { Button } from "@/components/common/ui/button";
 import { useTranslation } from '@/hooks/useTranslation';
@@ -71,14 +72,23 @@ const getCompanyLinks = (t: any) => [
 ];
 
 export function Footer() {
+  const pathname = usePathname();
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
-  
+
   const mainCategories = getMainCategories(t);
   const productCategories = getProductCategories(t);
   const foodRegions = getFoodRegions(t);
   const boutiqueCategories = getBoutiqueCategories(t);
   const companyLinks = getCompanyLinks(t);
+
+  // No renderizar Footer en rutas de administración, EXCEPTO en las páginas de login
+  const isDashboardRoute = (pathname?.startsWith('/restaurante') && pathname !== '/restaurante/login') ||
+    (pathname?.startsWith('/admin') && pathname !== '/admin/login');
+
+  if (isDashboardRoute) {
+    return null;
+  }
 
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-6" itemScope itemType="https://schema.org/WPFooter">
@@ -100,7 +110,7 @@ export function Footer() {
                   href={social.url}
                   className="bg-gray-800 hover:bg-indigo-600 p-2 rounded-full transition-colors duration-200"
                   aria-label={social.ariaLabel}
-                  target="_blank" 
+                  target="_blank"
                   rel="noopener noreferrer"
                   itemProp="sameAs"
                 >
@@ -119,8 +129,8 @@ export function Footer() {
               <ul className="space-y-2">
                 {mainCategories.map((link, index) => (
                   <li key={index}>
-                    <Link 
-                      href={link.url} 
+                    <Link
+                      href={link.url}
                       className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center"
                     >
                       <span className="mr-1">›</span> {link.name}
@@ -138,8 +148,8 @@ export function Footer() {
               <ul className="space-y-2">
                 {productCategories.map((cat, index) => (
                   <li key={index}>
-                    <Link 
-                      href={cat.url} 
+                    <Link
+                      href={cat.url}
                       className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center"
                     >
                       <span className="mr-1">›</span> {cat.name}
@@ -170,9 +180,9 @@ export function Footer() {
                   </a>
                 </li>
                 <li className="mt-4">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="bg-transparent border-indigo-500 text-indigo-300 hover:bg-indigo-500 hover:text-white"
                     onClick={() => window.open('https://wa.me/14384681855?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20sus%20productos%20y%20servicios.', '_blank')}
                   >
@@ -188,7 +198,7 @@ export function Footer() {
         <div className="mt-8 pt-6 border-t border-gray-800">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             {companyLinks.map((link, index) => (
-              <Link 
+              <Link
                 key={index}
                 href={link.url}
                 className="text-gray-500 hover:text-indigo-300 text-sm transition-colors duration-200"

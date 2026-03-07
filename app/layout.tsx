@@ -11,6 +11,7 @@ import { Suspense } from 'react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import StructuredData from './schema';
+import { MainContentWrapper } from "@/components/shared/layout/MainContentWrapper";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
   keywords: 'productos latinos, tienda latinoamericana, Montreal, Quebec, productos latinoamericanos, comida latina, boutique latina, artesanías, importaciones, Canada',
   creator: 'Tout à un Clic LA',
   publisher: 'Tout à un Clic LA',
-  authors: [{ name: 'Tout à un Clic LA Team', url: 'https://toutaunclicla.com'}],
+  authors: [{ name: 'Tout à un Clic LA Team', url: 'https://toutaunclicla.com' }],
   metadataBase: new URL('https://toutaunclicla.com'),
   alternates: {
     canonical: '/',
@@ -138,7 +139,7 @@ export default function RootLayout({
         <link rel="icon" href="/icons/FaviconFinal.png" type="image/png" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
-        
+
         {/* Etiquetas hreflang para SEO multilingüe */}
         <link rel="alternate" hrefLang="es" href="https://toutaunclicla.com/es" />
         <link rel="alternate" hrefLang="fr" href="https://toutaunclicla.com/fr" />
@@ -161,13 +162,13 @@ export default function RootLayout({
               }>
                 <div className="flex min-h-screen flex-col">
                   <Navbar />
-                  <main className="flex-1 w-full pt-16">
+                  <MainContentWrapper>
                     {children}
-                  </main>
+                  </MainContentWrapper>
                   <Footer />
                 </div>
               </Suspense>
-              <Toaster 
+              <Toaster
                 position="bottom-right"
                 expand={false}
                 richColors

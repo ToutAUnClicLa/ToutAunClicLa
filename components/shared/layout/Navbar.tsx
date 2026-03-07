@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Menu, 
-  X, 
+import {
+  Menu,
+  X,
   Search,
   Heart,
   ShoppingCart,
@@ -73,22 +73,22 @@ const PROFILE_MENU_ITEMS = [
 export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  
+
   // Usar el estado global del contexto de autenticación
-  const { 
-    isAuthenticated, 
-    user, 
-    isLoading: authLoading, 
-    logout, 
-    error: authError 
+  const {
+    isAuthenticated,
+    user,
+    isLoading: authLoading,
+    logout,
+    error: authError
   } = useAuth();
-  
+
   const { currentLanguage, setLanguage, availableLanguages } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgotPassword'>('login');
   const { t } = useTranslation();
-  
+
   // Hook optimizado para contador del carrito
   const { count: cartCount } = useCartCount();
 
@@ -103,7 +103,7 @@ export function Navbar() {
       setIsMobileMenuOpen(false);
       await logout();
       toast.success(t('navbar.logoutSuccess'));
-      
+
       // Redireccionar si está en una página protegida
       if (pathname.startsWith('/profile')) {
         router.push('/');
@@ -147,11 +147,19 @@ export function Navbar() {
       items: PROFILE_MENU_ITEMS,
       showWhen: "authenticated"
     }
-  ];  const handleLanguageChange = (langCode: string) => {
+  ]; const handleLanguageChange = (langCode: string) => {
     const newLang = availableLanguages.find(lang => lang.code === langCode) || availableLanguages[0];
     setLanguage(newLang.code);
     toast.success(`${t('navbar.languageChanged')} ${newLang.name}`);
   };
+
+  // No renderizar Navbar en las rutas de administrador, EXCEPTO en las páginas de login
+  const isDashboardRoute = (pathname?.startsWith('/restaurante') && pathname !== '/restaurante/login') ||
+    (pathname?.startsWith('/admin') && pathname !== '/admin/login');
+
+  if (isDashboardRoute) {
+    return null;
+  }
 
   return (
     <>
@@ -160,10 +168,10 @@ export function Navbar() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <motion.img 
-                src="/logoaunclic.svg" 
-                alt="Logo A un clic" 
-                className="h-[60px] w-[60px] xs:h-[60px] xs:w-[60px] sm:h-[65px] sm:w-[65px] md:h-[70px] md:w-[70px] filter drop-shadow-md" 
+              <motion.img
+                src="/logoaunclic.svg"
+                alt="Logo A un clic"
+                className="h-[60px] w-[60px] xs:h-[60px] xs:w-[60px] sm:h-[65px] sm:w-[65px] md:h-[70px] md:w-[70px] filter drop-shadow-md"
                 width="88"
                 height="88"
               />
@@ -209,9 +217,9 @@ export function Navbar() {
               <div className="hidden md:flex">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="h-9 px-2 gap-1 text-gray-600 hover:text-indigo-600"
                     >                      <Globe className="h-4 w-4" />
                       <span className="text-sm font-medium">{availableLanguages.find(lang => lang.code === currentLanguage)?.flag}</span>
@@ -259,7 +267,7 @@ export function Navbar() {
               >
                 <ShoppingCart className="h-5 w-5 text-gray-600 hover:text-indigo-600 transition-colors duration-200" />
                 {cartCount > 0 && (
-                  <Badge 
+                  <Badge
                     className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold shadow-lg animate-pulse"
                   >
                     {cartCount > 99 ? '99+' : cartCount}
@@ -271,9 +279,9 @@ export function Navbar() {
               <div className="md:hidden">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="h-9 w-9 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors duration-200"
                     >
                       <span className="text-lg">{availableLanguages.find(lang => lang.code === currentLanguage)?.flag}</span>
@@ -310,7 +318,7 @@ export function Navbar() {
                           </AvatarFallback>
                         </Avatar>
                         {!isUserVerified() && (
-                          <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-amber-500 border-2 border-white animate-pulse" 
+                          <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-amber-500 border-2 border-white animate-pulse"
                             title={t('navbar.accountNeedsVerification')}>
                           </span>
                         )}
@@ -391,8 +399,8 @@ export function Navbar() {
                   </DropdownMenu>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={() => openAuthModal('login')}
                       className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
@@ -402,9 +410,9 @@ export function Navbar() {
                   </div>
                 )}
               </div>              {/* Mobile Menu Button */}
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="md:hidden h-9 w-9 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors duration-200"
                 onClick={() => setIsMobileMenuOpen(true)}
               >
@@ -434,15 +442,15 @@ export function Navbar() {
                   <div className="text-xl font-bold tracking-tight">{t('navbar.mobile.menu')}</div>
                   <div className="text-sm opacity-90 font-medium">{t('navbar.mobile.navigation')}</div>
                 </div>
-                
+
                 {/* Botón cerrar */}
                 <motion.div
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="text-white hover:bg-white/20 rounded-full h-10 w-10 backdrop-blur-sm border border-white/20"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
@@ -451,14 +459,14 @@ export function Navbar() {
                 </motion.div>
               </div>
             </div>
-            
+
             {/* Contenido principal con scroll suave */}
             <div className="flex-1 overflow-y-auto overscroll-contain w-full">
               {isAuthenticated ? (
                 <>
                   {/* Sección de usuario autenticado */}
                   <div className="px-4 py-5 bg-gradient-to-b from-gray-50 to-white w-full">
-                    <motion.div 
+                    <motion.div
                       className="relative p-4 bg-white rounded-2xl shadow-sm border border-gray-100"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -498,7 +506,7 @@ export function Navbar() {
                       </div>
                     </motion.div>
                   </div>
-                  
+
                   {/* Accesos rápidos mejorados - solo para usuarios autenticados */}
                   <div className="px-4 py-4 w-full">
                     <div className="flex items-center gap-2 mb-4">
@@ -514,8 +522,8 @@ export function Navbar() {
                         whileTap={{ scale: 0.98 }}
                         className="w-full"
                       >
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100 hover:border-indigo-200 relative overflow-hidden group"
                           onClick={() => {
                             setIsMobileMenuOpen(false);
@@ -534,8 +542,8 @@ export function Navbar() {
                         whileTap={{ scale: 0.98 }}
                         className="w-full"
                       >
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-100 hover:border-amber-200 relative overflow-hidden group"
                           onClick={() => {
                             setIsMobileMenuOpen(false);
@@ -554,8 +562,8 @@ export function Navbar() {
                         whileTap={{ scale: 0.98 }}
                         className="w-full"
                       >
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100 hover:border-blue-200 relative overflow-hidden group"
                           onClick={() => {
                             setIsMobileMenuOpen(false);
@@ -569,11 +577,11 @@ export function Navbar() {
                       </motion.div>
                     </div>
                   </div>
-                  
+
                   <div className="w-full border-t border-gray-200 my-2"></div>
                 </>
               ) : null}
-              
+
               {/* Navegación principal - siempre visible, arriba del todo para usuarios no autenticados */}
               <div className="px-4 py-4 w-full">
                 <div className="flex items-center gap-2 mb-4">
@@ -586,7 +594,7 @@ export function Navbar() {
                   {LINKS.map((link, index) => {
                     const isActive = pathname === link.href;
                     const LinkIcon = link.icon;
-                    
+
                     return (
                       <motion.div
                         key={link.href}
@@ -600,8 +608,8 @@ export function Navbar() {
                           variant={isActive ? "secondary" : "ghost"}
                           className={cn(
                             "w-full justify-start h-14 px-4 rounded-xl transition-all duration-200",
-                            isActive 
-                              ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 border border-indigo-200 shadow-sm" 
+                            isActive
+                              ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 border border-indigo-200 shadow-sm"
                               : "text-gray-700 hover:bg-gray-50 hover:shadow-sm"
                           )}
                           onClick={() => {
@@ -612,8 +620,8 @@ export function Navbar() {
                           <div className="flex items-center w-full">
                             <div className={cn(
                               "mr-4 p-2.5 rounded-xl transition-colors",
-                              isActive 
-                                ? "bg-gradient-to-br from-indigo-100 to-purple-100" 
+                              isActive
+                                ? "bg-gradient-to-br from-indigo-100 to-purple-100"
                                 : "bg-gray-100"
                             )}>
                               <LinkIcon className={cn(
@@ -632,12 +640,12 @@ export function Navbar() {
                   })}
                 </div>
               </div>
-              
+
               {/* Mi cuenta (solo usuarios autenticados) */}
               {isAuthenticated && (
                 <>
                   <div className="w-full border-t border-gray-200 my-2"></div>
-                  
+
                   <div className="px-4 py-4 w-full">
                     <div className="flex items-center gap-2 mb-4">
                       <div className="h-6 w-1 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
@@ -681,7 +689,7 @@ export function Navbar() {
               {/* Espacio adicional para el scroll */}
               <div className="h-5 w-full"></div>
             </div>
-            
+
             {/* Footer fijo */}
             <div className="border-t bg-gray-50/80 backdrop-blur-sm w-full">
               {isAuthenticated ? (
@@ -689,8 +697,8 @@ export function Navbar() {
                 <>
                   <div className="w-full border-t border-gray-200"></div>
                   <div className="px-4 py-3">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 h-12 px-3 rounded-xl"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
@@ -714,7 +722,7 @@ export function Navbar() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
                   >
-                    <Button 
+                    <Button
                       className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold h-12 rounded-xl shadow-lg"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
@@ -733,10 +741,10 @@ export function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-      
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={closeAuthModal} 
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={closeAuthModal}
         initialMode={authModalMode}
       />
     </>
