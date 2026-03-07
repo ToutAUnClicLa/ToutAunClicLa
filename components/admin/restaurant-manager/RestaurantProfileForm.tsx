@@ -11,6 +11,7 @@ import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
 import { Textarea } from "@/components/common/ui/textarea";
 import { superAdminService } from "@/lib/services/superAdmin";
+import { API_CONFIG } from "@/lib/config/api";
 import {
     AlertDialog,
     AlertDialogCancel,
@@ -87,7 +88,7 @@ export default function RestaurantProfileForm({ restauranteId }: RestaurantProfi
         try {
             if (restauranteId) {
                  // Hack for superadmin directly saving into the endpoint specifying ID
-                 await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5500/api/v1'}/restaurants/profile?restauranteId=${restauranteId}`, {
+                 await fetch(`${API_CONFIG.BASE_URL}/restaurants/profile?restauranteId=${restauranteId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

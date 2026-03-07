@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { restaurantAdminService } from "@/lib/services/restaurant";
+import { API_CONFIG } from "@/lib/config/api";
 import { Loader2, Plus, Edit2, Trash2, PackageSearch, Search } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/common/ui/button";
@@ -42,7 +43,7 @@ export default function RestaurantProductsManager({ restauranteId }: RestaurantP
                     ...(searchTerm ? { search: searchTerm } : {})
                 });
                 
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5500/api/v1'}/restaurants/products?restauranteId=${restauranteId}&${queryParams.toString()}`, {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/restaurants/products?restauranteId=${restauranteId}&${queryParams.toString()}`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
                 });
                 responseData = await res.json();
@@ -83,7 +84,7 @@ export default function RestaurantProductsManager({ restauranteId }: RestaurantP
         if (!confirm("¿Estás seguro de eliminar este producto?")) return;
         try {
             if (restauranteId) {
-                await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5500/api/v1'}/restaurants/products/${id}?restauranteId=${restauranteId}`, {
+                await fetch(`${API_CONFIG.BASE_URL}/restaurants/products/${id}?restauranteId=${restauranteId}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
                 });

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { restaurantAdminService } from "@/lib/services/restaurant";
+import { API_CONFIG } from "@/lib/config/api";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Loader2, Receipt, Search, Filter } from "lucide-react";
@@ -39,7 +40,7 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
                     limit: itemsPerPage.toString(),
                     ...(searchTerm ? { search: searchTerm } : {})
                 });
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5500/api/v1'}/restaurants/orders?${queryParams.toString()}`, {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/restaurants/orders?${queryParams.toString()}`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
                 });
                 responseData = await res.json();

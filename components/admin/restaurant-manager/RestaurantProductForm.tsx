@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { restaurantAdminService } from "@/lib/services/restaurant";
+import { API_CONFIG } from "@/lib/config/api";
 import { Loader2, UploadCloud, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/common/ui/button";
@@ -86,8 +87,8 @@ export default function RestaurantProductForm({ restauranteId, initialProduct, o
             if (restauranteId) {
                 // Super Admin context
                 const url = initialProduct 
-                    ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5500/api/v1'}/restaurants/products/${initialProduct.id}?restauranteId=${restauranteId}`
-                    : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5500/api/v1'}/restaurants/products?restauranteId=${restauranteId}`;
+                    ? `${API_CONFIG.BASE_URL}/restaurants/products/${initialProduct.id}?restauranteId=${restauranteId}`
+                    : `${API_CONFIG.BASE_URL}/restaurants/products?restauranteId=${restauranteId}`;
                 
                 await fetch(url, {
                     method: initialProduct ? 'PUT' : 'POST',

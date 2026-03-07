@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import RestaurantProductForm from "@/components/admin/restaurant-manager/RestaurantProductForm";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { API_CONFIG } from "@/lib/config/api";
 
 export default function EditarProductoSuperAdminPage() {
     const params = useParams();
@@ -21,7 +22,7 @@ export default function EditarProductoSuperAdminPage() {
             
             try {
                 // Obtenemos todos los productos de este restaurante como Super Admin
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5500/api/v1'}/restaurants/products?restauranteId=${restauranteId}`, {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/restaurants/products?restauranteId=${restauranteId}`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
                 });
                 
