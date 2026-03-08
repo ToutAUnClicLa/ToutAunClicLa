@@ -196,7 +196,7 @@ export default function RestaurantProductForm({ restauranteId, initialProduct, o
                         </div>
                         
                         <div className="space-y-2">
-                            <Label className="text-slate-700 font-semibold">Stock Inicial</Label>
+                            <Label className="text-slate-700 font-semibold">Stock</Label>
                             <Input
                                 type="number"
                                 value={formData.stock}

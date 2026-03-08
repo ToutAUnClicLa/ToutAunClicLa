@@ -166,9 +166,9 @@ export default function RestaurantProductsManager({ restauranteId }: RestaurantP
                                                     <PackageSearch className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                                                 </div>
                                             )}
-                                            <div className="min-w-0">
-                                                <div className="font-bold text-slate-900 truncate">{product.nombre}</div>
-                                                <div className="text-slate-500 text-[10px] sm:text-xs mt-0.5 truncate max-w-[120px] sm:max-w-[200px]">{product.descripcion}</div>
+                                            <div className="min-w-0 flex-1">
+                                                <div className="font-bold text-slate-900 truncate max-w-[150px] sm:max-w-[250px] lg:max-w-[350px]">{product.nombre}</div>
+                                                <div className="text-slate-500 text-[10px] sm:text-xs mt-0.5 truncate max-w-[150px] sm:max-w-[250px] lg:max-w-[350px]">{product.descripcion}</div>
                                             </div>
                                         </div>
                                     </td>
