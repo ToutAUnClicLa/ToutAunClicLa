@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import * as authService from "@/lib/services/auth";
-import { ShieldAlert, Store, Users, Home, Settings, Menu, X, Ticket } from "lucide-react";
+import { ShieldAlert, Store, Users, Home, Settings, Menu, X, Ticket, Receipt } from "lucide-react";
 
 export default function AdminLayout({
     children,
@@ -81,6 +81,9 @@ export default function AdminLayout({
                     <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${pathname === '/admin' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
                         <Home className="w-5 h-5" /> Dashboard Central
                     </Link>
+                    <Link href="/admin/pedidos" onClick={() => setIsMobileMenuOpen(false)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${pathname.includes('/admin/pedidos') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+                        <Receipt className="w-5 h-5" /> Bandeja de Pedidos
+                    </Link>                    
                     <Link href="/admin/restaurantes" onClick={() => setIsMobileMenuOpen(false)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${pathname.includes('/admin/restaurantes') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
                         <Store className="w-5 h-5" /> Restaurantes
                     </Link>
@@ -90,6 +93,7 @@ export default function AdminLayout({
                     <Link href="/admin/cupones" onClick={() => setIsMobileMenuOpen(false)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${pathname.includes('/admin/cupones') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
                         <Ticket className="w-5 h-5" /> Gestión Cupones
                     </Link>
+
                 </nav>
 
                 <div className="p-4 border-t border-white/5 space-y-1">

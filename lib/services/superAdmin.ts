@@ -66,7 +66,7 @@ export const superAdminService = {
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
-        
+
         // El endpoint es común, pero el middleware de autenticación valida ambos tokens
         const res = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.UPLOAD.IMAGE), {
             method: 'POST',
@@ -162,5 +162,25 @@ export const superAdminService = {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Error deleting coupon');
         return data.message;
+    },
+
+    // --- Global Orders Management ---
+    getGlobalOrders: async (page: number = 1, limit: number = 10, search: string = '', status: string = '', restauranteId: string = '') => {
+        const queryParams = new URLSearchParams({
+            page: page.toString(),
+            limit: limit.toString(),
+            ...(search ? { search } : {}),
+            ...(status && status !== 'todos' ? { status } : {}),
+            ...(restauranteId && restauranteId !== 'todos' ? { restauranteId } : {})
+        });
+
+        // The endpoint is mounted at /api/v1/admin/orders usually, matching `buildApiUrl` configuration used for super-admin routes.
+        // If buildApiUrl('/super-admin/orders') resolves to /api/v1/super-admin/orders, we use that.
+        const res = await fetch(`${buildApiUrl('/super-admin/orders')}?${queryParams.toString()}`, {
+            headers: getAuthHeaders()
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Error fetching global orders');
+        return data; // returns page data {orders, total, totalPages, currentPage}
     }
 };
