@@ -16,6 +16,7 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("todos");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
@@ -26,28 +27,29 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
             fetchOrders();
         }, 300);
         return () => clearTimeout(timeoutId);
-    }, [restauranteId, currentPage, searchTerm]);
+    }, [restauranteId, currentPage, searchTerm, statusFilter]);
 
     const fetchOrders = async () => {
         try {
             setLoading(true);
             let responseData;
-            
+
             if (restauranteId) {
                 const queryParams = new URLSearchParams({
                     restauranteId: restauranteId.toString(),
                     page: currentPage.toString(),
                     limit: itemsPerPage.toString(),
-                    ...(searchTerm ? { search: searchTerm } : {})
+                    ...(searchTerm ? { search: searchTerm } : {}),
+                    ...(statusFilter !== 'todos' ? { status: statusFilter } : {})
                 });
                 const res = await fetch(`${API_CONFIG.BASE_URL}/restaurants/orders?${queryParams.toString()}`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
                 });
                 responseData = await res.json();
             } else {
-                responseData = await restaurantAdminService.getOrders(currentPage, itemsPerPage, searchTerm);
+                responseData = await restaurantAdminService.getOrders(currentPage, itemsPerPage, searchTerm, statusFilter);
             }
-            
+
             setOrders(responseData.orders || []);
             setTotalPages(responseData.totalPages || 1);
             setTotalItems(responseData.total || 0);
@@ -105,10 +107,29 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
                         }}
                     />
                 </div>
-                <button className="w-full sm:w-auto flex justify-center items-center gap-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 shadow-sm px-4 py-2 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-colors whitespace-nowrap">
-                    <Filter className="w-4 h-4" />
-                    Filtrar
-                </button>
+                <div className="relative w-full sm:w-auto">
+                    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                        <Filter className="w-4 h-4 text-slate-400" />
+                    </div>
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => {
+                            setStatusFilter(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        className="w-full sm:w-auto appearance-none pl-9 pr-10 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 shadow-sm rounded-xl hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-100 transition-colors cursor-pointer"
+                    >
+                        <option value="todos">Todos los estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="procesando">Procesando</option>
+                        <option value="enviado">En Camino</option>
+                        <option value="entregado">Entregado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </div>
             </div>
 
             <div className="space-y-4 relative">
@@ -202,14 +223,14 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
                             Mostrando {(currentPage - 1) * itemsPerPage + 1} a {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems} pedidos
                         </span>
                         <div className="flex gap-2">
-                            <button 
+                            <button
                                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                 disabled={currentPage === 1}
                                 className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Anterior
                             </button>
-                            <button 
+                            <button
                                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                 disabled={currentPage === totalPages}
                                 className="px-3 py-1.5 text-sm font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
