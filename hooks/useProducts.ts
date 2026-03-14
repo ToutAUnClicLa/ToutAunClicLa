@@ -38,7 +38,7 @@ interface UseRestaurantMenuReturn {
 /**
  * Hook para obtener productos con filtros
  */
-export function useProducts(filters: ProductFilters = {}): UseProductsReturn {
+export function useProducts(filters: ProductFilters = {}, skip = false): UseProductsReturn {
   const [products, setProducts] = useState<Product[]>([]);
   const [pagination, setPagination] = useState<ProductsResponse['pagination']>({
     currentPage: 1,
@@ -46,10 +46,14 @@ export function useProducts(filters: ProductFilters = {}): UseProductsReturn {
     totalItems: 0,
     itemsPerPage: 20
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!skip);
   const [error, setError] = useState<string | null>(null);
 
   const fetchProducts = useCallback(async () => {
+    if (skip) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       setError(null);
@@ -63,7 +67,7 @@ export function useProducts(filters: ProductFilters = {}): UseProductsReturn {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(filters)]);  // Usar JSON.stringify para detectar cambios profundos
+  }, [JSON.stringify(filters), skip]);  // Usar JSON.stringify para detectar cambios profundos
 
   useEffect(() => {
     fetchProducts();

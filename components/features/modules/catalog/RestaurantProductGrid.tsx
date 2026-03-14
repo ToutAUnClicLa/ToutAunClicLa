@@ -14,7 +14,6 @@ import { Pagination } from '@/components/common/Pagination';
 import { Input } from '@/components/common/ui/input';
 import { Badge } from '@/components/common/ui/badge';
 import { cn } from '@/lib/utils';
-import { getRestaurantSubcategoryId } from '@/lib/utils/restaurant-routes';
 
 const container = {  
   hidden: { opacity: 0 },
@@ -60,21 +59,23 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
     debounceDelay: 500
   });
 
-  // Get the restaurant subcategory ID
-  const restaurantSubcategoryId = getRestaurantSubcategoryId(restaurantName);
+  // Get the restaurant subcategory ID dynamically from the API response
+  // This supports both hardcoded and dynamically created restaurants
+  const restaurantSubcategoryId = restaurant?.id ?? null;
 
   // Filter to get products only from this restaurant using subcategory ID
+  // Only apply subcategory filter once we have the restaurant ID from the API
   const filters: ProductFilters = {
     category: 2, // "comidas" category
-    subcategory: restaurantSubcategoryId || undefined, // Filter by restaurant subcategory ID
-    search: debouncedValue || undefined, // Only add search if user is searching
+    subcategory: restaurantSubcategoryId ?? undefined,
+    search: debouncedValue || undefined,
     page: currentPage,
     limit: itemsPerPage,
     sortBy: 'precio',
     sortOrder: 'desc'
   };
 
-  const { products, pagination, loading, error, refetch } = useProducts(filters);
+  const { products, pagination, loading, error, refetch } = useProducts(filters, !restaurantSubcategoryId);
 
   // Ordenar: disponibles hoy primero (precio desc), luego no disponibles (precio desc)
   const sortedProducts = useMemo(() => {
