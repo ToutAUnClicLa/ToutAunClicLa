@@ -14,7 +14,7 @@ export default function SuperAdminRestaurantes() {
     const [restaurants, setRestaurants] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 8;
+    const itemsPerPage = 10;
 
     const [isCredModalOpen, setIsCredModalOpen] = useState(false);
 
