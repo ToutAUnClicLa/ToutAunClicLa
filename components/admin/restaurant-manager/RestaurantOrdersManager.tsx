@@ -164,19 +164,10 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
                                         </span>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                         <div>
-                                            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Datos del Cliente</h4>
+                                            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Nombre del Cliente</h4>
                                             <p className="font-semibold text-slate-900">{order.usuarios?.nombre || 'Cliente Anónimo'}</p>
-                                            {order.usuarios?.telefono && (
-                                                <p className="text-sm text-slate-500 mt-0.5">{order.usuarios.telefono}</p>
-                                            )}
-                                        </div>
-
-                                        <div>
-                                            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Ubicación de Entrega</h4>
-                                            <p className="text-sm font-medium text-slate-900 truncate">{order.direcciones_envio?.direccion}</p>
-                                            <p className="text-sm text-slate-500">{order.direcciones_envio?.ciudad}</p>
                                         </div>
 
                                         <div>
