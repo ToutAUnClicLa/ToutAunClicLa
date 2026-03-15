@@ -6,7 +6,7 @@
 // FSAs válidos para Montreal y Rivera Sur (Forward Sortation Areas)
 export const MONTREAL_FSA_CODES = [
   // Montreal específicos (según README backend)
-  'H1N', 'H1M', 'H1P', 'H1H', 'H1R', 'H1S', 'H1T', 'H1V', 'H1W', 'H1X',
+  'H1N', 'H1M', 'H1P', 'H1H', 'H1R', 'H1S', 'H1T', 'H1V', 'H1W', 'H1X', 'H1K',
   // Códigos H2* (todos los que comienzan con H2)
   'H2A', 'H2B', 'H2C', 'H2E', 'H2G', 'H2H', 'H2J', 'H2K', 'H2L', 'H2M',
   'H2N', 'H2P', 'H2R', 'H2S', 'H2T', 'H2V', 'H2W', 'H2X', 'H2Y', 'H2Z',
