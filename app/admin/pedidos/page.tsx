@@ -65,6 +65,8 @@ export default function GlobalOrdersManagerPage() {
                 return <span className="bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Entregado</span>;
             case "cancelado":
                 return <span className="bg-red-50 text-red-700 border border-red-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Cancelado</span>;
+            case "pagado":
+                return <span className="bg-teal-50 text-teal-700 border border-teal-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Pagado</span>;
             default:
                 return <span className="bg-slate-50 text-slate-700 border border-slate-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">{status}</span>;
         }
@@ -118,6 +120,7 @@ export default function GlobalOrdersManagerPage() {
                         <option value="enviado">En Camino</option>
                         <option value="entregado">Entregado</option>
                         <option value="cancelado">Cancelado</option>
+                        <option value="pagado">Pagado</option>
                     </select>
                     <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                         <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>

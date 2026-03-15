@@ -72,6 +72,8 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
                 return <span className="bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Entregado</span>;
             case "cancelado":
                 return <span className="bg-red-50 text-red-700 border border-red-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Cancelado</span>;
+            case "pagado":
+                return <span className="bg-teal-50 text-teal-700 border border-teal-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Pagado</span>;
             default:
                 return <span className="bg-slate-50 text-slate-700 border border-slate-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">{status}</span>;
         }
