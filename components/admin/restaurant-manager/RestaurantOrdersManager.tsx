@@ -148,6 +148,12 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
 
             setUpdatingOrderId(orderId);
             await restaurantAdminService.updateOrderStatus(orderId, newStatus);
+            
+            // Si el pedido fue aceptado (pasó a procesando), detener sonido de notificación
+            if (newStatus === 'procesando') {
+                window.dispatchEvent(new CustomEvent('stop-notification-sound'));
+            }
+
             toast.success(`Pedido #${orderId} actualizado a ${newStatus}`);
             fetchOrders();
         } catch (error: any) {

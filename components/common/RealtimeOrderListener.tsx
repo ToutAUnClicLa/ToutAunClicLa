@@ -129,10 +129,19 @@ export const RealtimeOrderListener = ({ role, restauranteId }: RealtimeOrderList
       }
     };
 
+    const handleStopSound = () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+
     window.addEventListener('manual-order-update', handleManualUpdate);
+    window.addEventListener('stop-notification-sound', handleStopSound);
 
     return () => {
       window.removeEventListener('manual-order-update', handleManualUpdate);
+      window.removeEventListener('stop-notification-sound', handleStopSound);
       if (channel) {
         supabase.removeChannel(channel);
       }
