@@ -123,6 +123,17 @@ export const restaurantAdminService = {
         if (!res.ok) throw new Error(data.message);
         return data; // returns page data {orders, total, totalPages, currentPage}
     },
+    
+    updateOrderStatus: async (id: string | number, status: string) => {
+        const res = await fetch(buildApiUrl(`${API_CONFIG.ENDPOINTS.RESTAURANTS.ORDERS}/${id}/status`), {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ status })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to update order status');
+        return data.order;
+    },
 
     getStats: async (period: string = 'week') => {
         const res = await fetch(buildApiUrl(`${API_CONFIG.ENDPOINTS.RESTAURANTS.STATS}?period=${period}`), {

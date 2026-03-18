@@ -182,5 +182,16 @@ export const superAdminService = {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Error fetching global orders');
         return data; // returns page data {orders, total, totalPages, currentPage}
+    },
+
+    updateOrderStatus: async (id: string | number, status: string) => {
+        const res = await fetch(`${buildApiUrl(`/super-admin/orders/${id}/status`)}`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ status })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Error updating order status');
+        return data.order;
     }
 };

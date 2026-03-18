@@ -66,3 +66,13 @@
 [data-radix-popper-content-wrapper] [data-radix-dialog-close] {
   display: none !important;
 }
+
+@keyframes pulse-green {
+  0% { background-color: transparent; }
+  15% { background-color: rgba(34, 197, 94, 0.2); }
+  100% { background-color: transparent; }
+}
+
+.animate-new-order {
+  animation: pulse-green 15s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}

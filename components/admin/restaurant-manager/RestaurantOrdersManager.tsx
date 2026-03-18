@@ -5,8 +5,46 @@ import { restaurantAdminService } from "@/lib/services/restaurant";
 import { API_CONFIG } from "@/lib/config/api";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Loader2, Receipt, Search, Filter } from "lucide-react";
+import { Loader2, Receipt, Search, Filter, CheckCircle2, Truck, XCircle, Clock } from "lucide-react";
 import { Input } from "@/components/common/ui/input";
+import { toast } from "sonner";
+
+// Subcomponente para el contador de auto-aceptación
+const OrderCountdown = ({ fechaPedido, onExpire }: { fechaPedido: string, onExpire: () => void }) => {
+    const [timeLeft, setTimeLeft] = useState<number | null>(null);
+
+    useEffect(() => {
+        const calculateTime = () => {
+            const now = new Date().getTime();
+            const orderTime = new Date(fechaPedido).getTime();
+            const expiryTime = orderTime + 5 * 60 * 1000; // 5 minutos
+            const diff = Math.max(0, expiryTime - now);
+            
+            const secondsLeft = Math.floor(diff / 1000);
+            setTimeLeft(secondsLeft);
+            
+            if (diff <= 0) {
+                onExpire();
+            }
+        };
+
+        calculateTime();
+        const interval = setInterval(calculateTime, 1000);
+        return () => clearInterval(interval);
+    }, [fechaPedido, onExpire]);
+
+    if (timeLeft === null || timeLeft <= 0) return null;
+
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+
+    return (
+        <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-2.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-amber-200/50 animate-pulse shadow-sm shadow-amber-100/50">
+            <Clock className="w-3 h-3" />
+            <span>Auto-aceptación en {minutes}:{seconds.toString().padStart(2, '0')}</span>
+        </div>
+    );
+};
 
 interface RestaurantOrdersManagerProps {
     restauranteId?: number;
@@ -20,7 +58,48 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
+    const [recentOrderIds, setRecentOrderIds] = useState<Set<number>>(new Set());
+    const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
     const itemsPerPage = 10;
+
+    useEffect(() => {
+        const handleNewOrder = (event: any) => {
+            const { orderId } = event.detail;
+            console.log("🏪 Nuevo pedido para restaurante en tiempo real, refrescando en 500ms...", orderId);
+            
+            // Agregar al estado de recientes para resaltar
+            setRecentOrderIds(prev => {
+                const next = new Set(prev);
+                next.add(Number(orderId));
+                return next;
+            });
+
+            // Quitar el resalte después de 10 segundos
+            setTimeout(() => {
+                setRecentOrderIds(prev => {
+                    const next = new Set(prev);
+                    next.delete(Number(orderId));
+                    return next;
+                });
+            }, 10000);
+
+            setTimeout(() => {
+                fetchOrders();
+            }, 500);
+        };
+
+        const handleStatusUpdateEvent = (event: any) => {
+            console.log("🔄 Cambio de estado detectado en restaurante, refrescando lista...", event.detail.orderId);
+            fetchOrders();
+        };
+
+        window.addEventListener('new-order-received', handleNewOrder);
+        window.addEventListener('order-status-updated', handleStatusUpdateEvent);
+        return () => {
+            window.removeEventListener('new-order-received', handleNewOrder);
+            window.removeEventListener('order-status-updated', handleStatusUpdateEvent);
+        };
+    }, [searchTerm, statusFilter, currentPage, restauranteId]);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -60,22 +139,40 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
         }
     };
 
+    const handleStatusUpdate = async (orderId: number, newStatus: string) => {
+        try {
+            // Avisar al RealtimeOrderListener que este cambio es local para evitar doble notificación
+            window.dispatchEvent(new CustomEvent('manual-order-update', { 
+                detail: { orderId: orderId.toString() } 
+            }));
+
+            setUpdatingOrderId(orderId);
+            await restaurantAdminService.updateOrderStatus(orderId, newStatus);
+            toast.success(`Pedido #${orderId} actualizado a ${newStatus}`);
+            fetchOrders();
+        } catch (error: any) {
+            toast.error(error.message || "Error al actualizar pedido");
+        } finally {
+            setUpdatingOrderId(null);
+        }
+    };
+
     const getStatusBadge = (status: string) => {
         switch (status) {
             case "pendiente":
-                return <span className="bg-amber-50 text-amber-700 border border-amber-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Pendiente</span>;
+                return <span className="bg-orange-50 text-orange-700 border border-orange-200/60 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">Pendiente</span>;
             case "procesando":
-                return <span className="bg-blue-50 text-blue-700 border border-blue-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Procesando</span>;
+                return <span className="bg-blue-600 text-white border border-blue-700 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm shadow-blue-100">Procesando</span>;
             case "enviado":
-                return <span className="bg-indigo-50 text-indigo-700 border border-indigo-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">En Camino</span>;
+                return <span className="bg-indigo-600 text-white border border-indigo-700 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm shadow-indigo-100">En Camino</span>;
             case "entregado":
-                return <span className="bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Entregado</span>;
+                return <span className="bg-emerald-600 text-white border border-emerald-700 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm shadow-emerald-100">Entregado</span>;
             case "cancelado":
-                return <span className="bg-red-50 text-red-700 border border-red-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Cancelado</span>;
+                return <span className="bg-rose-600 text-white border border-rose-700 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm shadow-rose-100">Cancelado</span>;
             case "pagado":
-                return <span className="bg-teal-50 text-teal-700 border border-teal-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Pagado</span>;
+                return <span className="bg-cyan-50 text-cyan-700 border border-cyan-200/60 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">Pagado</span>;
             default:
-                return <span className="bg-slate-50 text-slate-700 border border-slate-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">{status}</span>;
+                return <span className="bg-slate-50 text-slate-700 border border-slate-200/60 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">{status}</span>;
         }
     };
 
@@ -151,9 +248,15 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
                 ) : (
                     orders.map((order) => {
                         const itemCount = order.items.reduce((acc: number, item: any) => acc + item.cantidad, 0);
+                        const isNew = recentOrderIds.has(Number(order.id));
 
                         return (
-                            <div key={order.id} className="bg-white rounded-2xl border border-slate-200/60 p-6 flex flex-col lg:flex-row gap-6 transition-all duration-300 hover:border-indigo-200 hover:shadow-md group">
+                            <div 
+                                key={order.id} 
+                                className={`bg-white rounded-2xl border p-6 flex flex-col lg:flex-row gap-6 transition-all duration-300 hover:border-indigo-200 hover:shadow-md group ${
+                                    isNew ? 'border-green-500 shadow-lg shadow-green-100/50 animate-new-order' : 'border-slate-200/60'
+                                }`}
+                            >
                                 <div className="flex-1 space-y-4 sm:space-y-5">
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-slate-100 pb-3 sm:pb-4">
                                         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
@@ -176,6 +279,60 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
                                             <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 sm:mb-1.5">Resumen Contable</h4>
                                             <p className="font-bold text-base sm:text-lg text-indigo-600">${Number(order.restaurant_total).toFixed(2)}</p>
                                             <p className="text-xs sm:text-sm font-medium text-slate-500">{itemCount} artículo(s) totales</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Buttons & Timer */}
+                                    <div className="flex flex-col gap-4 pt-2">
+                                        {order.estado === 'pagado' && (
+                                            <OrderCountdown 
+                                                fechaPedido={order.fecha_pedido} 
+                                                onExpire={() => {
+                                                    console.log(`⏰ Tiempo agotado para pedido #${order.id}, refrescando...`);
+                                                    fetchOrders();
+                                                }} 
+                                            />
+                                        )}
+
+                                        <div className="flex flex-row items-center justify-between gap-4 w-full">
+                                            <div className="flex flex-wrap gap-2">
+                                                {order.estado === 'pagado' && (
+                                                    <button
+                                                        onClick={() => handleStatusUpdate(order.id, 'procesando')}
+                                                        disabled={updatingOrderId === order.id}
+                                                        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md shadow-indigo-100 hover:shadow-indigo-200 disabled:opacity-50 active:scale-95"
+                                                    >
+                                                        {updatingOrderId === order.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                                                        Aceptar Pedido
+                                                    </button>
+                                                )}
+                                                {order.estado === 'procesando' && (
+                                                    <button
+                                                        onClick={() => handleStatusUpdate(order.id, 'enviado')}
+                                                        disabled={updatingOrderId === order.id}
+                                                        className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md shadow-emerald-100 hover:shadow-emerald-200 disabled:opacity-50 active:scale-95"
+                                                    >
+                                                        {updatingOrderId === order.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Truck className="w-4 h-4" />}
+                                                        Marcar como Enviado
+                                                    </button>
+                                                )}
+                                            </div>
+                                            
+                                            {/* Cancel Button - Pushed to the far end */}
+                                            {(order.estado === 'pagado' || order.estado === 'procesando') && (
+                                                <button
+                                                    onClick={() => {
+                                                        if (confirm("¿Estás seguro de que deseas cancelar este pedido?")) {
+                                                            handleStatusUpdate(order.id, 'cancelado');
+                                                        }
+                                                    }}
+                                                    disabled={updatingOrderId === order.id}
+                                                    className="flex items-center gap-2  hover:bg-red-700 text-white bg-red-600 border px-5 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-50 active:scale-95 ml-auto"
+                                                >
+                                                    {updatingOrderId === order.id ? <Loader2 className="w-4 h-4 animate-spin text-white bg-red-600" /> : <XCircle className="w-4 h-4" />}
+                                                    Cancelar
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

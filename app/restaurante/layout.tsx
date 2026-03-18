@@ -14,6 +14,7 @@ import {
     Menu,
     X
 } from "lucide-react";
+import { RealtimeOrderListener } from "@/components/common/RealtimeOrderListener";
 
 export default function RestaurantLayout({
     children,
@@ -80,6 +81,9 @@ export default function RestaurantLayout({
 
     return (
         <div className="flex h-screen overflow-hidden bg-slate-50 font-sans selection:bg-indigo-100 selection:text-indigo-900">
+            {/* Real-time Order Notifications (Filtered by Restaurant) */}
+            <RealtimeOrderListener role="restaurant" restauranteId={user.restauranteId} />
+
             {/* Sidebar */}
             <aside className={`
                 fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 flex flex-col

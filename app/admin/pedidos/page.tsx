@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { superAdminService } from "@/lib/services/superAdmin";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Loader2, Receipt, Search, Filter, Store } from "lucide-react";
+import { Loader2, Receipt, Search, Filter, Store, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/common/ui/input";
+import { toast } from "sonner";
 
 export default function GlobalOrdersManagerPage() {
     const [orders, setOrders] = useState<any[]>([]);
@@ -14,9 +15,11 @@ export default function GlobalOrdersManagerPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("todos");
     const [restaurantFilter, setRestaurantFilter] = useState("todos");
+    const [recentOrderIds, setRecentOrderIds] = useState<Set<number>>(new Set());
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
+    const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
     const itemsPerPage = 10;
 
     useEffect(() => {
@@ -30,6 +33,45 @@ export default function GlobalOrdersManagerPage() {
         };
         fetchInitialData();
     }, []);
+
+    useEffect(() => {
+        const handleNewOrder = (event: any) => {
+            const { orderId } = event.detail;
+            console.log("🔄 Pedido en tiempo real detectado, refrescando lista en 500ms...", orderId);
+            
+            // Agregar al estado de recientes para resaltar
+            setRecentOrderIds(prev => {
+                const next = new Set(prev);
+                next.add(Number(orderId));
+                return next;
+            });
+
+            // Quitar el resalte después de 10 segundos
+            setTimeout(() => {
+                setRecentOrderIds(prev => {
+                    const next = new Set(prev);
+                    next.delete(Number(orderId));
+                    return next;
+                });
+            }, 10000);
+
+            setTimeout(() => {
+                fetchOrders();
+            }, 500);
+        };
+
+        const handleStatusUpdateEvent = (event: any) => {
+            console.log("🔄 Cambio de estado detectado, refrescando lista...", event.detail.orderId);
+            fetchOrders();
+        };
+
+        window.addEventListener('new-order-received', handleNewOrder);
+        window.addEventListener('order-status-updated', handleStatusUpdateEvent);
+        return () => {
+            window.removeEventListener('new-order-received', handleNewOrder);
+            window.removeEventListener('order-status-updated', handleStatusUpdateEvent);
+        };
+    }, [searchTerm, statusFilter, restaurantFilter, currentPage]); // Se re-registra cuando cambian los filtros
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -53,22 +95,40 @@ export default function GlobalOrdersManagerPage() {
         }
     };
 
+    const handleStatusUpdate = async (orderId: number, newStatus: string) => {
+        try {
+            // Avisar al RealtimeOrderListener que este cambio es local para evitar doble notificación
+            window.dispatchEvent(new CustomEvent('manual-order-update', { 
+                detail: { orderId: orderId.toString() } 
+            }));
+            
+            setUpdatingOrderId(orderId);
+            await superAdminService.updateOrderStatus(orderId, newStatus);
+            toast.success(`Pedido #${orderId} actualizado a ${newStatus}`);
+            fetchOrders();
+        } catch (error: any) {
+            toast.error(error.message || "Error al actualizar pedido");
+        } finally {
+            setUpdatingOrderId(null);
+        }
+    };
+
     const getStatusBadge = (status: string) => {
         switch (status) {
             case "pendiente":
-                return <span className="bg-amber-50 text-amber-700 border border-amber-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Pendiente</span>;
+                return <span className="bg-orange-50 text-orange-700 border border-orange-200/60 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">Pendiente</span>;
             case "procesando":
-                return <span className="bg-blue-50 text-blue-700 border border-blue-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Procesando</span>;
+                return <span className="bg-blue-600 text-white border border-blue-700 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm shadow-blue-100">Procesando</span>;
             case "enviado":
-                return <span className="bg-indigo-50 text-indigo-700 border border-indigo-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">En Camino</span>;
+                return <span className="bg-indigo-600 text-white border border-indigo-700 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm shadow-indigo-100">En Camino</span>;
             case "entregado":
-                return <span className="bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Entregado</span>;
+                return <span className="bg-emerald-600 text-white border border-emerald-700 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm shadow-emerald-100">Entregado</span>;
             case "cancelado":
-                return <span className="bg-red-50 text-red-700 border border-red-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Cancelado</span>;
+                return <span className="bg-rose-600 text-white border border-rose-700 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm shadow-rose-100">Cancelado</span>;
             case "pagado":
-                return <span className="bg-teal-50 text-teal-700 border border-teal-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">Pagado</span>;
+                return <span className="bg-cyan-50 text-cyan-700 border border-cyan-200/60 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">Pagado</span>;
             default:
-                return <span className="bg-slate-50 text-slate-700 border border-slate-200/60 px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">{status}</span>;
+                return <span className="bg-slate-50 text-slate-700 border border-slate-200/60 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">{status}</span>;
         }
     };
 
@@ -167,9 +227,15 @@ export default function GlobalOrdersManagerPage() {
                 ) : (
                     orders.map((order) => {
                         const itemCount = order.items.reduce((acc: number, item: any) => acc + item.cantidad, 0);
+                        const isNew = recentOrderIds.has(Number(order.id));
 
                         return (
-                            <div key={order.id} className="bg-white rounded-2xl border border-slate-200/60 p-6 flex flex-col lg:flex-row gap-6 transition-all duration-300 hover:border-indigo-200 hover:shadow-md group">
+                            <div 
+                                key={order.id} 
+                                className={`bg-white rounded-2xl border p-6 flex flex-col lg:flex-row gap-6 transition-all duration-300 hover:border-indigo-200 hover:shadow-md group ${
+                                    isNew ? 'border-green-500 shadow-lg shadow-green-100/50 animate-new-order' : 'border-slate-200/60'
+                                }`}
+                            >
                                 <div className="flex-1 space-y-4 sm:space-y-5">
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-slate-100 pb-3 sm:pb-4">
                                         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
@@ -206,6 +272,20 @@ export default function GlobalOrdersManagerPage() {
                                             <p className="text-xs sm:text-sm font-medium text-slate-500">{itemCount} artículo(s) totales</p>
                                         </div>
                                     </div>
+
+                                    {/* Super Admin Actions */}
+                                    {order.estado === 'enviado' && (
+                                        <div className="pt-2">
+                                            <button
+                                                onClick={() => handleStatusUpdate(order.id, 'entregado')}
+                                                disabled={updatingOrderId === order.id}
+                                                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md shadow-emerald-100 hover:shadow-emerald-200 disabled:opacity-50 active:scale-95"
+                                            >
+                                                {updatingOrderId === order.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                                                Marcar como Entregado
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="w-full lg:w-80 bg-slate-50/50 rounded-xl p-4 sm:p-5 border border-slate-100 shrink-0 mt-4 lg:mt-0">

@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import * as authService from "@/lib/services/auth";
 import { ShieldAlert, Store, Users, Home, Settings, Menu, X, Ticket, Receipt } from "lucide-react";
+import { RealtimeOrderListener } from "@/components/common/RealtimeOrderListener";
 
 export default function AdminLayout({
     children,
@@ -61,6 +62,9 @@ export default function AdminLayout({
 
     return (
         <div className="flex h-screen overflow-hidden bg-slate-50 font-sans selection:bg-indigo-100 selection:text-indigo-900">
+            {/* Real-time Order Notifications */}
+            <RealtimeOrderListener role="admin" />
+            
             {/* Sidebar */}
             <aside className={`
                 fixed inset-y-0 left-0 w-64 bg-[#0a0f1d] text-white border-r border-[#1a2235] flex flex-col
