@@ -272,7 +272,7 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                         <div>
                                             <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Nombre del Cliente</h4>
-                                            <p className="font-semibold text-slate-900">{order.usuarios?.nombre || 'Cliente Anónimo'}</p>
+                                            <p className="font-semibold text-slate-900">{order.usuarios?.nombre ? order.usuarios.nombre.split(' ')[0] : 'Cliente Anónimo'}</p>
                                         </div>
 
                                         <div>
