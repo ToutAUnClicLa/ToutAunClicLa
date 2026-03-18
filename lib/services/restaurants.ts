@@ -119,7 +119,8 @@ export const countryFlags: Record<string, string> = {
   "Canadá": "🇨🇦",
   "Perú": "🇵🇪",
   "Montreal": "⚜️",
-  "Cuba": "🇨🇺"
+  "Cuba": "🇨🇺",
+  "Quebec": "⚜️💙⚜️"
 };
 
 /**
