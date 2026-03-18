@@ -4,7 +4,7 @@ export default {
       badge: "OUR NETWORK",
       title: "Professional Services",
       subtitle: "Within Your Reach",
-      description: "We connect the Latino community in Montreal with trusted professionals. Find experts who speak your language and understand your culture."
+      description: "We connect the Montreal community with trusted professionals who understand your needs and local culture."
     },
     search: {
       placeholder: "Search for a service (e.g. lawyer, dentist)...",
@@ -28,7 +28,7 @@ export default {
       },
       health: {
         title: "Health & Wellness",
-        description: "Comprehensive medical care with doctors and specialists who speak your language.",
+        description: "Comprehensive medical care; doctors, and specialists in medicine and your well-being in your region.",
         short: "Health"
       },
       accounting: {
@@ -84,7 +84,12 @@ export default {
       official: "Official",
       interpretation: "Interpretation",
       remittances: "Remittances",
-      exchange: "Currency Exchange"
+      exchange: "Currency Exchange",
+      psychotherapists: "Psychotherapists",
+      speechTherapists: "Speech Therapists",
+      optometrists: "Optometrists",
+      sexologists: "Sexologists",
+      manyMore: "And many more"
     },
     cta: {
       title: "Are you a professional?",
@@ -415,8 +420,8 @@ export default {
       {
         id: 1,
         name: "Medical Services",
-        description: "Bilingual physicians for primary care, emergencies, therapy, and mental health tailored to you.",
-        subservices: ["Physicians", "Dentists", "Physiotherapists", "Ergotherapists", "Psychologists", "Psychiatrists", "Occupational therapy"],
+        description: "Comprehensive medical care; doctors, and specialists in medicine and your well-being in your region.",
+        subservices: ["Doctors", "Dentists", "Physiotherapists", "Psychotherapists", "Speech Therapists", "Optometrists", "Sexologists", "And many more"],
         color: "from-emerald-600 to-emerald-400",
         badge: "Available very soon",
         href: "/servicios#servicios-medicos",

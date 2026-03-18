@@ -4,7 +4,7 @@ export default {
       badge: "NUESTRA RED",
       title: "Servicios Profesionales",
       subtitle: "A Tu Alcance",
-      description: "Conectamos a la comunidad latina en Montreal con profesionales de confianza. Encuentra expertos que hablan tu idioma y entienden tu cultura."
+      description: "Conectamos a la comunidad en Montreal con profesionales de confianza que entienden tus necesidades y la cultura local."
     },
     search: {
       placeholder: "Buscar por servicio (ej. abogado, dentista)...",
@@ -28,7 +28,7 @@ export default {
       },
       health: {
         title: "Salud y Bienestar",
-        description: "Cuidado médico integral con doctores y especialistas que hablan tu idioma.",
+        description: "Cuidado médico integral; doctores, y especialistas de la medicina y de tu bienestar en tu región." ,
         short: "Salud"
       },
       accounting: {
@@ -84,7 +84,12 @@ export default {
       official: "Oficial",
       interpretation: "Interpretación",
       remittances: "Remesas",
-      exchange: "Cambio de Divisas"
+      exchange: "Cambio de Divisas",
+      psychotherapists: "Psicoterapeutas",
+      speechTherapists: "Especialistas del lenguaje",
+      optometrists: "Optometristas",
+      sexologists: "Sexólogos",
+      manyMore: "Y muchos más"
     },
     cta: {
       title: "¿Eres un profesional?",
@@ -416,8 +421,8 @@ export default {
       {
         id: 1,
         name: "Servicios Médicos",
-        description: "Médicos bilingües para atención integral, emergencias y seguimiento culturalmente cercano.",
-        subservices: ["Médicos", "Odontólogos", "Fisioterapeutas", "Ergoterapeutas", "Psicólogos", "Psiquiatras", "Terapia ocupacional"],
+        description: "Cuidado médico integral; doctores, y especialistas de la medicina y de tu bienestar en tu región.",
+        subservices: ["Médicos", "Odontólogos", "Fisioterapeutas", "Psicoterapeutas", "Especialistas del lenguaje", "Optometristas", "Sexólogos", "Y muchos más"],
         color: "from-emerald-600 to-emerald-400",
         badge: "Disponible muy pronto",
         href: "/servicios#servicios-medicos",

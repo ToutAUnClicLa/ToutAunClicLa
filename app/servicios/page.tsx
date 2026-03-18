@@ -36,7 +36,16 @@ export default function ServicesPage() {
       icon: Stethoscope,
       titleKey: 'services.categories.health.title',
       descKey: 'services.categories.health.description',
-      subServices: ['services.subservices.dentists', 'services.subservices.psychologists', 'services.subservices.doctors'],
+      subServices: [
+        'services.subservices.doctors',
+        'services.subservices.dentists',
+        'services.subservices.psychologists',
+        'services.subservices.psychotherapists',
+        'services.subservices.speechTherapists',
+        'services.subservices.optometrists',
+        'services.subservices.sexologists',
+        'services.subservices.manyMore'
+      ],
     },
     {
       id: 'accounting',

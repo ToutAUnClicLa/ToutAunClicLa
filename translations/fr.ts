@@ -4,7 +4,7 @@ export default {
       badge: "NOTRE RÉSEAU",
       title: "Services Professionnels",
       subtitle: "À Votre Portée",
-      description: "Nous connectons la communauté latino de Montréal avec des professionnels de confiance. Trouvez des experts qui parlent votre langue et comprennent votre culture."
+      description: "Nous connectons la communauté de Montréal avec des professionnels de confiance qui comprennent vos besoins et la culture locale."
     },
     search: {
       placeholder: "Rechercher un service (ex. avocat, dentiste)...",
@@ -28,7 +28,7 @@ export default {
       },
       health: {
         title: "Santé et Bien-être",
-        description: "Soins médicaux complets avec des médecins et spécialistes qui parlent votre langue.",
+        description: "Soins médicaux complets ; médecins et spécialistes de la médecine et de votre bien-être dans votre région.",
         short: "Santé"
       },
       accounting: {
@@ -84,7 +84,12 @@ export default {
       official: "Officiel",
       interpretation: "Interprétation",
       remittances: "Envois de fonds",
-      exchange: "Change"
+      exchange: "Change",
+      psychotherapists: "Psychothérapeutes",
+      speechTherapists: "Orthophonistes",
+      optometrists: "Optométristes",
+      sexologists: "Sexologues",
+      manyMore: "Et bien plus encore"
     },
     cta: {
       title: "Êtes-vous un professionnel ?",
@@ -415,8 +420,8 @@ export default {
       {
         id: 1,
         name: "Services médicaux",
-        description: "Médecins bilingues pour soins primaires, urgences, thérapies et santé mentale, avec approche culturelle.",
-        subservices: ["Médecins", "Dentistes", "Physiothérapeutes", "Ergothérapeutes", "Psychologues", "Psychiatres", "Ergothérapie"],
+        description: "Soins médicaux complets ; médecins et spécialistes de la médecine et de votre bien-être dans votre région.",
+        subservices: ["Médecins", "Dentistes", "Physiothérapeutes", "Psychothérapeutes", "Orthophonistes", "Optométristes", "Sexologues", "Et bien plus encore"],
         color: "from-emerald-600 to-emerald-400",
         badge: "Disponible très bientôt",
         href: "/servicios#servicios-medicos",
