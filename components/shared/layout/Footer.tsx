@@ -184,7 +184,7 @@ export function Footer() {
                     variant="outline"
                     size="sm"
                     className="bg-transparent border-indigo-500 text-indigo-300 hover:bg-indigo-500 hover:text-white"
-                    onClick={() => window.open('https://wa.me/14384681855?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20sus%20productos%20y%20servicios.', '_blank')}
+                    onClick={() => window.open('https://wa.me/14384626255?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20sus%20productos%20y%20servicios.', '_blank')}
                   >
                     {t('footer.contact.contactNow')}
                   </Button>
