@@ -18,10 +18,13 @@ export const RealtimeOrderListener = ({ role, restauranteId }: RealtimeOrderList
 
   useEffect(() => {
     // Inicializar audio de notificación
-    audioRef.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    const audioPath = '/JINGLE.mp3';
+    audioRef.current = new Audio(audioPath);
     audioRef.current.volume = 1;
 
-    console.log(`🔔 Iniciando RealtimeOrderListener para rol: ${role}${restauranteId ? ` (Restaurante: ${restauranteId})` : ''}`);
+    audioRef.current.addEventListener('error', (e) => {
+      console.error('❌ Error cargando JINGLE.mp3:', e);
+    });
 
     let channel: any;
 
@@ -61,7 +64,7 @@ export const RealtimeOrderListener = ({ role, restauranteId }: RealtimeOrderList
           async (payload) => {
             console.log('🚀 EVENTO RECIBIDO (Restaurante):', payload);
             const newItem = payload.new;
-            
+
             // Si ya procesamos este pedido recientemente, ignorar para evitar spam por múltiples items
             if (processedOrders.current.has(newItem.pedido_id.toString())) {
               console.log(`⏭️ Pedido ${newItem.pedido_id} ya procesado, ignorando item.`);
@@ -139,12 +142,15 @@ export const RealtimeOrderListener = ({ role, restauranteId }: RealtimeOrderList
   const handleNewOrder = (orderId: string | number, total?: number) => {
     // Reproducir sonido
     if (audioRef.current) {
-      audioRef.current.play().catch(e => console.warn('No se pudo reproducir sonido:', e));
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(e => {
+        console.warn('⚠️ Audio bloqueado por el navegador. Se requiere interacción del usuario.', e);
+      });
     }
 
     // Dispatch custom event for pages to refresh their data
-    window.dispatchEvent(new CustomEvent('new-order-received', { 
-      detail: { orderId, role, restauranteId } 
+    window.dispatchEvent(new CustomEvent('new-order-received', {
+      detail: { orderId, role, restauranteId }
     }));
 
     // Mostrar notificación
@@ -163,10 +169,10 @@ export const RealtimeOrderListener = ({ role, restauranteId }: RealtimeOrderList
 
   const handleStatusUpdate = (orderId: string | number, newStatus?: string) => {
     console.log(`✨ Estado del pedido ${orderId} actualizado a ${newStatus}. Avisando a componentes...`);
-    
+
     // Despachar evento para refrescar
-    window.dispatchEvent(new CustomEvent('order-status-updated', { 
-      detail: { orderId, status: newStatus } 
+    window.dispatchEvent(new CustomEvent('order-status-updated', {
+      detail: { orderId, status: newStatus }
     }));
 
     // Toast opcional para avisar que algo cambió (sin ser tan invasivo como un pedido nuevo)
