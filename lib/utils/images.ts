@@ -18,7 +18,13 @@ export function getImageUrl(imagePath?: string | null): string {
 
   // Si ya es una URL completa, devolverla tal como está
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath;
+    // Es buena práctica asegurarse de que la URL no tenga espacios nulos/sin codificar
+    // que puedan romper el fetch de Next.js u otras librerías
+    try {
+      return encodeURI(decodeURI(imagePath));
+    } catch {
+      return imagePath;
+    }
   }
 
   // Si es una ruta local (empieza con /), devolverla tal como está
@@ -32,7 +38,11 @@ export function getImageUrl(imagePath?: string | null): string {
     ? imagePath 
     : `productos/${imagePath}`;
 
-  return `${SUPABASE_STORAGE_URL}/${cleanPath}`;
+  // Codificar de forma segura la ruta para reemplazar espacios y caracteres especiales
+  // excepto aquellos permitidos en URIs
+  const encodedPath = cleanPath.split('/').map(segment => encodeURIComponent(segment)).join('/');
+
+  return `${SUPABASE_STORAGE_URL}/${encodedPath}`;
 }
 
 /**
@@ -70,8 +80,8 @@ export function getOptimizedImageUrl(
   // Agregar calidad
   transformParams.push(`quality=${quality}`);
   
-  // Agregar formato webp para mejor compresión
-  transformParams.push('format=webp');
+  // IMPORTANTE: format=webp no es válido dinámicamente en Supabase Storage
+  // a menos que sea origin. Supabase automáticamente sirve webp si el navegador lo soporta.
   
   // Si hay transformaciones, agregarlas a la URL
   if (transformParams.length > 0) {
