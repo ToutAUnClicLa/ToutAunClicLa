@@ -1,6 +1,9 @@
 import { getAuthToken } from './auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const isDevelopment = process.env.NODE_ENV === 'development';
+const API_BASE_URL = isDevelopment 
+  ? 'http://localhost:5500/api/v1' 
+  : (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://backendtoutaunclicla-production.up.railway.app/api/v1');
 
 // ============================================================================
 // TIPOS E INTERFACES ACTUALIZADOS SEGÚN LA DOCUMENTACIÓN API

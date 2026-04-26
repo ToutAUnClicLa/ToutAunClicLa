@@ -8,10 +8,14 @@ const nextConfig = {
   output: 'standalone',
   // Proxy para desarrollo - redirige /api/backend/* al backend real
   async rewrites() {
+    const isDev = process.env.NODE_ENV === 'development';
+    const backendUrl = isDev
+      ? 'http://localhost:5500/api/v1'
+      : 'https://backendtoutaunclicla-production.up.railway.app/api/v1';
     return [
       {
         source: '/api/backend/:path*',
-        destination: 'https://backendtoutaunclicla-production.up.railway.app/api/v1/:path*',
+        destination: `${backendUrl}/:path*`,
       },
     ]
   },

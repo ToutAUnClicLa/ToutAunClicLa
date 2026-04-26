@@ -181,6 +181,12 @@ export function AddAddressModal({
                   <SelectItem value="La Prairie">La Prairie</SelectItem>
                   <SelectItem value="Candiac">Candiac</SelectItem>
                   <SelectItem value="Châteauguay">Châteauguay</SelectItem>
+                  <SelectItem value="Saint-Bruno-de-Montarville">Saint-Bruno-de-Montarville</SelectItem>
+                  <SelectItem value="Varennes">Varennes</SelectItem>
+                  <SelectItem value="Chambly">Chambly</SelectItem>
+                  <SelectItem value="Sainte-Catherine">Sainte-Catherine</SelectItem>
+                  <SelectItem value="Sainte-Julie">Sainte-Julie</SelectItem>
+                  <SelectItem value="Beloeil">Beloeil</SelectItem>
                 </SelectContent>
               </Select>
             </div>

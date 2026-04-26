@@ -22,7 +22,14 @@ export const MONTREAL_FSA_CODES = [
   'H9R', 'H9S', 'H9G', 'H9A', 'H9B', 'H9P',
   // Rivera Sur códigos
   'J5R', 'J4B', 'J3Y', 'J4N', 'J4M', 'J4G', 'J4L', 'J4J', 'J4H', 'J4K',
-  'J4T', 'J4V', 'J4R', 'J4Z', 'J4S', 'J4W', 'J4X', 'J4Y', 'J3Z'
+  'J4T', 'J4V', 'J4R', 'J4Z', 'J4S', 'J4W', 'J4X', 'J4Y', 'J3Z',
+  // Nuevas ciudades de domicilio
+  'J3V', // Saint-Bruno-de-Montarville
+  'J3X', // Varennes
+  'J3L', // Chambly
+  'J5C', // Saint-Catherine
+  'J3E', // Saint-Julie
+  'J3G'  // Beloeil
 ];
 
 /**
@@ -42,7 +49,14 @@ export function isValidServiceCity(city: string): boolean {
     'longueuil', 'saint-lambert', 'brossard', 'saint-hubert',
     'greenfield park', 'la prairie', 'candiac', 'delson',
     'saint-constant', 'sainte-catherine', 'châteauguay',
-    'mercier', 'kahnawake', 'boucherville'
+    'mercier', 'kahnawake', 'boucherville',
+    // Nuevas ciudades de domicilio
+    'saint-bruno-de-montarville', 'saint bruno de montarville', 'saint-bruno',
+    'varennes',
+    'chambly',
+    'saint-catherine', // ya estaba como sainte-catherine
+    'saint-julie',
+    'beloeil'
   ];
   return validCities.includes(cityLower);
 }
