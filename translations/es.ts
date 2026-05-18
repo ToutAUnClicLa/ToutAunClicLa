@@ -9,7 +9,13 @@ export default {
     search: {
       placeholder: "Buscar por servicio (ej. abogado, dentista)...",
       button: "Buscar",
-      popular: "Populares"
+      popular: "Populares",
+      result: "resultado",
+      results: "resultados",
+      clearFilter: "Limpiar filtro",
+      noResults: "No se encontraron servicios",
+      noResultsHint: "Intenta con otro termino de busqueda",
+      showAll: "Ver todos los servicios"
     },
     grid: {
       title: "Explora Nuestros Servicios",

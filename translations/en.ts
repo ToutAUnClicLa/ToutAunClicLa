@@ -9,7 +9,13 @@ export default {
     search: {
       placeholder: "Search for a service (e.g. lawyer, dentist)...",
       button: "Search",
-      popular: "Popular"
+      popular: "Popular",
+      result: "result",
+      results: "results",
+      clearFilter: "Clear filter",
+      noResults: "No services found",
+      noResultsHint: "Try a different search term",
+      showAll: "View all services"
     },
     grid: {
       title: "Explore Our Services",
