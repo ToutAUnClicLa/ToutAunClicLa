@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import {
   Search,
@@ -14,13 +14,19 @@ import {
   Languages,
   BadgeDollarSign,
   CheckCircle2,
-  X
+  X,
+  Wrench
 } from 'lucide-react';
 import ServiceCard from '@/components/features/services/ServiceCard';
+
+const normalize = (str: string) =>
+  str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 export default function ServicesPage() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
+  const gridRef = useRef<HTMLDivElement>(null);
+  const scrollTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const services = [
     {
@@ -28,7 +34,7 @@ export default function ServicesPage() {
       icon: Gavel,
       titleKey: 'services.categories.lawyers.title',
       descKey: 'services.categories.lawyers.description',
-      subServices: ['services.subservices.notaries', 'services.subservices.migration', 'services.subservices.civil'],
+      subServices: ['services.subservices.lawyers', 'services.subservices.notaries', 'services.subservices.migration', 'services.subservices.civil'],
       image: '/services/lawyers.png',
     },
     {
@@ -104,22 +110,53 @@ export default function ServicesPage() {
       subServices: ['services.subservices.remittances', 'services.subservices.exchange'],
       image: '/services/money.png',
     },
+    {
+      id: 'maintenance',
+      icon: Wrench,
+      titleKey: 'services.categories.maintenance.title',
+      descKey: 'services.categories.maintenance.description',
+      subServices: ['services.subservices.electricians', 'services.subservices.plumbers', 'services.subservices.painters', 'services.subservices.carpenters', 'services.subservices.locksmiths'],
+      image: '/services/home-services.png',
+    },
   ];
 
   const filteredServices = useMemo(() => {
-    const query = searchQuery.toLowerCase().trim();
+    const query = normalize(searchQuery.trim());
     if (!query) return services;
 
     return services.filter((service) => {
-      const title = t(service.titleKey).toLowerCase();
-      const desc = t(service.descKey).toLowerCase();
-      const subs = service.subServices.map(key => t(key).toLowerCase()).join(' ');
+      const title = normalize(t(service.titleKey));
+      const desc = normalize(t(service.descKey));
+      const subs = service.subServices.map(key => normalize(t(key))).join(' ');
       return title.includes(query) || desc.includes(query) || subs.includes(query);
     });
   }, [searchQuery, services, t]);
 
+  const scrollToGrid = useCallback(() => {
+    if (gridRef.current) {
+      const navbarHeight = window.innerWidth < 768 ? 80 : 64;
+      const top = gridRef.current.getBoundingClientRect().top + window.scrollY - navbarHeight - 16;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }, []);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+    if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    if (value.trim()) {
+      scrollTimerRef.current = setTimeout(scrollToGrid, 600);
+    }
+  }, [scrollToGrid]);
+
+  useEffect(() => {
+    return () => {
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
+  }, []);
+
   const handleTagClick = (tag: string) => {
     setSearchQuery(tag);
+    setTimeout(scrollToGrid, 100);
   };
 
   return (
@@ -158,7 +195,7 @@ export default function ServicesPage() {
                   placeholder={t('services.search.placeholder')}
                   type="text"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                 />
                 {searchQuery && (
                   <button
@@ -205,6 +242,7 @@ export default function ServicesPage() {
           </p>
         </div>
 
+        <div ref={gridRef} />
         {/* Results count when filtering */}
         {searchQuery && (
           <div className="mb-8 flex items-center justify-between">

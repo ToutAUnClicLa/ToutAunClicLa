@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, BadgeDollarSign, Calculator, Car, ChevronDown, Gavel, Gift, GlassWater, Globe2, Handshake, Home as HomeIcon, Languages, Package, PiggyBank, Scissors, Shirt, Sparkles, Stethoscope, Store, TrendingUp, Truck, Utensils, Watch } from "lucide-react";
+import { ArrowRight, BadgeDollarSign, Calculator, Car, ChevronDown, Gavel, Gift, GlassWater, Globe2, Handshake, Home as HomeIcon, Languages, Package, PiggyBank, Scissors, Shirt, Sparkles, Stethoscope, Store, TrendingUp, Truck, Utensils, Watch, Wrench } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
@@ -321,7 +321,7 @@ export default function Home() {
       icon: Gavel,
       titleKey: 'services.categories.lawyers.title',
       descKey: 'services.categories.lawyers.description',
-      subServices: ['services.subservices.notaries', 'services.subservices.migration', 'services.subservices.civil'],
+      subServices: ['services.subservices.lawyers', 'services.subservices.notaries', 'services.subservices.migration', 'services.subservices.civil'],
       image: '/services/lawyers.png',
     },
     {
@@ -387,6 +387,14 @@ export default function Home() {
       descKey: 'services.categories.money.description',
       subServices: ['services.subservices.remittances', 'services.subservices.exchange'],
       image: '/services/money.png',
+    },
+    {
+      id: 'maintenance',
+      icon: Wrench,
+      titleKey: 'services.categories.maintenance.title',
+      descKey: 'services.categories.maintenance.description',
+      subServices: ['services.subservices.electricians', 'services.subservices.plumbers', 'services.subservices.painters', 'services.subservices.carpenters', 'services.subservices.locksmiths'],
+      image: '/services/home-services.png',
     },
   ];
 

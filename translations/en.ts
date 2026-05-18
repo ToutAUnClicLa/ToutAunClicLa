@@ -65,12 +65,17 @@ export default {
       money: {
         title: "Money Transfers",
         description: "Fast and secure solutions to send money to your country."
+      },
+      maintenance: {
+        title: "Maintenance & Construction",
+        description: "Electricians, plumbers, painters and more professionals for your home or business."
       }
     },
     subservices: {
       notaries: "Notaries",
       migration: "Migration",
       civil: "Civil",
+      lawyers: "Lawyers",
       dentists: "Dentists",
       psychologists: "Psychologists",
       doctors: "Doctors",
@@ -95,7 +100,12 @@ export default {
       speechTherapists: "Speech Therapists",
       optometrists: "Optometrists",
       sexologists: "Sexologists",
-      manyMore: "And many more"
+      manyMore: "And many more",
+      electricians: "Electricians",
+      plumbers: "Plumbers",
+      painters: "Painters",
+      carpenters: "Carpenters",
+      locksmiths: "Locksmiths"
     },
     cta: {
       title: "Are you a professional?",
