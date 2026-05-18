@@ -322,6 +322,7 @@ export default function Home() {
       titleKey: 'services.categories.lawyers.title',
       descKey: 'services.categories.lawyers.description',
       subServices: ['services.subservices.notaries', 'services.subservices.migration', 'services.subservices.civil'],
+      image: '/services/lawyers.png',
     },
     {
       id: 'health',
@@ -329,6 +330,7 @@ export default function Home() {
       titleKey: 'services.categories.health.title',
       descKey: 'services.categories.health.description',
       subServices: ['services.subservices.dentists', 'services.subservices.psychologists', 'services.subservices.doctors'],
+      image: '/services/health.png',
     },
     {
       id: 'accounting',
@@ -336,6 +338,7 @@ export default function Home() {
       titleKey: 'services.categories.accounting.title',
       descKey: 'services.categories.accounting.description',
       subServices: ['services.subservices.taxes', 'services.subservices.payroll', 'services.subservices.bookkeeping'],
+      image: '/services/accounting.png',
     },
     {
       id: 'finance',
@@ -343,6 +346,7 @@ export default function Home() {
       titleKey: 'services.categories.finance.title',
       descKey: 'services.categories.finance.description',
       subServices: ['services.subservices.insurance', 'services.subservices.investments'],
+      image: '/services/finance.png',
     },
     {
       id: 'realestate',
@@ -350,6 +354,7 @@ export default function Home() {
       titleKey: 'services.categories.realestate.title',
       descKey: 'services.categories.realestate.description',
       subServices: ['services.subservices.buying', 'services.subservices.renting', 'services.subservices.commercial'],
+      image: '/services/home-services.png',
     },
     {
       id: 'cars',
@@ -357,6 +362,7 @@ export default function Home() {
       titleKey: 'services.categories.cars.title',
       descKey: 'services.categories.cars.description',
       subServices: ['services.subservices.dealerships', 'services.subservices.mechanics'],
+      image: '/services/cars.png',
     },
     {
       id: 'beauty',
@@ -364,6 +370,7 @@ export default function Home() {
       titleKey: 'services.categories.beauty.title',
       descKey: 'services.categories.beauty.description',
       subServices: ['services.subservices.stylists', 'services.subservices.nails', 'services.subservices.barber'],
+      image: '/services/beauty.png',
     },
     {
       id: 'translation',
@@ -371,6 +378,7 @@ export default function Home() {
       titleKey: 'services.categories.translation.title',
       descKey: 'services.categories.translation.description',
       subServices: ['services.subservices.official', 'services.subservices.interpretation'],
+      image: '/services/translation.png',
     },
     {
       id: 'money',
@@ -378,6 +386,7 @@ export default function Home() {
       titleKey: 'services.categories.money.title',
       descKey: 'services.categories.money.description',
       subServices: ['services.subservices.remittances', 'services.subservices.exchange'],
+      image: '/services/money.png',
     },
   ];
 
@@ -741,6 +750,7 @@ export default function Home() {
               comingSoonText={t('services.card.comingSoon')}
               subServicesText={t('services.card.subservices')}
               viewMoreText={t('services.card.viewMore')}
+              image={service.image}
             />
           ))}
         </div>
