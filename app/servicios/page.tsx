@@ -116,7 +116,7 @@ export default function ServicesPage() {
       titleKey: 'services.categories.maintenance.title',
       descKey: 'services.categories.maintenance.description',
       subServices: ['services.subservices.electricians', 'services.subservices.plumbers', 'services.subservices.painters', 'services.subservices.carpenters', 'services.subservices.locksmiths'],
-      image: '/services/home-services.png',
+      image: '/services/maintenance.png',
     },
   ];
 
