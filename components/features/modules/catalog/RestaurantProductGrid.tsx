@@ -80,23 +80,32 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
 
   const { products, loading, error, refetch } = useProducts(filters, !restaurantSubcategoryId);
 
-  // Orden global: 1) disponibles hoy primero, 2) precio desc, 3) id (desempate)
+  // Orden global: 1) disponibles hoy Y restaurante abierto primero,
+  //               2) precio base desc, 3) id (desempate estable).
+  // Si el restaurante está cerrado, NINGÚN producto cuenta como disponible
+  // para el sort (aunque tenga dias_disponibles = todos los días).
   const sortedProducts = useMemo(() => {
     const today = new Date().getDay();
+    const restaurantOpen = restaurant?.abierto === true;
+
     const isAvailableToday = (p: any) => {
+      if (!restaurantOpen) return false; // restaurante cerrado → ninguno disponible
       if (typeof p?.disponible_hoy === 'boolean') return p.disponible_hoy;
       if (Array.isArray(p?.dias_disponibles)) return p.dias_disponibles.includes(today);
-      return true; // sin info -> tratar como disponible
+      return true;
     };
 
     return [...products].sort((a: any, b: any) => {
       const availDiff = (isAvailableToday(b) ? 1 : 0) - (isAvailableToday(a) ? 1 : 0);
-      if (availDiff !== 0) return availDiff; // disponibles primero
-      const priceDiff = (b?.precio ?? 0) - (a?.precio ?? 0);
-      if (priceDiff !== 0) return priceDiff; // precio mayor a menor
-      return (a?.id ?? 0) - (b?.id ?? 0); // desempate estable
+      if (availDiff !== 0) return availDiff;
+      // Precio BASE (sin descuento aplicado) para orden consistente
+      const priceA = a?.precio_anterior ?? a?.precio ?? 0;
+      const priceB = b?.precio_anterior ?? b?.precio ?? 0;
+      const priceDiff = priceB - priceA;
+      if (priceDiff !== 0) return priceDiff;
+      return (a?.id ?? 0) - (b?.id ?? 0);
     });
-  }, [products]);
+  }, [products, restaurant?.abierto]);
 
   // Paginación del lado del cliente sobre la lista ya ordenada
   const totalItems = sortedProducts.length;

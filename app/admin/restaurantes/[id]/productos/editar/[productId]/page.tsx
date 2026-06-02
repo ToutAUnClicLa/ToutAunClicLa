@@ -21,18 +21,19 @@ export default function EditarProductoSuperAdminPage() {
             if (!restauranteId || !productId) return;
             
             try {
-                // Obtenemos todos los productos de este restaurante como Super Admin
-                const res = await fetch(`${API_CONFIG.BASE_URL}/restaurants/products?restauranteId=${restauranteId}`, {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
-                });
-                
-                if (!res.ok) throw new Error("Error fetching products");
+                // Usamos el endpoint de producto individual para obtener el precio
+                // CRUDO de la BD (sin descuento aplicado). Si usáramos el listado
+                // público, el precio ya vendría descontado y al guardar se compondría.
+                const res = await fetch(
+                    `${API_CONFIG.BASE_URL}/restaurants/products/${productId}?restauranteId=${restauranteId}`,
+                    { headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` } }
+                );
+
+                if (!res.ok) throw new Error("Error fetching product");
                 const jsonData = await res.json();
-                
-                // Encontrar el producto específico
-                const foundProduct = jsonData.products?.find((p: any) => p.id === Number(productId));
-                
-                if (foundProduct) {
+                const foundProduct = jsonData.product ?? jsonData;
+
+                if (foundProduct?.id) {
                     setProduct(foundProduct);
                 } else {
                     toast.error("Producto no encontrado.");
