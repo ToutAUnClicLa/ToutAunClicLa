@@ -63,9 +63,9 @@ export async function middleware(req: NextRequest) {
       }
     }
     
-    if (token) {
+    if (token && process.env.JWT_SECRET) {
       try {
-        const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret');
+        const secret = new TextEncoder().encode(process.env.JWT_SECRET);
         const { payload } = await jwtVerify(token, secret);
         isAuthenticated = !!payload;
       } catch (error) {
@@ -86,9 +86,9 @@ export async function middleware(req: NextRequest) {
   
   if (isAuthPage) {
     let token = req.cookies.get('auth-token')?.value || req.cookies.get('auth_token')?.value;
-    if (token) {
+    if (token && process.env.JWT_SECRET) {
       try {
-        const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret');
+        const secret = new TextEncoder().encode(process.env.JWT_SECRET);
         const { payload } = await jwtVerify(token, secret);
         if (payload) {
           return NextResponse.redirect(new URL('/profile', req.url));
