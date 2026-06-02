@@ -154,9 +154,11 @@ export function Navbar() {
     toast.success(`${t('navbar.languageChanged')} ${newLang.name}`);
   };
 
-  // No renderizar Navbar en las rutas de administrador, EXCEPTO en las páginas de login
+  // No renderizar Navbar en las rutas de administrador, EXCEPTO en las páginas de login.
+  // Tampoco en /factura/* (la factura debe imprimirse sin navbar).
   const isDashboardRoute = (pathname?.startsWith('/restaurante') && pathname !== '/restaurante/login') ||
-    (pathname?.startsWith('/admin') && pathname !== '/admin/login');
+    (pathname?.startsWith('/admin') && pathname !== '/admin/login') ||
+    pathname?.startsWith('/factura');
 
   if (isDashboardRoute) {
     return null;

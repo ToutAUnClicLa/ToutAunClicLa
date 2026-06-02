@@ -7,6 +7,7 @@ import { es } from "date-fns/locale";
 import { Loader2, Receipt, Search, Filter, Store, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/common/ui/input";
 import { toast } from "sonner";
+import { printInvoice } from "@/lib/utils/printInvoice";
 
 export default function GlobalOrdersManagerPage() {
     const [orders, setOrders] = useState<any[]>([]);
@@ -274,8 +275,8 @@ export default function GlobalOrdersManagerPage() {
                                     </div>
 
                                     {/* Super Admin Actions */}
-                                    {order.estado === 'enviado' && (
-                                        <div className="pt-2">
+                                    <div className="pt-2 flex flex-wrap gap-2">
+                                        {order.estado === 'enviado' && (
                                             <button
                                                 onClick={() => handleStatusUpdate(order.id, 'entregado')}
                                                 disabled={updatingOrderId === order.id}
@@ -284,8 +285,15 @@ export default function GlobalOrdersManagerPage() {
                                                 {updatingOrderId === order.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                                                 Marcar como Entregado
                                             </button>
-                                        </div>
-                                    )}
+                                        )}
+                                        <button
+                                            onClick={() => printInvoice(order.id, "super")}
+                                            className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md disabled:opacity-50 active:scale-95"
+                                        >
+                                            <Receipt className="w-4 h-4" />
+                                            Exportar factura
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div className="w-full lg:w-80 bg-slate-50/50 rounded-xl p-4 sm:p-5 border border-slate-100 shrink-0 mt-4 lg:mt-0">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { restaurantAdminService } from "@/lib/services/restaurant";
 import { API_CONFIG } from "@/lib/config/api";
+import { printInvoice } from "@/lib/utils/printInvoice";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Loader2, Receipt, Search, Filter, CheckCircle2, Truck, XCircle, Clock } from "lucide-react";
@@ -322,6 +323,13 @@ export default function RestaurantOrdersManager({ restauranteId }: RestaurantOrd
                                                         Marcar como Enviado
                                                     </button>
                                                 )}
+                                                <button
+                                                    onClick={() => printInvoice(order.id, "restaurant")}
+                                                    className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md active:scale-95"
+                                                >
+                                                    <Receipt className="w-4 h-4" />
+                                                    Exportar factura
+                                                </button>
                                             </div>
                                             
                                             {/* Cancel Button - Pushed to the far end */}

@@ -5,7 +5,10 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   
   // Agregar headers de seguridad
-  res.headers.set('X-Frame-Options', 'DENY');
+  // La ruta /factura/[id] necesita poder cargarse en un iframe del mismo origen
+  // (lo usa el botón "Exportar factura" para imprimir sin redireccionar).
+  const isInvoicePage = req.nextUrl.pathname.startsWith('/factura/');
+  res.headers.set('X-Frame-Options', isInvoicePage ? 'SAMEORIGIN' : 'DENY');
   res.headers.set('X-Content-Type-Options', 'nosniff');
   res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.headers.set('X-XSS-Protection', '1; mode=block');

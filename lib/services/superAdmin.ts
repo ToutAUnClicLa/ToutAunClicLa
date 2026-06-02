@@ -184,6 +184,15 @@ export const superAdminService = {
         return data; // returns page data {orders, total, totalPages, currentPage}
     },
 
+    getOrderInvoice: async (id: string | number) => {
+        const res = await fetch(`${buildApiUrl(`/super-admin/orders/${id}/invoice`)}`, {
+            headers: getAuthHeaders()
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Error fetching invoice');
+        return data;
+    },
+
     updateOrderStatus: async (id: string | number, status: string) => {
         const res = await fetch(`${buildApiUrl(`/super-admin/orders/${id}/status`)}`, {
             method: 'PUT',

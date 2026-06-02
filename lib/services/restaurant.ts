@@ -135,6 +135,15 @@ export const restaurantAdminService = {
         return data.order;
     },
 
+    getOrderInvoice: async (id: string | number) => {
+        const res = await fetch(buildApiUrl(`${API_CONFIG.ENDPOINTS.RESTAURANTS.ORDERS}/${id}/invoice`), {
+            headers: getAuthHeaders()
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Error fetching invoice');
+        return data;
+    },
+
     getStats: async (period: string = 'week') => {
         const res = await fetch(buildApiUrl(`${API_CONFIG.ENDPOINTS.RESTAURANTS.STATS}?period=${period}`), {
             headers: getAuthHeaders()

@@ -83,9 +83,11 @@ export function Footer() {
   const boutiqueCategories = getBoutiqueCategories(t);
   const companyLinks = getCompanyLinks(t);
 
-  // No renderizar Footer en rutas de administración, EXCEPTO en las páginas de login
+  // No renderizar Footer en rutas de administración, EXCEPTO en las páginas de login.
+  // Tampoco en /factura/* (la factura debe imprimirse sin footer).
   const isDashboardRoute = (pathname?.startsWith('/restaurante') && pathname !== '/restaurante/login') ||
-    (pathname?.startsWith('/admin') && pathname !== '/admin/login');
+    (pathname?.startsWith('/admin') && pathname !== '/admin/login') ||
+    pathname?.startsWith('/factura');
 
   if (isDashboardRoute) {
     return null;
