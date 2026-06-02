@@ -258,7 +258,7 @@ export default {
     },
     search: {
       title: "¿Qué estás buscando?",
-      placeholder: "Buscar productos, marcas, categorías...",
+      placeholder: "Buscar platos, restaurantes, boutique...",
       button: "Buscar",
       noResultsTitle: "Sin resultados",
       noResultsMessage: "No encontramos productos que coincidan con tu búsqueda",
@@ -280,6 +280,7 @@ export default {
       inStock: "En stock",
       outOfStock: "Agotado",
       products: "Productos",
+      foods: "Comidas",
       boutique: "Boutique",
       categories: {
         productos: "Productos",

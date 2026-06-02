@@ -257,7 +257,7 @@ export default {
     },
     search: {
       title: "What are you looking for?",
-      placeholder: "Search products, brands, categories...",
+      placeholder: "Search dishes, restaurants, boutique...",
       button: "Search",
       noResultsTitle: "No results",
       noResultsMessage: "We couldn't find products matching your search",
@@ -279,6 +279,7 @@ export default {
       inStock: "In stock",
       outOfStock: "Out of stock",
       products: "Products",
+      foods: "Food",
       boutique: "Boutique",
       categories: {
         productos: "Products",

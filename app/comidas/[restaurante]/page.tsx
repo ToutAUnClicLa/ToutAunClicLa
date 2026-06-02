@@ -3,12 +3,15 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useParams, notFound } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useRestaurantDetails } from '@/hooks/useRestaurantDetails';
 import { RestaurantProductGrid } from '@/components/features/modules/catalog/RestaurantProductGrid';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
 import { getRestaurantNameFromSlug } from '@/lib/utils/restaurant-routes';
-import { MapPin, Clock, Star, ArrowLeft } from 'lucide-react';
+import { getImageUrl } from '@/lib/utils';
+import { MapPin, Clock, Star, ArrowLeft, ChefHat } from 'lucide-react';
 import { Badge } from '@/components/common/ui/badge';
 import { Button } from '@/components/common/ui/button';
 
@@ -97,7 +100,8 @@ function RestaurantPageContent() {
   const router = useRouter();
   const { t } = useTranslation();
   const [restaurantName, setRestaurantName] = useState<string | null>(null);
-  
+  const { restaurant } = useRestaurantDetails(restaurantName);
+
   const handleBackToRestaurants = () => {
     router.push('/comidas');
   };
@@ -173,7 +177,23 @@ function RestaurantPageContent() {
                 sm:pt-2
                 max-w-4xl mx-auto
               ">
-                <div className="mb-4">
+                <div className="mb-4 flex items-center justify-center gap-3 sm:gap-4">
+                  {/* Logo circular del restaurante - al lado del título */}
+                  <div className="relative flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-white/15 border-2 border-white shadow-lg ring-2 ring-white/40">
+                    {restaurant?.Imagen ? (
+                      <Image
+                        src={getImageUrl(restaurant.Imagen)}
+                        alt={`${restaurantName} logo`}
+                        fill
+                        className="object-cover rounded-full"
+                        sizes="(max-width: 768px) 64px, 80px"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <ChefHat className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 text-white/80" />
+                      </div>
+                    )}
+                  </div>
                   <h1 className="text-3xl md:text-4xl font-bold">{restaurantName}</h1>
                 </div>
                 

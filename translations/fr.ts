@@ -257,7 +257,7 @@ export default {
     },
     search: {
       title: "Que recherchez-vous ?",
-      placeholder: "Rechercher produits, marques, catégories...",
+      placeholder: "Rechercher plats, restaurants, boutique...",
       button: "Rechercher",
       noResultsTitle: "Aucun résultat",
       noResultsMessage: "Nous n'avons trouvé aucun produit correspondant à votre recherche",
@@ -279,6 +279,7 @@ export default {
       inStock: "En stock",
       outOfStock: "Épuisé",
       products: "Produits",
+      foods: "Plats",
       boutique: "Boutique",
       categories: {
         productos: "Produits",

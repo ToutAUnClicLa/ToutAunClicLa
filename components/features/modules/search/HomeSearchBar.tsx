@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, memo, useMemo } from 'react';
-import { Search, X, Package, Store, Clock, ShoppingBag } from 'lucide-react';
+import { Search, X, Package, Store, Clock, ShoppingBag, Utensils } from 'lucide-react';
+import { getRestaurantUrlWithFallback } from '@/lib/utils/restaurant-routes';
 import { useTranslation } from '@/hooks/useTranslation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -209,15 +210,15 @@ const HomeSearchBar = memo(function HomeSearchBar() {
           // Load with timeout and fallback strategy
           const loadPromises = [
             Promise.race([
-              getProducts({ 
-                category: 1, // Productos
-                page: 1, 
+              getProducts({
+                category: 2, // Comidas (platos de restaurantes)
+                page: 1,
                 limit: 500, // Load more products for better local filtering
                 sortBy: 'nombre',
                 sortOrder: 'asc'
               }),
-              new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Timeout loading productos')), 15000)
+              new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Timeout loading comidas')), 15000)
               )
             ]),
             Promise.race([
@@ -246,7 +247,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
               allProducts.push(...productResponse.products);
             } else {
               hasErrors = true;
-              console.warn(`Failed to load category ${index === 0 ? 'productos' : 'boutique'}:`, result.reason);
+              console.warn(`Failed to load category ${index === 0 ? 'comidas' : 'boutique'}:`, result.reason);
             }
           });
           
@@ -344,8 +345,8 @@ const HomeSearchBar = memo(function HomeSearchBar() {
       
       // Filtrar y mapear productos con búsqueda inteligente
       const filteredProducts = allProducts.filter(product => {
-        // Los productos ya están filtrados por categoría (1: productos, 3: boutique)
-        // Ya no incluimos comidas (categoria_id === 2)
+        // Ya filtrados por categoría al cargar (2: comidas, 3: boutique).
+        // No se incluyen productos (categoria_id === 1).
 
         // BÚSQUEDA POR PALABRA EXACTA con normalización
         const normalizedProductName = normalizeText(product.nombre || '');
@@ -464,7 +465,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
           precio: product.precio,
           imagen_principal: product.imagen_principal,
           categoria_id: product.categoria_id,
-          categoria_nombre: product.categorias?.nombre || (product.categoria_id === 1 ? 'Productos' : 'Boutique'),
+          categoria_nombre: product.categorias?.nombre || (product.categoria_id === 2 ? 'Comidas' : 'Boutique'),
           subcategoria: product.subcategorias?.nombre,
           stock: product.stock
         }));
@@ -552,38 +553,38 @@ const HomeSearchBar = memo(function HomeSearchBar() {
     
     if (cachedResult && cachedResult.results.length > 0) {
       // Use full cached results for navigation decision (more accurate than preview)
-      const productsCount = cachedResult.results.filter(r => r.categoria_id === 1).length;
+      const foodsCount = cachedResult.results.filter(r => r.categoria_id === 2).length;
       const boutiqueCount = cachedResult.results.filter(r => r.categoria_id === 3).length;
-      
+
       console.log(`🎯 Navigation decision based on ${cachedResult.results.length} cached results:`);
-      console.log(`   📦 Products: ${productsCount}, 🏪 Boutique: ${boutiqueCount}`);
-      
-      if (boutiqueCount > productsCount) {
+      console.log(`   🍽️ Comidas: ${foodsCount}, 🏪 Boutique: ${boutiqueCount}`);
+
+      if (boutiqueCount > foodsCount) {
         console.log('→ Navigating to /boutique (majority in cached results)');
         router.push(`/boutique?search=${encodeURIComponent(currentQuery)}`);
       } else {
-        console.log('→ Navigating to /productos (majority in cached results or tie)');
-        router.push(`/productos?search=${encodeURIComponent(currentQuery)}`);
+        console.log('→ Navigating to /comidas (majority in cached results or tie)');
+        router.push(`/comidas?search=${encodeURIComponent(currentQuery)}`);
       }
     } else {
       // Fallback: search both categories and decide based on preview results
       if (searchResults.length > 0) {
-        const productsCount = searchResults.filter(r => r.categoria_id === 1).length;
+        const foodsCount = searchResults.filter(r => r.categoria_id === 2).length;
         const boutiqueCount = searchResults.filter(r => r.categoria_id === 3).length;
-        
+
         console.log(`🎯 Fallback navigation based on ${searchResults.length} preview results:`);
-        console.log(`   📦 Products: ${productsCount}, 🏪 Boutique: ${boutiqueCount}`);
-        
-        if (boutiqueCount > productsCount) {
+        console.log(`   🍽️ Comidas: ${foodsCount}, 🏪 Boutique: ${boutiqueCount}`);
+
+        if (boutiqueCount > foodsCount) {
           console.log('→ Navigating to /boutique (majority in preview results)');
           router.push(`/boutique?search=${encodeURIComponent(currentQuery)}`);
         } else {
-          console.log('→ Navigating to /productos (majority in preview results or tie)');
-          router.push(`/productos?search=${encodeURIComponent(currentQuery)}`);
+          console.log('→ Navigating to /comidas (majority in preview results or tie)');
+          router.push(`/comidas?search=${encodeURIComponent(currentQuery)}`);
         }
       } else {
-        console.log('→ No results, navigating to /productos by default');
-        router.push(`/productos?search=${encodeURIComponent(currentQuery)}`);
+        console.log('→ No results, navigating to /comidas by default');
+        router.push(`/comidas?search=${encodeURIComponent(currentQuery)}`);
       }
     }
     
@@ -598,9 +599,13 @@ const HomeSearchBar = memo(function HomeSearchBar() {
   const handleResultClick = useCallback((result: SearchResult) => {
     saveRecentSearch(result.nombre);
     
-    // Navegar directamente al producto (productos y boutique)
-    if (result.categoria_id === 1) {
-      router.push(`/productos/${result.id}`);
+    // Navegar al resultado (comidas -> página del restaurante; boutique -> producto)
+    if (result.categoria_id === 2) { // Comidas: vive dentro de un restaurante
+      if (result.subcategoria) {
+        router.push(`${getRestaurantUrlWithFallback(result.subcategoria)}/${result.id}`);
+      } else {
+        router.push(`/comidas/${result.id}`);
+      }
     } else if (result.categoria_id === 3) { // Boutique es categoria_id === 3
       router.push(`/boutique/${result.id}`);
     }
@@ -773,14 +778,14 @@ const HomeSearchBar = memo(function HomeSearchBar() {
                           </div>
                           <div className="text-xs text-gray-500 flex items-center gap-2">
                             <span className="flex items-center">
-                              {result.categoria_id === 1 ? (
-                                <Package className="h-3 w-3 mr-1 text-indigo-400" />
+                              {result.categoria_id === 2 ? (
+                                <Utensils className="h-3 w-3 mr-1 text-orange-400" />
                               ) : result.categoria_id === 3 ? (
                                 <Store className="h-3 w-3 mr-1 text-purple-400" />
                               ) : (
                                 <Package className="h-3 w-3 mr-1 text-gray-400" />
                               )}
-                              {result.categoria_id === 1 ? t('landing.search.products') : 
+                              {result.categoria_id === 2 ? t('landing.search.foods') :
                                result.categoria_id === 3 ? t('landing.search.boutique') : 'Otro'}
                             </span>
                             {result.stock > 0 ? (
