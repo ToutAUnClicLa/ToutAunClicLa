@@ -110,10 +110,15 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Reset page when restaurant changes
+  // Reset page when restaurant changes or when the search term changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [restaurantName]);
+  }, [restaurantName, debouncedValue]);
+
+  // Si la página actual queda fuera de rango (p. ej. tras filtrar), volver a 1
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(1);
+  }, [currentPage, totalPages]);
 
   return (
     <div className="lg:flex lg:gap-8">
@@ -235,7 +240,7 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
               role="grid"
               aria-label={`Cuadrícula de ${products.length} productos de ${restaurantName}`}
             >
-              {sortedProducts.map((product, index) => (
+              {pageProducts.map((product, index) => (
                 <motion.div key={product.id} variants={item}>
                   <ProductCard
                     product={product}
