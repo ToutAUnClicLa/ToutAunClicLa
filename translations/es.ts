@@ -250,7 +250,7 @@ export default {
     hero: {
       title: "Descubre América Latina",
       subtitle: "Productos auténticos y experiencias únicas",
-      description: "Conectando las Américas a través de productos auténticos y experiencias únicas. Entrega en la zona metropolitana de Montreal.",
+      description: "Conectando las Américas a través de productos auténticos y experiencias únicas. Entrega en Montreal y en toda la Rive-Sud: Boucherville, Chambly, Saint-Bruno-de-Montarville y más.",
       cta: "Registrate Para Distrutar de todas las americas!"
     },
     workWithUs: {

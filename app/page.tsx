@@ -197,13 +197,14 @@ export default function Home() {
   };
 
   const categories = [
-    {
-      icon: Package,
-      title: t('landing.categories.products.title'),
-      description: t('landing.categories.products.description'),
-      gradient: "from-indigo-600/20 to-blue-600/20",
-      sectionId: "productos"
-    },
+    // Sección de productos ocultada temporalmente (conservar para reactivar)
+    // {
+    //   icon: Package,
+    //   title: t('landing.categories.products.title'),
+    //   description: t('landing.categories.products.description'),
+    //   gradient: "from-indigo-600/20 to-blue-600/20",
+    //   sectionId: "productos"
+    // },
     {
       icon: Utensils,
       title: t('landing.categories.foods.title'),
@@ -498,7 +499,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Products Section */}
+      {/* Products Section — ocultada temporalmente (cambiar false -> true para reactivar) */}
+      {false && (
       <Section
         id="productos"
         title={t('landing.sections.products.title')}
@@ -573,6 +575,7 @@ export default function Home() {
         </div>
 
       </Section>
+      )}
 
       {/* Food Section */}
       <Section

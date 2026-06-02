@@ -36,7 +36,8 @@ const socialLinks = [
 // Enlaces para categorías principales
 const getMainCategories = (t: any) => [
   { name: t('footer.explore.home'), url: "/" },
-  { name: t('footer.explore.products'), url: "/productos" },
+  // Productos ocultado temporalmente (conservar para reactivar)
+  // { name: t('footer.explore.products'), url: "/productos" },
   { name: t('footer.explore.foods'), url: "/comidas" },
   { name: t('footer.explore.boutique'), url: "/boutique" }
 ];
@@ -139,7 +140,9 @@ export function Footer() {
                 ))}
               </ul>
             </nav>
-          </div>          {/* Productos Populares */}
+          </div>
+          {/* Productos Populares — ocultado temporalmente (conservar para reactivar) */}
+          {false && (
           <div>
             <h3 className="text-lg font-semibold mb-4 text-indigo-300">
               {t('footer.popularProducts.title')}
@@ -159,6 +162,7 @@ export function Footer() {
               </ul>
             </nav>
           </div>
+          )}
 
           {/* Contacto e Información */}
           <div>

@@ -55,7 +55,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 const LINKS = [
   { href: "/", label: "nav.home", icon: Home },
-  { href: "/productos", label: "nav.products", icon: Package },
+  // Productos ocultado temporalmente (conservar para reactivar)
+  // { href: "/productos", label: "nav.products", icon: Package },
   { href: "/comidas", label: "nav.foods", icon: ShoppingBag },
   { href: "/boutique", label: "nav.boutique", icon: Store },
   { href: "/servicios", label: "nav.services", icon: Layers }
