@@ -197,6 +197,8 @@ export default function CartPage() {
   // Always use the latest values from summary, with proper fallbacks
   const shippingMessage = summary?.shippingMessage || null;
   const needsAddress = summary?.needsAddress || false;
+  // El backend marca deliverable=false cuando el código postal está fuera de zona
+  const notDeliverable = summary?.deliverable === false;
 
   // 🔍 Debug logging for shipping state changes
   useEffect(() => {
@@ -512,6 +514,13 @@ export default function CartPage() {
       return;
     }
 
+    // Bloquear si la ubicación está fuera de la zona de cobertura
+    if (notDeliverable) {
+      toast.error(shippingMessage || 'No disponible esta ubicación por el momento!');
+      console.log('❌ Checkout blocked: location not deliverable (out of postal zone)');
+      return;
+    }
+
     // Priority 2: Local validation for address selection
     if (!selectedAddress || !selectedAddress.id) {
       toast.error(t('cart.errors.selectAddress'));
@@ -781,7 +790,7 @@ export default function CartPage() {
       setCheckoutLoading(false);
     }
   }, [
-    isAuthenticated, needsAddress, hasValidAddress, selectedAddress, isEmpty,
+    isAuthenticated, needsAddress, notDeliverable, shippingMessage, hasValidAddress, selectedAddress, isEmpty,
     deliveryOptions, appliedCoupon, finalTotal, savingsAmount, isFreeShippingApplied, t,
     displayConsigne, displaySubtotal, displayTaxes, finalShippingCost, items, summary,
     isSyncingWithBackend, isAddressSafeForCheckout, addresses, hasAddresses, lastSyncedAddressId
@@ -1095,7 +1104,11 @@ export default function CartPage() {
                         {formatPrice(displaySubtotal + displayTaxes + displayConsigne)}
                       </p>
                       <div className="text-xs text-gray-500">
-                        {needsAddress ? (
+                        {notDeliverable ? (
+                          <span className="text-red-600 font-medium">
+                            {shippingMessage || 'No disponible esta ubicación por el momento!'}
+                          </span>
+                        ) : needsAddress ? (
                           <span className="text-amber-600 font-medium">
                             {t('cart.summary.addressRequired')}
                           </span>
@@ -1299,7 +1312,7 @@ export default function CartPage() {
                           handleCheckout();
                           // toast.info(t('cart.checkout.unavailable'));
                         }}
-                        disabled={false}
+                        disabled={notDeliverable}
                       >
                         {checkoutLoading ? (
                           <span className="flex items-center justify-center gap-2">
@@ -1315,6 +1328,7 @@ export default function CartPage() {
                           isEmpty ? t('cart.checkout.emptyCart') :
                             !hasAddresses ? t('cart.summary.addressRequired') :
                               !selectedAddress?.id ? t('cart.errors.selectAddress') :
+                                notDeliverable ? (shippingMessage || 'No disponible esta ubicación por el momento!') :
                                 needsAddress ? 'Procesando dirección...' :
                                   isSyncingWithBackend ? 'Procesando...' :
                                     !deliveryOptions.isValid ? t('cart.delivery.error') :
@@ -1324,7 +1338,7 @@ export default function CartPage() {
                         variant="outline"
                         size="lg"
                         className="w-full text-sm sm:text-base h-10 sm:h-12"
-                        onClick={() => router.push('/productos')}
+                        onClick={() => router.push('/comidas')}
                       >
                         {t('cart.summary.continue')}
                       </Button>

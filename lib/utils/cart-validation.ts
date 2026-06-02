@@ -44,6 +44,7 @@ export function validateCartSummary(summary: Partial<CartSummary> | undefined): 
     // Critical shipping state fields
     shippingMessage: summary.shippingMessage ?? null,
     needsAddress: summary.needsAddress ?? false,
+    deliverable: summary.deliverable ?? null,
     isPromotionEligible: summary.isPromotionEligible ?? false,
     promotionThreshold: summary.promotionThreshold ?? 0
   };
@@ -65,6 +66,7 @@ export function createEmptyCartSummary(): CartSummary {
     shippingCost: 0,
     shippingMessage: null,
     needsAddress: false,
+    deliverable: null,
     isPromotionEligible: false,
     promotionThreshold: 0
   };

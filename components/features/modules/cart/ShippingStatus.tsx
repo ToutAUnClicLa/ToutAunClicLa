@@ -23,6 +23,14 @@ export function ShippingStatus({ summary, className = '', variant = 'box' }: Shi
       (summary.promotionApplied && summary.shippingDiscount && summary.shippingDiscount > 0) ||
       (summary.shippingCost === 0);
 
+    if (summary.deliverable === false) {
+      return (
+        <span className="text-sm sm:text-base font-medium text-red-600">
+          {summary.shippingMessage || 'No disponible esta ubicación por el momento!'}
+        </span>
+      );
+    }
+
     if (summary.needsAddress) {
       return (
         <span className="text-sm sm:text-base font-medium text-amber-600">
@@ -49,6 +57,20 @@ export function ShippingStatus({ summary, className = '', variant = 'box' }: Shi
   }
 
   // ✅ Box variant: Muestra información detallada (alertas, promociones, etc.)
+
+  // 0. Fuera de zona de cobertura
+  if (summary.deliverable === false) {
+    return (
+      <div className={`bg-red-50/50 border border-red-200/50 rounded-lg p-2 ${className}`}>
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 text-red-600 flex-shrink-0" />
+          <span className="text-xs font-medium text-red-800">
+            {summary.shippingMessage || 'No disponible esta ubicación por el momento!'}
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   // 1. Necesita dirección
   if (summary.needsAddress) {

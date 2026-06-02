@@ -103,6 +103,7 @@ export interface CartSummary {
   // New fields for backend shipping calculation system
   shippingMessage?: string | null;
   needsAddress?: boolean;
+  deliverable?: boolean | null;     // ✨ false cuando el código postal está fuera de zona
   promotionThreshold?: number;     // ✨ NEW - Threshold for Herencia promotion
   isPromotionEligible?: boolean;    // ✨ NEW - Eligibility for Herencia promotion
 }

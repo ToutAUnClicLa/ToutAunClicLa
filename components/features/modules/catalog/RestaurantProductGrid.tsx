@@ -65,33 +65,44 @@ export function RestaurantProductGrid({ restaurantName }: RestaurantProductGridP
 
   // Filter to get products only from this restaurant using subcategory ID
   // Only apply subcategory filter once we have the restaurant ID from the API
+  // Traemos el menú completo del restaurante y ordenamos/paginamos en el cliente.
+  // Así garantizamos: disponibles primero, luego por precio (mayor a menor), con
+  // un orden 100% consistente entre páginas (sin repetidos ni saltos).
   const filters: ProductFilters = {
     category: 2, // "comidas" category
     subcategory: restaurantSubcategoryId ?? undefined,
     search: debouncedValue || undefined,
-    page: currentPage,
-    limit: itemsPerPage,
+    page: 1,
+    limit: 200,
     sortBy: 'precio',
     sortOrder: 'desc'
   };
 
-  const { products, pagination, loading, error, refetch } = useProducts(filters, !restaurantSubcategoryId);
+  const { products, loading, error, refetch } = useProducts(filters, !restaurantSubcategoryId);
 
-  // Ordenar: disponibles hoy primero (precio desc), luego no disponibles (precio desc)
+  // Orden global: 1) disponibles hoy primero, 2) precio desc, 3) id (desempate)
   const sortedProducts = useMemo(() => {
     const today = new Date().getDay();
     const isAvailableToday = (p: any) => {
       if (typeof p?.disponible_hoy === 'boolean') return p.disponible_hoy;
       if (Array.isArray(p?.dias_disponibles)) return p.dias_disponibles.includes(today);
-      return true; // si no hay info, considerarlo disponible para no penalizarlo
+      return true; // sin info -> tratar como disponible
     };
 
-    const byPriceDesc = (a: any, b: any) => (b?.precio ?? 0) - (a?.precio ?? 0);
-
-    const available = products.filter(isAvailableToday).sort(byPriceDesc);
-    const unavailable = products.filter(p => !isAvailableToday(p)).sort(byPriceDesc);
-    return [...available, ...unavailable];
+    return [...products].sort((a: any, b: any) => {
+      const availDiff = (isAvailableToday(b) ? 1 : 0) - (isAvailableToday(a) ? 1 : 0);
+      if (availDiff !== 0) return availDiff; // disponibles primero
+      const priceDiff = (b?.precio ?? 0) - (a?.precio ?? 0);
+      if (priceDiff !== 0) return priceDiff; // precio mayor a menor
+      return (a?.id ?? 0) - (b?.id ?? 0); // desempate estable
+    });
   }, [products]);
+
+  // Paginación del lado del cliente sobre la lista ya ordenada
+  const totalItems = sortedProducts.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+  const pageProducts = sortedProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const pagination = { currentPage, totalPages, totalItems, itemsPerPage };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
