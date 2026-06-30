@@ -1,8 +1,7 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
-import { Navbar } from '@/components/shared/layout/Navbar';
-import { Footer } from '@/components/shared/layout/Footer';
+import { SiteChrome } from '@/components/shared/layout/SiteChrome';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/common/providers/ThemeProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
@@ -11,7 +10,6 @@ import { Suspense } from 'react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import StructuredData from './schema';
-import { MainContentWrapper } from "@/components/shared/layout/MainContentWrapper";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -160,13 +158,7 @@ export default function RootLayout({
                   <div className="animate-pulse text-lg">Loading...</div>
                 </div>
               }>
-                <div className="flex min-h-screen flex-col">
-                  <Navbar />
-                  <MainContentWrapper>
-                    {children}
-                  </MainContentWrapper>
-                  <Footer />
-                </div>
+                <SiteChrome>{children}</SiteChrome>
               </Suspense>
               <Toaster
                 position="bottom-right"
