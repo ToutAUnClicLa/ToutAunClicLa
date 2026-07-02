@@ -1,17 +1,12 @@
 import Link from 'next/link';
-import { ProLogo } from '@/components/pro/ProLogo';
 import { Button } from '@/components/pro/ui/button';
+import { ProLandingHeader } from '@/components/pro/ProLandingHeader';
 
 // Placeholder de la landing. La landing de ventas completa llega en el Día 15.
 export default function ProHomePage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex h-16 items-center justify-between px-4 sm:px-6">
-        <ProLogo />
-        <Link href="/pro/login" className="text-sm font-medium text-primary hover:underline">
-          Iniciar sesión
-        </Link>
-      </header>
+      <ProLandingHeader />
 
       <main className="flex flex-1 flex-col items-center justify-center px-4 text-center">
         <span className="mb-5 inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground">

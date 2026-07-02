@@ -1,19 +1,13 @@
-import Link from 'next/link';
-import { ProLogo } from '@/components/pro/ProLogo';
 import { BackButton } from '@/components/pro/ui/back-button';
 import { PricingPlans } from '@/components/pro/pricing/PricingPlans';
+import { ProLandingHeader } from '@/components/pro/ProLandingHeader';
 
 export default function PricingPage() {
   return (
     <div>
-      <header className="flex h-16 items-center justify-between border-b border-border px-4 sm:px-6">
-        <Link href="/pro">
-          <ProLogo />
-        </Link>
-        <Link href="/pro/login" className="text-sm font-medium text-primary hover:underline">
-          Iniciar sesión
-        </Link>
-      </header>
+      <div className="border-b border-border">
+        <ProLandingHeader />
+      </div>
 
       <div className="mx-auto max-w-5xl px-4 pt-6 sm:px-6">
         <BackButton href="/pro" label="Inicio" />

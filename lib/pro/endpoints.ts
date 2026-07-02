@@ -65,6 +65,10 @@ export interface SubscriptionState {
 
 export const getSubscription = () => proFetch<SubscriptionState>('/me/subscription');
 
+// Fuerza re-sync desde Stripe (post-checkout / post-portal).
+export const syncSubscription = () =>
+  proFetch<SubscriptionState>('/me/subscription/sync', { method: 'POST', body: {} });
+
 export const createCheckout = (plan: 'pro' | 'max', periodo: 'mensual' | 'anual') =>
   proFetch<{ url: string }>('/me/checkout', { method: 'POST', body: { plan, periodo } }).then(
     (r) => r.url,

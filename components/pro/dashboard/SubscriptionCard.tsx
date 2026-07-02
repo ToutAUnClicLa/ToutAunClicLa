@@ -3,8 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { getSubscription, openBillingPortal, type SubscriptionState } from '@/lib/pro/endpoints';
+import {
+  getSubscription,
+  syncSubscription,
+  openBillingPortal,
+  type SubscriptionState,
+} from '@/lib/pro/endpoints';
 import { ProApiError } from '@/lib/pro/api';
+import { useProAuth } from '@/contexts/ProAuthContext';
 import { Button } from '@/components/pro/ui/button';
 
 const ESTADO_LABEL: Record<string, string> = {
@@ -23,6 +29,7 @@ function formatDate(iso: string | null): string {
 
 export function SubscriptionCard() {
   const router = useRouter();
+  const { refresh } = useProAuth();
   const [data, setData] = useState<SubscriptionState | null>(null);
   const [loading, setLoading] = useState(true);
   const [portalLoading, setPortalLoading] = useState(false);
@@ -33,15 +40,30 @@ export function SubscriptionCard() {
       .catch(() => {})
       .finally(() => setLoading(false));
 
+  // Tras volver del checkout/portal: sincroniza desde Stripe (no espera al webhook)
+  const syncFromStripe = async () => {
+    try {
+      const fresh = await syncSubscription();
+      setData(fresh);
+      await refresh(); // actualiza tier en toda la UI
+    } catch {
+      // fallback: lectura normal
+      load();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    load();
-    // Retorno desde Stripe Checkout
     const params = new URLSearchParams(window.location.search);
     if (params.get('checkout') === 'success') {
       toast.success('¡Suscripción activada!');
       window.history.replaceState({}, '', '/pro/dashboard');
-      setTimeout(load, 1500); // dar tiempo al webhook
+      syncFromStripe();
+    } else {
+      load();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onPortal = async () => {
