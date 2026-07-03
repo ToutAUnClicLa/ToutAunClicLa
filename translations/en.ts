@@ -2537,5 +2537,234 @@ export default {
       customers: "Satisfied customers",
       deliveries: "Deliveries completed"
     }
+  },
+  pro: {
+    directory: {
+      backToCategories: "All categories",
+      proCountOne: "professional",
+      proCountMany: "professionals",
+      filters: "Filters",
+      alsoHere: "Also here",
+      loadMore: "Load more",
+      loading: "Loading…",
+      searchLabel: "Search",
+      searchPlaceholder: "Name, company, title…",
+      languageLabel: "Spoken language",
+      cityLabel: "City",
+      cityPlaceholder: "Montréal, Laval…",
+      clearFilters: "Clear filters",
+      emptyFiltersTitle: "No results with those filters",
+      emptyCategoryTitle: "No professionals in this category yet",
+      emptyFiltersHint: "Try clearing filters or broadening your search.",
+      emptyCategoryHint: "Do you work in this category? Be the first to appear.",
+      createProfile: "Create my professional profile",
+      featured: "Featured"
+    },
+    card: {
+      backGeneric: "Services",
+      share: "Share",
+      shareAria: "Share profile",
+      copied: "Copied",
+      copyOk: "Link copied",
+      copyFail: "Couldn't copy link",
+      saveContact: "Save contact",
+      speaks: "Speaks",
+      socialsSection: "Social",
+      contactSection: "Contact",
+      gallery: "Gallery",
+      socialWebsite: "Website",
+      notFoundTitle: "Profile not found",
+      metaDefaultDescription: "Professional card on Tout À Un Clic Là.",
+      footerTagline: "Digital card · Tout À Un Clic Là Pro",
+      qrTitle: "Scan this card",
+      qrDownload: "Download QR",
+      categoryNotFound: "Category not found",
+      metaCategoryDescription: "Find {nombre} professionals in Quebec."
+    },
+    landing: {
+      meta: {
+        title: "Your professional card, in one click — Tout À Un Clic Là Pro",
+        description: "Create your digital card, share it over AirDrop and appear in Quebec's services directory. Apple Wallet, vCard, QR and real local visibility. 7-day free trial."
+      },
+      nav: {
+        signIn: "Sign in",
+        dashboard: "Dashboard"
+      },
+      hero: {
+        badge: "For Quebec professionals",
+        headline: "Your professional card, in one click.",
+        subhead: "Create your digital card, share it over AirDrop and show up in the services directory. Less paper, more clients.",
+        ctaPrimary: "Create my account",
+        ctaSecondary: "See the plans",
+        microcopy: "7-day free trial · No commitment"
+      },
+      card: {
+        airdrop: "AirDrop · Card shared",
+        name: "Marie Tremblay",
+        title: "Hair stylist",
+        company: "Salon Lumière",
+        city: "Montreal",
+        speaks: "Speaks",
+        saveContact: "Save contact",
+        scan: "Scan to open"
+      },
+      trust: {
+        madeInQuebec: "Made in Quebec 🇨🇦",
+        loi25: "Law 25 compliant",
+        stripe: "Secure Stripe payments",
+        languages: "FR · EN · ES"
+      },
+      how: {
+        kicker: "How it works",
+        title: "Ready in three minutes.",
+        subtitle: "No app to install. No card to print.",
+        step1Title: "Create your account",
+        step1Desc: "Sign up for free and pick your unique URL.",
+        step2Title: "Customize your card",
+        step2Desc: "Photo, title, socials, spoken languages. In a few clicks.",
+        step3Title: "Share over AirDrop",
+        step3Desc: "One gesture, and your contact lands in the client's Wallet."
+      },
+      features: {
+        kicker: "Everything you need",
+        title: "A card that works for you.",
+        subtitle: "Built for Quebec's independents, not for Silicon Valley.",
+        walletTitle: "Apple Wallet + AirDrop",
+        walletDesc: "Your card lives in the client's Wallet. Share it over AirDrop, no app needed. It updates itself.",
+        directoryTitle: "Directory with real local traffic",
+        directoryDesc: "Appear in the /services directory and get found by real clients in your area.",
+        vcardTitle: "Unlimited vCard + QR",
+        vcardDesc: "One QR code for your storefront, your car, your counter. The contact saves with a single scan.",
+        statsTitle: "Clear statistics",
+        statsDesc: "Views, clicks and scans in real time. Know what draws your clients in."
+      },
+      pricing: {
+        kicker: "Simple plans",
+        title: "A price in Canadian dollars.",
+        subtitle: "No surprises, no USD. Cancel whenever you want.",
+        perMonth: "/mo",
+        badgeRecommended: "Recommended",
+        seeAll: "See all plans",
+        free: {
+          name: "Free",
+          price: "$0",
+          tagline: "To start showing up.",
+          f1: "Basic listing in the directory",
+          f2: "Name and category visible",
+          f3: "Public profile",
+          f4: "Ready to go Pro anytime"
+        },
+        pro: {
+          name: "Pro",
+          price: "$25",
+          tagline: "Your complete digital card.",
+          f1: "Digital card + Apple Wallet and AirDrop",
+          f2: "Public profile with unique URL",
+          f3: "Up to 5 social networks",
+          f4: "Downloadable vCard + QR",
+          f5: "Basic statistics"
+        },
+        max: {
+          name: "Max",
+          price: "$45",
+          tagline: "Maximum visibility and tools.",
+          f1: "Everything in Pro",
+          f2: "Featured in your category",
+          f3: "Project gallery",
+          f4: "Unlimited social networks",
+          f5: "Advanced statistics + NFC card"
+        }
+      },
+      testimonials: {
+        kicker: "The first pros",
+        title: "Built with Quebec's independents.",
+        subtitle: "We're starting with our beta users. Their words are coming soon.",
+        betaName: "Beta professional",
+        betaBadge: "Beta",
+        q1: "Finally a card I share with a simple AirDrop. My clients love it.",
+        q1Niche: "Hair · Montreal",
+        q2: "The directory brought me real calls from my area. It changes everything.",
+        q2Niche: "Renovation · Laval",
+        q3: "Zero paper, zero app. My profile updates itself.",
+        q3Niche: "Photography · Quebec City"
+      },
+      faq: {
+        kicker: "Questions",
+        title: "Everything you're wondering.",
+        q1: "Does it work on Android?",
+        a1: "Yes. The web profile and vCard work on every phone. The Apple Wallet pass is iPhone-only, but your Android clients still get your full web card.",
+        q2: "Do I need an app?",
+        a2: "No. No app to download, neither for you nor your clients. Everything runs on the web and Apple Wallet.",
+        q3: "Can I cancel anytime?",
+        a3: "Yes. You manage your subscription from the secure portal and cancel whenever you want, with no hidden fees.",
+        q4: "In which languages?",
+        a4: "French, English and Spanish, French first. Your card displays in your visitor's language."
+      },
+      finalCta: {
+        title: "Your card. One AirDrop. New client.",
+        subtitle: "Join the Quebec professionals who share differently.",
+        ctaPrimary: "Create my account",
+        ctaSecondary: "See the plans"
+      },
+      footer: {
+        tagline: "The professional card for Quebec's independents.",
+        plans: "Plans",
+        signIn: "Sign in",
+        privacy: "Privacy policy",
+        terms: "Terms",
+        directory: "Directory",
+        legal: "© 2026 Tout À Un Clic Là · Montreal, Quebec · Law 25 compliant"
+      }
+    },
+    consent: {
+      title: "Privacy",
+      message: "We use local storage and cookies to run the site and measure its usage. Your choice.",
+      accept: "Accept",
+      reject: "Essentials only",
+      learnMore: "Privacy policy",
+      ariaLabel: "Privacy consent banner"
+    },
+    privacy: {
+      backToPro: "Back to Pro",
+      title: "Privacy policy",
+      effective: "Effective: July 2026",
+      intro: "This policy explains what data Tout À Un Clic Là Pro collects, why, and what your rights are under Quebec's Law 25.",
+      langLabel: "Language",
+      sections: [
+        {
+          h: "1. Data controller",
+          p: "The controller of personal information is Tout À Un Clic Là, based in Montreal, Quebec. For any privacy question, write to us at privacy@toutaunclicla.com."
+        },
+        {
+          h: "2. Data we collect",
+          p: "Account data: name, email address and, if you provide it, your phone number. Public professional profile: title, company, city, spoken languages, social networks and the photo you choose to display. Usage data: profile views, clicks and scans, with a truncated IP address and user agent, for statistics."
+        },
+        {
+          h: "3. Purpose of processing",
+          p: "We use this data to create and display your card and public profile, manage your account and subscription, provide you with statistics, keep the service secure and meet our legal obligations."
+        },
+        {
+          h: "4. Cookies and local storage",
+          p: "We use a language cookie (preferred-language) to display the right language, a local storage value (pro_consent) to remember your consent choice, and session and payment cookies provided by Stripe. No third-party advertising cookies are used."
+        },
+        {
+          h: "5. Data sharing",
+          p: "We rely on trusted processors: Supabase (data hosting) and Stripe (payments). We never sell your personal information and never share it for advertising purposes."
+        },
+        {
+          h: "6. Your rights under Law 25",
+          p: "You have the right to access your information, have it corrected, withdraw your consent, request its deletion and obtain the portability of your data. To exercise these rights, write to us at privacy@toutaunclicla.com; we respond within the timeframes required by law."
+        },
+        {
+          h: "7. Retention",
+          p: "We keep your data as long as your account is active. After the account is closed, we delete or anonymize it, except where the law requires longer retention."
+        },
+        {
+          h: "8. Changes to this policy",
+          p: "We may update this policy. If there is a material change, we will let you know. The effective date above indicates the most recent version."
+        }
+      ],
+      footerBack: "Back to Tout À Un Clic Là Pro"
+    }
   }
 };

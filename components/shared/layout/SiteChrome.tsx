@@ -10,6 +10,8 @@ import { MainContentWrapper } from './MainContentWrapper';
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
+  // Solo el módulo /pro (dashboard/auth) tiene layout propio.
+  // /card/* es tarjeta pública y se integra al chrome del sitio.
   if (pathname?.startsWith('/pro')) {
     return <>{children}</>;
   }

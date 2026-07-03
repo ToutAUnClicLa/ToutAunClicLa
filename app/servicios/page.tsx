@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
 import {
   Search,
@@ -259,17 +260,22 @@ export default function ServicesPage() {
         {filteredServices.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredServices.map((service) => (
-              <ServiceCard
+              <Link
                 key={service.id}
-                icon={service.icon}
-                title={t(service.titleKey)}
-                description={t(service.descKey)}
-                subServices={service.subServices.map(key => t(key))}
-                comingSoonText={t('services.card.comingSoon')}
-                subServicesText={t('services.card.subservices')}
-                viewMoreText={t('services.card.viewMore')}
-                image={service.image}
-              />
+                href={`/servicios/${service.id}`}
+                className="block rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00875A] focus-visible:ring-offset-2"
+              >
+                <ServiceCard
+                  icon={service.icon}
+                  title={t(service.titleKey)}
+                  description={t(service.descKey)}
+                  subServices={service.subServices.map(key => t(key))}
+                  comingSoonText={t('services.card.comingSoon')}
+                  subServicesText={t('services.card.subservices')}
+                  viewMoreText={t('services.card.viewMore')}
+                  image={service.image}
+                />
+              </Link>
             ))}
           </div>
         ) : (

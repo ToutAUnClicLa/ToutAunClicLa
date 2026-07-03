@@ -20,6 +20,10 @@
   --input: 214 32% 91%;
   --ring: 160 100% 26%;
   --radius: 0.625rem;
+  --shadow-sm: 0 1px 2px 0 rgb(2 6 23 / 0.04);
+  --shadow: 0 1px 3px 0 rgb(2 6 23 / 0.06), 0 1px 2px -1px rgb(2 6 23 / 0.04);
+  --shadow-md: 0 4px 12px -2px rgb(2 6 23 / 0.08);
+  --shadow-lg: 0 12px 32px -8px rgb(2 6 23 / 0.12);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -49,11 +53,109 @@
   font-family: var(--font-geist-mono), ui-monospace, monospace;
 }
 
+/* Espaciado vertical generoso entre secciones de la landing */
+.pro-theme .pro-section {
+  padding-block: clamp(4rem, 10vw, 8rem);
+}
+
+/* Fondo de marca del hero: degradado verde muy contenido + patrón de puntos
+   sutil (estética Vercel), todo con CSS, sin imágenes. */
+.pro-theme .pro-hero-bg {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(60% 55% at 50% -10%, hsl(var(--accent) / 0.9), transparent 70%);
+}
+.pro-theme .pro-hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(hsl(var(--foreground) / 0.06) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(70% 60% at 50% 25%, #000 40%, transparent 78%);
+  mask-image: radial-gradient(70% 60% at 50% 25%, #000 40%, transparent 78%);
+}
+
+/* Entrada suave (opacity + translateY) — firma startup */
+@keyframes pro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.pro-theme .pro-rise {
+  animation: pro-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Chip AirDrop: entrada + flotación sutil */
+@keyframes pro-chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes pro-chip-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+.pro-theme .pro-airdrop-chip {
+  animation:
+    pro-chip-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both,
+    pro-chip-float 4s ease-in-out 0.9s infinite;
+}
+
+/* Banner de consentimiento: entrada desde abajo */
+@keyframes pro-banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.pro-theme .pro-banner-in {
+  animation: pro-banner-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Hover de card */
+.pro-theme .pro-card-hover {
+  transition:
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.15s ease;
+}
+.pro-theme .pro-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pro-theme *,
   .pro-theme *::before,
   .pro-theme *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  .pro-theme .pro-rise,
+  .pro-theme .pro-airdrop-chip,
+  .pro-theme .pro-banner-in {
+    animation: none !important;
   }
 }

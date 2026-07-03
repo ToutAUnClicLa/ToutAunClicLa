@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 
 type Language = 'es' | 'en' | 'fr';
 
@@ -18,27 +19,42 @@ export const availableLanguages = [
   { code: 'fr' as Language, name: 'Français', flag: '🇫🇷' },
 ];
 
+// Cookie legible por el server (SSR de /card/[slug], metadata OG, etc.)
+const COOKIE_KEY = 'preferred-language';
+const setLangCookie = (lang: Language) => {
+  if (typeof document === 'undefined') return;
+  // 1 año, todo el dominio, SameSite=Lax para no romper navegación normal
+  document.cookie = `${COOKIE_KEY}=${lang}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+};
+
 interface LanguageProviderProps {
   children: ReactNode;
 }
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
+  const router = useRouter();
   const [currentLanguage, setCurrentLanguage] = useState<Language>('es');
 
-  const setLanguage = (language: Language) => {
-    setCurrentLanguage(language);
-    // Optionally save to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('preferred-language', language);
-    }
-  };
+  const setLanguage = useCallback(
+    (language: Language) => {
+      setCurrentLanguage(language);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(COOKIE_KEY, language);
+        setLangCookie(language);
+        // Refresca los server components (SSR) para que rehidraten con el idioma nuevo.
+        router.refresh();
+      }
+    },
+    [router],
+  );
 
-  // Load saved language on mount
+  // Load saved language on mount + sincroniza cookie por si venía solo de localStorage
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedLanguage = localStorage.getItem('preferred-language') as Language;
-      if (savedLanguage && availableLanguages.some(lang => lang.code === savedLanguage)) {
+      const savedLanguage = localStorage.getItem(COOKIE_KEY) as Language;
+      if (savedLanguage && availableLanguages.some((l) => l.code === savedLanguage)) {
         setCurrentLanguage(savedLanguage);
+        setLangCookie(savedLanguage);
       }
     }
   }, []);

@@ -76,3 +76,55 @@ export const createCheckout = (plan: 'pro' | 'max', periodo: 'mensual' | 'anual'
 
 export const openBillingPortal = () =>
   proFetch<{ url: string }>('/me/billing-portal', { method: 'POST', body: {} }).then((r) => r.url);
+
+// --- Directorio público -----------------------------------------------------
+
+export interface DirectoryRed {
+  plataforma: string;
+  url: string;
+}
+
+export interface DirectoryPro {
+  slug: string;
+  nombre: string;
+  apellido?: string | null;
+  tier: 'free' | 'pro' | 'max';
+  categoria_id: string;
+  subcategoria_id?: string | null;
+  empresa?: string | null;
+  foto_url?: string | null;
+  titulo?: string | null;
+  ciudad?: string | null;
+  idiomas_hablados?: string[];
+  redes?: DirectoryRed[];
+  bio?: string | null;
+  destacado?: boolean;
+}
+
+export interface DirectoryResponse {
+  items: DirectoryPro[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface DirectoryFilters {
+  category?: string;
+  subcategory?: string;
+  idioma?: string;
+  ciudad?: string;
+  q?: string;
+  lang?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export const getServices = (filters: DirectoryFilters = {}) => {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== '') params.set(k, String(v));
+  });
+  const qs = params.toString();
+  return proFetch<DirectoryResponse>(`/services${qs ? `?${qs}` : ''}`);
+};

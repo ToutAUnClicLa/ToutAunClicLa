@@ -2531,5 +2531,234 @@ export default {
       customers: "Clients satisfaits",
       deliveries: "Livraisons effectuées"
     }
+  },
+  pro: {
+    directory: {
+      backToCategories: "Toutes les catégories",
+      proCountOne: "professionnel",
+      proCountMany: "professionnels",
+      filters: "Filtres",
+      alsoHere: "Aussi ici",
+      loadMore: "Voir plus",
+      loading: "Chargement…",
+      searchLabel: "Recherche",
+      searchPlaceholder: "Nom, entreprise, titre…",
+      languageLabel: "Langue parlée",
+      cityLabel: "Ville",
+      cityPlaceholder: "Montréal, Laval…",
+      clearFilters: "Effacer les filtres",
+      emptyFiltersTitle: "Aucun résultat avec ces filtres",
+      emptyCategoryTitle: "Aucun professionnel dans cette catégorie pour le moment",
+      emptyFiltersHint: "Essayez d'effacer les filtres ou d'élargir votre recherche.",
+      emptyCategoryHint: "Vous travaillez dans cette catégorie ? Soyez le premier à apparaître.",
+      createProfile: "Créer mon profil professionnel",
+      featured: "En vedette"
+    },
+    card: {
+      backGeneric: "Services",
+      share: "Partager",
+      shareAria: "Partager le profil",
+      copied: "Copié",
+      copyOk: "Lien copié",
+      copyFail: "Impossible de copier le lien",
+      saveContact: "Enregistrer le contact",
+      speaks: "Parle",
+      socialsSection: "Réseaux",
+      contactSection: "Contact",
+      gallery: "Galerie",
+      socialWebsite: "Site web",
+      notFoundTitle: "Profil introuvable",
+      metaDefaultDescription: "Carte professionnelle sur Tout À Un Clic Là.",
+      footerTagline: "Carte numérique · Tout À Un Clic Là Pro",
+      qrTitle: "Scanne cette carte",
+      qrDownload: "Télécharger le QR",
+      categoryNotFound: "Catégorie introuvable",
+      metaCategoryDescription: "Trouve des professionnels de {nombre} au Québec."
+    },
+    landing: {
+      meta: {
+        title: "Ta carte professionnelle, en un clic — Tout À Un Clic Là Pro",
+        description: "Crée ta carte digitale, partage-la par AirDrop et apparais dans l'annuaire de services du Québec. Apple Wallet, vCard, QR et vraie visibilité locale. Essai gratuit de 7 jours."
+      },
+      nav: {
+        signIn: "Connexion",
+        dashboard: "Tableau de bord"
+      },
+      hero: {
+        badge: "Pour les professionnels du Québec",
+        headline: "Ta carte professionnelle, en un clic.",
+        subhead: "Crée ta carte digitale, partage-la par AirDrop et apparais dans l'annuaire de services. Plus de papier, plus de clients.",
+        ctaPrimary: "Créer mon compte",
+        ctaSecondary: "Voir les plans",
+        microcopy: "Essai gratuit de 7 jours · Sans engagement"
+      },
+      card: {
+        airdrop: "AirDrop · Carte partagée",
+        name: "Marie Tremblay",
+        title: "Coiffeuse",
+        company: "Salon Lumière",
+        city: "Montréal",
+        speaks: "Parle",
+        saveContact: "Enregistrer le contact",
+        scan: "Scanne pour ouvrir"
+      },
+      trust: {
+        madeInQuebec: "Fait au Québec 🇨🇦",
+        loi25: "Conforme Loi 25",
+        stripe: "Paiement sécurisé Stripe",
+        languages: "FR · EN · ES"
+      },
+      how: {
+        kicker: "Comment ça marche",
+        title: "Prêt en trois minutes.",
+        subtitle: "Aucune app à installer. Aucune carte à imprimer.",
+        step1Title: "Crée ton compte",
+        step1Desc: "Inscris-toi gratuitement et choisis ton URL unique.",
+        step2Title: "Personnalise ta carte",
+        step2Desc: "Photo, titre, réseaux, langues parlées. En quelques clics.",
+        step3Title: "Partage par AirDrop",
+        step3Desc: "Un geste, et ton contact atterrit dans le Wallet du client."
+      },
+      features: {
+        kicker: "Tout ce qu'il te faut",
+        title: "Une carte qui travaille pour toi.",
+        subtitle: "Pensée pour les indépendants du Québec, pas pour Silicon Valley.",
+        walletTitle: "Apple Wallet + AirDrop",
+        walletDesc: "Ta carte vit dans le Wallet du client. Partage par AirDrop, sans app. Elle se met à jour toute seule.",
+        directoryTitle: "Annuaire avec vrai trafic local",
+        directoryDesc: "Apparais dans l'annuaire /services et sois trouvé par de vrais clients de ta région.",
+        vcardTitle: "vCard + QR illimités",
+        vcardDesc: "Un code QR pour ta vitrine, ta voiture, ton comptoir. Le contact s'enregistre d'un scan.",
+        statsTitle: "Statistiques claires",
+        statsDesc: "Vues, clics et scans en temps réel. Sache ce qui attire tes clients."
+      },
+      pricing: {
+        kicker: "Plans simples",
+        title: "Un prix en dollars canadiens.",
+        subtitle: "Pas de surprise, pas de USD. Annule quand tu veux.",
+        perMonth: "/mois",
+        badgeRecommended: "Recommandé",
+        seeAll: "Voir tous les plans",
+        free: {
+          name: "Free",
+          price: "0 $",
+          tagline: "Pour commencer à apparaître.",
+          f1: "Fiche de base dans l'annuaire",
+          f2: "Nom et catégorie visibles",
+          f3: "Profil public",
+          f4: "Prêt à passer Pro quand tu veux"
+        },
+        pro: {
+          name: "Pro",
+          price: "25 $",
+          tagline: "Ta carte digitale complète.",
+          f1: "Carte digitale + Apple Wallet et AirDrop",
+          f2: "Profil public avec URL unique",
+          f3: "Jusqu'à 5 réseaux sociaux",
+          f4: "vCard téléchargeable + QR",
+          f5: "Statistiques de base"
+        },
+        max: {
+          name: "Max",
+          price: "45 $",
+          tagline: "Visibilité et outils au maximum.",
+          f1: "Tout ce qu'inclut Pro",
+          f2: "En vedette dans ta catégorie",
+          f3: "Galerie de projets",
+          f4: "Réseaux sociaux illimités",
+          f5: "Statistiques avancées + carte NFC"
+        }
+      },
+      testimonials: {
+        kicker: "Les premiers pros",
+        title: "Bâti avec les indépendants du Québec.",
+        subtitle: "Nous démarrons avec nos utilisateurs beta. Leurs mots arrivent bientôt.",
+        betaName: "Professionnel·le beta",
+        betaBadge: "Beta",
+        q1: "Enfin une carte que je partage d'un simple AirDrop. Mes clients l'adorent.",
+        q1Niche: "Coiffure · Montréal",
+        q2: "L'annuaire m'a amené de vrais appels de ma région. Ça change tout.",
+        q2Niche: "Rénovation · Laval",
+        q3: "Zéro papier, zéro app. Mon profil se met à jour tout seul.",
+        q3Niche: "Photographie · Québec"
+      },
+      faq: {
+        kicker: "Questions",
+        title: "Tout ce que tu te demandes.",
+        q1: "Est-ce que ça marche sur Android ?",
+        a1: "Oui. Le profil web et la vCard fonctionnent sur tous les téléphones. Le pass Apple Wallet est réservé à l'iPhone, mais tes clients Android reçoivent quand même ta carte web complète.",
+        q2: "Ai-je besoin d'une application ?",
+        a2: "Non. Aucune app à télécharger, ni pour toi ni pour tes clients. Tout passe par le web et Apple Wallet.",
+        q3: "Puis-je annuler à tout moment ?",
+        a3: "Oui. Tu gères ton abonnement depuis le portail sécurisé et tu annules quand tu veux, sans frais cachés.",
+        q4: "En quelles langues ?",
+        a4: "Français, anglais et espagnol, avec le français en priorité. Ta carte s'affiche dans la langue de ton visiteur."
+      },
+      finalCta: {
+        title: "Ta carte. Un AirDrop. Nouveau client.",
+        subtitle: "Rejoins les professionnels du Québec qui partagent autrement.",
+        ctaPrimary: "Créer mon compte",
+        ctaSecondary: "Voir les plans"
+      },
+      footer: {
+        tagline: "La carte professionnelle des indépendants du Québec.",
+        plans: "Plans",
+        signIn: "Connexion",
+        privacy: "Politique de confidentialité",
+        terms: "Conditions",
+        directory: "Annuaire",
+        legal: "© 2026 Tout À Un Clic Là · Montréal, Québec · Conforme Loi 25"
+      }
+    },
+    consent: {
+      title: "Confidentialité",
+      message: "Nous utilisons le stockage local et des cookies pour faire fonctionner le site et mesurer son usage. Tu choisis.",
+      accept: "Accepter",
+      reject: "Essentiels seulement",
+      learnMore: "Politique de confidentialité",
+      ariaLabel: "Bannière de consentement à la confidentialité"
+    },
+    privacy: {
+      backToPro: "Retour à Pro",
+      title: "Politique de confidentialité",
+      effective: "En vigueur : juillet 2026",
+      intro: "Cette politique explique quelles données Tout À Un Clic Là Pro recueille, pourquoi, et quels sont tes droits selon la Loi 25 du Québec.",
+      langLabel: "Langue",
+      sections: [
+        {
+          h: "1. Responsable du traitement",
+          p: "Le responsable du traitement des renseignements personnels est Tout À Un Clic Là, situé à Montréal, Québec. Pour toute question relative à la confidentialité, écris-nous à privacy@toutaunclicla.com."
+        },
+        {
+          h: "2. Données que nous recueillons",
+          p: "Données de compte : nom, adresse courriel et, si tu les fournis, ton numéro de téléphone. Profil professionnel public : titre, entreprise, ville, langues parlées, réseaux sociaux et photo que tu choisis d'afficher. Données d'usage : vues de profil, clics et scans, avec une adresse IP tronquée et l'agent utilisateur, à des fins de statistiques."
+        },
+        {
+          h: "3. Finalité du traitement",
+          p: "Nous utilisons ces données pour créer et afficher ta carte et ton profil public, gérer ton compte et ton abonnement, te fournir des statistiques, assurer la sécurité du service et respecter nos obligations légales."
+        },
+        {
+          h: "4. Cookies et stockage local",
+          p: "Nous utilisons un cookie de langue (preferred-language) pour afficher la bonne langue, une valeur de stockage local (pro_consent) pour mémoriser ton choix de consentement, ainsi que des cookies de session et de paiement fournis par Stripe. Aucun cookie publicitaire tiers n'est utilisé."
+        },
+        {
+          h: "5. Partage des données",
+          p: "Nous faisons appel à des sous-traitants de confiance : Supabase (hébergement des données) et Stripe (paiements). Nous ne vendons jamais tes renseignements personnels et ne les partageons pas à des fins publicitaires."
+        },
+        {
+          h: "6. Tes droits selon la Loi 25",
+          p: "Tu as le droit d'accéder à tes renseignements, de les faire rectifier, de retirer ton consentement, de demander leur suppression et d'obtenir la portabilité de tes données. Pour exercer ces droits, écris-nous à privacy@toutaunclicla.com ; nous répondons dans les délais prévus par la loi."
+        },
+        {
+          h: "7. Conservation",
+          p: "Nous conservons tes données tant que ton compte est actif. Après la fermeture du compte, nous les supprimons ou les anonymisons, sauf lorsque la loi exige une conservation plus longue."
+        },
+        {
+          h: "8. Modifications de cette politique",
+          p: "Nous pouvons mettre à jour cette politique. En cas de changement important, nous t'en informerons. La date d'entrée en vigueur ci-dessus indique la version la plus récente."
+        }
+      ],
+      footerBack: "Retour à Tout À Un Clic Là Pro"
+    }
   }
 };
