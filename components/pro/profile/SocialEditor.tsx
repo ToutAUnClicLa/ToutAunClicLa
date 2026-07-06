@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { listSocial, addSocial, deleteSocial, type RedSocial } from '@/lib/pro/endpoints';
 import { ProApiError } from '@/lib/pro/api';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/pro/ui/button';
 import { Input } from '@/components/pro/ui/input';
 import { Select } from '@/components/pro/ui/select';
@@ -19,6 +20,7 @@ const PLATAFORMAS = [
 ];
 
 export function SocialEditor() {
+  const { t } = useTranslation();
   const [redes, setRedes] = useState<RedSocial[]>([]);
   const [loading, setLoading] = useState(true);
   const [plataforma, setPlataforma] = useState('instagram');
@@ -40,9 +42,9 @@ export function SocialEditor() {
       const red = await addSocial({ plataforma, url });
       setRedes((prev) => [...prev, red]);
       setUrl('');
-      toast.success('Red agregada.');
+      toast.success(t('pro.social.added'));
     } catch (err) {
-      toast.error((err as ProApiError).message || 'No se pudo agregar (¿límite del plan?).');
+      toast.error((err as ProApiError).message || t('pro.social.addError'));
     } finally {
       setAdding(false);
     }
@@ -53,16 +55,16 @@ export function SocialEditor() {
       await deleteSocial(id);
       setRedes((prev) => prev.filter((r) => r.id !== id));
     } catch {
-      toast.error('No se pudo eliminar.');
+      toast.error(t('pro.social.removeError'));
     }
   };
 
   return (
     <div>
       {loading ? (
-        <p className="text-sm text-muted-foreground">Cargando…</p>
+        <p className="text-sm text-muted-foreground">{t('pro.social.loading')}</p>
       ) : redes.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Aún no agregaste redes sociales.</p>
+        <p className="text-sm text-muted-foreground">{t('pro.social.empty')}</p>
       ) : (
         <ul className="space-y-2">
           {redes.map((r) => (
@@ -70,16 +72,18 @@ export function SocialEditor() {
               key={r.id}
               className="flex items-center justify-between rounded-[10px] border border-border px-3 py-2"
             >
-              <span className="min-w-0 text-sm">
-                <span className="font-medium capitalize text-foreground">{r.plataforma}</span>
-                <span className="ml-2 truncate text-muted-foreground">{r.url}</span>
+              <span className="flex min-w-0 items-baseline gap-2 text-sm">
+                <span className="shrink-0 font-medium capitalize text-foreground">
+                  {r.plataforma}
+                </span>
+                <span className="min-w-0 truncate text-muted-foreground">{r.url}</span>
               </span>
               <button
                 type="button"
                 onClick={() => onDelete(r.id)}
                 className="ml-3 shrink-0 text-sm text-destructive hover:underline"
               >
-                Eliminar
+                {t('pro.social.remove')}
               </button>
             </li>
           ))}
@@ -102,11 +106,11 @@ export function SocialEditor() {
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://…"
+          placeholder={t('pro.social.urlPlaceholder')}
           className="flex-1"
         />
         <Button type="submit" variant="secondary" loading={adding} className="sm:w-auto">
-          Agregar
+          {t('pro.social.add')}
         </Button>
       </form>
     </div>

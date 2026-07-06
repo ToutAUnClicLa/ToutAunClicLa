@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
+import QRCode from 'qrcode';
 import {
   UserPlus,
   PenLine,
-  Wifi,
   Wallet,
   MapPin,
   QrCode,
@@ -16,7 +16,11 @@ import {
 import { Button } from '@/components/pro/ui/button';
 import { ProLandingHeader } from '@/components/pro/ProLandingHeader';
 import { HeroCardMockup } from '@/components/pro/landing/HeroCardMockup';
+import { AirDropIcon } from '@/components/pro/landing/AirDropIcon';
+import { TestimonialsMarquee } from '@/components/pro/landing/TestimonialsMarquee';
+import { LandingMotion } from '@/components/pro/landing/LandingMotion';
 import { getProT, validLang, type Lang } from '@/lib/pro/i18n';
+import { APP_URL } from '@/lib/pro/publicProfile';
 
 // Resuelve el idioma igual que app/card/[slug]: ?lang= > cookie > fr (Loi 96)
 function resolveLang(paramLang?: string): Lang {
@@ -33,10 +37,18 @@ export function generateMetadata({ searchParams }: PageProps): Metadata {
   return { title: t.meta.title, description: t.meta.description };
 }
 
-export default function ProHomePage({ searchParams }: PageProps) {
+export default async function ProHomePage({ searchParams }: PageProps) {
   const lang = resolveLang(searchParams?.lang);
   const t = getProT(lang).landing;
   const q = lang === 'fr' ? '' : `?lang=${lang}`;
+
+  // QR real que apunta a la página de registro (así quien escanee el hero cae de
+  // verdad en el registro). Se genera en el server como data URL.
+  const qrDataUrl = await QRCode.toDataURL(`${APP_URL}/pro/register?src=qr-landing`, {
+    margin: 1,
+    width: 96,
+    color: { dark: '#0f172a', light: '#ffffff' },
+  }).catch(() => null);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -46,17 +58,29 @@ export default function ProHomePage({ searchParams }: PageProps) {
         {/* ---------- HERO ---------- */}
         <section className="pro-hero-bg overflow-hidden border-b border-border">
           <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-12 sm:px-6 lg:grid-cols-2 lg:gap-8 lg:px-8 lg:pb-24 lg:pt-20">
-            <div className="pro-rise text-center lg:text-left">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/70 px-3 py-1 text-xs font-medium text-accent-foreground backdrop-blur">
+            <div className="text-center lg:text-left">
+              <span
+                data-hero-item
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/70 px-3 py-1 text-xs font-medium text-accent-foreground backdrop-blur"
+              >
                 {t.hero.badge}
               </span>
-              <h1 className="mt-5 text-balance font-semibold tracking-[-0.03em] text-foreground [font-size:clamp(2.5rem,5vw,3.75rem)] [line-height:1.05]">
+              <h1
+                data-hero-item
+                className="mt-5 text-balance font-semibold tracking-[-0.03em] text-foreground [font-size:clamp(2.5rem,5vw,3.75rem)] [line-height:1.05]"
+              >
                 {t.hero.headline}
               </h1>
-              <p className="mx-auto mt-5 max-w-xl text-balance text-lg leading-relaxed text-muted-foreground lg:mx-0">
+              <p
+                data-hero-item
+                className="mx-auto mt-5 max-w-xl text-balance text-lg leading-relaxed text-muted-foreground lg:mx-0"
+              >
                 {t.hero.subhead}
               </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
+              <div
+                data-hero-item
+                className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start"
+              >
                 <Link href="/pro/register">
                   <Button size="lg" className="h-11 w-full px-6 sm:w-auto">
                     {t.hero.ctaPrimary}
@@ -68,11 +92,13 @@ export default function ProHomePage({ searchParams }: PageProps) {
                   </Button>
                 </Link>
               </div>
-              <p className="mt-4 text-sm text-muted-foreground">{t.hero.microcopy}</p>
+              <p data-hero-item className="mt-4 text-sm text-muted-foreground">
+                {t.hero.microcopy}
+              </p>
             </div>
 
-            <div className="pro-rise flex justify-center lg:justify-end" style={{ animationDelay: '0.12s' }}>
-              <HeroCardMockup t={t} />
+            <div data-hero-item data-hero-mockup className="flex justify-center lg:justify-end">
+              <HeroCardMockup t={t} qrDataUrl={qrDataUrl} />
             </div>
           </div>
         </section>
@@ -91,18 +117,19 @@ export default function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- COMMENT ÇA MARCHE ---------- */}
-        <section className="pro-section">
+        <section className="pro-section" data-animate-section>
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <SectionHead kicker={t.how.kicker} title={t.how.title} subtitle={t.how.subtitle} />
             <div className="mt-12 grid gap-6 md:grid-cols-3">
               {[
                 { n: '01', Icon: UserPlus, title: t.how.step1Title, desc: t.how.step1Desc },
                 { n: '02', Icon: PenLine, title: t.how.step2Title, desc: t.how.step2Desc },
-                { n: '03', Icon: Wifi, title: t.how.step3Title, desc: t.how.step3Desc },
+                { n: '03', Icon: AirDropIcon, title: t.how.step3Title, desc: t.how.step3Desc },
               ].map(({ n, Icon, title, desc }) => (
                 <div
                   key={n}
-                  className="rounded-[14px] border border-border bg-card p-6 shadow-[var(--shadow-sm)]"
+                  data-animate-item
+                  className="pro-card-hover rounded-[14px] border border-border bg-card p-6 shadow-[var(--shadow-sm)]"
                 >
                   <div className="flex items-center justify-between">
                     <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent text-accent-foreground">
@@ -123,7 +150,7 @@ export default function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- FEATURES (bento) ---------- */}
-        <section className="pro-section border-t border-border bg-card/40">
+        <section className="pro-section border-t border-border bg-card/40" data-animate-section>
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <SectionHead
               kicker={t.features.kicker}
@@ -158,7 +185,7 @@ export default function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- PRICING (cards estáticas) ---------- */}
-        <section className="pro-section">
+        <section className="pro-section" data-animate-section>
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <SectionHead
               kicker={t.pricing.kicker}
@@ -219,7 +246,7 @@ export default function ProHomePage({ searchParams }: PageProps) {
           </div>
         </section>
 
-        {/* ---------- TESTIMONIOS (placeholder beta) ---------- */}
+        {/* ---------- TESTIMONIOS (marquee infinito) ---------- */}
         <section className="pro-section border-t border-border bg-card/40">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <SectionHead
@@ -227,46 +254,18 @@ export default function ProHomePage({ searchParams }: PageProps) {
               title={t.testimonials.title}
               subtitle={t.testimonials.subtitle}
             />
-            <div className="mt-12 grid gap-6 md:grid-cols-3">
-              {[
-                { quote: t.testimonials.q1, niche: t.testimonials.q1Niche },
-                { quote: t.testimonials.q2, niche: t.testimonials.q2Niche },
-                { quote: t.testimonials.q3, niche: t.testimonials.q3Niche },
-              ].map(({ quote, niche }, i) => (
-                <figure
-                  key={i}
-                  className="flex flex-col rounded-[14px] border border-border bg-card p-6 shadow-[var(--shadow-sm)]"
-                >
-                  <blockquote className="flex-1 text-[15px] leading-relaxed text-foreground">
-                    “{quote}”
-                  </blockquote>
-                  <figcaption className="mt-5 flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-accent-foreground">
-                      P
-                    </span>
-                    <span className="min-w-0">
-                      <span className="flex items-center gap-1.5">
-                        <span className="text-sm font-medium text-foreground">
-                          {t.testimonials.betaName}
-                        </span>
-                        <span className="rounded-full bg-secondary px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-secondary-foreground">
-                          {t.testimonials.betaBadge}
-                        </span>
-                      </span>
-                      <span className="block text-xs text-muted-foreground">{niche}</span>
-                    </span>
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
           </div>
+          <TestimonialsMarquee t={t} />
         </section>
 
         {/* ---------- FAQ ---------- */}
-        <section className="pro-section">
+        <section className="pro-section" data-animate-section>
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <SectionHead kicker={t.faq.kicker} title={t.faq.title} />
-            <div className="mt-10 divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-card">
+            <div
+              data-animate-item
+              className="mt-10 divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-card"
+            >
               {[
                 { q: t.faq.q1, a: t.faq.a1 },
                 { q: t.faq.q2, a: t.faq.a2 },
@@ -289,8 +288,11 @@ export default function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- CTA FINAL ---------- */}
-        <section className="px-4 pb-20 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-5xl overflow-hidden rounded-[20px] bg-gradient-to-br from-[#004d40] to-[#00332a] px-6 py-14 text-center shadow-[var(--shadow-lg)] sm:px-12 sm:py-16">
+        <section className="px-4 pb-20 sm:px-6 lg:px-8" data-animate-section>
+          <div
+            data-animate-item
+            className="mx-auto max-w-5xl overflow-hidden rounded-[20px] bg-gradient-to-br from-[#004d40] to-[#00332a] px-6 py-14 text-center shadow-[var(--shadow-lg)] sm:px-12 sm:py-16"
+          >
             <h2 className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">
               {t.finalCta.title}
             </h2>
@@ -333,22 +335,22 @@ export default function ProHomePage({ searchParams }: PageProps) {
               <p className="mt-2 max-w-xs text-sm text-muted-foreground">{t.footer.tagline}</p>
             </div>
             <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <Link href="/pro/pricing" className="transition-colors hover:text-foreground">
+              <Link href="/pro/pricing" className="rounded-[6px] transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">
                 {t.footer.plans}
               </Link>
-              <Link href="/pro/login" className="transition-colors hover:text-foreground">
+              <Link href="/pro/login" className="rounded-[6px] transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">
                 {t.footer.signIn}
               </Link>
               <Link
                 href={`/pro/politica-privacidad${q}`}
-                className="transition-colors hover:text-foreground"
+                className="rounded-[6px] transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
               >
                 {t.footer.privacy}
               </Link>
-              <Link href="/terminos" className="transition-colors hover:text-foreground">
+              <Link href="/terminos" className="rounded-[6px] transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">
                 {t.footer.terms}
               </Link>
-              <Link href="/servicios" className="transition-colors hover:text-foreground">
+              <Link href="/servicios" className="rounded-[6px] transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">
                 {t.footer.directory}
               </Link>
             </nav>
@@ -358,6 +360,10 @@ export default function ProHomePage({ searchParams }: PageProps) {
           </p>
         </div>
       </footer>
+
+      {/* Animaciones de entrada (GSAP + ScrollTrigger). No convierte la página en
+          client component: se monta al final y anima por data-attributes. */}
+      <LandingMotion />
     </div>
   );
 }
@@ -399,6 +405,7 @@ function FeatureCard({
 }) {
   return (
     <div
+      data-animate-item
       className={`pro-card-hover rounded-[14px] border border-border bg-card p-6 shadow-[var(--shadow-sm)] ${
         large ? 'sm:col-span-1' : ''
       }`}
@@ -431,7 +438,8 @@ function PricingCard({
 }) {
   return (
     <div
-      className={`relative flex flex-col rounded-[14px] border bg-card p-6 text-left shadow-[var(--shadow-sm)] ${
+      data-animate-item
+      className={`pro-card-hover relative flex flex-col rounded-[14px] border bg-card p-6 text-left shadow-[var(--shadow-sm)] ${
         featured ? 'border-2 border-primary' : 'border-border'
       }`}
     >

@@ -3,27 +3,22 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/pro/ui/button';
-import { getProT, validLang, type Lang } from '@/lib/pro/i18n';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { getProT, validLang } from '@/lib/pro/i18n';
 
 const STORAGE_KEY = 'pro_consent';
-
-// Lee el idioma del mismo modo que los server components de /pro: cookie
-// 'preferred-language', default fr. Se hace en cliente para evitar mismatch.
-function readLang(): Lang {
-  if (typeof document === 'undefined') return 'fr';
-  const match = document.cookie.match(/(?:^|;\s*)preferred-language=([^;]+)/);
-  return validLang(match?.[1]);
-}
 
 export function ProConsentBanner() {
   // Oculto por defecto: evita hydration mismatch (localStorage solo en cliente).
   const [visible, setVisible] = useState(false);
-  const [lang, setLang] = useState<Lang>('fr');
+  // Idioma vivo del contexto (ProLangSync lo alinea con el SSR de /pro):
+  // así el banner cambia de idioma junto con la página, no solo al montarse.
+  const { currentLanguage } = useLanguage();
+  const lang = validLang(currentLanguage);
 
   useEffect(() => {
     try {
       if (!localStorage.getItem(STORAGE_KEY)) {
-        setLang(readLang());
         setVisible(true);
       }
     } catch {

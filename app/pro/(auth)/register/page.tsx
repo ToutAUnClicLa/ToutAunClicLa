@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useProAuth } from '@/contexts/ProAuthContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { ProApiError } from '@/lib/pro/api';
 import { Button } from '@/components/pro/ui/button';
 import { Input } from '@/components/pro/ui/input';
@@ -13,6 +14,7 @@ import { Label } from '@/components/pro/ui/label';
 export default function ProRegisterPage() {
   const router = useRouter();
   const { register } = useProAuth();
+  const { t } = useTranslation();
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
@@ -24,10 +26,10 @@ export default function ProRegisterPage() {
     setLoading(true);
     try {
       await register({ nombre, apellido: apellido || undefined, email, password });
-      toast.success('Cuenta creada. Te enviamos un código por correo.');
+      toast.success(t('pro.auth.register.success'));
       router.push(`/pro/verify-email?email=${encodeURIComponent(email)}`);
     } catch (err) {
-      toast.error((err as ProApiError).message || 'No se pudo crear la cuenta.');
+      toast.error((err as ProApiError).message || t('pro.auth.register.error'));
     } finally {
       setLoading(false);
     }
@@ -35,22 +37,24 @@ export default function ProRegisterPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-foreground">Crear cuenta</h1>
-      <p className="mt-1.5 text-sm text-muted-foreground">Empieza tu presencia profesional.</p>
+      <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+        {t('pro.auth.register.title')}
+      </h1>
+      <p className="mt-1.5 text-sm text-muted-foreground">{t('pro.auth.register.subtitle')}</p>
 
       <form onSubmit={onSubmit} className="mt-6 space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label htmlFor="nombre">Nombre</Label>
+            <Label htmlFor="nombre">{t('pro.auth.register.firstNameLabel')}</Label>
             <Input id="nombre" required value={nombre} onChange={(e) => setNombre(e.target.value)} />
           </div>
           <div>
-            <Label htmlFor="apellido">Apellido</Label>
+            <Label htmlFor="apellido">{t('pro.auth.register.lastNameLabel')}</Label>
             <Input id="apellido" value={apellido} onChange={(e) => setApellido(e.target.value)} />
           </div>
         </div>
         <div>
-          <Label htmlFor="email">Correo</Label>
+          <Label htmlFor="email">{t('pro.auth.register.emailLabel')}</Label>
           <Input
             id="email"
             type="email"
@@ -58,11 +62,11 @@ export default function ProRegisterPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="nom@exemple.com"
+            placeholder={t('pro.auth.register.emailPlaceholder')}
           />
         </div>
         <div>
-          <Label htmlFor="password">Contraseña</Label>
+          <Label htmlFor="password">{t('pro.auth.register.passwordLabel')}</Label>
           <Input
             id="password"
             type="password"
@@ -71,18 +75,18 @@ export default function ProRegisterPage() {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Mínimo 8 caracteres"
+            placeholder={t('pro.auth.register.passwordPlaceholder')}
           />
         </div>
         <Button type="submit" loading={loading} className="w-full">
-          Crear cuenta
+          {t('pro.auth.register.submit')}
         </Button>
       </form>
 
       <p className="mt-4 text-center text-sm text-muted-foreground">
-        ¿Ya tienes cuenta?{' '}
+        {t('pro.auth.register.haveAccount')}{' '}
         <Link href="/pro/login" className="font-medium text-primary hover:underline">
-          Iniciar sesión
+          {t('pro.auth.register.signIn')}
         </Link>
       </p>
     </div>

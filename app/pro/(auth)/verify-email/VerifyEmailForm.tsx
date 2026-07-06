@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { useProAuth } from '@/contexts/ProAuthContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { ProApiError } from '@/lib/pro/api';
 import { Button } from '@/components/pro/ui/button';
 import { Input } from '@/components/pro/ui/input';
@@ -14,6 +15,7 @@ export default function VerifyEmailForm() {
   const params = useSearchParams();
   const email = params.get('email') || '';
   const { verifyEmail, resendCode } = useProAuth();
+  const { t } = useTranslation();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
@@ -23,10 +25,10 @@ export default function VerifyEmailForm() {
     setLoading(true);
     try {
       await verifyEmail(email, code);
-      toast.success('Correo verificado.');
+      toast.success(t('pro.auth.verify.verified'));
       router.replace('/pro/dashboard');
     } catch (err) {
-      toast.error((err as ProApiError).message || 'Código inválido.');
+      toast.error((err as ProApiError).message || t('pro.auth.verify.verifyError'));
     } finally {
       setLoading(false);
     }
@@ -36,9 +38,9 @@ export default function VerifyEmailForm() {
     setResending(true);
     try {
       await resendCode(email);
-      toast.success('Te enviamos un nuevo código.');
+      toast.success(t('pro.auth.verify.resent'));
     } catch (err) {
-      toast.error((err as ProApiError).message || 'No se pudo reenviar.');
+      toast.error((err as ProApiError).message || t('pro.auth.verify.resendError'));
     } finally {
       setResending(false);
     }
@@ -46,15 +48,20 @@ export default function VerifyEmailForm() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-foreground">Verifica tu correo</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+        {t('pro.auth.verify.title')}
+      </h1>
       <p className="mt-1.5 text-sm text-muted-foreground">
-        Ingresa el código de 6 dígitos que enviamos a{' '}
-        <span className="font-medium text-foreground">{email || 'tu correo'}</span>.
+        {t('pro.auth.verify.subtitlePrefix')}{' '}
+        <span className="font-medium text-foreground">
+          {email || t('pro.auth.verify.subtitleFallback')}
+        </span>
+        .
       </p>
 
       <form onSubmit={onSubmit} className="mt-6 space-y-4">
         <div>
-          <Label htmlFor="code">Código</Label>
+          <Label htmlFor="code">{t('pro.auth.verify.codeLabel')}</Label>
           <Input
             id="code"
             inputMode="numeric"
@@ -68,7 +75,7 @@ export default function VerifyEmailForm() {
           />
         </div>
         <Button type="submit" loading={loading} className="w-full">
-          Verificar
+          {t('pro.auth.verify.submit')}
         </Button>
       </form>
 
@@ -77,7 +84,7 @@ export default function VerifyEmailForm() {
         disabled={resending}
         className="mt-4 w-full text-center text-sm text-muted-foreground hover:text-foreground disabled:opacity-50"
       >
-        {resending ? 'Reenviando…' : 'Reenviar código'}
+        {resending ? t('pro.auth.verify.resending') : t('pro.auth.verify.resend')}
       </button>
     </div>
   );

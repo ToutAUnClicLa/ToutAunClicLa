@@ -2623,7 +2623,7 @@ export default {
         dashboard: "Panel"
       },
       hero: {
-        badge: "Para los profesionales de Quebec",
+        badge: "Para profesionales independientes",
         headline: "Tu tarjeta profesional, en un clic.",
         subhead: "Crea tu tarjeta digital, compártela por AirDrop y aparece en el directorio de servicios. Menos papel, más clientes.",
         ctaPrimary: "Crear mi cuenta",
@@ -2638,7 +2638,8 @@ export default {
         city: "Montreal",
         speaks: "Habla",
         saveContact: "Guardar contacto",
-        scan: "Escanea para abrir"
+        scan: "Escanea para abrir",
+        qrAlt: "Código QR a la página de registro"
       },
       trust: {
         madeInQuebec: "Hecho en Quebec 🇨🇦",
@@ -2660,7 +2661,7 @@ export default {
       features: {
         kicker: "Todo lo que necesitas",
         title: "Una tarjeta que trabaja por ti.",
-        subtitle: "Pensada para los independientes de Quebec, no para Silicon Valley.",
+        subtitle: "Pensada para independientes de verdad, no para Silicon Valley.",
         walletTitle: "Apple Wallet + AirDrop",
         walletDesc: "Tu tarjeta vive en el Wallet del cliente. Compártela por AirDrop, sin apps. Se actualiza sola.",
         directoryTitle: "Directorio con tráfico local real",
@@ -2709,7 +2710,7 @@ export default {
       },
       testimonials: {
         kicker: "Los primeros pros",
-        title: "Construido con los independientes de Quebec.",
+        title: "Construido con independientes de verdad.",
         subtitle: "Empezamos con nuestros usuarios beta. Sus palabras llegan pronto.",
         betaName: "Profesional beta",
         betaBadge: "Beta",
@@ -2734,12 +2735,12 @@ export default {
       },
       finalCta: {
         title: "Tu tarjeta. Un AirDrop. Nuevo cliente.",
-        subtitle: "Únete a los profesionales de Quebec que comparten de otra forma.",
+        subtitle: "Únete a los profesionales independientes que comparten de otra forma.",
         ctaPrimary: "Crear mi cuenta",
         ctaSecondary: "Ver los planes"
       },
       footer: {
-        tagline: "La tarjeta profesional de los independientes de Quebec.",
+        tagline: "La tarjeta profesional de los independientes.",
         plans: "Planes",
         signIn: "Iniciar sesión",
         privacy: "Política de privacidad",
@@ -2747,6 +2748,186 @@ export default {
         directory: "Directorio",
         legal: "© 2026 Tout À Un Clic Là · Montreal, Quebec · Conforme a la Ley 25"
       }
+    },
+    header: {
+      signIn: "Iniciar sesión",
+      dashboard: "Panel",
+      langMenuLabel: "Cambiar idioma",
+      langCurrentLabel: "Idioma actual: {lang}",
+      backHome: "Inicio"
+    },
+    auth: {
+      login: {
+        title: "Iniciar sesión",
+        subtitle: "Accede a tu panel profesional.",
+        emailLabel: "Correo",
+        emailPlaceholder: "nombre@ejemplo.com",
+        passwordLabel: "Contraseña",
+        submit: "Entrar",
+        noAccount: "¿No tienes cuenta?",
+        createAccount: "Crear cuenta",
+        needsVerification: "Verifica tu correo antes de entrar.",
+        error: "No se pudo iniciar sesión."
+      },
+      register: {
+        title: "Crear cuenta",
+        subtitle: "Empieza tu presencia profesional.",
+        firstNameLabel: "Nombre",
+        lastNameLabel: "Apellido",
+        emailLabel: "Correo",
+        emailPlaceholder: "nombre@ejemplo.com",
+        passwordLabel: "Contraseña",
+        passwordPlaceholder: "Mínimo 8 caracteres",
+        submit: "Crear cuenta",
+        haveAccount: "¿Ya tienes cuenta?",
+        signIn: "Iniciar sesión",
+        success: "Cuenta creada. Te enviamos un código por correo.",
+        error: "No se pudo crear la cuenta."
+      },
+      verify: {
+        title: "Verifica tu correo",
+        subtitlePrefix: "Ingresa el código de 6 dígitos que enviamos a",
+        subtitleFallback: "tu correo",
+        codeLabel: "Código",
+        submit: "Verificar",
+        resend: "Reenviar código",
+        resending: "Reenviando…",
+        verified: "Correo verificado.",
+        verifyError: "Código inválido.",
+        resent: "Te enviamos un nuevo código.",
+        resendError: "No se pudo reenviar."
+      }
+    },
+    dashboard: {
+      metaTitle: "Panel",
+      logout: "Salir",
+      greeting: "Hola, {name}",
+      intro: "Este es tu panel profesional. Edita tu perfil y gestiona tu suscripción.",
+      profileCardTitle: "Tu perfil",
+      profileCardDesc: "Edita tu título, biografía, categoría, idiomas, redes y foto.",
+      profile: {
+        metaTitle: "Mi perfil",
+        back: "Panel",
+        title: "Mi perfil",
+        subtitle: "Así te verán en tu tarjeta digital y en el directorio.",
+        socialsTitle: "Redes sociales",
+        socialsHint: "Pro permite hasta 5 · Max, ilimitadas."
+      }
+    },
+    subscription: {
+      title: "Tu plan",
+      loading: "Cargando…",
+      statusLabel: "Estado:",
+      planLabel: "Plan:",
+      trialEnds: "La prueba termina el {date}.",
+      renewsOn: "Se renueva el {date}.",
+      endsOn: "Termina el {date}.",
+      freeText: "Estás en el plan gratuito. Suscríbete para tu tarjeta digital.",
+      manage: "Gestionar suscripción",
+      seePlans: "Ver planes",
+      activated: "¡Suscripción activada!",
+      portalError: "No se pudo abrir el portal.",
+      status: {
+        trialing: "Prueba gratuita",
+        active: "Activo",
+        past_due: "Pago pendiente",
+        canceled: "Cancelado",
+        unpaid: "Sin pagar",
+        incomplete: "Incompleto"
+      }
+    },
+    pricingPage: {
+      metaTitle: "Planes",
+      metaDescription: "Empieza gratis y sube a Pro o Max cuando quieras. Prueba de 7 días en los planes de pago.",
+      back: "Inicio",
+      title: "Planes para profesionales",
+      subtitle: "Empieza gratis y sube a Pro o Max cuando quieras. Prueba de 7 días en los planes de pago.",
+      monthly: "Mensual",
+      yearly: "Anual",
+      yearlyNote: "· 2 meses gratis",
+      perMonth: "mes",
+      perYear: "año",
+      recommended: "Recomendado",
+      currentPlan: "Tu plan actual",
+      goToDashboard: "Ir al panel",
+      createAccount: "Crear cuenta",
+      subscribe: "Suscribirme",
+      start: "Empezar",
+      checkoutError: "No se pudo iniciar el pago.",
+      plans: {
+        free: {
+          name: "Free",
+          description: "Para empezar a aparecer.",
+          f1: "Listado básico en el directorio",
+          f2: "Nombre y categoría visibles"
+        },
+        pro: {
+          name: "Pro",
+          description: "Tu tarjeta digital completa.",
+          f1: "Tarjeta digital + Apple Wallet y AirDrop",
+          f2: "Perfil público con URL única",
+          f3: "Hasta 5 redes sociales",
+          f4: "vCard descargable",
+          f5: "Listado estándar con foto",
+          f6: "Analítica básica"
+        },
+        max: {
+          name: "Max",
+          description: "Máxima visibilidad y herramientas.",
+          f1: "Todo lo de Pro",
+          f2: "Destacado primero en tu categoría",
+          f3: "Banner publicitario",
+          f4: "Galería de proyectos",
+          f5: "Redes sociales ilimitadas",
+          f6: "Analítica avanzada",
+          f7: "1 tarjeta física NFC incluida"
+        }
+      }
+    },
+    profileForm: {
+      firstNameLabel: "Nombre",
+      lastNameLabel: "Apellido",
+      companyLabel: "Empresa",
+      companyPlaceholder: "Opcional",
+      titleBioHeading: "Título y biografía",
+      titleBioHint: "Completa al menos tu idioma principal. Los demás se muestran según el visitante.",
+      titleLabel: "Título ({lang})",
+      titlePlaceholderFr: "Courtière immobilière",
+      titlePlaceholder: "Tu título profesional",
+      bioLabel: "Biografía ({lang})",
+      bioPlaceholder: "Cuéntales a tus clientes quién eres y qué ofreces.",
+      primaryLangLabel: "Idioma principal (fallback)",
+      categoryHeading: "Categoría",
+      categoryLabel: "Categoría",
+      subcategoryLabel: "Subcategoría",
+      selectPlaceholder: "Selecciona…",
+      subcategoryPlaceholder: "Elige una categoría",
+      spokenHeading: "Idiomas que hablas",
+      spokenHint: "Tus clientes podrán filtrar por idioma en el directorio.",
+      contactHeading: "Contacto",
+      phoneLabel: "Teléfono",
+      cityLabel: "Ciudad",
+      websiteLabel: "Sitio web",
+      save: "Guardar cambios",
+      saved: "Perfil actualizado.",
+      saveError: "No se pudo guardar."
+    },
+    avatar: {
+      change: "Cambiar foto",
+      hint: "JPG o PNG, máximo 5 MB.",
+      invalidType: "Selecciona una imagen.",
+      uploaded: "Foto actualizada.",
+      uploadError: "No se pudo subir la foto."
+    },
+    social: {
+      loading: "Cargando…",
+      empty: "Aún no agregaste redes sociales.",
+      urlPlaceholder: "https://…",
+      add: "Agregar",
+      remove: "Eliminar",
+      added: "Red agregada.",
+      addError: "No se pudo agregar (¿límite del plan?).",
+      removeError: "No se pudo eliminar."
     },
     consent: {
       title: "Privacidad",

@@ -10,29 +10,42 @@ import {
   type SubscriptionState,
 } from '@/lib/pro/endpoints';
 import { ProApiError } from '@/lib/pro/api';
+import { CreditCard } from 'lucide-react';
 import { useProAuth } from '@/contexts/ProAuthContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/pro/ui/button';
+import { cn } from '@/lib/utils';
 
-const ESTADO_LABEL: Record<string, string> = {
-  trialing: 'Prueba gratuita',
-  active: 'Activo',
-  past_due: 'Pago pendiente',
-  canceled: 'Cancelado',
-  unpaid: 'Sin pagar',
-  incomplete: 'Incompleto',
+// Badge por tier según la guía: Free gris, Pro verde, Max degradado verde→teal.
+const TIER_BADGE: Record<string, string> = {
+  free: 'bg-secondary text-muted-foreground',
+  pro: 'bg-accent text-accent-foreground',
+  max: 'bg-gradient-to-r from-[#00875A] to-teal-600 text-white',
 };
 
-function formatDate(iso: string | null): string {
-  if (!iso) return '';
-  return new Date(iso).toLocaleDateString('es-CA', { day: 'numeric', month: 'long', year: 'numeric' });
-}
+// Mapa código de idioma -> locale de Intl para formatear fechas.
+const DATE_LOCALE: Record<string, string> = {
+  fr: 'fr-CA',
+  en: 'en-CA',
+  es: 'es-CA',
+};
 
 export function SubscriptionCard() {
   const router = useRouter();
   const { refresh } = useProAuth();
+  const { t, locale } = useTranslation();
   const [data, setData] = useState<SubscriptionState | null>(null);
   const [loading, setLoading] = useState(true);
   const [portalLoading, setPortalLoading] = useState(false);
+
+  const formatDate = (iso: string | null): string => {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString(DATE_LOCALE[locale] || 'fr-CA', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  };
 
   const load = () =>
     getSubscription()
@@ -57,7 +70,7 @@ export function SubscriptionCard() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('checkout') === 'success') {
-      toast.success('¡Suscripción activada!');
+      toast.success(t('pro.subscription.activated'));
       window.history.replaceState({}, '', '/pro/dashboard');
       syncFromStripe();
     } else {
@@ -72,60 +85,74 @@ export function SubscriptionCard() {
       const url = await openBillingPortal();
       window.location.href = url;
     } catch (err) {
-      toast.error((err as ProApiError).message || 'No se pudo abrir el portal.');
+      toast.error((err as ProApiError).message || t('pro.subscription.portalError'));
       setPortalLoading(false);
     }
   };
 
   const tier = data?.tier || 'free';
   const sub = data?.subscription;
+  const estadoLabel = (estado: string) => t(`pro.subscription.status.${estado}`) || estado;
 
   return (
     <div className="rounded-[14px] border border-border bg-card p-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-foreground">Tu plan</h2>
-        <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-semibold uppercase text-accent-foreground">
+      <div className="flex items-start justify-between">
+        <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent text-accent-foreground">
+          <CreditCard className="h-5 w-5" aria-hidden />
+        </span>
+        <span
+          className={cn(
+            'rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide',
+            TIER_BADGE[tier] || TIER_BADGE.free,
+          )}
+        >
           {tier}
         </span>
       </div>
+      <h2 className="mt-4 text-base font-semibold text-foreground">
+        {t('pro.subscription.title')}
+      </h2>
 
       {loading ? (
-        <p className="mt-3 text-sm text-muted-foreground">Cargando…</p>
+        <div className="mt-3 space-y-2" aria-hidden>
+          <div className="pro-skeleton h-4 w-2/3" />
+          <div className="pro-skeleton h-4 w-1/2" />
+        </div>
       ) : sub ? (
         <div className="mt-3 space-y-1 text-sm text-muted-foreground">
           <p>
-            Estado:{' '}
-            <span className="font-medium text-foreground">
-              {ESTADO_LABEL[sub.estado] || sub.estado}
-            </span>
+            {t('pro.subscription.statusLabel')}{' '}
+            <span className="font-medium text-foreground">{estadoLabel(sub.estado)}</span>
           </p>
           <p className="capitalize">
-            Plan: <span className="font-medium text-foreground">{sub.plan} · {sub.periodo}</span>
+            {t('pro.subscription.planLabel')}{' '}
+            <span className="font-medium text-foreground">
+              {sub.plan} · {sub.periodo}
+            </span>
           </p>
           {sub.estado === 'trialing' && sub.trial_fin && (
-            <p>La prueba termina el {formatDate(sub.trial_fin)}.</p>
+            <p>{t('pro.subscription.trialEnds', { date: formatDate(sub.trial_fin) })}</p>
           )}
           {sub.estado !== 'trialing' && sub.periodo_actual_fin && (
             <p>
-              {sub.cancelar_al_final ? 'Termina el ' : 'Se renueva el '}
-              {formatDate(sub.periodo_actual_fin)}.
+              {sub.cancelar_al_final
+                ? t('pro.subscription.endsOn', { date: formatDate(sub.periodo_actual_fin) })
+                : t('pro.subscription.renewsOn', { date: formatDate(sub.periodo_actual_fin) })}
             </p>
           )}
         </div>
       ) : (
-        <p className="mt-3 text-sm text-muted-foreground">
-          Estás en el plan gratuito. Suscríbete para tu tarjeta digital.
-        </p>
+        <p className="mt-3 text-sm text-muted-foreground">{t('pro.subscription.freeText')}</p>
       )}
 
       <div className="mt-5">
         {sub ? (
           <Button variant="secondary" size="sm" loading={portalLoading} onClick={onPortal}>
-            Gestionar suscripción
+            {t('pro.subscription.manage')}
           </Button>
         ) : (
           <Button size="sm" onClick={() => router.push('/pro/pricing')}>
-            Ver planes
+            {t('pro.subscription.seePlans')}
           </Button>
         )}
       </div>

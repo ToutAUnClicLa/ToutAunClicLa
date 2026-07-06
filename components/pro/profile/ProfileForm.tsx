@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { updateMe, type Categoria } from '@/lib/pro/endpoints';
 import { ProApiError } from '@/lib/pro/api';
 import { useProAuth, type ProUser } from '@/contexts/ProAuthContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/pro/ui/button';
 import { Input } from '@/components/pro/ui/input';
 import { Label } from '@/components/pro/ui/label';
@@ -52,8 +53,13 @@ interface FormValues {
 
 export function ProfileForm({ categorias }: { categorias: Categoria[] }) {
   const { proUser, refresh } = useProAuth();
+  const { t, locale } = useTranslation();
   const p = proUser as ProUser;
   const [activeLang, setActiveLang] = useState<Lang>(p?.idioma_principal || 'fr');
+
+  // Nombre de categoría/subcategoría en el idioma actual del visitante.
+  const catName = (c: { nombre_fr: string; nombre_en: string; nombre_es: string }) =>
+    locale === 'en' ? c.nombre_en : locale === 'es' ? c.nombre_es : c.nombre_fr;
 
   const {
     register,
@@ -103,37 +109,43 @@ export function ProfileForm({ categorias }: { categorias: Categoria[] }) {
     try {
       await updateMe(payload);
       await refresh();
-      toast.success('Perfil actualizado.');
+      toast.success(t('pro.profileForm.saved'));
     } catch (err) {
-      toast.error((err as ProApiError).message || 'No se pudo guardar.');
+      toast.error((err as ProApiError).message || t('pro.profileForm.saveError'));
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+    <form onSubmit={handleSubmit(onSubmit)} className="divide-y divide-border">
       {/* Identidad */}
-      <section className="space-y-4">
+      <section className="space-y-4 pb-8">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label htmlFor="nombre">Nombre</Label>
+            <Label htmlFor="nombre">{t('pro.profileForm.firstNameLabel')}</Label>
             <Input id="nombre" {...register('nombre', { required: true })} />
           </div>
           <div>
-            <Label htmlFor="apellido">Apellido</Label>
+            <Label htmlFor="apellido">{t('pro.profileForm.lastNameLabel')}</Label>
             <Input id="apellido" {...register('apellido')} />
           </div>
         </div>
         <div>
-          <Label htmlFor="empresa">Empresa</Label>
-          <Input id="empresa" {...register('empresa')} placeholder="Opcional" />
+          <Label htmlFor="empresa">{t('pro.profileForm.companyLabel')}</Label>
+          <Input
+            id="empresa"
+            {...register('empresa')}
+            placeholder={t('pro.profileForm.companyPlaceholder')}
+          />
         </div>
       </section>
 
       {/* Título y bio trilingües */}
-      <section>
-        <h2 className="text-base font-semibold text-foreground">Título y biografía</h2>
+      <section className="py-8">
+        <h2 className="text-base font-semibold text-foreground">
+          {t('pro.profileForm.titleBioHeading')}
+        </h2>
         <p className="mb-3 mt-1 text-sm text-muted-foreground">
-          Completa al menos tu idioma principal. Los demás se muestran según el visitante.
+          {t('pro.profileForm.titleBioHint')}
         </p>
 
         <div className="mb-4 inline-flex rounded-[10px] border border-border p-1">
@@ -157,26 +169,34 @@ export function ProfileForm({ categorias }: { categorias: Categoria[] }) {
         {LANGS.map((l) => (
           <div key={l.code} className={cn('space-y-4', activeLang === l.code ? '' : 'hidden')}>
             <div>
-              <Label htmlFor={`titulo_${l.code}`}>Título ({l.label})</Label>
+              <Label htmlFor={`titulo_${l.code}`}>
+                {t('pro.profileForm.titleLabel', { lang: l.label })}
+              </Label>
               <Input
                 id={`titulo_${l.code}`}
                 {...register(`titulo_${l.code}` as keyof FormValues)}
-                placeholder={l.code === 'fr' ? 'Courtière immobilière' : 'Tu título profesional'}
+                placeholder={
+                  l.code === 'fr'
+                    ? t('pro.profileForm.titlePlaceholderFr')
+                    : t('pro.profileForm.titlePlaceholder')
+                }
               />
             </div>
             <div>
-              <Label htmlFor={`bio_${l.code}`}>Biografía ({l.label})</Label>
+              <Label htmlFor={`bio_${l.code}`}>
+                {t('pro.profileForm.bioLabel', { lang: l.label })}
+              </Label>
               <Textarea
                 id={`bio_${l.code}`}
                 {...register(`bio_${l.code}` as keyof FormValues)}
-                placeholder="Cuéntales a tus clientes quién eres y qué ofreces."
+                placeholder={t('pro.profileForm.bioPlaceholder')}
               />
             </div>
           </div>
         ))}
 
         <div className="mt-4 max-w-xs">
-          <Label htmlFor="idioma_principal">Idioma principal (fallback)</Label>
+          <Label htmlFor="idioma_principal">{t('pro.profileForm.primaryLangLabel')}</Label>
           <Select id="idioma_principal" {...register('idioma_principal')}>
             {LANGS.map((l) => (
               <option key={l.code} value={l.code}>
@@ -188,32 +208,38 @@ export function ProfileForm({ categorias }: { categorias: Categoria[] }) {
       </section>
 
       {/* Clasificación */}
-      <section className="space-y-4">
-        <h2 className="text-base font-semibold text-foreground">Categoría</h2>
+      <section className="space-y-4 py-8">
+        <h2 className="text-base font-semibold text-foreground">
+          {t('pro.profileForm.categoryHeading')}
+        </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label htmlFor="categoria_id">Categoría</Label>
+            <Label htmlFor="categoria_id">{t('pro.profileForm.categoryLabel')}</Label>
             <Select
               id="categoria_id"
               {...register('categoria_id', {
                 onChange: () => setValue('subcategoria_id', ''),
               })}
             >
-              <option value="">Selecciona…</option>
+              <option value="">{t('pro.profileForm.selectPlaceholder')}</option>
               {categorias.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.nombre_es}
+                  {catName(c)}
                 </option>
               ))}
             </Select>
           </div>
           <div>
-            <Label htmlFor="subcategoria_id">Subcategoría</Label>
+            <Label htmlFor="subcategoria_id">{t('pro.profileForm.subcategoryLabel')}</Label>
             <Select id="subcategoria_id" {...register('subcategoria_id')} disabled={!subcats.length}>
-              <option value="">{subcats.length ? 'Selecciona…' : 'Elige una categoría'}</option>
+              <option value="">
+                {subcats.length
+                  ? t('pro.profileForm.selectPlaceholder')
+                  : t('pro.profileForm.subcategoryPlaceholder')}
+              </option>
               {subcats.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.nombre_es}
+                  {catName(s)}
                 </option>
               ))}
             </Select>
@@ -222,10 +248,12 @@ export function ProfileForm({ categorias }: { categorias: Categoria[] }) {
       </section>
 
       {/* Idiomas hablados */}
-      <section>
-        <h2 className="text-base font-semibold text-foreground">Idiomas que hablas</h2>
+      <section className="py-8">
+        <h2 className="text-base font-semibold text-foreground">
+          {t('pro.profileForm.spokenHeading')}
+        </h2>
         <p className="mb-3 mt-1 text-sm text-muted-foreground">
-          Tus clientes podrán filtrar por idioma en el directorio.
+          {t('pro.profileForm.spokenHint')}
         </p>
         <div className="flex flex-wrap gap-2">
           {SPOKEN.map((l) => {
@@ -250,27 +278,29 @@ export function ProfileForm({ categorias }: { categorias: Categoria[] }) {
       </section>
 
       {/* Contacto */}
-      <section className="space-y-4">
-        <h2 className="text-base font-semibold text-foreground">Contacto</h2>
+      <section className="space-y-4 py-8">
+        <h2 className="text-base font-semibold text-foreground">
+          {t('pro.profileForm.contactHeading')}
+        </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label htmlFor="telefono">Teléfono</Label>
+            <Label htmlFor="telefono">{t('pro.profileForm.phoneLabel')}</Label>
             <Input id="telefono" {...register('telefono')} placeholder="+1 (514) …" />
           </div>
           <div>
-            <Label htmlFor="ciudad">Ciudad</Label>
+            <Label htmlFor="ciudad">{t('pro.profileForm.cityLabel')}</Label>
             <Input id="ciudad" {...register('ciudad')} placeholder="Montréal" />
           </div>
         </div>
         <div>
-          <Label htmlFor="sitio_web">Sitio web</Label>
+          <Label htmlFor="sitio_web">{t('pro.profileForm.websiteLabel')}</Label>
           <Input id="sitio_web" type="url" {...register('sitio_web')} placeholder="https://…" />
         </div>
       </section>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end pt-6">
         <Button type="submit" loading={isSubmitting}>
-          Guardar cambios
+          {t('pro.profileForm.save')}
         </Button>
       </div>
     </form>

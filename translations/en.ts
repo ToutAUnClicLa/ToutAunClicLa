@@ -2591,7 +2591,7 @@ export default {
         dashboard: "Dashboard"
       },
       hero: {
-        badge: "For Quebec professionals",
+        badge: "For independent professionals",
         headline: "Your professional card, in one click.",
         subhead: "Create your digital card, share it over AirDrop and show up in the services directory. Less paper, more clients.",
         ctaPrimary: "Create my account",
@@ -2606,7 +2606,8 @@ export default {
         city: "Montreal",
         speaks: "Speaks",
         saveContact: "Save contact",
-        scan: "Scan to open"
+        scan: "Scan to open",
+        qrAlt: "QR code to the sign-up page"
       },
       trust: {
         madeInQuebec: "Made in Quebec 🇨🇦",
@@ -2628,7 +2629,7 @@ export default {
       features: {
         kicker: "Everything you need",
         title: "A card that works for you.",
-        subtitle: "Built for Quebec's independents, not for Silicon Valley.",
+        subtitle: "Built for real independents, not for Silicon Valley.",
         walletTitle: "Apple Wallet + AirDrop",
         walletDesc: "Your card lives in the client's Wallet. Share it over AirDrop, no app needed. It updates itself.",
         directoryTitle: "Directory with real local traffic",
@@ -2677,7 +2678,7 @@ export default {
       },
       testimonials: {
         kicker: "The first pros",
-        title: "Built with Quebec's independents.",
+        title: "Built with real independents.",
         subtitle: "We're starting with our beta users. Their words are coming soon.",
         betaName: "Beta professional",
         betaBadge: "Beta",
@@ -2702,12 +2703,12 @@ export default {
       },
       finalCta: {
         title: "Your card. One AirDrop. New client.",
-        subtitle: "Join the Quebec professionals who share differently.",
+        subtitle: "Join the independent professionals who share differently.",
         ctaPrimary: "Create my account",
         ctaSecondary: "See the plans"
       },
       footer: {
-        tagline: "The professional card for Quebec's independents.",
+        tagline: "The professional card for independents.",
         plans: "Plans",
         signIn: "Sign in",
         privacy: "Privacy policy",
@@ -2715,6 +2716,186 @@ export default {
         directory: "Directory",
         legal: "© 2026 Tout À Un Clic Là · Montreal, Quebec · Law 25 compliant"
       }
+    },
+    header: {
+      signIn: "Sign in",
+      dashboard: "Dashboard",
+      langMenuLabel: "Change language",
+      langCurrentLabel: "Current language: {lang}",
+      backHome: "Home"
+    },
+    auth: {
+      login: {
+        title: "Sign in",
+        subtitle: "Access your professional dashboard.",
+        emailLabel: "Email",
+        emailPlaceholder: "name@example.com",
+        passwordLabel: "Password",
+        submit: "Sign in",
+        noAccount: "No account yet?",
+        createAccount: "Create an account",
+        needsVerification: "Verify your email before signing in.",
+        error: "Could not sign in."
+      },
+      register: {
+        title: "Create an account",
+        subtitle: "Start your professional presence.",
+        firstNameLabel: "First name",
+        lastNameLabel: "Last name",
+        emailLabel: "Email",
+        emailPlaceholder: "name@example.com",
+        passwordLabel: "Password",
+        passwordPlaceholder: "At least 8 characters",
+        submit: "Create an account",
+        haveAccount: "Already have an account?",
+        signIn: "Sign in",
+        success: "Account created. We sent you a code by email.",
+        error: "Could not create the account."
+      },
+      verify: {
+        title: "Verify your email",
+        subtitlePrefix: "Enter the 6-digit code we sent to",
+        subtitleFallback: "your email",
+        codeLabel: "Code",
+        submit: "Verify",
+        resend: "Resend code",
+        resending: "Sending…",
+        verified: "Email verified.",
+        verifyError: "Invalid code.",
+        resent: "New code sent.",
+        resendError: "Could not resend."
+      }
+    },
+    dashboard: {
+      metaTitle: "Dashboard",
+      logout: "Sign out",
+      greeting: "Hi, {name}",
+      intro: "This is your professional dashboard. Edit your profile and manage your subscription.",
+      profileCardTitle: "Your profile",
+      profileCardDesc: "Edit your title, bio, category, languages, socials and photo.",
+      profile: {
+        metaTitle: "My profile",
+        back: "Dashboard",
+        title: "My profile",
+        subtitle: "This is how you'll appear on your digital card and in the directory.",
+        socialsTitle: "Social networks",
+        socialsHint: "Pro allows up to 5 · Max, unlimited."
+      }
+    },
+    subscription: {
+      title: "Your plan",
+      loading: "Loading…",
+      statusLabel: "Status:",
+      planLabel: "Plan:",
+      trialEnds: "The trial ends on {date}.",
+      renewsOn: "Renews on {date}.",
+      endsOn: "Ends on {date}.",
+      freeText: "You're on the free plan. Subscribe for your digital card.",
+      manage: "Manage subscription",
+      seePlans: "See plans",
+      activated: "Subscription activated!",
+      portalError: "Could not open the portal.",
+      status: {
+        trialing: "Free trial",
+        active: "Active",
+        past_due: "Payment due",
+        canceled: "Canceled",
+        unpaid: "Unpaid",
+        incomplete: "Incomplete"
+      }
+    },
+    pricingPage: {
+      metaTitle: "Plans",
+      metaDescription: "Start free and move up to Pro or Max whenever you want. 7-day trial on paid plans.",
+      back: "Home",
+      title: "Plans for professionals",
+      subtitle: "Start free and move up to Pro or Max whenever you want. 7-day trial on paid plans.",
+      monthly: "Monthly",
+      yearly: "Yearly",
+      yearlyNote: "· 2 months free",
+      perMonth: "mo",
+      perYear: "yr",
+      recommended: "Recommended",
+      currentPlan: "Your current plan",
+      goToDashboard: "Go to dashboard",
+      createAccount: "Create an account",
+      subscribe: "Subscribe",
+      start: "Get started",
+      checkoutError: "Could not start the payment.",
+      plans: {
+        free: {
+          name: "Free",
+          description: "To start showing up.",
+          f1: "Basic listing in the directory",
+          f2: "Name and category visible"
+        },
+        pro: {
+          name: "Pro",
+          description: "Your complete digital card.",
+          f1: "Digital card + Apple Wallet and AirDrop",
+          f2: "Public profile with unique URL",
+          f3: "Up to 5 social networks",
+          f4: "Downloadable vCard",
+          f5: "Standard listing with photo",
+          f6: "Basic analytics"
+        },
+        max: {
+          name: "Max",
+          description: "Maximum visibility and tools.",
+          f1: "Everything in Pro",
+          f2: "Featured first in your category",
+          f3: "Advertising banner",
+          f4: "Project gallery",
+          f5: "Unlimited social networks",
+          f6: "Advanced analytics",
+          f7: "1 physical NFC card included"
+        }
+      }
+    },
+    profileForm: {
+      firstNameLabel: "First name",
+      lastNameLabel: "Last name",
+      companyLabel: "Company",
+      companyPlaceholder: "Optional",
+      titleBioHeading: "Title and bio",
+      titleBioHint: "Fill in at least your primary language. The others show based on the visitor.",
+      titleLabel: "Title ({lang})",
+      titlePlaceholderFr: "Real estate broker",
+      titlePlaceholder: "Your professional title",
+      bioLabel: "Bio ({lang})",
+      bioPlaceholder: "Tell your clients who you are and what you offer.",
+      primaryLangLabel: "Primary language (fallback)",
+      categoryHeading: "Category",
+      categoryLabel: "Category",
+      subcategoryLabel: "Subcategory",
+      selectPlaceholder: "Select…",
+      subcategoryPlaceholder: "Pick a category",
+      spokenHeading: "Languages you speak",
+      spokenHint: "Your clients will be able to filter by language in the directory.",
+      contactHeading: "Contact",
+      phoneLabel: "Phone",
+      cityLabel: "City",
+      websiteLabel: "Website",
+      save: "Save changes",
+      saved: "Profile updated.",
+      saveError: "Could not save."
+    },
+    avatar: {
+      change: "Change photo",
+      hint: "JPG or PNG, 5 MB max.",
+      invalidType: "Select an image.",
+      uploaded: "Photo updated.",
+      uploadError: "Could not upload the photo."
+    },
+    social: {
+      loading: "Loading…",
+      empty: "You haven't added any social networks yet.",
+      urlPlaceholder: "https://…",
+      add: "Add",
+      remove: "Remove",
+      added: "Network added.",
+      addError: "Could not add (plan limit?).",
+      removeError: "Could not remove."
     },
     consent: {
       title: "Privacy",

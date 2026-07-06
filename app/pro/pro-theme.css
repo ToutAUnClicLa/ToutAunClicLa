@@ -53,6 +53,33 @@
   font-family: var(--font-geist-mono), ui-monospace, monospace;
 }
 
+/* Selección de texto con el verde de marca (detalle de identidad) */
+.pro-theme ::selection {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+/* Skeleton con shimmer sutil (la guía prohíbe spinners genéricos en contenido) */
+.pro-theme .pro-skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: hsl(var(--muted));
+}
+.pro-theme .pro-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, hsl(var(--background) / 0.6), transparent);
+  animation: pro-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes pro-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
 /* Espaciado vertical generoso entre secciones de la landing */
 .pro-theme .pro-section {
   padding-block: clamp(4rem, 10vw, 8rem);
@@ -77,20 +104,8 @@
   mask-image: radial-gradient(70% 60% at 50% 25%, #000 40%, transparent 78%);
 }
 
-/* Entrada suave (opacity + translateY) — firma startup */
-@keyframes pro-rise {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.pro-theme .pro-rise {
-  animation: pro-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
+/* La entrada del hero (fade + translateY escalonado) la orquesta ahora GSAP
+   en LandingMotion.tsx, no CSS, para evitar movimiento duplicado. */
 
 /* Chip AirDrop: entrada + flotación sutil */
 @keyframes pro-chip-in {
@@ -133,6 +148,56 @@
   animation: pro-banner-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* Testimonios: marquee infinito y continuo (CSS puro).
+   La pista contiene dos copias del set; translateX(-50%) reinicia sin salto.
+   Máscara de degradado en los bordes para aparición/desaparición suave. */
+.pro-theme .pro-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.pro-theme .pro-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 1.5rem;
+  padding-inline: 1rem;
+  will-change: transform;
+  animation: pro-marquee 36s linear infinite;
+}
+@keyframes pro-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* -50% del total = un set completo (los dos sets son idénticos) menos la
+       mitad del gap central, compensado por el gap uniforme entre tarjetas. */
+    transform: translateX(calc(-50% - 0.75rem));
+  }
+}
+/* Pausa en hover y en focus-within (accesibilidad de teclado). */
+.pro-theme .pro-marquee:hover .pro-marquee-track,
+.pro-theme .pro-marquee:focus-within .pro-marquee-track {
+  animation-play-state: paused;
+}
+
+/* CTA decorativa del mockup: micro-interacción viva al pasar por la tarjeta
+   (no clickeable — el mockup completo es aria-hidden en sus partes). */
+.pro-theme .pro-mock-cta {
+  transition:
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.15s ease;
+}
+.pro-theme .pro-mock:hover .pro-mock-cta {
+  transform: scale(1.01);
+  filter: brightness(1.04);
+}
+
 /* Hover de card */
 .pro-theme .pro-card-hover {
   transition:
@@ -153,9 +218,25 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .pro-theme .pro-rise,
   .pro-theme .pro-airdrop-chip,
   .pro-theme .pro-banner-in {
     animation: none !important;
+  }
+
+  /* Marquee → grid estático de 3 columnas (sin scroll perpetuo). Se muestra
+     solo el primer set; la copia duplicada se oculta. */
+  .pro-theme .pro-marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .pro-theme .pro-marquee-track {
+    animation: none !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    transform: none !important;
+  }
+  .pro-theme .pro-marquee-track > *:nth-child(n + 4) {
+    display: none;
   }
 }

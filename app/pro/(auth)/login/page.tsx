@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useProAuth } from '@/contexts/ProAuthContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { ProApiError } from '@/lib/pro/api';
 import { Button } from '@/components/pro/ui/button';
 import { Input } from '@/components/pro/ui/input';
@@ -13,6 +14,7 @@ import { Label } from '@/components/pro/ui/label';
 export default function ProLoginPage() {
   const router = useRouter();
   const { login } = useProAuth();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,10 +30,10 @@ export default function ProLoginPage() {
       const needsVerification =
         apiErr.data && typeof apiErr.data === 'object' && 'needsVerification' in apiErr.data;
       if (needsVerification) {
-        toast.error('Verifica tu correo antes de entrar.');
+        toast.error(t('pro.auth.login.needsVerification'));
         router.push(`/pro/verify-email?email=${encodeURIComponent(email)}`);
       } else {
-        toast.error(apiErr.message || 'No se pudo iniciar sesión.');
+        toast.error(apiErr.message || t('pro.auth.login.error'));
       }
     } finally {
       setLoading(false);
@@ -40,12 +42,14 @@ export default function ProLoginPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-foreground">Iniciar sesión</h1>
-      <p className="mt-1.5 text-sm text-muted-foreground">Accede a tu panel profesional.</p>
+      <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+        {t('pro.auth.login.title')}
+      </h1>
+      <p className="mt-1.5 text-sm text-muted-foreground">{t('pro.auth.login.subtitle')}</p>
 
       <form onSubmit={onSubmit} className="mt-6 space-y-4">
         <div>
-          <Label htmlFor="email">Correo</Label>
+          <Label htmlFor="email">{t('pro.auth.login.emailLabel')}</Label>
           <Input
             id="email"
             type="email"
@@ -53,11 +57,11 @@ export default function ProLoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="nom@exemple.com"
+            placeholder={t('pro.auth.login.emailPlaceholder')}
           />
         </div>
         <div>
-          <Label htmlFor="password">Contraseña</Label>
+          <Label htmlFor="password">{t('pro.auth.login.passwordLabel')}</Label>
           <Input
             id="password"
             type="password"
@@ -69,14 +73,14 @@ export default function ProLoginPage() {
           />
         </div>
         <Button type="submit" loading={loading} className="w-full">
-          Entrar
+          {t('pro.auth.login.submit')}
         </Button>
       </form>
 
       <p className="mt-4 text-center text-sm text-muted-foreground">
-        ¿No tienes cuenta?{' '}
+        {t('pro.auth.login.noAccount')}{' '}
         <Link href="/pro/register" className="font-medium text-primary hover:underline">
-          Crear cuenta
+          {t('pro.auth.login.createAccount')}
         </Link>
       </p>
     </div>

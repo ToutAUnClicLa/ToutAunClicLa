@@ -8,6 +8,8 @@ type Language = 'es' | 'en' | 'fr';
 interface LanguageContextType {
   currentLanguage: Language;
   setLanguage: (language: Language) => void;
+  /** Alinea el estado en memoria sin persistir (cookie/localStorage intactos). */
+  syncLanguage: (language: Language) => void;
   availableLanguages: { code: Language; name: string; flag: string }[];
 }
 
@@ -48,6 +50,11 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
     [router],
   );
 
+  // Alinea el estado sin escribir cookie/localStorage (p. ej. /pro default fr vía SSR).
+  const syncLanguage = useCallback((language: Language) => {
+    setCurrentLanguage(language);
+  }, []);
+
   // Load saved language on mount + sincroniza cookie por si venía solo de localStorage
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -64,6 +71,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       value={{
         currentLanguage,
         setLanguage,
+        syncLanguage,
         availableLanguages,
       }}
     >

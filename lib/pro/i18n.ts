@@ -16,6 +16,10 @@ export function getProT(lang: Lang) {
     landing: dict.pro.landing,
     consent: dict.pro.consent,
     privacy: dict.pro.privacy,
+    header: dict.pro.header,
+    auth: dict.pro.auth,
+    dashboard: dict.pro.dashboard,
+    pricingPage: dict.pro.pricingPage,
   };
 }
 
