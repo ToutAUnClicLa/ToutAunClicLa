@@ -115,17 +115,17 @@ export default async function PublicProfilePage({ params, searchParams }: PagePr
           <div className="h-24 bg-gradient-to-br from-[#004d40] to-[#00332a] sm:h-28" />
 
           <div className="px-6 pb-8 sm:px-10">
-            {/* Foto y acciones */}
-            <div className="-mt-14 flex flex-col gap-4 sm:-mt-16 sm:flex-row sm:items-end sm:justify-between">
+            {/* Foto y acciones — marco 4:5 (retrato; las fotos de perfil suelen serlo, así no se recortan) */}
+            <div className="-mt-16 flex flex-col gap-4 sm:-mt-24 sm:flex-row sm:items-end sm:justify-between">
               {pro.foto_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={pro.foto_url}
                   alt={name}
-                  className="h-28 w-28 rounded-2xl border-4 border-white dark:border-slate-900 object-cover shadow-md sm:h-32 sm:w-32"
+                  className="aspect-[4/5] w-36 rounded-2xl border-4 border-white dark:border-slate-900 object-cover shadow-md sm:w-44"
                 />
               ) : (
-                <div className="flex h-28 w-28 items-center justify-center rounded-2xl border-4 border-white dark:border-slate-900 bg-emerald-100 dark:bg-emerald-900/30 text-3xl font-semibold text-emerald-700 dark:text-emerald-300 shadow-md sm:h-32 sm:w-32">
+                <div className="flex aspect-[4/5] w-36 items-center justify-center rounded-2xl border-4 border-white dark:border-slate-900 bg-emerald-100 dark:bg-emerald-900/30 text-3xl font-semibold text-emerald-700 dark:text-emerald-300 shadow-md sm:w-44">
                   {(pro.nombre[0] || '') + (pro.apellido?.[0] || '')}
                 </div>
               )}
@@ -203,7 +203,7 @@ export default async function PublicProfilePage({ params, searchParams }: PagePr
             )}
 
             {/* Contacto directo */}
-            {(pro.telefono || pro.sitio_web) && (
+            {(pro.telefono || pro.email_contacto || pro.sitio_web) && (
               <div className="mt-8 border-t border-slate-100 dark:border-slate-800 pt-6">
                 <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
                   {t.card.contactSection}
@@ -217,6 +217,17 @@ export default async function PublicProfilePage({ params, searchParams }: PagePr
                       >
                         <Phone className="h-4 w-4" aria-hidden />
                         {pro.telefono}
+                      </a>
+                    </li>
+                  )}
+                  {pro.email_contacto && (
+                    <li>
+                      <a
+                        href={`mailto:${pro.email_contacto}`}
+                        className="inline-flex items-center gap-2 break-all text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400"
+                      >
+                        <Mail className="h-4 w-4 shrink-0" aria-hidden />
+                        {pro.email_contacto}
                       </a>
                     </li>
                   )}

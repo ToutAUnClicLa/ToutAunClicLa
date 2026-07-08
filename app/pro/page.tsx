@@ -117,7 +117,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- COMMENT ÇA MARCHE ---------- */}
-        <section className="pro-section" data-animate-section>
+        <section className="pro-section" data-animate-section data-animate="steps">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <SectionHead kicker={t.how.kicker} title={t.how.title} subtitle={t.how.subtitle} />
             <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -132,7 +132,10 @@ export default async function ProHomePage({ searchParams }: PageProps) {
                   className="pro-card-hover rounded-[14px] border border-border bg-card p-6 shadow-[var(--shadow-sm)]"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent text-accent-foreground">
+                    <span
+                      data-step-icon
+                      className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent text-accent-foreground"
+                    >
                       <Icon className="h-5 w-5" aria-hidden />
                     </span>
                     <span className="font-mono text-sm font-medium tabular-nums text-muted-foreground">
@@ -150,7 +153,11 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- FEATURES (bento) ---------- */}
-        <section className="pro-section border-t border-border bg-card/40" data-animate-section>
+        <section
+          className="pro-section border-t border-border bg-card/40"
+          data-animate-section
+          data-animate="bento"
+        >
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <SectionHead
               kicker={t.features.kicker}
@@ -185,7 +192,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- PRICING (cards estáticas) ---------- */}
-        <section className="pro-section" data-animate-section>
+        <section className="pro-section" data-animate-section data-animate="pricing">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <SectionHead
               kicker={t.pricing.kicker}
@@ -247,7 +254,11 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- TESTIMONIOS (marquee infinito) ---------- */}
-        <section className="pro-section border-t border-border bg-card/40">
+        <section
+          className="pro-section border-t border-border bg-card/40"
+          data-animate-section
+          data-animate="fade"
+        >
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <SectionHead
               kicker={t.testimonials.kicker}
@@ -255,11 +266,13 @@ export default async function ProHomePage({ searchParams }: PageProps) {
               subtitle={t.testimonials.subtitle}
             />
           </div>
-          <TestimonialsMarquee t={t} />
+          <div data-animate-item>
+            <TestimonialsMarquee t={t} />
+          </div>
         </section>
 
         {/* ---------- FAQ ---------- */}
-        <section className="pro-section" data-animate-section>
+        <section className="pro-section" data-animate-section data-animate="faq">
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <SectionHead kicker={t.faq.kicker} title={t.faq.title} />
             <div
@@ -288,18 +301,21 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- CTA FINAL ---------- */}
-        <section className="px-4 pb-20 sm:px-6 lg:px-8" data-animate-section>
+        <section className="px-4 pb-20 sm:px-6 lg:px-8" data-animate-section data-animate="cta">
           <div
             data-animate-item
             className="mx-auto max-w-5xl overflow-hidden rounded-[20px] bg-gradient-to-br from-[#004d40] to-[#00332a] px-6 py-14 text-center shadow-[var(--shadow-lg)] sm:px-12 sm:py-16"
           >
-            <h2 className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">
+            <h2
+              data-cta-item
+              className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl"
+            >
               {t.finalCta.title}
             </h2>
-            <p className="mx-auto mt-4 max-w-lg text-balance text-emerald-50/80">
+            <p data-cta-item className="mx-auto mt-4 max-w-lg text-balance text-emerald-50/80">
               {t.finalCta.subtitle}
             </p>
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <div data-cta-item className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Link href="/pro/register">
                 <Button
                   size="lg"
@@ -380,7 +396,7 @@ function SectionHead({
   subtitle?: string;
 }) {
   return (
-    <div className="mx-auto max-w-2xl text-center">
+    <div data-animate-head className="mx-auto max-w-2xl text-center">
       <span className="font-mono text-xs font-medium uppercase tracking-[0.05em] text-primary">
         {kicker}
       </span>
@@ -439,12 +455,16 @@ function PricingCard({
   return (
     <div
       data-animate-item
+      {...(featured ? { 'data-featured': '' } : {})}
       className={`pro-card-hover relative flex flex-col rounded-[14px] border bg-card p-6 text-left shadow-[var(--shadow-sm)] ${
         featured ? 'border-2 border-primary' : 'border-border'
       }`}
     >
       {badge && (
-        <span className="absolute -top-3 left-6 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground">
+        <span
+          data-pricing-badge
+          className="absolute -top-3 left-6 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground"
+        >
           {badge}
         </span>
       )}

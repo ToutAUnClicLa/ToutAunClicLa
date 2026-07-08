@@ -2842,6 +2842,7 @@ export default {
       back: "Inicio",
       title: "Planes para profesionales",
       subtitle: "Empieza gratis y sube a Pro o Max cuando quieras. Prueba de 7 días en los planes de pago.",
+      trialOnceNote: "La prueba gratis de 7 días es válida una sola vez por persona. Si ya la usaste, el cobro es inmediato.",
       monthly: "Mensual",
       yearly: "Anual",
       yearlyNote: "· 2 meses gratis",
@@ -2849,6 +2850,7 @@ export default {
       perYear: "año",
       recommended: "Recomendado",
       currentPlan: "Tu plan actual",
+      changePlan: "Cambiar plan",
       goToDashboard: "Ir al panel",
       createAccount: "Crear cuenta",
       subscribe: "Suscribirme",
@@ -2908,6 +2910,8 @@ export default {
       phoneLabel: "Teléfono",
       cityLabel: "Ciudad",
       websiteLabel: "Sitio web",
+      contactEmailLabel: "Correo de contacto",
+      contactEmailPlaceholder: "contacto@ejemplo.com",
       save: "Guardar cambios",
       saved: "Perfil actualizado.",
       saveError: "No se pudo guardar."
@@ -2922,6 +2926,7 @@ export default {
     social: {
       loading: "Cargando…",
       empty: "Aún no agregaste redes sociales.",
+      platformAria: "Elegir plataforma",
       urlPlaceholder: "https://…",
       add: "Agregar",
       remove: "Eliminar",

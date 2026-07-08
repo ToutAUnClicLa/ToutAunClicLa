@@ -30,6 +30,7 @@ export interface ProUser {
   sitio_web?: string | null;
   ciudad?: string | null;
   codigo_postal?: string | null;
+  email_contacto?: string | null;
   categoria_id?: string | null;
   subcategoria_id?: string | null;
   destacado?: boolean;

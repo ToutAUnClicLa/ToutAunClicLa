@@ -39,6 +39,7 @@ interface FormValues {
   telefono: string;
   sitio_web: string;
   ciudad: string;
+  email_contacto: string;
   idioma_principal: Lang;
   titulo_fr: string;
   titulo_en: string;
@@ -75,6 +76,7 @@ export function ProfileForm({ categorias }: { categorias: Categoria[] }) {
       telefono: p?.telefono || '',
       sitio_web: p?.sitio_web || '',
       ciudad: p?.ciudad || '',
+      email_contacto: p?.email_contacto || '',
       idioma_principal: p?.idioma_principal || 'fr',
       titulo_fr: p?.titulo_fr || '',
       titulo_en: p?.titulo_en || '',
@@ -295,6 +297,15 @@ export function ProfileForm({ categorias }: { categorias: Categoria[] }) {
         <div>
           <Label htmlFor="sitio_web">{t('pro.profileForm.websiteLabel')}</Label>
           <Input id="sitio_web" type="url" {...register('sitio_web')} placeholder="https://…" />
+        </div>
+        <div>
+          <Label htmlFor="email_contacto">{t('pro.profileForm.contactEmailLabel')}</Label>
+          <Input
+            id="email_contacto"
+            type="email"
+            {...register('email_contacto')}
+            placeholder={t('pro.profileForm.contactEmailPlaceholder')}
+          />
         </div>
       </section>
 

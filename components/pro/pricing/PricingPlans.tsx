@@ -1,12 +1,17 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import { createCheckout } from '@/lib/pro/endpoints';
+import {
+  createCheckout,
+  getSubscription,
+  openBillingPortal,
+  type SubscriptionState,
+} from '@/lib/pro/endpoints';
 import { ProApiError } from '@/lib/pro/api';
 import { Button } from '@/components/pro/ui/button';
 import { cn } from '@/lib/utils';
@@ -39,6 +44,18 @@ export function PricingPlans() {
   const { t } = useTranslation();
   const [periodo, setPeriodo] = useState<Periodo>('mensual');
   const [loadingPlan, setLoadingPlan] = useState<PlanId | null>(null);
+  const [sub, setSub] = useState<SubscriptionState['subscription']>(null);
+
+  // El plan actual se determina por plan + periodo + estado (viene de
+  // /me/subscription), no solo por el tier — así Max mensual ≠ Max anual.
+  useEffect(() => {
+    if (!proUser) return;
+    getSubscription()
+      .then((s) => setSub(s.subscription))
+      .catch(() => {});
+  }, [proUser]);
+
+  const hasActiveSub = !!sub && (sub.estado === 'active' || sub.estado === 'trialing');
 
   const onSubscribe = async (plan: 'pro' | 'max') => {
     if (!proUser) {
@@ -51,6 +68,19 @@ export function PricingPlans() {
       window.location.href = url;
     } catch (err) {
       toast.error((err as ProApiError).message || t('pro.pricingPage.checkoutError'));
+      setLoadingPlan(null);
+    }
+  };
+
+  // Cambiar/cancelar un plan ya activo se hace en el Customer Portal: Stripe
+  // actualiza la MISMA suscripción con prorrateo (no crea una segunda).
+  const onChangePlan = async (plan: PlanId) => {
+    setLoadingPlan(plan);
+    try {
+      const url = await openBillingPortal();
+      window.location.href = url;
+    } catch (err) {
+      toast.error((err as ProApiError).message || t('pro.subscription.portalError'));
       setLoadingPlan(null);
     }
   };
@@ -90,7 +120,12 @@ export function PricingPlans() {
       <div className="grid gap-6 md:grid-cols-3">
         {PLANS.map((plan) => {
           const precio = plan.precio[periodo];
-          const esActual = proUser?.tier === plan.id;
+          // Free "actual" = logueado sin suscripción de pago. Pro/Max "actual" =
+          // coincide plan Y periodo con la suscripción activa.
+          const esActual =
+            plan.id === 'free'
+              ? !!proUser && !hasActiveSub
+              : hasActiveSub && sub?.plan === plan.id && sub?.periodo === periodo;
           const nombre = t(`pro.pricingPage.plans.${plan.id}.name`);
           const descripcion = t(`pro.pricingPage.plans.${plan.id}.description`);
           const features = PLAN_FEATURE_KEYS[plan.id].map((k) =>
@@ -134,10 +169,20 @@ export function PricingPlans() {
               </ul>
 
               <div className="mt-6">
-                {plan.id === 'free' ? (
-                  esActual ? (
-                    <Button variant="secondary" className="w-full" disabled>
-                      {t('pro.pricingPage.currentPlan')}
+                {esActual ? (
+                  <Button variant="secondary" className="w-full" disabled>
+                    {t('pro.pricingPage.currentPlan')}
+                  </Button>
+                ) : plan.id === 'free' ? (
+                  hasActiveSub ? (
+                    // Bajar a Free = cancelar en el portal
+                    <Button
+                      variant="secondary"
+                      className="w-full"
+                      loading={loadingPlan === 'free'}
+                      onClick={() => onChangePlan('free')}
+                    >
+                      {t('pro.pricingPage.changePlan')}
                     </Button>
                   ) : (
                     <Button
@@ -148,9 +193,15 @@ export function PricingPlans() {
                       {proUser ? t('pro.pricingPage.goToDashboard') : t('pro.pricingPage.createAccount')}
                     </Button>
                   )
-                ) : esActual ? (
-                  <Button variant="secondary" className="w-full" disabled>
-                    {t('pro.pricingPage.currentPlan')}
+                ) : hasActiveSub ? (
+                  // Ya tiene suscripción: cambiar de plan/periodo va al portal
+                  <Button
+                    variant={plan.destacado ? 'primary' : 'secondary'}
+                    className="w-full"
+                    loading={loadingPlan === plan.id}
+                    onClick={() => onChangePlan(plan.id)}
+                  >
+                    {t('pro.pricingPage.changePlan')}
                   </Button>
                 ) : (
                   <Button

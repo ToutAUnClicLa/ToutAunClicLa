@@ -2810,6 +2810,7 @@ export default {
       back: "Home",
       title: "Plans for professionals",
       subtitle: "Start free and move up to Pro or Max whenever you want. 7-day trial on paid plans.",
+      trialOnceNote: "The 7-day free trial is valid once per person. If you've already used it, your subscription is charged immediately.",
       monthly: "Monthly",
       yearly: "Yearly",
       yearlyNote: "· 2 months free",
@@ -2817,6 +2818,7 @@ export default {
       perYear: "yr",
       recommended: "Recommended",
       currentPlan: "Your current plan",
+      changePlan: "Change plan",
       goToDashboard: "Go to dashboard",
       createAccount: "Create an account",
       subscribe: "Subscribe",
@@ -2876,6 +2878,8 @@ export default {
       phoneLabel: "Phone",
       cityLabel: "City",
       websiteLabel: "Website",
+      contactEmailLabel: "Contact email",
+      contactEmailPlaceholder: "contact@example.com",
       save: "Save changes",
       saved: "Profile updated.",
       saveError: "Could not save."
@@ -2890,6 +2894,7 @@ export default {
     social: {
       loading: "Loading…",
       empty: "You haven't added any social networks yet.",
+      platformAria: "Choose platform",
       urlPlaceholder: "https://…",
       add: "Add",
       remove: "Remove",

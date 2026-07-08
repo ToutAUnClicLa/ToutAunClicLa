@@ -23,6 +23,7 @@ export interface PublicPro {
   telefono?: string | null;
   sitio_web?: string | null;
   ciudad?: string | null;
+  email_contacto?: string | null;
   idiomas_hablados?: string[];
   categoria_id?: string | null;
   subcategoria_id?: string | null;

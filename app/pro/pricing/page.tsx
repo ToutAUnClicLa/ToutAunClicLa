@@ -41,6 +41,10 @@ export default function PricingPage({ searchParams }: PageProps) {
         </div>
 
         <PricingPlans />
+
+        <p className="mx-auto mt-8 max-w-xl text-center text-xs text-muted-foreground">
+          {t.trialOnceNote}
+        </p>
       </main>
     </div>
   );

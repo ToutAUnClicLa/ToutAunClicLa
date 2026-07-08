@@ -16,7 +16,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     if (!loading && (!proUser || !proUser.verificado)) {
-      router.replace('/pro/login');
+      router.replace('/pro');
     }
   }, [loading, proUser, router]);
 
@@ -51,9 +51,9 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
             variant="secondary"
             size="sm"
             aria-label={t('pro.dashboard.logout')}
-            onClick={() => {
-              logout();
-              router.replace('/pro/login');
+            onClick={async () => {
+              await logout();
+              router.replace('/pro');
             }}
           >
             <LogOut className="h-4 w-4 sm:hidden" aria-hidden />

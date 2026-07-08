@@ -76,3 +76,71 @@
 .animate-new-order {
   animation: pulse-green 15s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
+
+/* ── Cards del directorio Pro: borde de gradiente iluminado ──────────────────
+   El borde real es un ::before enmascarado (solo el anillo de 1.5px se ve).
+   Un shimmer lento desplaza el gradiente; el glow (box-shadow tintado) sube en
+   hover. Restrained a propósito (guía: movimiento con propósito, no neón). */
+.pro-glow {
+  position: relative;
+  isolation: isolate;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+.pro-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background-size: 220% 220%;
+  background-position: 0% 50%;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* MAX — dorado + esmeralda */
+.pro-glow-max::before {
+  background-image: linear-gradient(115deg, #f59e0b, #10b981, #fbbf24, #059669, #f59e0b);
+  animation: pro-border-shimmer 9s ease-in-out infinite;
+}
+.pro-glow-max {
+  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0), 0 8px 24px -12px rgba(16, 185, 129, 0.25);
+}
+.pro-glow-max:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 22px -6px rgba(245, 158, 11, 0.35), 0 12px 30px -14px rgba(16, 185, 129, 0.4);
+}
+
+/* PRO — esmeralda (más sobrio) */
+.pro-glow-pro::before {
+  background-image: linear-gradient(115deg, #34d399, #059669, #6ee7b7, #10b981);
+  animation: pro-border-shimmer 11s ease-in-out infinite;
+  opacity: 0.85;
+}
+.pro-glow-pro {
+  box-shadow: 0 6px 20px -14px rgba(16, 185, 129, 0.35);
+}
+.pro-glow-pro:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 18px -8px rgba(16, 185, 129, 0.4), 0 10px 26px -14px rgba(16, 185, 129, 0.35);
+}
+
+@keyframes pro-border-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pro-glow-max::before,
+  .pro-glow-pro::before {
+    animation: none;
+  }
+  .pro-glow:hover {
+    transform: none;
+  }
+}

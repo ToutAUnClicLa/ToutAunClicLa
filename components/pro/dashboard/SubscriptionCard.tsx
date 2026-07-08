@@ -69,8 +69,12 @@ export function SubscriptionCard() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('checkout') === 'success') {
-      toast.success(t('pro.subscription.activated'));
+    const justCheckedOut = params.get('checkout') === 'success';
+    const justUsedPortal = params.get('billing') === 'updated';
+    // Tras checkout o portal, sincroniza desde Stripe (no dependas del timing
+    // del webhook: al volver del portal el evento puede no haberse procesado aún).
+    if (justCheckedOut || justUsedPortal) {
+      if (justCheckedOut) toast.success(t('pro.subscription.activated'));
       window.history.replaceState({}, '', '/pro/dashboard');
       syncFromStripe();
     } else {
@@ -145,11 +149,16 @@ export function SubscriptionCard() {
         <p className="mt-3 text-sm text-muted-foreground">{t('pro.subscription.freeText')}</p>
       )}
 
-      <div className="mt-5">
+      <div className="mt-5 flex flex-wrap gap-2">
         {sub ? (
-          <Button variant="secondary" size="sm" loading={portalLoading} onClick={onPortal}>
-            {t('pro.subscription.manage')}
-          </Button>
+          <>
+            <Button size="sm" loading={portalLoading} onClick={onPortal}>
+              {t('pro.subscription.manage')}
+            </Button>
+            <Button variant="secondary" size="sm" onClick={() => router.push('/pro/pricing')}>
+              {t('pro.subscription.seePlans')}
+            </Button>
+          </>
         ) : (
           <Button size="sm" onClick={() => router.push('/pro/pricing')}>
             {t('pro.subscription.seePlans')}

@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Sliders, Users } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { getServices, type DirectoryPro, type DirectoryResponse } from '@/lib/pro/endpoints';
-import { DirectoryCard, DirectoryCardMaxFeatured } from '@/components/features/services/directory/DirectoryCard';
+import { DirectoryCard } from '@/components/features/services/directory/DirectoryCard';
 import { DirectoryFilters } from '@/components/features/services/directory/DirectoryFilters';
 import { DirectorySkeleton } from '@/components/features/services/directory/DirectorySkeleton';
 
@@ -107,13 +107,6 @@ export function CategoryDirectory({ category }: Props) {
     setCiudad('');
   };
 
-  // Separa el primer Max destacado como banner, resto va en grid
-  const { featured, gridItems } = useMemo(() => {
-    const idx = items.findIndex((p) => p.tier === 'max' && p.destacado);
-    if (idx === -1) return { featured: null, gridItems: items };
-    return { featured: items[idx], gridItems: items.filter((_, i) => i !== idx) };
-  }, [items]);
-
   return (
     <div className="bg-slate-50 dark:bg-slate-900 min-h-screen">
       {/* Hero compacto */}
@@ -178,26 +171,13 @@ export function CategoryDirectory({ category }: Props) {
               <EmptyState anyFilterActive={anyFilterActive} onClear={clearFilters} t={t} />
             ) : (
               <div className="space-y-6">
-                {featured && <DirectoryCardMaxFeatured pro={featured} />}
-                {gridItems.length > 0 && (
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {gridItems.filter((p) => p.tier !== 'free').map((p) => (
-                      <DirectoryCard key={p.slug} pro={p} />
-                    ))}
-                  </div>
-                )}
-                {gridItems.some((p) => p.tier === 'free') && (
-                  <div>
-                    <p className="mb-2 mt-8 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                      {t('pro.directory.alsoHere')}
-                    </p>
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                      {gridItems.filter((p) => p.tier === 'free').map((p) => (
-                        <DirectoryCard key={p.slug} pro={p} />
-                      ))}
-                    </div>
-                  </div>
-                )}
+                {/* Grid simétrico: todos los tiers, misma tarjeta, 2 columnas.
+                    El orden (Max destacado → Max → Pro → Free) lo da el backend. */}
+                <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                  {items.map((p) => (
+                    <DirectoryCard key={p.slug} pro={p} />
+                  ))}
+                </div>
 
                 {page < totalPages && (
                   <div className="pt-2 text-center">

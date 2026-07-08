@@ -2804,6 +2804,7 @@ export default {
       back: "Accueil",
       title: "Plans pour professionnels",
       subtitle: "Commence gratuitement et passe à Pro ou Max quand tu veux. Essai de 7 jours sur les plans payants.",
+      trialOnceNote: "L'essai gratuit de 7 jours est valable une seule fois. Si tu l'as déjà utilisé, l'abonnement est facturé immédiatement.",
       monthly: "Mensuel",
       yearly: "Annuel",
       yearlyNote: "· 2 mois gratuits",
@@ -2811,6 +2812,7 @@ export default {
       perYear: "an",
       recommended: "Recommandé",
       currentPlan: "Ton plan actuel",
+      changePlan: "Changer de plan",
       goToDashboard: "Aller au panneau",
       createAccount: "Créer un compte",
       subscribe: "M'abonner",
@@ -2870,6 +2872,8 @@ export default {
       phoneLabel: "Téléphone",
       cityLabel: "Ville",
       websiteLabel: "Site web",
+      contactEmailLabel: "Courriel de contact",
+      contactEmailPlaceholder: "contact@exemple.com",
       save: "Enregistrer les modifications",
       saved: "Profil mis à jour.",
       saveError: "Enregistrement impossible."
@@ -2884,6 +2888,7 @@ export default {
     social: {
       loading: "Chargement…",
       empty: "Tu n'as pas encore ajouté de réseaux sociaux.",
+      platformAria: "Choisir la plateforme",
       urlPlaceholder: "https://…",
       add: "Ajouter",
       remove: "Supprimer",
