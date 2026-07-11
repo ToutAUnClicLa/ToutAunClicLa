@@ -2775,6 +2775,12 @@ export default {
       profileCardDesc: "Edit your title, bio, category, languages, socials and photo.",
       analyticsCardTitle: "My stats",
       analyticsCardDesc: "Views, clicks, vCard downloads and QR scans for your card.",
+      cardCardTitle: "Your public card",
+      cardCardDesc: "Exactly what your clients see when they visit your card.",
+      vcardCardTitle: "Save contact (vCard)",
+      vcardCardDesc: "What happens when someone taps \"Save contact\" on your card.",
+      walletCardTitle: "Apple Wallet",
+      walletCardDesc: "Your digital card in the iPhone Wallet, shareable via AirDrop.",
       profile: {
         metaTitle: "My profile",
         back: "Dashboard",
@@ -2811,6 +2817,48 @@ export default {
           qr: "QR code",
           directo: "Direct"
         }
+      },
+      card: {
+        back: "Dashboard",
+        title: "Your public card",
+        subtitle: "An exact preview of what your clients see on your digital card. To edit it, go to My profile.",
+        viewLive: "View live",
+        upsellTitle: "Public card not available on Free",
+        upsellText: "Subscribe to Pro or Max to activate your public digital card.",
+        upsellCta: "See plans",
+        notReady: "Not enough data yet to show your card. Complete your profile first."
+      },
+      vcard: {
+        back: "Dashboard",
+        title: "Save contact (vCard)",
+        subtitle: "When someone taps \"Save contact\" on your card, here's what gets saved to their phone.",
+        upsellTitle: "vCard not available on Free",
+        upsellText: "Subscribe to Pro or Max so your clients can save your contact in one tap.",
+        upsellCta: "See plans",
+        notReady: "Complete your profile to generate your vCard.",
+        fileNote: ".vcf file · works on iPhone and Android",
+        fieldsTitle: "Included data",
+        fieldName: "Name",
+        fieldTitle: "Title / company",
+        fieldPhone: "Phone",
+        fieldEmail: "Email",
+        fieldWebsite: "Website",
+        fieldPhoto: "Profile photo",
+        fieldPhotoValue: "Included",
+        testButton: "Test it: download my vCard",
+        howItWorks: "The button above downloads the same file your clients get when they tap \"Save contact\" on your public card."
+      },
+      wallet: {
+        back: "Dashboard",
+        title: "Apple Wallet",
+        subtitle: "Your digital card as an Apple Wallet pass, shareable via AirDrop with no apps or friction.",
+        comingSoonBadge: "Coming soon",
+        comingSoonTitle: "Not available yet",
+        comingSoonText: "We're building the Apple Wallet integration. We'll let you know as soon as it's ready for your plan.",
+        featureWalletTitle: "Lives in your Wallet",
+        featureWalletDesc: "Like a boarding pass or movie ticket: your professional card always one tap away on iPhone.",
+        featureAirdropTitle: "Share via AirDrop",
+        featureAirdropDesc: "Share it with any nearby iPhone without installing an app."
       }
     },
     subscription: {

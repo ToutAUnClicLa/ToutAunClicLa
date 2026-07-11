@@ -2769,6 +2769,12 @@ export default {
       profileCardDesc: "Modifie ton titre, ta biographie, ta catégorie, tes langues, tes réseaux et ta photo.",
       analyticsCardTitle: "Mes statistiques",
       analyticsCardDesc: "Vues, clics, téléchargements de vCard et scans QR de ta carte.",
+      cardCardTitle: "Ta carte publique",
+      cardCardDesc: "Exactement ce que voient tes clients quand ils visitent ta carte.",
+      vcardCardTitle: "Enregistrer le contact (vCard)",
+      vcardCardDesc: "Ce qui se passe quand quelqu'un touche « Enregistrer le contact » sur ta carte.",
+      walletCardTitle: "Apple Wallet",
+      walletCardDesc: "Ta carte numérique dans le Wallet de l'iPhone, partageable par AirDrop.",
       profile: {
         metaTitle: "Mon profil",
         back: "Tableau de bord",
@@ -2805,6 +2811,48 @@ export default {
           qr: "Code QR",
           directo: "Direct"
         }
+      },
+      card: {
+        back: "Tableau de bord",
+        title: "Ta carte publique",
+        subtitle: "Aperçu exact de ce que voient tes clients sur ta carte numérique. Pour la modifier, va dans Mon profil.",
+        viewLive: "Voir en direct",
+        upsellTitle: "Carte publique non disponible en Free",
+        upsellText: "Abonne-toi à Pro ou Max pour activer ta carte numérique publique.",
+        upsellCta: "Voir les plans",
+        notReady: "Pas encore assez de données pour afficher ta carte. Complète d'abord ton profil."
+      },
+      vcard: {
+        back: "Tableau de bord",
+        title: "Enregistrer le contact (vCard)",
+        subtitle: "Quand quelqu'un touche « Enregistrer le contact » sur ta carte, voici ce qui est enregistré sur son téléphone.",
+        upsellTitle: "vCard non disponible en Free",
+        upsellText: "Abonne-toi à Pro ou Max pour que tes clients puissent enregistrer ton contact en un geste.",
+        upsellCta: "Voir les plans",
+        notReady: "Complète ton profil pour générer ta vCard.",
+        fileNote: "Fichier .vcf · compatible iPhone et Android",
+        fieldsTitle: "Données incluses",
+        fieldName: "Nom",
+        fieldTitle: "Titre / entreprise",
+        fieldPhone: "Téléphone",
+        fieldEmail: "Email",
+        fieldWebsite: "Site web",
+        fieldPhoto: "Photo de profil",
+        fieldPhotoValue: "Incluse",
+        testButton: "Essayer : télécharger ma vCard",
+        howItWorks: "Le bouton ci-dessus télécharge le même fichier que voient tes clients en touchant « Enregistrer le contact » sur ta carte publique."
+      },
+      wallet: {
+        back: "Tableau de bord",
+        title: "Apple Wallet",
+        subtitle: "Ta carte numérique comme un pass Apple Wallet, partageable par AirDrop sans app ni friction.",
+        comingSoonBadge: "Bientôt disponible",
+        comingSoonTitle: "Pas encore disponible",
+        comingSoonText: "On construit l'intégration avec Apple Wallet. On t'avertira dès qu'elle sera prête pour ton plan.",
+        featureWalletTitle: "Vit dans ton Wallet",
+        featureWalletDesc: "Comme un billet d'avion ou de cinéma : ta carte professionnelle toujours à portée de main sur l'iPhone.",
+        featureAirdropTitle: "Partager par AirDrop",
+        featureAirdropDesc: "Partage-la avec n'importe quel iPhone à proximité, sans installer d'application."
       }
     },
     subscription: {
