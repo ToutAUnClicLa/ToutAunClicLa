@@ -33,7 +33,7 @@ export default function CardPreviewPage() {
 
   if (isFree) {
     return (
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <BackButton href="/pro/dashboard" label={t('pro.dashboard.card.back')} />
         <div className="mt-4">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
@@ -60,7 +60,7 @@ export default function CardPreviewPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-3xl" aria-busy="true">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6" aria-busy="true">
         <div className="pro-skeleton h-5 w-36" />
         <div className="mt-6 space-y-2">
           <div className="pro-skeleton h-8 w-48" />
@@ -83,7 +83,7 @@ export default function CardPreviewPage() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6">
       <BackButton href="/pro/dashboard" label={t('pro.dashboard.card.back')} />
 
       <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
@@ -110,18 +110,20 @@ export default function CardPreviewPage() {
 
       {pro ? (
         <div className="mt-8">
-          <PublicCardBody
-            pro={pro}
-            name={name}
-            url={liveUrl}
-            t={cardT}
-            qr={<QrCard slug={pro.slug} dataUrl={`/api/pro/qr/${pro.slug}`} />}
-          />
+          <PublicCardBody pro={pro} name={name} url={liveUrl} t={cardT} />
+
           {pro.galeria && pro.galeria.length > 0 && (
-            <div className="mt-8">
+            <section className="mt-8">
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-slate-400">
+                {t('pro.card.gallery')}
+              </h2>
               <PublicGallery items={pro.galeria} />
-            </div>
+            </section>
           )}
+
+          <section className="mt-8">
+            <QrCard slug={pro.slug} dataUrl={`/api/pro/qr/${pro.slug}`} />
+          </section>
         </div>
       ) : (
         <p className="mt-8 text-sm text-muted-foreground">{t('pro.dashboard.card.notReady')}</p>

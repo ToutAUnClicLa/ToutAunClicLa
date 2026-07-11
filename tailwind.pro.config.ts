@@ -6,7 +6,11 @@ import baseConfig from './tailwind.config';
 // páginas las utilidades del resto del sitio (e-commerce, admin, restaurante).
 const config: Config = {
   ...baseConfig,
-  content: ['./app/pro/**/*.{js,ts,jsx,tsx,mdx}', './components/pro/**/*.{js,ts,jsx,tsx,mdx}'],
+  content: [
+    './app/pro/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/pro/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/features/services/card/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
 };
 
 export default config;
