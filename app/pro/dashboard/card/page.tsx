@@ -110,7 +110,13 @@ export default function CardPreviewPage() {
 
       {pro ? (
         <div className="mt-8">
-          <PublicCardBody pro={pro} name={name} url={liveUrl} t={cardT} />
+          <PublicCardBody
+            pro={pro}
+            name={name}
+            url={liveUrl}
+            t={cardT}
+            qr={<QrCard slug={pro.slug} dataUrl={`/api/pro/qr/${pro.slug}`} />}
+          />
 
           {pro.galeria && pro.galeria.length > 0 && (
             <section className="mt-8">
@@ -120,10 +126,6 @@ export default function CardPreviewPage() {
               <PublicGallery items={pro.galeria} />
             </section>
           )}
-
-          <section className="mt-8">
-            <QrCard slug={pro.slug} dataUrl={`/api/pro/qr/${pro.slug}`} />
-          </section>
         </div>
       ) : (
         <p className="mt-8 text-sm text-muted-foreground">{t('pro.dashboard.card.notReady')}</p>

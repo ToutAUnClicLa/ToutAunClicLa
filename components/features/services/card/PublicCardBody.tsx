@@ -16,11 +16,14 @@ interface PublicCardBodyProps {
   name: string;
   url: string;
   t: PublicCardBodyStrings;
+  // Bloque de QR (fuente de datos distinta según contexto: data URL SSR en
+  // la tarjeta pública, ruta proxy same-origin en el preview del dashboard).
+  qr?: React.ReactNode;
 }
 
 // Cuerpo visual de la tarjeta pública (app/(main)/card/[slug]/page.tsx).
 // Extraído para reutilizarlo tal cual en la vista previa del dashboard Pro.
-export function PublicCardBody({ pro, name, url, t }: PublicCardBodyProps) {
+export function PublicCardBody({ pro, name, url, t, qr }: PublicCardBodyProps) {
   return (
     <article className="overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
       {/* Banda superior */}
@@ -104,63 +107,72 @@ export function PublicCardBody({ pro, name, url, t }: PublicCardBodyProps) {
           )}
         </div>
 
-        {/* Redes */}
-        {pro.redes && pro.redes.length > 0 && (
-          <div className="mt-8 border-t border-slate-100 dark:border-slate-800 pt-6">
-            <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
-              {t.socialsSection}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {pro.redes.map((r) => (
-                <SocialLink key={r.plataforma + r.url} plataforma={r.plataforma} url={r.url} slug={pro.slug} />
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Redes + Contacto (izquierda) y QR (derecha) — 2 columnas iguales en desktop */}
+        {(!!pro.redes?.length || pro.telefono || pro.email_contacto || pro.sitio_web || qr) && (
+          <div className="mt-8 border-t border-slate-100 dark:border-slate-800 pt-6 sm:grid sm:grid-cols-2 sm:items-start sm:gap-8">
+            <div className="flex flex-col gap-8">
+              {/* Redes */}
+              {pro.redes && pro.redes.length > 0 && (
+                <div>
+                  <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+                    {t.socialsSection}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {pro.redes.map((r) => (
+                      <SocialLink key={r.plataforma + r.url} plataforma={r.plataforma} url={r.url} slug={pro.slug} />
+                    ))}
+                  </div>
+                </div>
+              )}
 
-        {/* Contacto directo */}
-        {(pro.telefono || pro.email_contacto || pro.sitio_web) && (
-          <div className="mt-8 border-t border-slate-100 dark:border-slate-800 pt-6">
-            <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
-              {t.contactSection}
-            </p>
-            <ul className="flex flex-col gap-2 text-sm">
-              {pro.telefono && (
-                <li>
-                  <a
-                    href={`tel:${pro.telefono}`}
-                    className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400"
-                  >
-                    <Phone className="h-4 w-4" aria-hidden />
-                    {pro.telefono}
-                  </a>
-                </li>
+              {/* Contacto directo */}
+              {(pro.telefono || pro.email_contacto || pro.sitio_web) && (
+                <div>
+                  <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+                    {t.contactSection}
+                  </p>
+                  <ul className="flex flex-col gap-2 text-sm">
+                    {pro.telefono && (
+                      <li>
+                        <a
+                          href={`tel:${pro.telefono}`}
+                          className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400"
+                        >
+                          <Phone className="h-4 w-4" aria-hidden />
+                          {pro.telefono}
+                        </a>
+                      </li>
+                    )}
+                    {pro.email_contacto && (
+                      <li>
+                        <a
+                          href={`mailto:${pro.email_contacto}`}
+                          className="inline-flex items-center gap-2 break-all text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400"
+                        >
+                          <Mail className="h-4 w-4 shrink-0" aria-hidden />
+                          {pro.email_contacto}
+                        </a>
+                      </li>
+                    )}
+                    {pro.sitio_web && (
+                      <li>
+                        <a
+                          href={pro.sitio_web}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400"
+                        >
+                          <Globe className="h-4 w-4" aria-hidden />
+                          {pro.sitio_web.replace(/^https?:\/\//, '')}
+                        </a>
+                      </li>
+                    )}
+                  </ul>
+                </div>
               )}
-              {pro.email_contacto && (
-                <li>
-                  <a
-                    href={`mailto:${pro.email_contacto}`}
-                    className="inline-flex items-center gap-2 break-all text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400"
-                  >
-                    <Mail className="h-4 w-4 shrink-0" aria-hidden />
-                    {pro.email_contacto}
-                  </a>
-                </li>
-              )}
-              {pro.sitio_web && (
-                <li>
-                  <a
-                    href={pro.sitio_web}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400"
-                  >
-                    <Globe className="h-4 w-4" aria-hidden />
-                    {pro.sitio_web.replace(/^https?:\/\//, '')}
-                  </a>
-                </li>
-              )}
-            </ul>
+            </div>
+
+            {qr && <div className="mt-8 sm:mt-0">{qr}</div>}
           </div>
         )}
       </div>
