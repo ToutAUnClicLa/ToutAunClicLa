@@ -77,6 +77,43 @@ export const createCheckout = (plan: 'pro' | 'max', periodo: 'mensual' | 'anual'
 export const openBillingPortal = () =>
   proFetch<{ url: string }>('/me/billing-portal', { method: 'POST', body: {} }).then((r) => r.url);
 
+// --- Analytics ---------------------------------------------------------------
+
+export interface AnalyticsTotals {
+  vistas: number;
+  clics_redes: number;
+  descargas_vcard: number;
+  scans_qr: number;
+}
+
+export interface AnalyticsWeekPoint {
+  date: string;
+  vistas: number;
+  clics: number;
+  descargas: number;
+  scans: number;
+}
+
+export interface AnalyticsSource {
+  fuente: string;
+  count: number;
+}
+
+export interface AnalyticsDevice {
+  tipo: string;
+  count: number;
+}
+
+export interface ProAnalytics {
+  totals: AnalyticsTotals;
+  weekly: AnalyticsWeekPoint[];
+  // Solo presentes para tier Max.
+  sources?: AnalyticsSource[];
+  devices?: AnalyticsDevice[];
+}
+
+export const getAnalytics = () => proFetch<ProAnalytics>('/me/analytics');
+
 // --- Directorio público -----------------------------------------------------
 
 export interface DirectoryRed {

@@ -15,7 +15,7 @@ export function TestimonialsMarquee({ t }: { t: LandingT }) {
 
   // Duplicamos el set para cubrir pantallas anchas sin hueco. La pista contiene
   // dos copias idénticas del bloque; translateX(-50%) reinicia sin salto.
-  const track = [...items, ...items];
+  const track = [...items, ...items, ...items];
 
   const Card = ({
     quote,

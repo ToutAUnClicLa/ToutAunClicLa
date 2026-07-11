@@ -2767,6 +2767,8 @@ export default {
       intro: "Voici ton tableau de bord professionnel. Modifie ton profil et gère ton abonnement.",
       profileCardTitle: "Ton profil",
       profileCardDesc: "Modifie ton titre, ta biographie, ta catégorie, tes langues, tes réseaux et ta photo.",
+      analyticsCardTitle: "Mes statistiques",
+      analyticsCardDesc: "Vues, clics, téléchargements de vCard et scans QR de ta carte.",
       profile: {
         metaTitle: "Mon profil",
         back: "Tableau de bord",
@@ -2774,6 +2776,35 @@ export default {
         subtitle: "Voici comment on te verra sur ta carte numérique et dans l'annuaire.",
         socialsTitle: "Réseaux sociaux",
         socialsHint: "Pro permet jusqu'à 5 · Max, illimités."
+      },
+      analytics: {
+        metaTitle: "Mes statistiques",
+        back: "Tableau de bord",
+        title: "Mes statistiques",
+        subtitle: "Comment se comporte ta carte numérique cette semaine.",
+        statVistas: "Vues du profil",
+        statClics: "Clics sur les réseaux",
+        statDescargas: "Téléchargements de vCard",
+        statScans: "Scans de QR",
+        chartTitle: "Vues des 7 derniers jours",
+        emptyState: "Aucune activité enregistrée pour l'instant. Partage ta carte pour voir tes statistiques.",
+        upsellTitle: "Statistiques non disponibles en Free",
+        upsellText: "Abonne-toi à Pro ou Max pour voir les vues, clics, téléchargements de vCard et scans QR.",
+        upsellCta: "Voir les plans",
+        sourcesTitle: "Sources de trafic",
+        devicesTitle: "Appareils",
+        noData: "Pas encore assez de données.",
+        deviceTypes: {
+          ios: "iOS",
+          android: "Android",
+          desktop: "Desktop",
+          unknown: "Inconnu"
+        },
+        sourceTypes: {
+          directorio: "Annuaire",
+          qr: "Code QR",
+          directo: "Direct"
+        }
       }
     },
     subscription: {

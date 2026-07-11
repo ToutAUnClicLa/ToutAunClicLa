@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import { MapPin, Phone, Globe, ArrowLeft, Mail } from 'lucide-react';
 import { fetchPublicProfile, fetchCategoriaById, fetchQrDataUrl, APP_URL, vcardUrl, type PublicPro } from '@/lib/pro/publicProfile';
@@ -118,12 +119,16 @@ export default async function PublicProfilePage({ params, searchParams }: PagePr
             {/* Foto y acciones — marco 4:5 (retrato; las fotos de perfil suelen serlo, así no se recortan) */}
             <div className="-mt-16 flex flex-col gap-4 sm:-mt-24 sm:flex-row sm:items-end sm:justify-between">
               {pro.foto_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={pro.foto_url}
-                  alt={name}
-                  className="aspect-[4/5] w-36 rounded-2xl border-4 border-white dark:border-slate-900 object-cover shadow-md sm:w-44"
-                />
+                <div className="relative aspect-[4/5] w-36 shrink-0 overflow-hidden rounded-2xl border-4 border-white shadow-md dark:border-slate-900 sm:w-44">
+                  <Image
+                    src={pro.foto_url}
+                    alt={name}
+                    fill
+                    priority
+                    sizes="(max-width: 640px) 144px, 176px"
+                    className="object-cover"
+                  />
+                </div>
               ) : (
                 <div className="flex aspect-[4/5] w-36 items-center justify-center rounded-2xl border-4 border-white dark:border-slate-900 bg-emerald-100 dark:bg-emerald-900/30 text-3xl font-semibold text-emerald-700 dark:text-emerald-300 shadow-md sm:w-44">
                   {(pro.nombre[0] || '') + (pro.apellido?.[0] || '')}

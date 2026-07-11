@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ProLogo } from '@/components/pro/ProLogo';
@@ -38,8 +39,13 @@ export function ProLandingHeader() {
           <Link href="/pro/dashboard" className="flex items-center gap-3">
             <div className="hidden items-center gap-2 sm:flex">
               {proUser.foto_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={proUser.foto_url} alt="" className="h-8 w-8 rounded-full object-cover" />
+                <Image
+                  src={proUser.foto_url}
+                  alt=""
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 rounded-full object-cover"
+                />
               ) : (
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
                   {(proUser.nombre || '?').slice(0, 2).toUpperCase()}

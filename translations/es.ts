@@ -2805,6 +2805,8 @@ export default {
       intro: "Este es tu panel profesional. Edita tu perfil y gestiona tu suscripción.",
       profileCardTitle: "Tu perfil",
       profileCardDesc: "Edita tu título, biografía, categoría, idiomas, redes y foto.",
+      analyticsCardTitle: "Mis estadísticas",
+      analyticsCardDesc: "Vistas, clics, descargas de vCard y scans de QR de tu tarjeta.",
       profile: {
         metaTitle: "Mi perfil",
         back: "Panel",
@@ -2812,6 +2814,35 @@ export default {
         subtitle: "Así te verán en tu tarjeta digital y en el directorio.",
         socialsTitle: "Redes sociales",
         socialsHint: "Pro permite hasta 5 · Max, ilimitadas."
+      },
+      analytics: {
+        metaTitle: "Mis estadísticas",
+        back: "Panel",
+        title: "Mis estadísticas",
+        subtitle: "Cómo está funcionando tu tarjeta digital esta semana.",
+        statVistas: "Vistas del perfil",
+        statClics: "Clics en redes",
+        statDescargas: "Descargas de vCard",
+        statScans: "Scans de QR",
+        chartTitle: "Vistas de los últimos 7 días",
+        emptyState: "Aún no hay actividad registrada. Comparte tu tarjeta para empezar a ver estadísticas.",
+        upsellTitle: "Analítica no disponible en Free",
+        upsellText: "Suscríbete a Pro o Max para ver vistas, clics, descargas de vCard y scans de tu QR.",
+        upsellCta: "Ver planes",
+        sourcesTitle: "Fuentes de tráfico",
+        devicesTitle: "Dispositivos",
+        noData: "Sin datos suficientes todavía.",
+        deviceTypes: {
+          ios: "iOS",
+          android: "Android",
+          desktop: "Desktop",
+          unknown: "Desconocido"
+        },
+        sourceTypes: {
+          directorio: "Directorio",
+          qr: "Código QR",
+          directo: "Directo"
+        }
       }
     },
     subscription: {

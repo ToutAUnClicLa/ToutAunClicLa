@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { LogOut } from 'lucide-react';
 import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -36,8 +37,13 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
           <ProLangSwitcher />
           <div className="hidden items-center gap-2 sm:flex">
             {proUser.foto_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={proUser.foto_url} alt="" className="h-8 w-8 rounded-full object-cover" />
+              <Image
+                src={proUser.foto_url}
+                alt=""
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-full object-cover"
+              />
             ) : (
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
                 {(proUser.nombre || '?').slice(0, 2).toUpperCase()}

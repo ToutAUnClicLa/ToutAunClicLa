@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { MapPin, Star, Sparkles, ArrowUpRight } from 'lucide-react';
 import type { DirectoryPro } from '@/lib/pro/endpoints';
 import { socialIcon } from '@/components/pro/socialBrand';
@@ -57,12 +58,15 @@ function ProCardContent({
   return (
     <>
       {pro.foto_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={pro.foto_url}
-          alt=""
-          className="aspect-[4/5] w-24 shrink-0 rounded-xl object-cover sm:w-28"
-        />
+        <div className="relative aspect-[4/5] w-24 shrink-0 overflow-hidden rounded-xl sm:w-28">
+          <Image
+            src={pro.foto_url}
+            alt=""
+            fill
+            sizes="(max-width: 640px) 96px, 112px"
+            className="object-cover"
+          />
+        </div>
       ) : (
         <div
           className={`flex aspect-[4/5] w-24 shrink-0 items-center justify-center rounded-xl text-2xl font-semibold sm:w-28 ${

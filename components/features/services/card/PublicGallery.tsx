@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import type { PublicGaleriaItem } from '@/lib/pro/publicProfile';
 
 // Galería con scroll horizontal snap. En < 640px cada foto ocupa ~90% del ancho.
@@ -15,13 +16,15 @@ export function PublicGallery({ items }: { items: PublicGaleriaItem[] }) {
             className="snap-start shrink-0 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800"
             style={{ width: 'min(340px, 90vw)' }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={it.imagen_url}
-              alt={it.titulo || ''}
-              loading="lazy"
-              className="aspect-[4/3] w-full object-cover"
-            />
+            <div className="relative aspect-[4/3] w-full">
+              <Image
+                src={it.imagen_url}
+                alt={it.titulo || ''}
+                fill
+                sizes="min(340px, 90vw)"
+                className="object-cover"
+              />
+            </div>
             {(it.titulo || it.descripcion) && (
               <figcaption className="p-3 text-xs">
                 {it.titulo && <p className="font-medium text-slate-800 dark:text-slate-200">{it.titulo}</p>}

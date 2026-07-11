@@ -180,11 +180,7 @@
     transform: translateX(calc(-50% - 0.75rem));
   }
 }
-/* Pausa en hover y en focus-within (accesibilidad de teclado). */
-.pro-theme .pro-marquee:hover .pro-marquee-track,
-.pro-theme .pro-marquee:focus-within .pro-marquee-track {
-  animation-play-state: paused;
-}
+
 
 /* CTA decorativa del mockup: micro-interacción viva al pasar por la tarjeta
    (no clickeable — el mockup completo es aria-hidden en sus partes). */

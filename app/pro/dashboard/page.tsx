@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { ArrowUpRight, UserRound } from 'lucide-react';
+import { ArrowUpRight, BarChart2, UserRound } from 'lucide-react';
 import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { SubscriptionCard } from '@/components/pro/dashboard/SubscriptionCard';
@@ -17,7 +17,7 @@ export default function DashboardPage() {
       </h1>
       <p className="mt-1.5 text-sm text-muted-foreground">{t('pro.dashboard.intro')}</p>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Link
           href="/pro/dashboard/profile"
           className="pro-card-hover group rounded-[14px] border border-border bg-card p-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -36,6 +36,26 @@ export default function DashboardPage() {
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {t('pro.dashboard.profileCardDesc')}
+          </p>
+        </Link>
+        <Link
+          href="/pro/dashboard/analytics"
+          className="pro-card-hover group rounded-[14px] border border-border bg-card p-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          <div className="flex items-start justify-between">
+            <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent text-accent-foreground">
+              <BarChart2 className="h-5 w-5" aria-hidden />
+            </span>
+            <ArrowUpRight
+              className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary"
+              aria-hidden
+            />
+          </div>
+          <h2 className="mt-4 text-base font-semibold text-foreground">
+            {t('pro.dashboard.analyticsCardTitle')}
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t('pro.dashboard.analyticsCardDesc')}
           </p>
         </Link>
         <SubscriptionCard />

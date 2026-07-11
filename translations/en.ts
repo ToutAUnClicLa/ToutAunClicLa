@@ -2773,6 +2773,8 @@ export default {
       intro: "This is your professional dashboard. Edit your profile and manage your subscription.",
       profileCardTitle: "Your profile",
       profileCardDesc: "Edit your title, bio, category, languages, socials and photo.",
+      analyticsCardTitle: "My stats",
+      analyticsCardDesc: "Views, clicks, vCard downloads and QR scans for your card.",
       profile: {
         metaTitle: "My profile",
         back: "Dashboard",
@@ -2780,6 +2782,35 @@ export default {
         subtitle: "This is how you'll appear on your digital card and in the directory.",
         socialsTitle: "Social networks",
         socialsHint: "Pro allows up to 5 · Max, unlimited."
+      },
+      analytics: {
+        metaTitle: "My stats",
+        back: "Dashboard",
+        title: "My stats",
+        subtitle: "How your digital card is doing this week.",
+        statVistas: "Profile views",
+        statClics: "Social clicks",
+        statDescargas: "vCard downloads",
+        statScans: "QR scans",
+        chartTitle: "Views over the last 7 days",
+        emptyState: "No activity recorded yet. Share your card to start seeing stats.",
+        upsellTitle: "Analytics not available on Free",
+        upsellText: "Subscribe to Pro or Max to see views, clicks, vCard downloads and QR scans.",
+        upsellCta: "See plans",
+        sourcesTitle: "Traffic sources",
+        devicesTitle: "Devices",
+        noData: "Not enough data yet.",
+        deviceTypes: {
+          ios: "iOS",
+          android: "Android",
+          desktop: "Desktop",
+          unknown: "Unknown"
+        },
+        sourceTypes: {
+          directorio: "Directory",
+          qr: "QR code",
+          directo: "Direct"
+        }
       }
     },
     subscription: {
