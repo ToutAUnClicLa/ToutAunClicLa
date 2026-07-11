@@ -1,12 +1,9 @@
-import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
-import { SiteChrome } from '@/components/shared/layout/SiteChrome';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/common/providers/ThemeProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { Suspense } from 'react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import StructuredData from './schema';
@@ -153,13 +150,7 @@ export default function RootLayout({
               enableSystem={false}
               disableTransitionOnChange
             >
-              <Suspense fallback={
-                <div className="flex min-h-screen items-center justify-center">
-                  <div className="animate-pulse text-lg">Loading...</div>
-                </div>
-              }>
-                <SiteChrome>{children}</SiteChrome>
-              </Suspense>
+              {children}
               <Toaster
                 position="bottom-right"
                 expand={false}

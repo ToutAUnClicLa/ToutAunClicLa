@@ -1,3 +1,4 @@
+import './tailwind-pro.css';
 import './pro-theme.css';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';

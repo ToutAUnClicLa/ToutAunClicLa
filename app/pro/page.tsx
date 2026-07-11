@@ -65,8 +65,9 @@ export default async function ProHomePage({ searchParams }: PageProps) {
               >
                 {t.hero.badge}
               </span>
+              {/* Sin data-hero-item a propósito: es el elemento LCP de la página,
+                  no debe depender de que GSAP ejecute para volverse visible. */}
               <h1
-                data-hero-item
                 className="mt-5 text-balance font-semibold tracking-[-0.03em] text-foreground [font-size:clamp(2.5rem,5vw,3.75rem)] [line-height:1.05]"
               >
                 {t.hero.headline}
