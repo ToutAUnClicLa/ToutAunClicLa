@@ -36,7 +36,7 @@ export function SEOMetaTags({ page, product, categoryName }: SEOMetaTagsProps) {
         { property: 'og:title', content: product.nombre },
         { property: 'og:description', content: product.descripcion },
         { property: 'og:image', content: product.imagen_principal },
-        { property: 'og:url', content: `https://toutaunclicla.com/${categoryName}/${product.id}` },
+        { property: 'og:url', content: `https://www.toutaunclicla.com/${categoryName}/${product.id}` },
         { property: 'product:price:amount', content: product.precio.toString() },
         { property: 'product:price:currency', content: 'CAD' },
         { property: 'product:availability', content: 'in stock' },
@@ -58,13 +58,13 @@ export function SEOMetaTags({ page, product, categoryName }: SEOMetaTagsProps) {
         { property: 'og:type', content: 'website' },
         { property: 'og:title', content: t(`seo.${seoKey}.title`) },
         { property: 'og:description', content: t(`seo.${seoKey}.description`) },
-        { property: 'og:image', content: 'https://toutaunclicla.com/fondoEscritorio.png' },
-        { property: 'og:url', content: `https://toutaunclicla.com/${page}` },
+        { property: 'og:image', content: 'https://www.toutaunclicla.com/fondoEscritorio.png' },
+        { property: 'og:url', content: `https://www.toutaunclicla.com/${page}` },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:site', content: '@toutaunclicla' },
         { name: 'twitter:title', content: t(`seo.${seoKey}.title`) },
         { name: 'twitter:description', content: t(`seo.${seoKey}.description`) },
-        { name: 'twitter:image', content: 'https://toutaunclicla.com/fondoEscritorio.png' }
+        { name: 'twitter:image', content: 'https://www.toutaunclicla.com/fondoEscritorio.png' }
       );
     }
 
@@ -109,9 +109,9 @@ export function SEOMetaTags({ page, product, categoryName }: SEOMetaTagsProps) {
     }
     
     if (page === 'product' && product && categoryName) {
-      canonicalLink.setAttribute('href', `https://toutaunclicla.com/${categoryName}/${product.id}`);
+      canonicalLink.setAttribute('href', `https://www.toutaunclicla.com/${categoryName}/${product.id}`);
     } else {
-      canonicalLink.setAttribute('href', `https://toutaunclicla.com/${page}`);
+      canonicalLink.setAttribute('href', `https://www.toutaunclicla.com/${page}`);
     }
 
     // Add hreflang tags for multilingual SEO
@@ -126,9 +126,9 @@ export function SEOMetaTags({ page, product, categoryName }: SEOMetaTagsProps) {
       }
       
       if (page === 'product' && product && categoryName) {
-        hrefLang.setAttribute('href', `https://toutaunclicla.com/${lang}/${categoryName}/${product.id}`);
+        hrefLang.setAttribute('href', `https://www.toutaunclicla.com/${lang}/${categoryName}/${product.id}`);
       } else {
-        hrefLang.setAttribute('href', `https://toutaunclicla.com/${lang}/${page}`);
+        hrefLang.setAttribute('href', `https://www.toutaunclicla.com/${lang}/${page}`);
       }
     });
 

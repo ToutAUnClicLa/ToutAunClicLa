@@ -5,7 +5,6 @@ import { ArrowRight, BadgeDollarSign, Calculator, Car, ChevronDown, Gavel, Gift,
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from '@/hooks/useTranslation';
 import AuthModal from '@/components/features/auth/AuthModal';
 import HomeSearchBar from '@/components/features/modules/search/HomeSearchBar';
@@ -111,27 +110,27 @@ export default function Home() {
   const { t } = useTranslation();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgotPassword'>('register');
-  const searchParams = useSearchParams();
-  const router = useRouter();
 
   const openAuthModal = useCallback((mode: 'login' | 'register' | 'forgotPassword' = 'register') => {
     setAuthModalMode(mode);
     setIsAuthModalOpen(true);
   }, []);
 
-  // Open modal if redirected from cart (or other protected pages)
+  // Open modal if redirected from cart (or other protected pages).
+  // Se lee window.location.search directo (en vez de useSearchParams) porque
+  // solo hace falta el valor al montar, y useSearchParams fuerza que todo el
+  // árbol quede detrás del Suspense del layout y se renderice solo en cliente.
   useEffect(() => {
-    const authParam = searchParams.get('auth');
-    if (authParam === 'login') {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('auth') === 'login') {
       openAuthModal('login');
 
       // Clean up URL to avoid reopening on refresh
-      const params = new URLSearchParams(searchParams.toString());
       params.delete('auth');
       const newPath = window.location.pathname + (params.toString() ? `?${params.toString()}` : '');
       window.history.replaceState(null, '', newPath);
     }
-  }, [searchParams, openAuthModal]);
+  }, [openAuthModal]);
 
   const closeAuthModal = () => {
     setIsAuthModalOpen(false);
@@ -408,17 +407,14 @@ export default function Home() {
             className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-purple-50"
             style={{ width: "100%", height: "100%", minHeight: "inherit" }}
           >
-            <picture className="block w-full h-full">
-              <source media="(min-width: 768px)" srcSet="/imagenPrueba.jpeg" />
-              <source media="(max-width: 767px)" srcSet="/imagenPrueba.jpeg" />
-              <Image
-                src="/imagenPrueba.jpeg"
-                alt="Hero background"
-                fill
-                className="object-cover blur-[1px] lg:blur-[2px] filter transition-opacity duration-300 opacity-100"
-                priority
-              />
-            </picture>
+            <Image
+              src="/imagenPrueba.jpeg"
+              alt="Hero background"
+              fill
+              sizes="100vw"
+              className="object-cover blur-[1px] lg:blur-[2px] filter transition-opacity duration-300 opacity-100"
+              priority
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
           </div>
           <div className="absolute inset-0 flex flex-col justify-start mt-20 md:justify-center md:mt-0 px-4 sm:px-6 lg:px-8">

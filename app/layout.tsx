@@ -27,8 +27,8 @@ export const metadata: Metadata = {
   keywords: 'productos latinos, tienda latinoamericana, Montreal, Quebec, productos latinoamericanos, comida latina, boutique latina, artesanías, importaciones, Canada',
   creator: 'Tout à un Clic LA',
   publisher: 'Tout à un Clic LA',
-  authors: [{ name: 'Tout à un Clic LA Team', url: 'https://toutaunclicla.com' }],
-  metadataBase: new URL('https://toutaunclicla.com'),
+  authors: [{ name: 'Tout à un Clic LA Team', url: 'https://www.toutaunclicla.com' }],
+  metadataBase: new URL('https://www.toutaunclicla.com'),
   alternates: {
     canonical: '/',
     languages: {
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_ES',
     alternateLocale: ['fr_CA', 'en_CA'],
-    url: 'https://toutaunclicla.com',
+    url: 'https://www.toutaunclicla.com',
     siteName: 'Tout à un Clic LA',
     title: 'Tout à un Clic LA - Productos Latinoamericanos en Montreal',
     description: 'Descubre auténticos productos latinoamericanos en Montreal. Alimentos, artesanías, ropa típica y más. Entrega a domicilio en Quebec y todo Canadá.',
@@ -136,10 +136,10 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
 
         {/* Etiquetas hreflang para SEO multilingüe */}
-        <link rel="alternate" hrefLang="es" href="https://toutaunclicla.com/es" />
-        <link rel="alternate" hrefLang="fr" href="https://toutaunclicla.com/fr" />
-        <link rel="alternate" hrefLang="en" href="https://toutaunclicla.com/en" />
-        <link rel="alternate" hrefLang="x-default" href="https://toutaunclicla.com" />
+        <link rel="alternate" hrefLang="es" href="https://www.toutaunclicla.com/es" />
+        <link rel="alternate" hrefLang="fr" href="https://www.toutaunclicla.com/fr" />
+        <link rel="alternate" hrefLang="en" href="https://www.toutaunclicla.com/en" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.toutaunclicla.com" />
       </head>
       <body className={inter.className}>
         <LanguageProvider>

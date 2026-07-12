@@ -154,7 +154,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Crear versiones multilingües de todas las rutas
   const multilingualRoutes = routes.flatMap(route => {
     return languageVersions.map(lang => ({
-      url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://toutaunclicla.com'}/${lang}${route.url}`,
+      url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.toutaunclicla.com'}/${lang}${route.url}`,
       lastModified: route.lastModified,
       changeFrequency: route.changeFrequency,
       priority: route.priority,
@@ -164,7 +164,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Combinar rutas originales y multilingües
   const allRoutes = [
     ...routes.map(route => ({
-      url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://toutaunclicla.com'}${route.url}`,
+      url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.toutaunclicla.com'}${route.url}`,
       lastModified: route.lastModified,
       changeFrequency: route.changeFrequency,
       priority: route.priority,
