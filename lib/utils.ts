@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { 
@@ -179,7 +180,7 @@ export function getTranslatedSubcategory(subcategoryId: number, translations: an
  * @returns Función para traducir subcategorías por ID
  */
 export function useSubcategoryTranslation(t: any) {
-  return (subcategoryId: number): string => {
+  return useCallback((subcategoryId: number): string => {
     return getTranslatedSubcategory(subcategoryId, { catalog: { productList: { subcategories: t('catalog.productList.subcategories', { returnObjects: true }) } } });
-  };
+  }, [t]);
 }
