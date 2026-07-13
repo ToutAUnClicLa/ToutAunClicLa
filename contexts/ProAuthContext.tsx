@@ -58,6 +58,25 @@ interface ProAuthContextValue {
 
 const ProAuthContext = createContext<ProAuthContextValue | undefined>(undefined);
 
+// El tier que devuelve /me es una caché (pro_profesionales.tier) que el
+// webhook de Stripe puede dejar desincronizada del estado real de la
+// suscripción. /me/subscription sí lo deriva en vivo (getEffectiveTier), así
+// que lo usamos para corregir el tier mostrado en vez de esperar a que el
+// usuario vuelva de un checkout/portal (único caso que hoy refresca esto).
+// Si la reconciliación falla, seguimos con el tier de /me tal cual — no debe
+// bloquear el login.
+const reconcileTier = async (pro: ProUser): Promise<ProUser> => {
+  try {
+    const sub = await proFetch<{ tier: ProUser['tier'] }>('/me/subscription');
+    if (sub.tier && sub.tier !== pro.tier) {
+      return { ...pro, tier: sub.tier };
+    }
+  } catch {
+    // No bloqueante: nos quedamos con el tier de /me.
+  }
+  return pro;
+};
+
 export function ProAuthProvider({ children }: { children: React.ReactNode }) {
   const [proUser, setProUser] = useState<ProUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -70,7 +89,7 @@ export function ProAuthProvider({ children }: { children: React.ReactNode }) {
     }
     try {
       const data = await proFetch<{ pro: ProUser }>('/me');
-      setProUser(data.pro);
+      setProUser(await reconcileTier(data.pro));
     } catch {
       clearProToken();
       setProUser(null);
@@ -89,7 +108,7 @@ export function ProAuthProvider({ children }: { children: React.ReactNode }) {
       body: { email, password },
     });
     setProToken(data.token);
-    setProUser(data.pro);
+    setProUser(await reconcileTier(data.pro));
   }, []);
 
   const register = useCallback(async (payload: RegisterPayload) => {
@@ -98,7 +117,7 @@ export function ProAuthProvider({ children }: { children: React.ReactNode }) {
       body: payload,
     });
     setProToken(data.token);
-    setProUser(data.pro);
+    setProUser(await reconcileTier(data.pro));
   }, []);
 
   const verifyEmail = useCallback(async (email: string, code: string) => {
@@ -106,7 +125,7 @@ export function ProAuthProvider({ children }: { children: React.ReactNode }) {
       method: 'POST',
       body: { email, code },
     });
-    setProUser(data.pro);
+    setProUser(await reconcileTier(data.pro));
   }, []);
 
   const resendCode = useCallback(async (email: string) => {
