@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { ArrowUpRight, BarChart2, Contact, IdCard, UserRound, Wallet } from 'lucide-react';
+import { ArrowUpRight, BarChart2, Contact, IdCard, Settings, UserRound, Wallet } from 'lucide-react';
 import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { SubscriptionCard } from '@/components/pro/dashboard/SubscriptionCard';
@@ -12,6 +12,7 @@ const TILES = [
   { href: '/pro/dashboard/vcard', Icon: Contact, titleKey: 'vcardCardTitle', descKey: 'vcardCardDesc' },
   { href: '/pro/dashboard/wallet', Icon: Wallet, titleKey: 'walletCardTitle', descKey: 'walletCardDesc' },
   { href: '/pro/dashboard/analytics', Icon: BarChart2, titleKey: 'analyticsCardTitle', descKey: 'analyticsCardDesc' },
+  { href: '/pro/dashboard/account', Icon: Settings, titleKey: 'accountCardTitle', descKey: 'accountCardDesc' },
 ] as const;
 
 export default function DashboardPage() {

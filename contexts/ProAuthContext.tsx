@@ -17,6 +17,7 @@ export interface ProUser {
   empresa?: string | null;
   foto_url?: string | null;
   verificado: boolean;
+  autenticacion_social: boolean;
   tier: 'free' | 'pro' | 'max';
   titulo_fr?: string | null;
   titulo_en?: string | null;
@@ -52,6 +53,9 @@ interface ProAuthContextValue {
   register: (payload: RegisterPayload) => Promise<void>;
   verifyEmail: (email: string, code: string) => Promise<void>;
   resendCode: (email: string) => Promise<void>;
+  forgotPassword: (email: string) => Promise<{ message: string }>;
+  resetPassword: (email: string, code: string, newPassword: string) => Promise<{ message: string }>;
+  deleteAccount: (payload: { password?: string; confirmarEmail?: string }) => Promise<{ message: string }>;
   logout: () => void;
   refresh: () => Promise<void>;
 }
@@ -132,6 +136,38 @@ export function ProAuthProvider({ children }: { children: React.ReactNode }) {
     await proFetch('/resend-verification', { method: 'POST', body: { email } });
   }, []);
 
+  const forgotPassword = useCallback(async (email: string) => {
+    return proFetch<{ message: string }>('/forgot-password', {
+      method: 'POST',
+      body: { email },
+    });
+  }, []);
+
+  const resetPassword = useCallback(
+    async (email: string, code: string, newPassword: string) => {
+      return proFetch<{ message: string }>('/reset-password', {
+        method: 'POST',
+        body: { email, code, newPassword },
+      });
+    },
+    [],
+  );
+
+  // No limpia el token en catch/finally: si Stripe falla (502) la cuenta
+  // sigue existiendo y la sesión debe seguir siendo válida para reintentar.
+  const deleteAccount = useCallback(
+    async (payload: { password?: string; confirmarEmail?: string }) => {
+      const data = await proFetch<{ message: string }>('/me', {
+        method: 'DELETE',
+        body: payload,
+      });
+      clearProToken();
+      setProUser(null);
+      return data;
+    },
+    [],
+  );
+
   const logout = useCallback(() => {
     clearProToken();
     setProUser(null);
@@ -139,7 +175,19 @@ export function ProAuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ProAuthContext.Provider
-      value={{ proUser, loading, login, register, verifyEmail, resendCode, logout, refresh }}
+      value={{
+        proUser,
+        loading,
+        login,
+        register,
+        verifyEmail,
+        resendCode,
+        forgotPassword,
+        resetPassword,
+        deleteAccount,
+        logout,
+        refresh,
+      }}
     >
       {children}
     </ProAuthContext.Provider>

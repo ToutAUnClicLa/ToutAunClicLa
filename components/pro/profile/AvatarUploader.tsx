@@ -42,8 +42,8 @@ export function AvatarUploader({ initialUrl, nombre, onUploaded }: Props) {
   const initials = (nombre || '?').slice(0, 2).toUpperCase();
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-accent text-xl font-semibold text-accent-foreground">
+    <div className="flex items-start gap-4">
+      <div className="flex aspect-[4/5] w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-accent text-xl font-semibold text-accent-foreground">
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt="" className="h-full w-full object-cover" />
@@ -62,7 +62,7 @@ export function AvatarUploader({ initialUrl, nombre, onUploaded }: Props) {
         >
           {t('pro.avatar.change')}
         </Button>
-        <p className="mt-1.5 text-xs text-muted-foreground">{t('pro.avatar.hint')}</p>
+        <p className="mt-1.5 max-w-xs text-xs text-muted-foreground">{t('pro.avatar.hint')}</p>
       </div>
     </div>
   );

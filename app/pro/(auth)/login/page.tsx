@@ -61,7 +61,15 @@ export default function ProLoginPage() {
           />
         </div>
         <div>
-          <Label htmlFor="password">{t('pro.auth.login.passwordLabel')}</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">{t('pro.auth.login.passwordLabel')}</Label>
+            <Link
+              href="/pro/forgot-password"
+              className="mb-1.5 text-xs font-medium text-primary hover:underline"
+            >
+              {t('pro.auth.login.forgotPassword')}
+            </Link>
+          </div>
           <Input
             id="password"
             type="password"
