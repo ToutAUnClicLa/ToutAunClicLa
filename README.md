@@ -35,9 +35,10 @@ Backend (Express) is expected at `http://localhost:5500` in development. `next.c
 ```
 app/layout.tsx              # html/body, Inter, shop Auth + Language, Toaster, GA
 app/(main)/                 # shop: homepage, catalog, cart, profile, restaurante, admin
-app/(main)/globals.css      # shop Tailwind @tailwind base (Preflight) — only here
+app/(main)/globals.css      # shop Tailwind @config + @tailwind base (Preflight) — only here
 app/pro/layout.tsx          # Inter --font-pro-sans, .pro-theme wrapper
-app/pro/tailwind-pro.css    # @config tailwind.pro.config.ts; components + utilities only
+app/pro/tailwind-pro.src.css  # Pro Tailwind source (CLI only)
+app/pro/tailwind-pro.css    # generated Pro utilities (.pro-theme :is(...)); no @tailwind in Next
 app/pro/pro-theme.css       # Pro tokens + scoped reset (not a second Preflight on html)
 app/card is actually         app/(main)/card/[slug]
 translations/{es,en,fr}.ts
@@ -50,10 +51,10 @@ Root `app/layout.tsx` wraps **everything**. Shop chrome is only under `(main)`. 
 
 ## CSS isolation (do not break this)
 
-Shop Preflight is global (`@tailwind base` in `app/(main)/globals.css`). Pro must **not** emit a second Preflight.
+Shop Preflight is global (`@tailwind base` in `app/(main)/globals.css`, pinned with `@config "../../tailwind.config.ts"`). Shop content paths exclude `app/pro` and `components/pro`. Pro must **not** emit a second Preflight.
 
 - `tailwind.pro.config.ts`: `corePlugins.preflight: false`, `important: '.pro-theme'`, content limited to `app/pro`, `components/pro`, public-card files.
-- `app/pro/tailwind-pro.css` imports that config and only `@tailwind components` + `@tailwind utilities`.
+- `app/pro/tailwind-pro.src.css` is compiled **offline** (`npm run build:pro-css`) to `app/pro/tailwind-pro.css`. Next must import the generated sheet only — a second `@config` / `@tailwind` pass in the same PostCSS process was prefixing shop utilities with `.pro-theme` and dropping shop Preflight.
 - Tokens and a **scoped** reset live on `.pro-theme` in `pro-theme.css`. Never reset `html`/`body` as if they were Pro-only, except the `:has(.pro-theme)` margin:0 (shop UA margin would otherwise frame a cold `/pro` load).
 - Shop `lg` breakpoint is **1025px** (`tailwind.config.ts`); Pro inherits it.
 

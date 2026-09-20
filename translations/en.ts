@@ -328,8 +328,28 @@ export default {
         title: "Professional Services",
         description: "We are building a trusted network of lawyers, dentists, accountants and specialists who understand the Latin American community.",
         viewAll: "Meet our professionals"
+      },
+      testimonials: {
+        title: "What the community says",
+        description: "Real orders from restaurants, souvenirs, and services in Montreal and the South Shore."
       }
     },
+    testimonials: [
+      { quote: "I ordered arepas on a Friday and they arrived hot in Longueuil. Tastes like Caracas, not 'fusion'.", name: "Mariana López", place: "Longueuil", kind: "Restaurants" },
+      { quote: "Sunday pabellón is my aunt's recipe. We no longer cross the bridge just for that.", name: "Carlos Herrera", place: "Brossard", kind: "Restaurants" },
+      { quote: "Tamales for 12, on time for the birthday. Zero stress.", name: "Ana Ruiz", place: "Saint-Hubert", kind: "Restaurants" },
+      { quote: "The salteña empanadas arrived crisp. Downtown office ordered the same menu.", name: "Diego Fernández", place: "Ville-Marie", kind: "Restaurants" },
+      { quote: "Fresh ceviche on a Thursday night. I didn't think you could order that in Montreal.", name: "Lucía Mendoza", place: "Plateau", kind: "Restaurants" },
+      { quote: "A mate and a poncho for my sister in Laval. It arrived wrapped, not in a generic bag.", name: "Sofía Álvarez", place: "Laval", kind: "Souvenirs" },
+      { quote: "Molas and souvenir coffee were the Christmas gift. Not airport merchandise.", name: "Pierre Gagnon", place: "Boucherville", kind: "Souvenirs" },
+      { quote: "Needed a small hammock and Guatemala crafts. Found them here without a bazaar trip.", name: "Elena Castro", place: "Chambly", kind: "Souvenirs" },
+      { quote: "A magnet plus an embroidered blouse for a colleague moving away. Looks handmade.", name: "Nadia Benali", place: "Saint-Bruno", kind: "Souvenirs" },
+      { quote: "The bilingual dentist explained the quote in Spanish. That does not happen everywhere.", name: "Jorge Ramírez", place: "LaSalle", kind: "Services" },
+      { quote: "An accountant who gets T4s and remittances. We filed without translating papers in the car.", name: "Valentina Soto", place: "Verdun", kind: "Services" },
+      { quote: "Notary for the lease: one call, PDF the next day. Didn't miss the clinic appointment.", name: "Andrés Peña", place: "Greenfield Park", kind: "Services" },
+      { quote: "Certified birth-certificate translation in 48 hours. Immigration did not reject it.", name: "Camila Ortega", place: "Saint-Lambert", kind: "Services" },
+      { quote: "Immigration lawyer who answered in the same language as my mom. That's why the directory exists.", name: "Ricardo Núñez", place: "Hochelaga", kind: "Services" }
+    ],
     productCategories: [
       {
         id: 1,

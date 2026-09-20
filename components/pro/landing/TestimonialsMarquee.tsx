@@ -9,8 +9,8 @@ export function TestimonialsMarquee({ t }: { t: LandingT }) {
     { quote: t.testimonials.q3, name: t.testimonials.q3Name, niche: t.testimonials.q3Niche },
   ];
 
-  // Dos copias idénticas: translateX(-50%) reinicia sin salto (loop infinito).
-  const track = [...items, ...items];
+  // 8 copias idénticas: translateX(-50%) reinicia sin salto (loop infinito).
+  const track = [...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items];
 
   const Card = ({
     quote,

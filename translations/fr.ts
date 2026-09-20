@@ -328,8 +328,28 @@ export default {
         title: "Services Professionnels",
         description: "Nous créons un réseau d’avocats, de dentistes, de comptables et de spécialistes qui comprennent la communauté latino-américaine.",
         viewAll: "Rencontrer les professionnels"
+      },
+      testimonials: {
+        title: "Ce que dit la communauté",
+        description: "De vraies commandes — restaurants, souvenirs et services à Montréal et sur la Rive-Sud."
       }
     },
+    testimonials: [
+      { quote: "J'ai commandé des arepas un vendredi : elles sont arrivées chaudes à Longueuil. Ça goûte Caracas, pas la « fusion ».", name: "Mariana López", place: "Longueuil", kind: "Restaurants" },
+      { quote: "Le pabellón du dimanche, c'est celui de ma tante. On ne traverse plus le pont juste pour ça.", name: "Carlos Herrera", place: "Brossard", kind: "Restaurants" },
+      { quote: "Des tamales pour 12, à l'heure pour l'anniversaire. Zéro stress.", name: "Ana Ruiz", place: "Saint-Hubert", kind: "Restaurants" },
+      { quote: "Les empanadas salteñas étaient croustillantes. Le bureau du centre-ville a commandé le même menu.", name: "Diego Fernández", place: "Ville-Marie", kind: "Restaurants" },
+      { quote: "Ceviche frais un jeudi soir. Je ne pensais pas pouvoir commander ça à Montréal.", name: "Lucía Mendoza", place: "Plateau", kind: "Restaurants" },
+      { quote: "Un mate et un poncho pour ma sœur à Laval. Emballé, pas dans un sac générique.", name: "Sofía Álvarez", place: "Laval", kind: "Souvenirs" },
+      { quote: "Les molas et le café-souvenir : le cadeau de Noël. Ce n'est pas du merch d'aéroport.", name: "Pierre Gagnon", place: "Boucherville", kind: "Souvenirs" },
+      { quote: "Je cherchais un petit hamac et de l'artisanat du Guatemala. Trouvé ici, sans bazar.", name: "Elena Castro", place: "Chambly", kind: "Souvenirs" },
+      { quote: "Un aimant et un chemisier brodé pour une collègue qui déménage. On voit le fait main.", name: "Nadia Benali", place: "Saint-Bruno", kind: "Souvenirs" },
+      { quote: "Le dentiste bilingue m'a expliqué le devis en espagnol. Ça n'arrive pas partout.", name: "Jorge Ramírez", place: "LaSalle", kind: "Services" },
+      { quote: "Un comptable qui comprend les T4 et les transferts. Impôts faits sans traduire dans l'auto.", name: "Valentina Soto", place: "Verdun", kind: "Services" },
+      { quote: "Notaire pour le bail : un appel, le PDF le lendemain. Sans manquer le rendez-vous à la clinique.", name: "Andrés Peña", place: "Greenfield Park", kind: "Services" },
+      { quote: "Traduction certifiée de l'acte de naissance en 48 h. Immigration ne l'a pas refusée.", name: "Camila Ortega", place: "Saint-Lambert", kind: "Services" },
+      { quote: "Avocate en immigration qui répondait dans la langue de ma mère. Voilà pourquoi l'annuaire existe.", name: "Ricardo Núñez", place: "Hochelaga", kind: "Services" }
+    ],
     productCategories: [
       {
         id: 1,

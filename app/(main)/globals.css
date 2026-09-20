@@ -1,3 +1,7 @@
+/* Pin this sheet to the shop config. Without @config, Next's shared PostCSS
+   Tailwind instance can inherit `tailwind.pro.config.ts` (`important: '.pro-theme'`,
+   preflight off) and ship `/` with unprefixed-looking markup and no utilities. */
+@config "../../tailwind.config.ts";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

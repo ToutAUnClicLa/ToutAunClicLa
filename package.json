@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run build:pro-css && next build",
+    "build:pro-css": "tailwindcss -c ./tailwind.pro.config.ts -i ./app/pro/tailwind-pro.src.css -o ./app/pro/tailwind-pro.css",
     "start": "next start",
     "lint": "next lint"
   },

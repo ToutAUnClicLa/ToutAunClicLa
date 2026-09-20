@@ -5,7 +5,9 @@ const config: Config = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
+    '!./components/pro/**/*',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    '!./app/pro/**/*',
   ],
   theme: {
     extend: {

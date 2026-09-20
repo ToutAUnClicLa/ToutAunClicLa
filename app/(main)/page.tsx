@@ -9,6 +9,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import AuthModal from '@/components/features/auth/AuthModal';
 import HomeSearchBar from '@/components/features/modules/search/HomeSearchBar';
 import WorkWithUsButton from '@/components/features/landing/WorkWithUsButton';
+import HomeTestimonials from '@/components/features/landing/HomeTestimonials';
 import ServiceCard from '@/components/features/services/ServiceCard';
 
 // Types
@@ -762,6 +763,8 @@ export default function Home() {
           ))}
         </div>
       </Section>
+
+      <HomeTestimonials />
       {/* Auth Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}

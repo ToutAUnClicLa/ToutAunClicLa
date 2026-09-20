@@ -314,18 +314,12 @@ export default async function ProHomePage({ searchParams }: PageProps) {
             </p>
             <div data-cta-item className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Link href="/pro/register">
-                <Button
-                  size="lg"
-                  className="w-full bg-white text-zinc-950 hover:bg-zinc-100 sm:w-auto"
-                >
+                <Button size="lg" className="pro-btn-on-ink w-full sm:w-auto">
                   {t.finalCta.ctaPrimary}
                 </Button>
               </Link>
               <Link href="/pro/pricing">
-                <Button
-                  size="lg"
-                  className="w-full border border-white/30 bg-transparent text-white hover:bg-white/10 sm:w-auto"
-                >
+                <Button size="lg" variant="ghost" className="pro-btn-ghost-ink w-full sm:w-auto">
                   {t.finalCta.ctaSecondary}
                 </Button>
               </Link>
