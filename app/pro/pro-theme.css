@@ -80,10 +80,10 @@
   background-image: radial-gradient(70% 42% at 50% -10%, hsl(243 90% 94% / 0.55), transparent 55%);
 }
 
-/* Banda indigo fuerte (ritmo Stripe: blanco → tinta → blanco) */
+/* Banda sólida indigo-600 (features + CTA) */
 .pro-theme .pro-ink {
-  background-color: hsl(var(--ink));
-  background-image: radial-gradient(80% 55% at 50% -8%, hsl(var(--ink-glow)), transparent 58%);
+  background-color: #4f46e5;
+  background-image: none;
   color: #fff;
 }
 .pro-theme .pro-ink .pro-kicker {
