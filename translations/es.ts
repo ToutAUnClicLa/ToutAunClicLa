@@ -2965,7 +2965,7 @@ export default {
       renewsOn: "Se renueva el {date}.",
       endsOn: "Termina el {date}.",
       freeText: "Estás en el plan gratuito. Suscríbete para tu tarjeta digital.",
-      manage: "Gestionar suscripción",
+      manage: "Gestionar",
       seePlans: "Ver planes",
       activated: "¡Suscripción activada!",
       portalError: "No se pudo abrir el portal.",

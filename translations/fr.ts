@@ -2927,7 +2927,7 @@ export default {
       renewsOn: "Renouvellement le {date}.",
       endsOn: "Se termine le {date}.",
       freeText: "Tu es sur le plan gratuit. Abonne-toi pour ta carte numérique.",
-      manage: "Gérer l'abonnement",
+      manage: "Gérer",
       seePlans: "Voir les plans",
       activated: "Abonnement activé !",
       portalError: "Impossible d'ouvrir le portail.",

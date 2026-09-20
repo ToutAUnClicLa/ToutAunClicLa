@@ -2933,7 +2933,7 @@ export default {
       renewsOn: "Renews on {date}.",
       endsOn: "Ends on {date}.",
       freeText: "You're on the free plan. Subscribe for your digital card.",
-      manage: "Manage subscription",
+      manage: "Manage",
       seePlans: "See plans",
       activated: "Subscription activated!",
       portalError: "Could not open the portal.",
