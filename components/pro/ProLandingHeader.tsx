@@ -28,7 +28,7 @@ export function ProLandingHeader() {
         scrolled ? 'border-border' : 'border-transparent'
       }`}
     >
-      <div className="mx-auto flex h-16 w-full max-w-4xl items-center justify-between px-4 sm:px-5">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-5">
         <ProLogo />
 
         <div className="flex items-center gap-2 sm:gap-3">

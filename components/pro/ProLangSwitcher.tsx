@@ -95,7 +95,7 @@ export function ProLangSwitcher() {
         <div
           role="menu"
           aria-label={t('pro.header.langMenuLabel')}
-          className="absolute right-0 z-50 mt-2 flex w-60 flex-col gap-3 rounded-lg border border-border bg-card p-3 shadow-[var(--shadow-md)]"
+          className="absolute right-0 z-50 mt-2 flex w-60 flex-col gap-1.5 rounded-lg border border-border bg-card p-3 shadow-[var(--shadow-md)]"
         >
           {OPTIONS.map((opt, i) => {
             const active = opt.code === current;
