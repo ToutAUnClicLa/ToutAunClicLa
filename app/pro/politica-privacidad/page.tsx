@@ -84,7 +84,7 @@ export default function ProPrivacyPage({ searchParams }: PageProps) {
         </div>
       </main>
 
-      <footer className="pro-band border-t border-border">
+      <footer className="border-t border-border bg-background">
         <div className="mx-auto max-w-prose px-4 py-8 text-center text-sm sm:px-6">
           <Link href="/pro" className="text-primary transition-colors hover:text-primary/80">
             {t.footerBack}

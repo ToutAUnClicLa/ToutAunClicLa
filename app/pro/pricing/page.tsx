@@ -32,22 +32,20 @@ export default function PricingPage({ searchParams }: PageProps) {
         <BackButton href="/pro/dashboard" label={t.back} />
       </div>
 
-      <div className="pro-wash mt-4 border-y border-border">
-        <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-          <div className="mb-10 text-center">
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-              {t.title}
-            </h1>
-            <p className="mx-auto mt-3 max-w-xl text-muted-foreground">{t.subtitle}</p>
-          </div>
+      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+        <div className="mb-10 text-center">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            {t.title}
+          </h1>
+          <p className="mx-auto mt-3 max-w-xl text-muted-foreground">{t.subtitle}</p>
+        </div>
 
-          <PricingPlans />
+        <PricingPlans />
 
-          <p className="mx-auto mt-8 max-w-xl text-center text-xs text-muted-foreground">
-            {t.trialOnceNote}
-          </p>
-        </main>
-      </div>
+        <p className="mx-auto mt-8 max-w-xl text-center text-xs text-muted-foreground">
+          {t.trialOnceNote}
+        </p>
+      </main>
     </div>
   );
 }

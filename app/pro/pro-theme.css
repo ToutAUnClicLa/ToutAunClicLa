@@ -1,9 +1,8 @@
 /* Tokens Pro — Stripe-like, scoped a .pro-theme (no afecta al e-commerce) */
 .pro-theme {
-  --background: 240 7% 93.5%;
-  --surface: 240 6% 89.5%;
-  --surface-deep: 240 6% 86%;
-  --wash: 243 72% 95.5%;
+  --background: 0 0% 100%;
+  --ink: 243 62% 16%;
+  --ink-glow: 243 80% 32%;
   --foreground: 240 6% 10%;
   --card: 0 0% 100%;
   --card-foreground: 240 6% 10%;
@@ -11,9 +10,9 @@
   --popover-foreground: 240 6% 10%;
   --primary: 243 75% 59%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 240 6% 91%;
+  --secondary: 243 45% 97%;
   --secondary-foreground: 240 6% 10%;
-  --muted: 240 6% 90%;
+  --muted: 243 45% 97%;
   --muted-foreground: 240 4% 42%;
   --accent: 243 80% 95%;
   --accent-foreground: 243 55% 38%;
@@ -35,10 +34,9 @@
 }
 
 .dark .pro-theme {
-  --background: 240 6% 8%;
-  --surface: 240 5% 11%;
-  --surface-deep: 240 5% 7%;
-  --wash: 243 28% 14%;
+  --background: 240 6% 6%;
+  --ink: 243 55% 12%;
+  --ink-glow: 243 70% 24%;
   --foreground: 240 5% 96%;
   --card: 240 5% 12%;
   --card-foreground: 240 5% 96%;
@@ -79,22 +77,27 @@
 
 .pro-theme .pro-canvas {
   background-color: hsl(var(--background));
-  background-image:
-    radial-gradient(80% 48% at 50% -12%, hsl(243 85% 93% / 0.9), transparent 58%),
-    radial-gradient(42% 32% at 100% 0%, hsl(243 50% 90% / 0.4), transparent 48%);
+  background-image: radial-gradient(70% 42% at 50% -10%, hsl(243 90% 94% / 0.55), transparent 55%);
 }
 
-.pro-theme .pro-band {
-  background: hsl(var(--surface));
+/* Banda indigo fuerte (ritmo Stripe: blanco → tinta → blanco) */
+.pro-theme .pro-ink {
+  background-color: hsl(var(--ink));
+  background-image: radial-gradient(80% 55% at 50% -8%, hsl(var(--ink-glow)), transparent 58%);
+  color: #fff;
 }
-
-.pro-theme .pro-band-deep {
-  background: hsl(var(--surface-deep));
+.pro-theme .pro-ink .pro-kicker {
+  color: hsl(243 90% 82%);
 }
-
-.pro-theme .pro-wash {
-  background-color: hsl(var(--wash));
-  background-image: radial-gradient(80% 55% at 50% 0%, hsl(243 90% 92% / 0.55), transparent 68%);
+.pro-theme .pro-ink [data-animate-head] h2,
+.pro-theme .pro-ink [data-cta-item]:is(h2) {
+  color: #fff;
+}
+.pro-theme .pro-ink [data-animate-head] p {
+  color: hsl(243 30% 84%);
+}
+.pro-theme .pro-ink .pro-card {
+  color: hsl(var(--card-foreground));
 }
 
 .pro-theme .pro-paper {
@@ -162,8 +165,8 @@
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(70% 55% at 50% -12%, hsl(243 80% 91% / 0.98), transparent 62%),
-    hsl(var(--wash));
+    radial-gradient(65% 50% at 72% -8%, hsl(243 90% 92% / 0.75), transparent 55%),
+    hsl(var(--background));
 }
 .pro-theme .pro-hero-bg::before {
   content: '';

@@ -105,7 +105,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- BARRA DE CONFIANZA ---------- */}
-        <section className="pro-band border-y border-border">
+        <section className="border-y border-border bg-background">
           <ul className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-4 py-5 text-sm text-muted-foreground sm:px-6 lg:px-8">
             <li>{t.trust.madeInQuebec}</li>
             <li className="hidden sm:block" aria-hidden>·</li>
@@ -152,7 +152,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
 
         {/* ---------- FEATURES (bento) ---------- */}
         <section
-          className="pro-section pro-wash border-y border-border"
+          className="pro-section pro-ink"
           data-animate-section
           data-animate="bento"
         >
@@ -253,7 +253,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
 
         {/* ---------- TESTIMONIOS (marquee infinito) ---------- */}
         <section
-          className="pro-section pro-band border-y border-border"
+          className="pro-section border-y border-border bg-background"
           data-animate-section
           data-animate="fade"
         >
@@ -270,7 +270,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- FAQ ---------- */}
-        <section className="pro-section pro-wash border-y border-border" data-animate-section data-animate="faq">
+        <section className="pro-section bg-background" data-animate-section data-animate="faq">
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <SectionHead kicker={t.faq.kicker} title={t.faq.title} />
             <div
@@ -299,18 +299,15 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- CTA FINAL ---------- */}
-        <section className="pro-band-deep px-4 py-16 sm:px-6 lg:px-8" data-animate-section data-animate="cta">
-          <div
-            data-animate-item
-            className="mx-auto max-w-5xl overflow-hidden rounded-lg bg-zinc-950 px-6 py-14 text-center sm:px-12 sm:py-16"
-          >
+        <section className="pro-ink px-4 py-16 sm:px-6 lg:px-8" data-animate-section data-animate="cta">
+          <div data-animate-item className="mx-auto max-w-5xl px-2 py-8 text-center sm:px-6 sm:py-12">
             <h2
               data-cta-item
-              className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl"
+              className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-[-0.02em] sm:text-4xl"
             >
               {t.finalCta.title}
             </h2>
-            <p data-cta-item className="mx-auto mt-4 max-w-lg text-balance text-zinc-300">
+            <p data-cta-item className="mx-auto mt-4 max-w-lg text-balance text-indigo-100/80">
               {t.finalCta.subtitle}
             </p>
             <div data-cta-item className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
@@ -336,7 +333,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
       </main>
 
       {/* ---------- FOOTER ---------- */}
-      <footer className="pro-band border-t border-border">
+      <footer className="border-t border-border bg-background">
         <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
             <div>
