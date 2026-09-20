@@ -2568,6 +2568,10 @@ export default {
       gallery: "Galerie",
       socialWebsite: "Site web",
       notFoundTitle: "Profil introuvable",
+      notFoundText: "Cette carte n'existe pas ou n'est plus en ligne.",
+      unavailableTitle: "Carte disponible avec Pro",
+      unavailableText: "Ce professionnel est sur le plan gratuit. Les cartes numériques publiques sont réservées aux abonnements Pro et Max.",
+      unavailableCta: "Voir les plans",
       metaDefaultDescription: "Carte professionnelle sur Tout À Un Clic Là.",
       footerTagline: "Carte numérique · Tout À Un Clic Là Pro",
       qrTitle: "Scanne cette carte",
@@ -2730,7 +2734,7 @@ export default {
         noAccount: "Pas encore de compte ?",
         createAccount: "Créer un compte",
         needsVerification: "Vérifie ton courriel avant de te connecter.",
-        error: "Connexion impossible."
+        error: "Courriel ou mot de passe incorrect."
       },
       register: {
         title: "Créer un compte",
@@ -2745,6 +2749,7 @@ export default {
         haveAccount: "Tu as déjà un compte ?",
         signIn: "Se connecter",
         success: "Compte créé. Nous t'avons envoyé un code par courriel.",
+        exists: "Un compte professionnel existe déjà avec cet e-mail.",
         error: "Création du compte impossible."
       },
       verify: {
@@ -2955,6 +2960,8 @@ export default {
       subscribe: "M'abonner",
       start: "Commencer",
       checkoutError: "Impossible de démarrer le paiement.",
+      planUpdated: "Plan mis à jour.",
+      changeError: "Impossible de changer de plan.",
       plans: {
         free: {
           name: "Free",

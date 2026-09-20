@@ -9,7 +9,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import {
   createCheckout,
   getSubscription,
-  openBillingPortal,
+  changeSubscription,
   type SubscriptionState,
 } from '@/lib/pro/endpoints';
 import { ProApiError } from '@/lib/pro/api';
@@ -40,7 +40,7 @@ const PLAN_FEATURE_KEYS: Record<PlanId, string[]> = {
 
 export function PricingPlans() {
   const router = useRouter();
-  const { proUser } = useProAuth();
+  const { proUser, refresh } = useProAuth();
   const { t } = useTranslation();
   const [periodo, setPeriodo] = useState<Periodo>('mensual');
   const [loadingPlan, setLoadingPlan] = useState<PlanId | null>(null);
@@ -72,15 +72,18 @@ export function PricingPlans() {
     }
   };
 
-  // Cambiar/cancelar un plan ya activo se hace en el Customer Portal: Stripe
-  // actualiza la MISMA suscripción con prorrateo (no crea una segunda).
+  // Misma suscripción Stripe (prorrateo). No pasa por el Customer Portal:
+  // "Continue" del portal no avanza hasta elegir otro producto a mano.
   const onChangePlan = async (plan: PlanId) => {
     setLoadingPlan(plan);
     try {
-      const url = await openBillingPortal();
-      window.location.href = url;
+      const next = await changeSubscription(plan, plan === 'free' ? undefined : periodo);
+      setSub(next.subscription);
+      await refresh();
+      toast.success(t('pro.pricingPage.planUpdated'));
     } catch (err) {
-      toast.error((err as ProApiError).message || t('pro.subscription.portalError'));
+      toast.error(t('pro.pricingPage.changeError'));
+    } finally {
       setLoadingPlan(null);
     }
   };
@@ -175,7 +178,7 @@ export function PricingPlans() {
                   </Button>
                 ) : plan.id === 'free' ? (
                   hasActiveSub ? (
-                    // Bajar a Free = cancelar en el portal
+                    // Bajar a Free = cancelar al final del periodo (misma sub)
                     <Button
                       variant="secondary"
                       className="w-full"
@@ -194,7 +197,7 @@ export function PricingPlans() {
                     </Button>
                   )
                 ) : hasActiveSub ? (
-                  // Ya tiene suscripción: cambiar de plan/periodo va al portal
+                  // Ya tiene suscripción: cambia el price in-app (misma sub)
                   <Button
                     variant={plan.destacado ? 'primary' : 'secondary'}
                     className="w-full"

@@ -94,7 +94,7 @@ export function SubscriptionCard() {
     }
   };
 
-  const tier = data?.tier || 'free';
+  const tier = loading ? null : data?.tier || 'free';
   const sub = data?.subscription;
   const estadoLabel = (estado: string) => t(`pro.subscription.status.${estado}`) || estado;
 
@@ -104,14 +104,20 @@ export function SubscriptionCard() {
         <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent text-accent-foreground">
           <CreditCard className="h-5 w-5" aria-hidden />
         </span>
-        <span
-          className={cn(
-            'rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide',
-            TIER_BADGE[tier] || TIER_BADGE.free,
-          )}
-        >
-          {tier}
-        </span>
+        {tier ? (
+          <span
+            className={cn(
+              'rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide',
+              TIER_BADGE[tier] || TIER_BADGE.free,
+            )}
+          >
+            {tier}
+          </span>
+        ) : (
+          <span className="rounded-full px-2.5 py-0.5 text-xs text-muted-foreground">
+            {t('pro.subscription.loading')}
+          </span>
+        )}
       </div>
       <h2 className="mt-4 text-base font-semibold text-foreground">
         {t('pro.subscription.title')}
@@ -135,7 +141,11 @@ export function SubscriptionCard() {
             </span>
           </p>
           {sub.estado === 'trialing' && sub.trial_fin && (
-            <p>{t('pro.subscription.trialEnds', { date: formatDate(sub.trial_fin) })}</p>
+            <p>
+              {sub.cancelar_al_final
+                ? t('pro.subscription.endsOn', { date: formatDate(sub.trial_fin) })
+                : t('pro.subscription.trialEnds', { date: formatDate(sub.trial_fin) })}
+            </p>
           )}
           {sub.estado !== 'trialing' && sub.periodo_actual_fin && (
             <p>

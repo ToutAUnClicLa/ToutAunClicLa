@@ -81,17 +81,40 @@ export async function fetchCategoriaById(
 }
 
 // SSR: obtiene el perfil público (cache corto para no matar la BD ante SEO crawlers)
-export async function fetchPublicProfile(slug: string, lang = 'fr'): Promise<PublicPro | null> {
+export type PublicProfileLookup =
+  | { status: 'ok'; pro: PublicPro }
+  | { status: 'unavailable' }
+  | { status: 'missing' };
+
+export async function lookupPublicProfile(
+  slug: string,
+  lang = 'fr',
+): Promise<PublicProfileLookup> {
   try {
     const res = await fetch(`${API_BASE}/pro/${encodeURIComponent(slug)}?lang=${lang}`, {
       next: { revalidate: 60 },
     });
-    if (!res.ok) return null;
-    const data = (await res.json()) as { pro: PublicPro };
-    return data.pro;
+    if (res.ok) {
+      const data = (await res.json()) as { pro: PublicPro };
+      return { status: 'ok', pro: data.pro };
+    }
+    let error = '';
+    try {
+      const body = (await res.json()) as { error?: string };
+      error = body.error || '';
+    } catch {
+      /* cuerpo vacío */
+    }
+    if (res.status === 404 && error === 'Unavailable') return { status: 'unavailable' };
+    return { status: 'missing' };
   } catch {
-    return null;
+    return { status: 'missing' };
   }
+}
+
+export async function fetchPublicProfile(slug: string, lang = 'fr'): Promise<PublicPro | null> {
+  const result = await lookupPublicProfile(slug, lang);
+  return result.status === 'ok' ? result.pro : null;
 }
 
 // Cliente: registra un evento sin bloquear. Fire-and-forget.

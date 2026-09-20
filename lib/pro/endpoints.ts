@@ -77,6 +77,12 @@ export const createCheckout = (plan: 'pro' | 'max', periodo: 'mensual' | 'anual'
 export const openBillingPortal = () =>
   proFetch<{ url: string }>('/me/billing-portal', { method: 'POST', body: {} }).then((r) => r.url);
 
+export const changeSubscription = (plan: 'free' | 'pro' | 'max', periodo?: 'mensual' | 'anual') =>
+  proFetch<SubscriptionState>('/me/subscription/change', {
+    method: 'POST',
+    body: plan === 'free' ? { plan } : { plan, periodo },
+  });
+
 // --- Analytics ---------------------------------------------------------------
 
 export interface AnalyticsTotals {

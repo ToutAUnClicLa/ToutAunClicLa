@@ -2606,6 +2606,10 @@ export default {
       gallery: "Galería",
       socialWebsite: "Sitio web",
       notFoundTitle: "Perfil no encontrado",
+      notFoundText: "Esta tarjeta no existe o ya no está en línea.",
+      unavailableTitle: "Tarjeta disponible con Pro",
+      unavailableText: "Este profesional está en el plan gratuito. Las tarjetas digitales públicas están incluidas en Pro y Max.",
+      unavailableCta: "Ver los planes",
       metaDefaultDescription: "Tarjeta profesional en Tout À Un Clic Là.",
       footerTagline: "Tarjeta digital · Tout À Un Clic Là Pro",
       qrTitle: "Escanea esta tarjeta",
@@ -2768,7 +2772,7 @@ export default {
         noAccount: "¿No tienes cuenta?",
         createAccount: "Crear cuenta",
         needsVerification: "Verifica tu correo antes de entrar.",
-        error: "No se pudo iniciar sesión."
+        error: "Correo o contraseña incorrectos."
       },
       register: {
         title: "Crear cuenta",
@@ -2783,6 +2787,7 @@ export default {
         haveAccount: "¿Ya tienes cuenta?",
         signIn: "Iniciar sesión",
         success: "Cuenta creada. Te enviamos un código por correo.",
+        exists: "Ya existe una cuenta profesional con este correo.",
         error: "No se pudo crear la cuenta."
       },
       verify: {
@@ -2993,6 +2998,8 @@ export default {
       subscribe: "Suscribirme",
       start: "Empezar",
       checkoutError: "No se pudo iniciar el pago.",
+      planUpdated: "Plan actualizado.",
+      changeError: "No se pudo cambiar de plan.",
       plans: {
         free: {
           name: "Free",

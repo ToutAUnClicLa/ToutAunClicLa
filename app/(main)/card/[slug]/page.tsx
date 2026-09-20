@@ -1,10 +1,9 @@
-import { notFound } from 'next/navigation';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
-import { MapPin, Phone, Globe, ArrowLeft, Mail } from 'lucide-react';
-import { fetchPublicProfile, fetchCategoriaById, fetchQrDataUrl, APP_URL, vcardUrl, type PublicPro } from '@/lib/pro/publicProfile';
+import { MapPin, Phone, Globe, ArrowLeft, Mail, Lock } from 'lucide-react';
+import { lookupPublicProfile, fetchCategoriaById, fetchQrDataUrl, APP_URL, vcardUrl, type PublicPro } from '@/lib/pro/publicProfile';
 import { getProT, validLang, type Lang } from '@/lib/pro/i18n';
 import { QrCard } from '@/components/features/services/card/QrCard';
 
@@ -29,8 +28,14 @@ const fullName = (pro: PublicPro) => `${pro.nombre} ${pro.apellido || ''}`.trim(
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const lang = resolveLang(searchParams?.lang);
   const t = getProT(lang);
-  const pro = await fetchPublicProfile(params.slug, lang);
-  if (!pro) return { title: t.card.notFoundTitle };
+  const lookup = await lookupPublicProfile(params.slug, lang);
+  if (lookup.status !== 'ok') {
+    return {
+      title: lookup.status === 'unavailable' ? t.card.unavailableTitle : t.card.notFoundTitle,
+      robots: { index: false, follow: false },
+    };
+  }
+  const pro = lookup.pro;
   const name = fullName(pro);
   const title = pro.titulo ? `${name} · ${pro.titulo}` : name;
   const description = pro.bio || pro.titulo || t.card.metaDefaultDescription;
@@ -62,8 +67,41 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
 export default async function PublicProfilePage({ params, searchParams }: PageProps) {
   const lang = resolveLang(searchParams?.lang);
   const t = getProT(lang);
-  const pro = await fetchPublicProfile(params.slug, lang);
-  if (!pro) notFound();
+  const lookup = await lookupPublicProfile(params.slug, lang);
+  if (lookup.status !== 'ok') {
+    const unavailable = lookup.status === 'unavailable';
+    return (
+      <div className="bg-slate-50 dark:bg-slate-950 min-h-[70vh]">
+        <div className="mx-auto max-w-lg px-4 py-16 sm:px-6 text-center">
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">
+            <Lock className="h-5 w-5" aria-hidden />
+          </span>
+          <h1 className="mt-4 text-2xl font-semibold text-slate-900 dark:text-slate-100">
+            {unavailable ? t.card.unavailableTitle : t.card.notFoundTitle}
+          </h1>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            {unavailable ? t.card.unavailableText : t.card.notFoundText}
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/pro/pricing"
+              className="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700"
+            >
+              {t.card.unavailableCta}
+            </Link>
+            <Link
+              href="/servicios"
+              className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-slate-100"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {t.card.backGeneric}
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  const pro = lookup.pro;
 
   const name = fullName(pro);
   const url = `${APP_URL}/card/${pro.slug}`;

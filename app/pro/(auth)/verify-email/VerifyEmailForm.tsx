@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import { ProApiError } from '@/lib/pro/api';
+import { proAuthErrorKey } from '@/lib/pro/authErrors';
 import { Button } from '@/components/pro/ui/button';
 import { Input } from '@/components/pro/ui/input';
 import { Label } from '@/components/pro/ui/label';
@@ -28,7 +28,7 @@ export default function VerifyEmailForm() {
       toast.success(t('pro.auth.verify.verified'));
       router.replace('/pro/dashboard');
     } catch (err) {
-      toast.error((err as ProApiError).message || t('pro.auth.verify.verifyError'));
+      toast.error(t(proAuthErrorKey(err, 'pro.auth.verify.verifyError')));
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,7 @@ export default function VerifyEmailForm() {
       await resendCode(email);
       toast.success(t('pro.auth.verify.resent'));
     } catch (err) {
-      toast.error((err as ProApiError).message || t('pro.auth.verify.resendError'));
+      toast.error(t(proAuthErrorKey(err, 'pro.auth.verify.resendError')));
     } finally {
       setResending(false);
     }

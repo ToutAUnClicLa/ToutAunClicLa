@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import { ProApiError } from '@/lib/pro/api';
+import { proAuthErrorKey } from '@/lib/pro/authErrors';
 import { Button } from '@/components/pro/ui/button';
 import { Input } from '@/components/pro/ui/input';
 import { Label } from '@/components/pro/ui/label';
@@ -29,7 +29,7 @@ export default function ProRegisterPage() {
       toast.success(t('pro.auth.register.success'));
       router.push(`/pro/verify-email?email=${encodeURIComponent(email)}`);
     } catch (err) {
-      toast.error((err as ProApiError).message || t('pro.auth.register.error'));
+      toast.error(t(proAuthErrorKey(err, 'pro.auth.register.error')));
     } finally {
       setLoading(false);
     }

@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ProApiError } from '@/lib/pro/api';
+import { proAuthErrorKey } from '@/lib/pro/authErrors';
 import { Button } from '@/components/pro/ui/button';
 import { Input } from '@/components/pro/ui/input';
 import { Label } from '@/components/pro/ui/label';
@@ -48,18 +49,9 @@ export default function ResetPasswordForm() {
       router.replace('/pro/login');
     } catch (err) {
       const apiErr = err as ProApiError;
-      const errorCode =
-        apiErr.data && typeof apiErr.data === 'object'
-          ? (apiErr.data as { error?: string }).error
-          : undefined;
-      if (errorCode === 'Code expired') {
-        setExpired(true);
-        toast.error(apiErr.message || t('pro.auth.resetPassword.expired'));
-      } else if (errorCode === 'Invalid reset code') {
-        toast.error(apiErr.message || t('pro.auth.resetPassword.invalidCode'));
-      } else {
-        toast.error(apiErr.message || t('pro.auth.resetPassword.error'));
-      }
+      const key = proAuthErrorKey(apiErr, 'pro.auth.resetPassword.error');
+      if (key === 'pro.auth.resetPassword.expired') setExpired(true);
+      toast.error(t(key));
     } finally {
       setLoading(false);
     }

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ProApiError } from '@/lib/pro/api';
+import { proAuthErrorKey } from '@/lib/pro/authErrors';
 import { Button } from '@/components/pro/ui/button';
 import { Input } from '@/components/pro/ui/input';
 import { Label } from '@/components/pro/ui/label';
@@ -33,7 +34,7 @@ export default function ProLoginPage() {
         toast.error(t('pro.auth.login.needsVerification'));
         router.push(`/pro/verify-email?email=${encodeURIComponent(email)}`);
       } else {
-        toast.error(apiErr.message || t('pro.auth.login.error'));
+        toast.error(t(proAuthErrorKey(apiErr, 'pro.auth.login.error')));
       }
     } finally {
       setLoading(false);
