@@ -61,7 +61,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
             <div className="text-center lg:text-left">
               <span
                 data-hero-item
-                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1 text-xs font-medium text-accent-foreground"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1 text-xs font-medium text-primary"
               >
                 {t.hero.badge}
               </span>
