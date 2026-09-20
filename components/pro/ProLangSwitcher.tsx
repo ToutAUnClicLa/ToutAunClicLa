@@ -88,14 +88,14 @@ export function ProLangSwitcher() {
         className="inline-flex h-11 min-h-11 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-sm text-foreground transition-colors duration-[180ms] ease-out hover:bg-secondary"
       >
         <Globe className="h-4 w-4 text-muted-foreground" aria-hidden />
-        <span className="font-mono text-xs font-semibold uppercase tabular-nums">{current}</span>
+        <span className="text-xs font-semibold uppercase tabular-nums">{current}</span>
       </button>
 
       {open && (
         <div
           role="menu"
           aria-label={t('pro.header.langMenuLabel')}
-          className="absolute right-0 z-50 mt-2 flex w-60 flex-col gap-1.5 rounded-lg border border-border bg-card p-3 shadow-[var(--shadow-md)]"
+          className="absolute right-0 z-50 mt-2 flex w-60 flex-col gap-3 rounded-lg border border-border bg-card p-3 shadow-[var(--shadow-md)]"
         >
           {OPTIONS.map((opt, i) => {
             const active = opt.code === current;
@@ -118,7 +118,7 @@ export function ProLangSwitcher() {
                 )}
               >
                 <span className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-semibold uppercase tabular-nums text-muted-foreground">
+                  <span className="text-xs font-semibold uppercase tabular-nums text-muted-foreground">
                     {opt.code}
                   </span>
                   <span>{opt.label}</span>

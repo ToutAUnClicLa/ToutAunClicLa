@@ -31,6 +31,181 @@
   font-family: var(--font-pro-sans), ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   letter-spacing: -0.011em;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+/* Cold /pro never loads shop Preflight, so UA body margin (8px) would frame the
+   page in white. Gate to :has(.pro-theme) — shop / is unchanged once Pro unmounts. */
+html:has(.pro-theme),
+html:has(.pro-theme) body {
+  margin: 0;
+}
+
+/* Toasts portal outside .pro-theme; inherit body Inter only while Pro is mounted. */
+html:has(.pro-theme) [data-sonner-toaster],
+html:has(.pro-theme) [data-sonner-toast] {
+  font-family: inherit;
+}
+
+/* Scoped reset (shop owns global Preflight). Only .pro-theme — never html/body. */
+.pro-theme *,
+.pro-theme *::before,
+.pro-theme *::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: hsl(var(--border));
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x: ;
+  --tw-pan-y: ;
+  --tw-pinch-zoom: ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position: ;
+  --tw-gradient-via-position: ;
+  --tw-gradient-to-position: ;
+  --tw-ordinal: ;
+  --tw-slashed-zero: ;
+  --tw-numeric-figure: ;
+  --tw-numeric-spacing: ;
+  --tw-numeric-fraction: ;
+  --tw-ring-inset: ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(79 70 229 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur: ;
+  --tw-brightness: ;
+  --tw-contrast: ;
+  --tw-grayscale: ;
+  --tw-hue-rotate: ;
+  --tw-invert: ;
+  --tw-saturate: ;
+  --tw-sepia: ;
+  --tw-drop-shadow: ;
+  --tw-backdrop-blur: ;
+  --tw-backdrop-brightness: ;
+  --tw-backdrop-contrast: ;
+  --tw-backdrop-grayscale: ;
+  --tw-backdrop-hue-rotate: ;
+  --tw-backdrop-invert: ;
+  --tw-backdrop-opacity: ;
+  --tw-backdrop-saturate: ;
+  --tw-backdrop-sepia: ;
+}
+.pro-theme ::before,
+.pro-theme ::after {
+  --tw-content: '';
+}
+/* :where() keeps this at (0,1,0) so prefixed utilities (.pro-theme :is(.bg-primary)) win.
+   Without it, `.pro-theme [type=submit] { background: transparent }` (0,2,0) loads after
+   Tailwind and paints login/register submit white-on-white; `.pro-theme h1 { font-size: inherit }`
+   shrinks the hero title if the clamp arbitrary class is missing. */
+.pro-theme :where(h1, h2, h3, h4, h5, h6) {
+  font-size: inherit;
+  font-weight: inherit;
+}
+.pro-theme :where(a) {
+  color: inherit;
+  text-decoration: inherit;
+}
+.pro-theme :where(b, strong) {
+  font-weight: bolder;
+}
+.pro-theme :where(button, input, optgroup, select, textarea) {
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+}
+.pro-theme .font-sans {
+  font-family: inherit;
+}
+.pro-theme :where(button, select) {
+  text-transform: none;
+}
+.pro-theme :where(button, [type='button'], [type='reset'], [type='submit']) {
+  -webkit-appearance: button;
+  background-color: transparent;
+  background-image: none;
+}
+.pro-theme button:not(:disabled),
+.pro-theme [type='button']:not(:disabled),
+.pro-theme [type='submit']:not(:disabled),
+.pro-theme [type='reset']:not(:disabled),
+.pro-theme [role='button']:not([aria-disabled='true']),
+.pro-theme .pro-btn:not(:disabled) {
+  cursor: pointer;
+}
+.pro-theme :disabled {
+  cursor: default;
+}
+.pro-theme img,
+.pro-theme svg,
+.pro-theme video,
+.pro-theme canvas,
+.pro-theme audio,
+.pro-theme iframe,
+.pro-theme embed,
+.pro-theme object {
+  display: block;
+  vertical-align: middle;
+}
+.pro-theme img,
+.pro-theme video {
+  max-width: 100%;
+  height: auto;
+}
+.pro-theme :where(blockquote, dl, dd, h1, h2, h3, h4, h5, h6, hr, figure, p, pre) {
+  margin: 0;
+}
+.pro-theme ol,
+.pro-theme ul,
+.pro-theme menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pro-theme textarea {
+  resize: vertical;
+}
+.pro-theme input::placeholder,
+.pro-theme textarea::placeholder {
+  opacity: 1;
+  color: hsl(var(--muted-foreground));
+}
+.pro-theme [hidden] {
+  display: none;
+}
+.pro-theme hr {
+  height: 0;
+  color: inherit;
+  border-top-width: 1px;
+}
+.pro-theme table {
+  text-indent: 0;
+  border-color: inherit;
+  border-collapse: collapse;
 }
 
 .dark .pro-theme {
@@ -58,7 +233,8 @@
 }
 
 .pro-theme .font-mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
 }
 
 .pro-theme ::selection {
@@ -76,22 +252,44 @@
 }
 
 .pro-theme .pro-canvas {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  padding-inline: 0;
   background-color: hsl(var(--background));
   background-image: radial-gradient(70% 42% at 50% -10%, hsl(243 90% 94% / 0.55), transparent 55%);
 }
 
-/* Banda sólida indigo-600 (features + CTA) */
+.pro-theme main,
+.pro-theme header,
+.pro-theme footer,
+.pro-theme section {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+.pro-theme main,
+.pro-theme section,
+.pro-theme footer {
+  margin-block: 0;
+}
+
+/* Full-bleed bands: same paint as hero primary (`bg-primary` / --primary). */
 .pro-theme .pro-ink {
-  background-color: #4f46e5;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding-inline: 0;
+  background-color: hsl(var(--primary));
   background-image: none;
-  color: #fff;
+  color: hsl(var(--primary-foreground));
 }
 .pro-theme .pro-ink .pro-kicker {
   color: hsl(243 90% 82%);
 }
 .pro-theme .pro-ink [data-animate-head] h2,
 .pro-theme .pro-ink [data-cta-item]:is(h2) {
-  color: #fff;
+  color: hsl(var(--primary-foreground));
 }
 .pro-theme .pro-ink [data-animate-head] p {
   color: hsl(243 30% 84%);
@@ -158,7 +356,27 @@
 }
 
 .pro-theme .pro-section {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  padding-inline: 0;
   padding-block: clamp(4rem, 8vw, 7rem);
+}
+
+.pro-theme .pro-hero-title {
+  font-size: clamp(2.5rem, 5.5vw, 4rem);
+  line-height: 1.05;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.pro-theme .pro-btn-primary {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  min-height: 3rem;
+}
+.pro-theme .pro-btn-primary:hover {
+  background-color: hsl(var(--primary) / 0.9);
 }
 
 .pro-theme .pro-hero-bg {

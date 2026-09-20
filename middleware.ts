@@ -2,7 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
+  const requestHeaders = new Headers(req.headers);
+  const cookieLang = req.cookies.get('preferred-language')?.value;
+  const validLang =
+    cookieLang === 'en' || cookieLang === 'es' || cookieLang === 'fr' ? cookieLang : null;
+  const isPro = req.nextUrl.pathname.startsWith('/pro');
+  requestHeaders.set('x-app-lang', validLang ?? (isPro ? 'fr' : 'es'));
+
+  const res = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
   
   // Agregar headers de seguridad
   // La ruta /factura/[id] necesita poder cargarse en un iframe del mismo origen

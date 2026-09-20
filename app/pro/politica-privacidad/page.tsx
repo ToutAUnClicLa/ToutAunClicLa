@@ -66,7 +66,7 @@ export default function ProPrivacyPage({ searchParams }: PageProps) {
           {/* Encabezado */}
           <header className="mt-8">
             <h1 className="text-3xl font-semibold tracking-[-0.02em] text-foreground">{t.title}</h1>
-            <p className="mt-2 font-mono text-xs uppercase tracking-[0.05em] text-muted-foreground">
+            <p className="mt-2 text-xs uppercase tracking-[0.05em] text-muted-foreground">
               {t.effective}
             </p>
             <p className="mt-5 text-[15px] leading-relaxed text-muted-foreground">{t.intro}</p>

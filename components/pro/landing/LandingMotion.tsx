@@ -25,6 +25,7 @@ export function LandingMotion() {
 
         const sections = gsap.utils.toArray<HTMLElement>('[data-animate-section]');
         sections.forEach((section) => {
+          // Animate inner copy/cards only — never the section node (keeps full-bleed bg).
           const items = gsap.utils.toArray<HTMLElement>('[data-animate-item]', section);
           const tl = gsap.timeline({
             defaults: { ease, duration },

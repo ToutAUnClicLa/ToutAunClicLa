@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { cookies, headers } from 'next/headers';
 import { Inter } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/common/providers/ThemeProvider';
@@ -9,6 +10,15 @@ import { Analytics } from "@vercel/analytics/next"
 import StructuredData from './schema';
 
 const inter = Inter({ subsets: ['latin'] });
+
+type AppLang = 'es' | 'en' | 'fr';
+function initialAppLang(): AppLang {
+  const cookie = cookies().get('preferred-language')?.value;
+  if (cookie === 'en' || cookie === 'es' || cookie === 'fr') return cookie;
+  const header = headers().get('x-app-lang');
+  if (header === 'en' || header === 'es' || header === 'fr') return header;
+  return 'es';
+}
 
 export const viewport: Viewport = {
   themeColor: '#4f46e5',
@@ -128,8 +138,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const lang = initialAppLang();
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icons/FaviconFinal.png" type="image/png" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
@@ -142,7 +153,7 @@ export default function RootLayout({
         <link rel="alternate" hrefLang="x-default" href="https://www.toutaunclicla.com" />
       </head>
       <body className={inter.className}>
-        <LanguageProvider>
+        <LanguageProvider initialLanguage={lang}>
           <AuthProvider>
             <ThemeProvider
               attribute="class"

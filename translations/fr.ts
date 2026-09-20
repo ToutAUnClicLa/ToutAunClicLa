@@ -1522,7 +1522,7 @@ export default {
   },
   navbar: {
     logoutButton: "Se Déconnecter",
-    languageChanged: "Langue changée en ",
+    languageChanged: "Langue changée en",
     logoutSuccess: "Déconnexion réussie !",
     mobile: {
       // Header
@@ -2736,7 +2736,8 @@ export default {
         noAccount: "Pas encore de compte ?",
         createAccount: "Créer un compte",
         needsVerification: "Vérifie ton courriel avant de te connecter.",
-        error: "Courriel ou mot de passe incorrect."
+        error: "Courriel ou mot de passe incorrect.",
+        locked: "Compte temporairement bloqué. Réessaie plus tard."
       },
       register: {
         title: "Créer un compte",

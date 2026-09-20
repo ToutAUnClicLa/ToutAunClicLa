@@ -31,11 +31,12 @@ const setLangCookie = (lang: Language) => {
 
 interface LanguageProviderProps {
   children: ReactNode;
+  initialLanguage?: Language;
 }
 
-export function LanguageProvider({ children }: LanguageProviderProps) {
+export function LanguageProvider({ children, initialLanguage = 'es' }: LanguageProviderProps) {
   const router = useRouter();
-  const [currentLanguage, setCurrentLanguage] = useState<Language>('es');
+  const [currentLanguage, setCurrentLanguage] = useState<Language>(initialLanguage);
 
   const setLanguage = useCallback(
     (language: Language) => {
@@ -43,6 +44,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       if (typeof window !== 'undefined') {
         localStorage.setItem(COOKIE_KEY, language);
         setLangCookie(language);
+        document.documentElement.lang = language;
         // Refresca los server components (SSR) para que rehidraten con el idioma nuevo.
         router.refresh();
       }
@@ -53,6 +55,9 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
   // Alinea el estado sin escribir cookie/localStorage (p. ej. /pro default fr vía SSR).
   const syncLanguage = useCallback((language: Language) => {
     setCurrentLanguage(language);
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = language;
+    }
   }, []);
 
   // Load saved language on mount + sincroniza cookie por si venía solo de localStorage
@@ -62,9 +67,12 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       if (savedLanguage && availableLanguages.some((l) => l.code === savedLanguage)) {
         setCurrentLanguage(savedLanguage);
         setLangCookie(savedLanguage);
+        document.documentElement.lang = savedLanguage;
+      } else {
+        document.documentElement.lang = initialLanguage;
       }
     }
-  }, []);
+  }, [initialLanguage]);
 
   return (
     <LanguageContext.Provider

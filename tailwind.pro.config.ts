@@ -1,9 +1,8 @@
 import type { Config } from 'tailwindcss';
 import baseConfig from './tailwind.config';
 
-// Build de Tailwind acotado al módulo Pro: mismo theme/plugins que el config
-// principal, pero con `content` limitado a /pro para no cargar en esas
-// páginas las utilidades del resto del sitio (e-commerce, admin, restaurante).
+// Pro-only Tailwind: no Preflight, utilities/components only match inside .pro-theme
+// so last-stylesheet-wins cannot restyle the shop after visiting /pro.
 const config: Config = {
   ...baseConfig,
   content: [
@@ -11,6 +10,10 @@ const config: Config = {
     './components/pro/**/*.{js,ts,jsx,tsx,mdx}',
     './components/features/services/card/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  important: '.pro-theme',
+  corePlugins: {
+    preflight: false,
+  },
 };
 
 export default config;

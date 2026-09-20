@@ -234,7 +234,7 @@ export function Navbar() {
                       <DropdownMenuItem
                         key={lang.code}
                         onClick={() => handleLanguageChange(lang.code)}
-                        className="flex items-center gap-2 cursor-pointer"
+                        className="flex items-center gap-3 cursor-pointer"
                       >
                         <span className="text-base">{lang.flag}</span>
                         <span className="flex-1">{lang.name}</span>
@@ -295,7 +295,7 @@ export function Navbar() {
                       <DropdownMenuItem
                         key={lang.code}
                         onClick={() => handleLanguageChange(lang.code)}
-                        className="flex items-center gap-2 cursor-pointer"
+                        className="flex items-center gap-3 cursor-pointer"
                       >
                         <span className="text-base">{lang.flag}</span>
                         <span className="flex-1">{lang.name}</span>

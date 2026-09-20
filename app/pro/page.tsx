@@ -51,12 +51,12 @@ export default async function ProHomePage({ searchParams }: PageProps) {
   }).catch(() => null);
 
   return (
-    <div className="pro-canvas flex min-h-screen flex-col">
+    <div className="pro-canvas flex min-h-screen w-full flex-col">
       <ProLandingHeader />
 
-      <main className="flex-1">
+      <main className="w-full flex-1">
         {/* ---------- HERO ---------- */}
-        <section className="pro-hero-bg overflow-hidden border-b border-border">
+        <section className="pro-hero-bg w-full overflow-hidden border-b border-border">
           <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-12 sm:px-6 lg:grid-cols-2 lg:gap-8 lg:px-8 lg:pb-24 lg:pt-20">
             <div className="text-center lg:text-left">
               <span
@@ -67,9 +67,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
               </span>
               {/* Sin data-hero-item a propósito: es el elemento LCP de la página,
                   no debe depender de que GSAP ejecute para volverse visible. */}
-              <h1
-                className="mt-5 text-balance font-semibold tracking-[-0.03em] text-foreground [font-size:clamp(2.5rem,5vw,3.75rem)] [line-height:1.05]"
-              >
+              <h1 className="pro-hero-title mt-5 text-balance text-foreground">
                 {t.hero.headline}
               </h1>
               <p
@@ -83,12 +81,16 @@ export default async function ProHomePage({ searchParams }: PageProps) {
                 className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start"
               >
                 <Link href="/pro/register">
-                  <Button size="lg" className="w-full sm:w-auto">
+                  <Button size="lg" className="h-auto min-h-14 w-full px-8 py-3.5 text-base sm:w-auto">
                     {t.hero.ctaPrimary}
                   </Button>
                 </Link>
                 <Link href="/pro/pricing">
-                  <Button size="lg" variant="secondary" className="w-full sm:w-auto">
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    className="h-auto min-h-14 w-full px-8 py-3.5 text-base sm:w-auto"
+                  >
                     {t.hero.ctaSecondary}
                   </Button>
                 </Link>
@@ -105,7 +107,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- BARRA DE CONFIANZA ---------- */}
-        <section className="border-y border-border bg-background">
+        <section className="w-full border-y border-border bg-background">
           <ul className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-4 py-5 text-sm text-muted-foreground sm:px-6 lg:px-8">
             <li>{t.trust.madeInQuebec}</li>
             <li className="hidden sm:block" aria-hidden>·</li>
@@ -118,7 +120,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- COMMENT ÇA MARCHE ---------- */}
-        <section className="pro-section" data-animate-section data-animate="steps">
+        <section className="pro-section w-full bg-background" data-animate-section data-animate="steps">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <SectionHead kicker={t.how.kicker} title={t.how.title} subtitle={t.how.subtitle} />
             <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -136,7 +138,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
                     <span data-step-icon className="pro-icon-tile">
                       <Icon className="h-5 w-5" aria-hidden />
                     </span>
-                    <span className="font-mono text-sm font-medium tabular-nums text-muted-foreground">
+                    <span className="text-sm font-medium tabular-nums text-muted-foreground">
                       {n}
                     </span>
                   </div>
@@ -152,7 +154,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
 
         {/* ---------- FEATURES (bento) ---------- */}
         <section
-          className="pro-section pro-ink"
+          className="pro-section pro-ink w-full bg-primary"
           data-animate-section
           data-animate="bento"
         >
@@ -190,7 +192,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- PRICING (cards estáticas) ---------- */}
-        <section className="pro-section" data-animate-section data-animate="pricing">
+        <section className="pro-section w-full bg-background" data-animate-section data-animate="pricing">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <SectionHead
               kicker={t.pricing.kicker}
@@ -253,7 +255,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
 
         {/* ---------- TESTIMONIOS (marquee infinito) ---------- */}
         <section
-          className="pro-section border-y border-border bg-background"
+          className="pro-section w-full border-y border-border bg-background"
           data-animate-section
           data-animate="fade"
         >
@@ -270,7 +272,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- FAQ ---------- */}
-        <section className="pro-section bg-background" data-animate-section data-animate="faq">
+        <section className="pro-section w-full bg-background" data-animate-section data-animate="faq">
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <SectionHead kicker={t.faq.kicker} title={t.faq.title} />
             <div
@@ -299,8 +301,8 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- CTA FINAL ---------- */}
-        <section className="pro-ink px-4 py-16 sm:px-6 lg:px-8" data-animate-section data-animate="cta">
-          <div data-animate-item className="mx-auto max-w-5xl px-2 py-8 text-center sm:px-6 sm:py-12">
+        <section className="pro-ink w-full bg-primary" data-animate-section data-animate="cta">
+          <div data-animate-item className="mx-auto max-w-5xl px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-8">
             <h2
               data-cta-item
               className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-[-0.02em] sm:text-4xl"
@@ -333,7 +335,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
       </main>
 
       {/* ---------- FOOTER ---------- */}
-      <footer className="border-t border-border bg-background">
+      <footer className="w-full border-t border-border bg-background">
         <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
             <div>
@@ -464,7 +466,7 @@ function PricingCard({
       <h3 className="text-lg font-semibold text-foreground">{name}</h3>
       <p className="mt-1 text-sm text-muted-foreground">{tagline}</p>
       <div className="mt-4 flex items-baseline gap-1">
-        <span className="font-mono text-3xl font-semibold tabular-nums tracking-tight text-foreground">
+        <span className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
           {price}
         </span>
         {price !== '$0' && price !== '0 $' && (

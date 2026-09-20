@@ -82,7 +82,7 @@ export default function ResetPasswordForm() {
             value={code}
             onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
             placeholder="000000"
-            className="text-center text-lg tracking-[0.4em] font-mono"
+            className="text-center text-lg tracking-[0.4em] tabular-nums"
           />
         </div>
         <div>

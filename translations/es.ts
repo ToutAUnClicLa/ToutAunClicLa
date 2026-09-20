@@ -2774,7 +2774,8 @@ export default {
         noAccount: "¿No tienes cuenta?",
         createAccount: "Crear cuenta",
         needsVerification: "Verifica tu correo antes de entrar.",
-        error: "Correo o contraseña incorrectos."
+        error: "Correo o contraseña incorrectos.",
+        locked: "Cuenta bloqueada temporalmente. Inténtalo más tarde."
       },
       register: {
         title: "Crear cuenta",

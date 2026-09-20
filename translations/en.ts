@@ -2742,7 +2742,8 @@ export default {
         noAccount: "No account yet?",
         createAccount: "Create an account",
         needsVerification: "Verify your email before signing in.",
-        error: "Incorrect email or password."
+        error: "Incorrect email or password.",
+        locked: "Account temporarily locked. Try again later."
       },
       register: {
         title: "Create an account",

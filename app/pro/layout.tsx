@@ -27,15 +27,16 @@ export function generateMetadata(): Metadata {
 }
 
 export default function ProLayout({ children }: { children: React.ReactNode }) {
+  const lang = validLang(cookies().get('preferred-language')?.value);
   return (
-    <div
-      className={`${inter.variable} pro-theme pro-canvas min-h-screen text-foreground antialiased`}
-    >
-      <ProAuthProvider>
-        <ProLangSync />
-        {children}
-        <ProConsentBanner />
-      </ProAuthProvider>
+    <div className={`${inter.variable} ${inter.className} pro-theme`}>
+      <div className="pro-canvas min-h-screen text-foreground antialiased">
+        <ProAuthProvider>
+          <ProLangSync ssrLang={lang} />
+          {children}
+          <ProConsentBanner />
+        </ProAuthProvider>
+      </div>
     </div>
   );
 }
