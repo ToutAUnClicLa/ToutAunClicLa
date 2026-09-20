@@ -83,12 +83,12 @@ export default async function ProHomePage({ searchParams }: PageProps) {
                 className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start"
               >
                 <Link href="/pro/register">
-                  <Button size="lg" className="h-11 w-full px-6 sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto">
                     {t.hero.ctaPrimary}
                   </Button>
                 </Link>
                 <Link href="/pro/pricing">
-                  <Button size="lg" variant="secondary" className="h-11 w-full px-6 sm:w-auto">
+                  <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                     {t.hero.ctaSecondary}
                   </Button>
                 </Link>
@@ -314,7 +314,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
               <Link href="/pro/register">
                 <Button
                   size="lg"
-                  className="h-11 w-full bg-white px-6 text-zinc-950 hover:bg-zinc-100 sm:w-auto"
+                  className="w-full bg-white text-zinc-950 hover:bg-zinc-100 sm:w-auto"
                 >
                   {t.finalCta.ctaPrimary}
                 </Button>
@@ -322,7 +322,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
               <Link href="/pro/pricing">
                 <Button
                   size="lg"
-                  className="h-11 w-full border border-white/30 bg-transparent px-6 text-white hover:bg-white/10 sm:w-auto"
+                  className="w-full border border-white/30 bg-transparent text-white hover:bg-white/10 sm:w-auto"
                 >
                   {t.finalCta.ctaSecondary}
                 </Button>

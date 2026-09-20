@@ -48,7 +48,7 @@ export function PublicCardBody({ pro, name, url, t, qr }: PublicCardBodyProps) {
             <ShareButton title={name} text={pro.titulo || undefined} url={url} />
             <a
               href={vcardUrl(pro.slug)}
-              className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white transition-colors duration-[180ms] ease-out hover:bg-indigo-700"
+              className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-colors duration-[180ms] ease-out hover:bg-indigo-700"
             >
               {t.saveContact}
             </a>

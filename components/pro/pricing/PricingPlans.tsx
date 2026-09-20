@@ -103,7 +103,7 @@ export function PricingPlans() {
               type="button"
               onClick={() => setPeriodo(p.id)}
               className={cn(
-                'min-h-11 rounded-md px-4 text-sm font-medium transition-colors duration-[180ms] ease-out',
+                'min-h-11 rounded-md px-5 py-2 text-sm font-medium transition-colors duration-[180ms] ease-out',
                 periodo === p.id
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground',

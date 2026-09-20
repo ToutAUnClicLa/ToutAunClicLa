@@ -71,7 +71,7 @@ export function HeroCardMockup({ t, qrDataUrl }: { t: LandingT; qrDataUrl?: stri
           </div>
 
           <div className="mt-4 flex items-center gap-3">
-            <span className="inline-flex h-11 flex-1 items-center justify-center rounded-lg bg-primary text-sm font-medium text-primary-foreground">
+            <span className="inline-flex min-h-12 flex-1 items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground">
               {c.saveContact}
             </span>
             {qrDataUrl ? (
@@ -81,10 +81,10 @@ export function HeroCardMockup({ t, qrDataUrl }: { t: LandingT; qrDataUrl?: stri
                 alt={c.qrAlt}
                 width={44}
                 height={44}
-                className="h-11 w-11 shrink-0 rounded-md border border-border bg-white p-1"
+                className="h-12 w-12 shrink-0 rounded-md border border-border bg-white p-1"
               />
             ) : (
-              <span aria-hidden className="h-11 w-11 shrink-0 rounded-md border border-border bg-white" />
+              <span aria-hidden className="h-12 w-12 shrink-0 rounded-md border border-border bg-white" />
             )}
           </div>
         </div>
