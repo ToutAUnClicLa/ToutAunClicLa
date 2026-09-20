@@ -3,7 +3,6 @@
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { uploadAvatar } from '@/lib/pro/endpoints';
-import { ProApiError } from '@/lib/pro/api';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/pro/ui/button';
 
@@ -32,8 +31,8 @@ export function AvatarUploader({ initialUrl, nombre, onUploaded }: Props) {
       const { foto_url } = await uploadAvatar(file);
       onUploaded?.(foto_url);
       toast.success(t('pro.avatar.uploaded'));
-    } catch (err) {
-      toast.error((err as ProApiError).message || t('pro.avatar.uploadError'));
+    } catch {
+      toast.error(t('pro.avatar.uploadError'));
     } finally {
       setUploading(false);
     }
@@ -43,7 +42,7 @@ export function AvatarUploader({ initialUrl, nombre, onUploaded }: Props) {
 
   return (
     <div className="flex items-start gap-4">
-      <div className="flex aspect-[4/5] w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-accent text-xl font-semibold text-accent-foreground">
+      <div className="flex aspect-[4/5] w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-accent text-xl font-semibold text-accent-foreground">
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt="" className="h-full w-full object-cover" />

@@ -28,8 +28,8 @@ export function DeleteAccountModal({ isSocial, onClose }: DeleteAccountModalProp
     setFieldError('');
     try {
       const payload = isSocial ? { confirmarEmail: value } : { password: value };
-      const data = await deleteAccount(payload);
-      toast.success(data.message || t('pro.dashboard.account.deleteSuccess'));
+      await deleteAccount(payload);
+      toast.success(t('pro.dashboard.account.deleteSuccess'));
       router.replace('/pro');
     } catch (err) {
       const apiErr = err as ProApiError;
@@ -38,13 +38,13 @@ export function DeleteAccountModal({ isSocial, onClose }: DeleteAccountModalProp
           ? (apiErr.data as { error?: string }).error
           : undefined;
       if (errorCode === 'Invalid password') {
-        setFieldError(apiErr.message || t('pro.dashboard.account.invalidPassword'));
+        setFieldError(t('pro.dashboard.account.invalidPassword'));
       } else if (errorCode === 'Confirmation required') {
-        setFieldError(apiErr.message || t('pro.dashboard.account.confirmationMismatch'));
+        setFieldError(t('pro.dashboard.account.confirmationMismatch'));
       } else if (errorCode === 'Stripe cancellation failed') {
-        toast.error(apiErr.message || t('pro.dashboard.account.stripeError'));
+        toast.error(t('pro.dashboard.account.stripeError'));
       } else {
-        toast.error(apiErr.message || t('pro.dashboard.account.deleteError'));
+        toast.error(t('pro.dashboard.account.deleteError'));
       }
     } finally {
       setLoading(false);
@@ -53,7 +53,7 @@ export function DeleteAccountModal({ isSocial, onClose }: DeleteAccountModalProp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-[16px] border border-border bg-card p-6 shadow-[var(--shadow-md)]">
+      <div className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-[var(--shadow-md)]">
         <h2 className="text-lg font-semibold text-foreground">
           {t('pro.dashboard.account.modalTitle')}
         </h2>

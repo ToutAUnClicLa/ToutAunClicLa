@@ -60,7 +60,7 @@ export function ProLandingHeader() {
         ) : (
           <Link
             href="/pro/login"
-            className="whitespace-nowrap text-sm font-medium text-primary hover:underline"
+            className="inline-flex min-h-11 items-center whitespace-nowrap text-sm font-medium text-foreground hover:text-primary"
           >
             {t('pro.header.signIn')}
           </Link>

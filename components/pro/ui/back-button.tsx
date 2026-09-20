@@ -13,7 +13,7 @@ export function BackButton({ href, label, className }: BackButtonProps) {
     <Link
       href={href}
       className={cn(
-        'inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground',
+        'inline-flex min-h-11 items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-[180ms] ease-out hover:text-foreground',
         className,
       )}
     >

@@ -6,6 +6,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { BackButton } from '@/components/pro/ui/back-button';
 import { Button } from '@/components/pro/ui/button';
 import { DeleteAccountModal } from '@/components/pro/account/DeleteAccountModal';
+import { ProPageHeader } from '@/components/pro/ui/shell';
 
 export default function AccountPage() {
   const { proUser } = useProAuth();
@@ -17,17 +18,12 @@ export default function AccountPage() {
   return (
     <div>
       <BackButton href="/pro/dashboard" label={t('pro.dashboard.account.back')} />
+      <ProPageHeader
+        title={t('pro.dashboard.account.title')}
+        subtitle={t('pro.dashboard.account.subtitle')}
+      />
 
-      <div className="mt-4">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          {t('pro.dashboard.account.title')}
-        </h1>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {t('pro.dashboard.account.subtitle')}
-        </p>
-      </div>
-
-      <div className="mt-8 rounded-[14px] border border-destructive/30 bg-destructive/5 p-6">
+      <div className="pro-card mt-8 border-destructive/30 bg-destructive/5">
         <h2 className="text-base font-semibold text-destructive">
           {t('pro.dashboard.account.dangerZoneTitle')}
         </h2>

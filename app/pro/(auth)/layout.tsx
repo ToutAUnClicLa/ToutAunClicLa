@@ -16,11 +16,11 @@ export default function ProAuthLayout({ children }: { children: React.ReactNode 
 
       <Link
         href="/pro"
-        className="mb-8 rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        className="mb-8 rounded-lg"
       >
         <ProLogo />
       </Link>
-      <div className="w-full max-w-sm rounded-[16px] border border-border bg-card p-6 shadow-[var(--shadow-md)] sm:p-8">
+      <div className="w-full max-w-sm rounded-lg border border-border bg-card p-6 shadow-[var(--shadow-sm)] sm:p-8">
         {children}
       </div>
     </div>

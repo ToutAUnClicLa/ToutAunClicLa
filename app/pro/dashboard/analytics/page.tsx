@@ -27,6 +27,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { getAnalytics, type ProAnalytics } from '@/lib/pro/endpoints';
 import { BackButton } from '@/components/pro/ui/back-button';
 import { Button } from '@/components/pro/ui/button';
+import { ProEmptyState, ProPageHeader } from '@/components/pro/ui/shell';
 
 // Mismo mapeo que SubscriptionCard.tsx para formatear fechas por idioma.
 const DATE_LOCALE: Record<string, string> = {
@@ -93,25 +94,16 @@ export default function AnalyticsPage() {
     return (
       <div>
         <BackButton href="/pro/dashboard" label={t('pro.dashboard.analytics.back')} />
-        <div className="mt-4">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            {t('pro.dashboard.analytics.title')}
-          </h1>
-        </div>
-        <div className="mt-8 flex flex-col items-center rounded-[14px] border border-dashed border-border bg-card p-10 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-foreground">
-            <Lock className="h-5 w-5" aria-hidden />
-          </span>
-          <h2 className="mt-4 text-base font-semibold text-foreground">
-            {t('pro.dashboard.analytics.upsellTitle')}
-          </h2>
-          <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
-            {t('pro.dashboard.analytics.upsellText')}
-          </p>
-          <Button className="mt-5" onClick={() => router.push('/pro/pricing')}>
+        <ProPageHeader title={t('pro.dashboard.analytics.title')} />
+        <ProEmptyState
+          icon={Lock}
+          title={t('pro.dashboard.analytics.upsellTitle')}
+          text={t('pro.dashboard.analytics.upsellText')}
+        >
+          <Button onClick={() => router.push('/pro/pricing')}>
             {t('pro.dashboard.analytics.upsellCta')}
           </Button>
-        </div>
+        </ProEmptyState>
       </div>
     );
   }
@@ -126,14 +118,14 @@ export default function AnalyticsPage() {
         </div>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-[14px] border border-border bg-card p-6">
+            <div key={i} className="pro-card border border-border bg-card p-6">
               <div className="pro-skeleton h-10 w-10 rounded-[10px]" />
               <div className="pro-skeleton mt-4 h-7 w-16" />
               <div className="pro-skeleton mt-2 h-3 w-24" />
             </div>
           ))}
         </div>
-        <div className="mt-6 rounded-[14px] border border-border bg-card p-6">
+        <div className="mt-6 pro-card border border-border bg-card p-6">
           <div className="pro-skeleton h-64 w-full" />
         </div>
       </div>
@@ -143,20 +135,15 @@ export default function AnalyticsPage() {
   return (
     <div>
       <BackButton href="/pro/dashboard" label={t('pro.dashboard.analytics.back')} />
-
-      <div className="mt-4">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          {t('pro.dashboard.analytics.title')}
-        </h1>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {t('pro.dashboard.analytics.subtitle')}
-        </p>
-      </div>
+      <ProPageHeader
+        title={t('pro.dashboard.analytics.title')}
+        subtitle={t('pro.dashboard.analytics.subtitle')}
+      />
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {STATS.map(({ key, pick, Icon }) => (
-          <div key={key} className="rounded-[14px] border border-border bg-card p-6">
-            <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent text-accent-foreground">
+          <div key={key} className="pro-card border border-border bg-card p-6">
+            <span className="pro-icon-tile">
               <Icon className="h-5 w-5" aria-hidden />
             </span>
             <p className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
@@ -175,7 +162,7 @@ export default function AnalyticsPage() {
         </p>
       )}
 
-      <div className="mt-6 rounded-[14px] border border-border bg-card p-6">
+      <div className="mt-6 pro-card border border-border bg-card p-6">
         <h2 className="text-base font-semibold text-foreground">
           {t('pro.dashboard.analytics.chartTitle')}
         </h2>
@@ -205,7 +192,7 @@ export default function AnalyticsPage() {
               />
               <Tooltip
                 contentStyle={{
-                  borderRadius: 10,
+                  borderRadius: 8,
                   border: '1px solid hsl(var(--border))',
                   background: 'hsl(var(--popover))',
                   color: 'hsl(var(--popover-foreground))',
@@ -229,7 +216,7 @@ export default function AnalyticsPage() {
       {(data?.sources || data?.devices) && (
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           {data?.sources && (
-            <div className="rounded-[14px] border border-border bg-card p-6">
+            <div className="pro-card border border-border bg-card p-6">
               <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
                 <Globe2 className="h-4 w-4 text-muted-foreground" aria-hidden />
                 {t('pro.dashboard.analytics.sourcesTitle')}
@@ -254,7 +241,7 @@ export default function AnalyticsPage() {
           )}
 
           {data?.devices && (
-            <div className="rounded-[14px] border border-border bg-card p-6">
+            <div className="pro-card border border-border bg-card p-6">
               <h2 className="text-base font-semibold text-foreground">
                 {t('pro.dashboard.analytics.devicesTitle')}
               </h2>

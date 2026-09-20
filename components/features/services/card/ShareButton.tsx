@@ -41,7 +41,7 @@ export function ShareButton({ title, text, url }: Props) {
       type="button"
       onClick={onShare}
       aria-label={t('pro.card.shareAria')}
-      className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors hover:border-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-400"
+      className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors duration-[180ms] ease-out hover:border-indigo-300 hover:text-indigo-700"
     >
       {copied ? <Check className="h-4 w-4" aria-hidden /> : <Share2 className="h-4 w-4" aria-hidden />}
       {copied ? t('pro.card.copied') : t('pro.card.share')}

@@ -1,22 +1,19 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
-import Image from 'next/image';
 import type { Metadata } from 'next';
-import { MapPin, Phone, Globe, ArrowLeft, Mail, Lock } from 'lucide-react';
-import { lookupPublicProfile, fetchCategoriaById, fetchQrDataUrl, APP_URL, vcardUrl, type PublicPro } from '@/lib/pro/publicProfile';
+import { ArrowLeft, Mail, Lock } from 'lucide-react';
+import { lookupPublicProfile, fetchCategoriaById, fetchQrDataUrl, APP_URL, type PublicPro } from '@/lib/pro/publicProfile';
 import { getProT, validLang, type Lang } from '@/lib/pro/i18n';
 import { QrCard } from '@/components/features/services/card/QrCard';
+import { ViewTracker } from '@/components/features/services/card/ViewTracker';
+import { PublicGallery } from '@/components/features/services/card/PublicGallery';
+import { PublicCardBody } from '@/components/features/services/card/PublicCardBody';
 
-// Resuelve el idioma: ?lang= (explícito) > cookie del sitio > fr (Loi 96)
 function resolveLang(paramLang?: string): Lang {
   if (paramLang) return validLang(paramLang);
   const cookieLang = cookies().get('preferred-language')?.value;
   return validLang(cookieLang);
 }
-import { ShareButton } from '@/components/features/services/card/ShareButton';
-import { SocialLink } from '@/components/features/services/card/SocialLink';
-import { ViewTracker } from '@/components/features/services/card/ViewTracker';
-import { PublicGallery } from '@/components/features/services/card/PublicGallery';
 
 interface PageProps {
   params: { slug: string };
@@ -71,27 +68,27 @@ export default async function PublicProfilePage({ params, searchParams }: PagePr
   if (lookup.status !== 'ok') {
     const unavailable = lookup.status === 'unavailable';
     return (
-      <div className="bg-slate-50 dark:bg-slate-950 min-h-[70vh]">
-        <div className="mx-auto max-w-lg px-4 py-16 sm:px-6 text-center">
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">
+      <div className="min-h-[70vh] bg-zinc-50">
+        <div className="mx-auto max-w-lg px-4 py-16 text-center sm:px-6">
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">
             <Lock className="h-5 w-5" aria-hidden />
           </span>
-          <h1 className="mt-4 text-2xl font-semibold text-slate-900 dark:text-slate-100">
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight text-zinc-900">
             {unavailable ? t.card.unavailableTitle : t.card.notFoundTitle}
           </h1>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-2 text-sm text-zinc-600">
             {unavailable ? t.card.unavailableText : t.card.notFoundText}
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/pro/pricing"
-              className="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700"
+              className="inline-flex min-h-11 items-center rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white hover:bg-indigo-700"
             >
               {t.card.unavailableCta}
             </Link>
             <Link
               href="/servicios"
-              className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-slate-100"
+              className="inline-flex min-h-11 items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900"
             >
               <ArrowLeft className="h-4 w-4" />
               {t.card.backGeneric}
@@ -125,22 +122,18 @@ export default async function PublicProfilePage({ params, searchParams }: PagePr
   };
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-950">
-      {/* Analytics no-bloqueante */}
+    <div className="bg-zinc-50">
       <ViewTracker slug={pro.slug} source={searchParams?.src} />
-
-      {/* JSON-LD SEO */}
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Top bar */}
       <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6">
         <Link
           href={backHref}
-          className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+          className="inline-flex min-h-11 items-center gap-1.5 text-sm text-zinc-500 transition-colors duration-[180ms] ease-out hover:text-zinc-900"
         >
           <ArrowLeft className="h-4 w-4" />
           {backLabel}
@@ -148,176 +141,29 @@ export default async function PublicProfilePage({ params, searchParams }: PagePr
       </div>
 
       <main className="mx-auto max-w-3xl px-4 pb-16 sm:px-6">
-        {/* Card principal */}
-        <article className="overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-          {/* Banda superior */}
-          <div className="h-24 bg-gradient-to-br from-[#004d40] to-[#00332a] sm:h-28" />
+        <PublicCardBody
+          pro={pro}
+          name={name}
+          url={url}
+          t={{
+            saveContact: t.card.saveContact,
+            speaks: t.card.speaks,
+            socialsSection: t.card.socialsSection,
+            contactSection: t.card.contactSection,
+          }}
+          qr={qrDataUrl ? <QrCard slug={pro.slug} dataUrl={qrDataUrl} /> : undefined}
+        />
 
-          <div className="px-6 pb-8 sm:px-10">
-            {/* Foto y acciones — marco 4:5 (retrato; las fotos de perfil suelen serlo, así no se recortan) */}
-            <div className="-mt-16 flex flex-col gap-4 sm:-mt-24 sm:flex-row sm:items-end sm:justify-between">
-              {pro.foto_url ? (
-                <div className="relative aspect-[4/5] w-36 shrink-0 overflow-hidden rounded-2xl border-4 border-white shadow-md dark:border-slate-900 sm:w-44">
-                  <Image
-                    src={pro.foto_url}
-                    alt={name}
-                    fill
-                    priority
-                    sizes="(max-width: 640px) 144px, 176px"
-                    className="object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="flex aspect-[4/5] w-36 items-center justify-center rounded-2xl border-4 border-white dark:border-slate-900 bg-emerald-100 dark:bg-emerald-900/30 text-3xl font-semibold text-emerald-700 dark:text-emerald-300 shadow-md sm:w-44">
-                  {(pro.nombre[0] || '') + (pro.apellido?.[0] || '')}
-                </div>
-              )}
-
-              <div className="flex flex-wrap items-center gap-2">
-                <ShareButton title={name} text={pro.titulo || undefined} url={url} />
-                <a
-                  href={vcardUrl(pro.slug)}
-                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700"
-                >
-                  {t.card.saveContact}
-                </a>
-              </div>
-            </div>
-
-            {/* Identidad */}
-            <div className="mt-6">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
-                {name}
-              </h1>
-              {pro.titulo && (
-                <p className="mt-1 text-base text-slate-600 dark:text-slate-400">
-                  {pro.titulo}
-                  {pro.empresa && (
-                    <span className="text-slate-400 dark:text-slate-500"> · {pro.empresa}</span>
-                  )}
-                </p>
-              )}
-
-              {/* Meta secundaria */}
-              <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
-                {pro.ciudad && (
-                  <span className="inline-flex items-center gap-1.5">
-                    <MapPin className="h-4 w-4" aria-hidden />
-                    {pro.ciudad}
-                  </span>
-                )}
-                {pro.idiomas_hablados && pro.idiomas_hablados.length > 0 && (
-                  <span className="inline-flex items-center gap-1.5">
-                    <span className="text-xs">{t.card.speaks}</span>
-                    <span className="flex flex-wrap items-center gap-1">
-                      {pro.idiomas_hablados.map((l) => (
-                        <span
-                          key={l}
-                          className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300"
-                        >
-                          {l}
-                        </span>
-                      ))}
-                    </span>
-                  </span>
-                )}
-              </div>
-
-              {/* Bio */}
-              {pro.bio && (
-                <p className="mt-6 whitespace-pre-line text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">
-                  {pro.bio}
-                </p>
-              )}
-            </div>
-
-            {/* Redes + Contacto (izquierda) y QR (derecha) — 2 columnas iguales en desktop */}
-            {(!!pro.redes?.length || pro.telefono || pro.email_contacto || pro.sitio_web || qrDataUrl) && (
-              <div className="mt-8 border-t border-slate-100 dark:border-slate-800 pt-6 sm:grid sm:grid-cols-2 sm:items-start sm:gap-8">
-                <div className="flex flex-col gap-8">
-                  {/* Redes */}
-                  {pro.redes && pro.redes.length > 0 && (
-                    <div>
-                      <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
-                        {t.card.socialsSection}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {pro.redes.map((r) => (
-                          <SocialLink key={r.plataforma + r.url} plataforma={r.plataforma} url={r.url} slug={pro.slug} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Contacto directo */}
-                  {(pro.telefono || pro.email_contacto || pro.sitio_web) && (
-                    <div>
-                      <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
-                        {t.card.contactSection}
-                      </p>
-                      <ul className="flex flex-col gap-2 text-sm">
-                        {pro.telefono && (
-                          <li>
-                            <a
-                              href={`tel:${pro.telefono}`}
-                              className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400"
-                            >
-                              <Phone className="h-4 w-4" aria-hidden />
-                              {pro.telefono}
-                            </a>
-                          </li>
-                        )}
-                        {pro.email_contacto && (
-                          <li>
-                            <a
-                              href={`mailto:${pro.email_contacto}`}
-                              className="inline-flex items-center gap-2 break-all text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400"
-                            >
-                              <Mail className="h-4 w-4 shrink-0" aria-hidden />
-                              {pro.email_contacto}
-                            </a>
-                          </li>
-                        )}
-                        {pro.sitio_web && (
-                          <li>
-                            <a
-                              href={pro.sitio_web}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400"
-                            >
-                              <Globe className="h-4 w-4" aria-hidden />
-                              {pro.sitio_web.replace(/^https?:\/\//, '')}
-                            </a>
-                          </li>
-                        )}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-
-                {/* QR de la tarjeta (data URL desde SSR → sin problemas de CORS/CSP) */}
-                {qrDataUrl && (
-                  <div className="mt-8 sm:mt-0">
-                    <QrCard slug={pro.slug} dataUrl={qrDataUrl} />
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </article>
-
-        {/* Galería (solo Max con fotos) */}
         {pro.galeria && pro.galeria.length > 0 && (
           <section className="mt-8">
-            <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-slate-400">
+            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
               {t.card.gallery}
             </h2>
             <PublicGallery items={pro.galeria} />
           </section>
         )}
 
-        <footer className="mt-10 text-center text-xs text-slate-400">
+        <footer className="mt-10 text-center text-xs text-zinc-400">
           <Mail className="mx-auto mb-1 h-3 w-3" aria-hidden />
           <p>{t.card.footerTagline}</p>
         </footer>

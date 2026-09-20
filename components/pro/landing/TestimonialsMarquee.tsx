@@ -24,7 +24,7 @@ export function TestimonialsMarquee({ t }: { t: LandingT }) {
     quote: string;
     niche: string;
   }) => (
-    <figure className="pro-card-hover flex w-[300px] shrink-0 flex-col rounded-[14px] border border-border bg-card p-6 shadow-[var(--shadow-sm)] sm:w-[340px]">
+    <figure className="pro-card pro-card-hover flex w-[300px] shrink-0 flex-col sm:w-[340px]">
       <blockquote className="flex-1 text-[15px] leading-relaxed text-foreground">
         “{quote}”
       </blockquote>

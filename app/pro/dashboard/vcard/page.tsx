@@ -20,6 +20,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { fetchPublicProfile, vcardUrl, type PublicPro } from '@/lib/pro/publicProfile';
 import { BackButton } from '@/components/pro/ui/back-button';
 import { Button } from '@/components/pro/ui/button';
+import { ProEmptyState, ProPageHeader } from '@/components/pro/ui/shell';
 
 export default function VCardPreviewPage() {
   const router = useRouter();
@@ -44,25 +45,16 @@ export default function VCardPreviewPage() {
     return (
       <div className="mx-auto max-w-2xl">
         <BackButton href="/pro/dashboard" label={t('pro.dashboard.vcard.back')} />
-        <div className="mt-4">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            {t('pro.dashboard.vcard.title')}
-          </h1>
-        </div>
-        <div className="mt-8 flex flex-col items-center rounded-[14px] border border-dashed border-border bg-card p-10 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-foreground">
-            <Lock className="h-5 w-5" aria-hidden />
-          </span>
-          <h2 className="mt-4 text-base font-semibold text-foreground">
-            {t('pro.dashboard.vcard.upsellTitle')}
-          </h2>
-          <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
-            {t('pro.dashboard.vcard.upsellText')}
-          </p>
-          <Button className="mt-5" onClick={() => router.push('/pro/pricing')}>
+        <ProPageHeader title={t('pro.dashboard.vcard.title')} />
+        <ProEmptyState
+          icon={Lock}
+          title={t('pro.dashboard.vcard.upsellTitle')}
+          text={t('pro.dashboard.vcard.upsellText')}
+        >
+          <Button onClick={() => router.push('/pro/pricing')}>
             {t('pro.dashboard.vcard.upsellCta')}
           </Button>
-        </div>
+        </ProEmptyState>
       </div>
     );
   }
@@ -76,7 +68,7 @@ export default function VCardPreviewPage() {
           <div className="pro-skeleton h-4 w-72 max-w-full" />
         </div>
         <div className="mt-8">
-          <div className="pro-skeleton h-72 w-full rounded-[14px]" />
+          <div className="pro-skeleton h-72 w-full rounded-lg" />
         </div>
       </div>
     );
@@ -86,11 +78,7 @@ export default function VCardPreviewPage() {
     return (
       <div className="mx-auto max-w-2xl">
         <BackButton href="/pro/dashboard" label={t('pro.dashboard.vcard.back')} />
-        <div className="mt-4">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            {t('pro.dashboard.vcard.title')}
-          </h1>
-        </div>
+        <ProPageHeader title={t('pro.dashboard.vcard.title')} />
         <p className="mt-8 text-sm text-muted-foreground">{t('pro.dashboard.vcard.notReady')}</p>
       </div>
     );
@@ -109,19 +97,14 @@ export default function VCardPreviewPage() {
   return (
     <div className="mx-auto max-w-2xl">
       <BackButton href="/pro/dashboard" label={t('pro.dashboard.vcard.back')} />
+      <ProPageHeader
+        title={t('pro.dashboard.vcard.title')}
+        subtitle={t('pro.dashboard.vcard.subtitle')}
+      />
 
-      <div className="mt-4">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          {t('pro.dashboard.vcard.title')}
-        </h1>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {t('pro.dashboard.vcard.subtitle')}
-        </p>
-      </div>
-
-      <div className="mt-8 rounded-[14px] border border-border bg-card p-6">
+      <div className="mt-8 pro-card">
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-accent text-accent-foreground">
+          <span className="pro-icon-tile">
             <Contact className="h-5 w-5" aria-hidden />
           </span>
           <div>
@@ -130,7 +113,7 @@ export default function VCardPreviewPage() {
           </div>
         </div>
 
-        <p className="mt-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+        <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {t('pro.dashboard.vcard.fieldsTitle')}
         </p>
         <ul className="mt-3 flex flex-col gap-2.5">
@@ -154,7 +137,7 @@ export default function VCardPreviewPage() {
 
         <a
           href={vcardUrl(pro.slug)}
-          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90"
+          className="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
           <Download className="h-4 w-4" aria-hidden />
           {t('pro.dashboard.vcard.testButton')}

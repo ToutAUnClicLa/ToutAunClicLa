@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { updateMe, type Categoria } from '@/lib/pro/endpoints';
-import { ProApiError } from '@/lib/pro/api';
 import { useProAuth, type ProUser } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/pro/ui/button';
@@ -112,8 +111,8 @@ export function ProfileForm({ categorias }: { categorias: Categoria[] }) {
       await updateMe(payload);
       await refresh();
       toast.success(t('pro.profileForm.saved'));
-    } catch (err) {
-      toast.error((err as ProApiError).message || t('pro.profileForm.saveError'));
+    } catch {
+      toast.error(t('pro.profileForm.saveError'));
     }
   };
 

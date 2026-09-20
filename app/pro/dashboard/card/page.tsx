@@ -11,6 +11,7 @@ import { PublicGallery } from '@/components/features/services/card/PublicGallery
 import { QrCard } from '@/components/features/services/card/QrCard';
 import { BackButton } from '@/components/pro/ui/back-button';
 import { Button } from '@/components/pro/ui/button';
+import { ProEmptyState, ProPageHeader } from '@/components/pro/ui/shell';
 
 export default function CardPreviewPage() {
   const router = useRouter();
@@ -33,41 +34,32 @@ export default function CardPreviewPage() {
 
   if (isFree) {
     return (
-      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+      <div className="mx-auto max-w-3xl">
         <BackButton href="/pro/dashboard" label={t('pro.dashboard.card.back')} />
-        <div className="mt-4">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            {t('pro.dashboard.card.title')}
-          </h1>
-        </div>
-        <div className="mt-8 flex flex-col items-center rounded-[14px] border border-dashed border-border bg-card p-10 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-foreground">
-            <Lock className="h-5 w-5" aria-hidden />
-          </span>
-          <h2 className="mt-4 text-base font-semibold text-foreground">
-            {t('pro.dashboard.card.upsellTitle')}
-          </h2>
-          <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
-            {t('pro.dashboard.card.upsellText')}
-          </p>
-          <Button className="mt-5" onClick={() => router.push('/pro/pricing')}>
+        <ProPageHeader title={t('pro.dashboard.card.title')} />
+        <ProEmptyState
+          icon={Lock}
+          title={t('pro.dashboard.card.upsellTitle')}
+          text={t('pro.dashboard.card.upsellText')}
+        >
+          <Button onClick={() => router.push('/pro/pricing')}>
             {t('pro.dashboard.card.upsellCta')}
           </Button>
-        </div>
+        </ProEmptyState>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-3xl px-4 sm:px-6" aria-busy="true">
+      <div className="mx-auto max-w-3xl" aria-busy="true">
         <div className="pro-skeleton h-5 w-36" />
         <div className="mt-6 space-y-2">
           <div className="pro-skeleton h-8 w-48" />
           <div className="pro-skeleton h-4 w-72 max-w-full" />
         </div>
         <div className="mt-8">
-          <div className="pro-skeleton h-96 w-full rounded-3xl" />
+          <div className="pro-skeleton h-96 w-full rounded-lg" />
         </div>
       </div>
     );
@@ -83,24 +75,21 @@ export default function CardPreviewPage() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 sm:px-6">
+    <div className="mx-auto max-w-3xl">
       <BackButton href="/pro/dashboard" label={t('pro.dashboard.card.back')} />
 
       <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            {t('pro.dashboard.card.title')}
-          </h1>
-          <p className="mt-1.5 max-w-xl text-sm text-muted-foreground">
-            {t('pro.dashboard.card.subtitle')}
-          </p>
-        </div>
+        <ProPageHeader
+          className="mt-0"
+          title={t('pro.dashboard.card.title')}
+          subtitle={t('pro.dashboard.card.subtitle')}
+        />
         {pro && (
           <a
             href={liveUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+            className="inline-flex min-h-11 shrink-0 items-center gap-1.5 text-sm font-medium text-primary hover:underline"
           >
             {t('pro.dashboard.card.viewLive')}
             <ExternalLink className="h-3.5 w-3.5" aria-hidden />
@@ -120,7 +109,7 @@ export default function CardPreviewPage() {
 
           {pro.galeria && pro.galeria.length > 0 && (
             <section className="mt-8">
-              <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-slate-400">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t('pro.card.gallery')}
               </h2>
               <PublicGallery items={pro.galeria} />

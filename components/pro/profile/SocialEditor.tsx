@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { listSocial, addSocial, deleteSocial, type RedSocial } from '@/lib/pro/endpoints';
-import { ProApiError } from '@/lib/pro/api';
 import { useTranslation } from '@/hooks/useTranslation';
 import { socialIcon, socialBrandLabel } from '@/components/pro/socialBrand';
 import { Button } from '@/components/pro/ui/button';
@@ -49,8 +48,8 @@ export function SocialEditor() {
       setRedes((prev) => [...prev, red]);
       setUrl('');
       toast.success(t('pro.social.added'));
-    } catch (err) {
-      toast.error((err as ProApiError).message || t('pro.social.addError'));
+    } catch {
+      toast.error(t('pro.social.addError'));
     } finally {
       setAdding(false);
     }

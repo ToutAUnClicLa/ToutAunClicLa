@@ -61,7 +61,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
             <div className="text-center lg:text-left">
               <span
                 data-hero-item
-                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/70 px-3 py-1 text-xs font-medium text-accent-foreground backdrop-blur"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1 text-xs font-medium text-accent-foreground"
               >
                 {t.hero.badge}
               </span>
@@ -130,13 +130,10 @@ export default async function ProHomePage({ searchParams }: PageProps) {
                 <div
                   key={n}
                   data-animate-item
-                  className="pro-card-hover rounded-[14px] border border-border bg-card p-6 shadow-[var(--shadow-sm)]"
+                  className="pro-card pro-card-hover"
                 >
                   <div className="flex items-center justify-between">
-                    <span
-                      data-step-icon
-                      className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent text-accent-foreground"
-                    >
+                    <span data-step-icon className="pro-icon-tile">
                       <Icon className="h-5 w-5" aria-hidden />
                     </span>
                     <span className="font-mono text-sm font-medium tabular-nums text-muted-foreground">
@@ -245,7 +242,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
             <div className="mt-8 text-center">
               <Link
                 href="/pro/pricing"
-                className="inline-flex items-center gap-1.5 rounded-[10px] text-sm font-medium text-primary transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-primary transition-colors duration-[180ms] ease-out hover:text-primary/80"
               >
                 {t.pricing.seeAll}
                 <ArrowRight className="h-4 w-4" aria-hidden />
@@ -278,7 +275,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
             <SectionHead kicker={t.faq.kicker} title={t.faq.title} />
             <div
               data-animate-item
-              className="mt-10 divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-card"
+              className="mt-10 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card"
             >
               {[
                 { q: t.faq.q1, a: t.faq.a1 },
@@ -287,7 +284,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
                 { q: t.faq.q4, a: t.faq.a4 },
               ].map(({ q, a }, i) => (
                 <details key={i} className="group px-5 py-1">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">
+                  <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 py-3 text-sm font-medium text-foreground">
                     {q}
                     <ChevronDown
                       className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180"
@@ -305,7 +302,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         <section className="px-4 pb-20 sm:px-6 lg:px-8" data-animate-section data-animate="cta">
           <div
             data-animate-item
-            className="mx-auto max-w-5xl overflow-hidden rounded-[20px] bg-gradient-to-br from-[#004d40] to-[#00332a] px-6 py-14 text-center shadow-[var(--shadow-lg)] sm:px-12 sm:py-16"
+            className="mx-auto max-w-5xl overflow-hidden rounded-lg bg-zinc-950 px-6 py-14 text-center sm:px-12 sm:py-16"
           >
             <h2
               data-cta-item
@@ -313,14 +310,14 @@ export default async function ProHomePage({ searchParams }: PageProps) {
             >
               {t.finalCta.title}
             </h2>
-            <p data-cta-item className="mx-auto mt-4 max-w-lg text-balance text-emerald-50/80">
+            <p data-cta-item className="mx-auto mt-4 max-w-lg text-balance text-zinc-300">
               {t.finalCta.subtitle}
             </p>
             <div data-cta-item className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Link href="/pro/register">
                 <Button
                   size="lg"
-                  className="h-11 w-full bg-white px-6 text-[#00332a] hover:bg-white/90 sm:w-auto"
+                  className="h-11 w-full bg-white px-6 text-zinc-950 hover:bg-zinc-100 sm:w-auto"
                 >
                   {t.finalCta.ctaPrimary}
                 </Button>
@@ -351,23 +348,23 @@ export default async function ProHomePage({ searchParams }: PageProps) {
               </span>
               <p className="mt-2 max-w-xs text-sm text-muted-foreground">{t.footer.tagline}</p>
             </div>
-            <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <Link href="/pro/pricing" className="rounded-[6px] transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">
+            <nav className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <Link href="/pro/pricing" className="inline-flex min-h-11 items-center rounded-md transition-colors duration-[180ms] ease-out hover:text-foreground">
                 {t.footer.plans}
               </Link>
-              <Link href="/pro/login" className="rounded-[6px] transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">
+              <Link href="/pro/login" className="inline-flex min-h-11 items-center rounded-md transition-colors duration-[180ms] ease-out hover:text-foreground">
                 {t.footer.signIn}
               </Link>
               <Link
                 href={`/pro/politica-privacidad${q}`}
-                className="rounded-[6px] transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                className="inline-flex min-h-11 items-center rounded-md transition-colors duration-[180ms] ease-out hover:text-foreground"
               >
                 {t.footer.privacy}
               </Link>
-              <Link href="/terminos" className="rounded-[6px] transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">
+              <Link href="/terminos" className="inline-flex min-h-11 items-center rounded-md transition-colors duration-[180ms] ease-out hover:text-foreground">
                 {t.footer.terms}
               </Link>
-              <Link href="/servicios" className="rounded-[6px] transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">
+              <Link href="/servicios" className="inline-flex min-h-11 items-center rounded-md transition-colors duration-[180ms] ease-out hover:text-foreground">
                 {t.footer.directory}
               </Link>
             </nav>
@@ -398,7 +395,7 @@ function SectionHead({
 }) {
   return (
     <div data-animate-head className="mx-auto max-w-2xl text-center">
-      <span className="font-mono text-xs font-medium uppercase tracking-[0.05em] text-primary">
+      <span className="pro-kicker">
         {kicker}
       </span>
       <h2 className="mt-3 text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-[1.875rem]">
@@ -423,11 +420,9 @@ function FeatureCard({
   return (
     <div
       data-animate-item
-      className={`pro-card-hover rounded-[14px] border border-border bg-card p-6 shadow-[var(--shadow-sm)] ${
-        large ? 'sm:col-span-1' : ''
-      }`}
+      className={`pro-card pro-card-hover ${large ? 'sm:col-span-1' : ''}`}
     >
-      <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent text-accent-foreground">
+      <span className="pro-icon-tile">
         <Icon className="h-5 w-5" aria-hidden />
       </span>
       <h3 className="mt-4 text-lg font-semibold tracking-tight text-foreground">{title}</h3>
@@ -457,8 +452,8 @@ function PricingCard({
     <div
       data-animate-item
       {...(featured ? { 'data-featured': '' } : {})}
-      className={`pro-card-hover relative flex flex-col rounded-[14px] border bg-card p-6 text-left shadow-[var(--shadow-sm)] ${
-        featured ? 'border-2 border-primary' : 'border-border'
+      className={`pro-card pro-card-hover relative flex flex-col ${
+        featured ? 'border-primary shadow-[var(--shadow-sm)]' : ''
       }`}
     >
       {badge && (

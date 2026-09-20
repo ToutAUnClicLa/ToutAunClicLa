@@ -23,8 +23,23 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   if (loading || !proUser) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <span className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      <div className="min-h-screen" aria-busy="true">
+        <header className="flex h-16 items-center border-b border-border px-4 sm:px-6">
+          <div className="pro-skeleton h-8 w-40" />
+        </header>
+        <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <div className="pro-skeleton h-8 w-56" />
+          <div className="mt-2 pro-skeleton h-4 w-72 max-w-full" />
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="pro-card">
+                <div className="pro-skeleton h-10 w-10" />
+                <div className="pro-skeleton mt-4 h-4 w-32" />
+                <div className="pro-skeleton mt-2 h-3 w-full" />
+              </div>
+            ))}
+          </div>
+        </main>
       </div>
     );
   }

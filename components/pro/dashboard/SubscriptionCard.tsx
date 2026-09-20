@@ -9,18 +9,17 @@ import {
   openBillingPortal,
   type SubscriptionState,
 } from '@/lib/pro/endpoints';
-import { ProApiError } from '@/lib/pro/api';
 import { CreditCard } from 'lucide-react';
 import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/pro/ui/button';
 import { cn } from '@/lib/utils';
 
-// Badge por tier según la guía: Free gris, Pro verde, Max degradado verde→teal.
+// Badge por tier: Free gris, Pro/Max indigo.
 const TIER_BADGE: Record<string, string> = {
   free: 'bg-secondary text-muted-foreground',
   pro: 'bg-accent text-accent-foreground',
-  max: 'bg-gradient-to-r from-[#00875A] to-teal-600 text-white',
+  max: 'bg-primary text-primary-foreground',
 };
 
 // Mapa código de idioma -> locale de Intl para formatear fechas.
@@ -88,8 +87,8 @@ export function SubscriptionCard() {
     try {
       const url = await openBillingPortal();
       window.location.href = url;
-    } catch (err) {
-      toast.error((err as ProApiError).message || t('pro.subscription.portalError'));
+    } catch {
+      toast.error(t('pro.subscription.portalError'));
       setPortalLoading(false);
     }
   };
@@ -99,9 +98,9 @@ export function SubscriptionCard() {
   const estadoLabel = (estado: string) => t(`pro.subscription.status.${estado}`) || estado;
 
   return (
-    <div className="rounded-[14px] border border-border bg-card p-6">
+    <div className="pro-card">
       <div className="flex items-start justify-between">
-        <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-accent text-accent-foreground">
+        <span className="pro-icon-tile">
           <CreditCard className="h-5 w-5" aria-hidden />
         </span>
         {tier ? (

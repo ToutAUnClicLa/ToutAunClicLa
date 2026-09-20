@@ -1,69 +1,109 @@
-/* Tokens del módulo Pro — scoped a .pro-theme (no afecta al e-commerce) */
+/* Tokens Pro — Stripe-like, scoped a .pro-theme (no afecta al e-commerce) */
 .pro-theme {
-  --background: 0 0% 100%;
-  --foreground: 222 47% 11%;
+  --background: 240 5% 98%;
+  --foreground: 240 6% 10%;
   --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
+  --card-foreground: 240 6% 10%;
   --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
-  --primary: 160 100% 26%;
+  --popover-foreground: 240 6% 10%;
+  --primary: 243 75% 59%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222 47% 11%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%;
-  --accent: 152 76% 96%;
-  --accent-foreground: 160 100% 20%;
-  --destructive: 0 84% 60%;
+  --secondary: 240 5% 96%;
+  --secondary-foreground: 240 6% 10%;
+  --muted: 240 5% 96%;
+  --muted-foreground: 240 4% 46%;
+  --accent: 243 100% 97%;
+  --accent-foreground: 243 55% 38%;
+  --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
-  --ring: 160 100% 26%;
-  --radius: 0.625rem;
-  --shadow-sm: 0 1px 2px 0 rgb(2 6 23 / 0.04);
-  --shadow: 0 1px 3px 0 rgb(2 6 23 / 0.06), 0 1px 2px -1px rgb(2 6 23 / 0.04);
-  --shadow-md: 0 4px 12px -2px rgb(2 6 23 / 0.08);
-  --shadow-lg: 0 12px 32px -8px rgb(2 6 23 / 0.12);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --border: 240 6% 90%;
+  --input: 240 6% 84%;
+  --ring: 243 75% 59%;
+  --radius: 0.5rem;
+  --shadow-sm: 0 1px 2px 0 rgb(24 24 27 / 0.04);
+  --shadow: 0 1px 2px 0 rgb(24 24 27 / 0.05);
+  --shadow-md: 0 4px 12px -2px rgb(24 24 27 / 0.08);
+  --shadow-lg: 0 12px 28px -8px rgb(24 24 27 / 0.12);
+  --pro-ease: cubic-bezier(0, 0, 0.2, 1);
+  --pro-duration: 180ms;
+  font-family: var(--font-pro-sans), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  letter-spacing: -0.011em;
 }
 
 .dark .pro-theme {
-  --background: 222 47% 5%;
-  --foreground: 210 40% 98%;
-  --card: 222 47% 7%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222 47% 6%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 160 84% 39%;
-  --primary-foreground: 222 47% 6%;
-  --secondary: 217 33% 14%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217 33% 14%;
-  --muted-foreground: 215 20% 65%;
-  --accent: 161 60% 12%;
-  --accent-foreground: 152 76% 80%;
+  --background: 240 6% 6%;
+  --foreground: 240 5% 96%;
+  --card: 240 5% 8%;
+  --card-foreground: 240 5% 96%;
+  --popover: 240 5% 8%;
+  --popover-foreground: 240 5% 96%;
+  --primary: 243 80% 68%;
+  --primary-foreground: 243 40% 12%;
+  --secondary: 240 5% 12%;
+  --secondary-foreground: 240 5% 96%;
+  --muted: 240 5% 12%;
+  --muted-foreground: 240 4% 64%;
+  --accent: 243 30% 14%;
+  --accent-foreground: 243 80% 84%;
   --destructive: 0 72% 51%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 215 28% 17%;
-  --input: 215 28% 17%;
-  --ring: 160 84% 39%;
+  --destructive-foreground: 240 5% 96%;
+  --border: 240 4% 16%;
+  --input: 240 4% 18%;
+  --ring: 243 80% 68%;
 }
 
 .pro-theme .font-mono {
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-/* Selección de texto con el verde de marca (detalle de identidad) */
 .pro-theme ::selection {
   background: hsl(var(--accent));
   color: hsl(var(--accent-foreground));
 }
 
-/* Skeleton con shimmer sutil (la guía prohíbe spinners genéricos en contenido) */
+/* Ritmo 8px + radio 8px */
+.pro-theme .pro-card {
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  padding: 1.5rem;
+}
+
+.pro-theme .pro-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  padding: 2.5rem 1.5rem;
+}
+
+.pro-theme .pro-icon-tile {
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+.pro-theme .pro-kicker {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: hsl(var(--primary));
+}
+
 .pro-theme .pro-skeleton {
   position: relative;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 6px;
   background: hsl(var(--muted));
 }
 .pro-theme .pro-skeleton::after {
@@ -71,8 +111,8 @@
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, hsl(var(--background) / 0.6), transparent);
-  animation: pro-shimmer 1.6s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, hsl(var(--background) / 0.7), transparent);
+  animation: pro-shimmer 1.6s ease-out infinite;
 }
 @keyframes pro-shimmer {
   to {
@@ -80,64 +120,46 @@
   }
 }
 
-/* Espaciado vertical generoso entre secciones de la landing */
 .pro-theme .pro-section {
-  padding-block: clamp(4rem, 10vw, 8rem);
+  padding-block: clamp(4rem, 8vw, 7rem);
 }
 
-/* Fondo de marca del hero: degradado verde muy contenido + patrón de puntos
-   sutil (estética Vercel), todo con CSS, sin imágenes. */
 .pro-theme .pro-hero-bg {
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(60% 55% at 50% -10%, hsl(var(--accent) / 0.9), transparent 70%);
+    radial-gradient(55% 50% at 50% -8%, hsl(var(--accent) / 0.95), transparent 68%),
+    hsl(var(--background));
 }
 .pro-theme .pro-hero-bg::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-image: radial-gradient(hsl(var(--foreground) / 0.06) 1px, transparent 1px);
-  background-size: 22px 22px;
-  -webkit-mask-image: radial-gradient(70% 60% at 50% 25%, #000 40%, transparent 78%);
-  mask-image: radial-gradient(70% 60% at 50% 25%, #000 40%, transparent 78%);
+  background-image: radial-gradient(hsl(var(--foreground) / 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(70% 55% at 50% 20%, #000 38%, transparent 78%);
+  mask-image: radial-gradient(70% 55% at 50% 20%, #000 38%, transparent 78%);
 }
 
-/* La entrada del hero (fade + translateY escalonado) la orquesta ahora GSAP
-   en LandingMotion.tsx, no CSS, para evitar movimiento duplicado. */
-
-/* Chip AirDrop: entrada + flotación sutil */
 @keyframes pro-chip-in {
   from {
     opacity: 0;
-    transform: translateY(-8px) scale(0.96);
+    transform: translateY(-6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-@keyframes pro-chip-float {
-  0%,
-  100% {
     transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
   }
 }
 .pro-theme .pro-airdrop-chip {
-  animation:
-    pro-chip-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both,
-    pro-chip-float 4s ease-in-out 0.9s infinite;
+  animation: pro-chip-in var(--pro-duration) var(--pro-ease) 0.12s both;
 }
 
-/* Banner de consentimiento: entrada desde abajo */
 @keyframes pro-banner-in {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -145,65 +167,61 @@
   }
 }
 .pro-theme .pro-banner-in {
-  animation: pro-banner-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: pro-banner-in 200ms var(--pro-ease) both;
 }
 
-/* Testimonios: marquee infinito y continuo (CSS puro).
-   La pista contiene dos copias del set; translateX(-50%) reinicia sin salto.
-   Máscara de degradado en los bordes para aparición/desaparición suave. */
+/* Cookie bar reserva espacio: no cubre CTAs de pricing / dashboard */
+html.pro-consent-open .pro-theme {
+  padding-bottom: 7.5rem;
+}
+
 .pro-theme .pro-marquee {
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 8%,
-    #000 92%,
-    transparent
-  );
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
   mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
 .pro-theme .pro-marquee-track {
   display: flex;
   width: max-content;
-  gap: 1.5rem;
+  gap: 1rem;
   padding-inline: 1rem;
   will-change: transform;
-  animation: pro-marquee 36s linear infinite;
+  animation: pro-marquee 40s linear infinite;
 }
 @keyframes pro-marquee {
   from {
     transform: translateX(0);
   }
   to {
-    /* -50% del total = un set completo (los dos sets son idénticos) menos la
-       mitad del gap central, compensado por el gap uniforme entre tarjetas. */
-    transform: translateX(calc(-50% - 0.75rem));
+    transform: translateX(calc(-50% - 0.5rem));
   }
 }
 
-
-/* CTA decorativa del mockup: micro-interacción viva al pasar por la tarjeta
-   (no clickeable — el mockup completo es aria-hidden en sus partes). */
-.pro-theme .pro-mock-cta {
-  transition:
-    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 0.15s ease;
-}
-.pro-theme .pro-mock:hover .pro-mock-cta {
-  transform: scale(1.01);
-  filter: brightness(1.04);
-}
-
-/* Hover de card */
 .pro-theme .pro-card-hover {
   transition:
-    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.15s ease;
+    box-shadow var(--pro-duration) var(--pro-ease),
+    border-color var(--pro-duration) var(--pro-ease);
 }
 .pro-theme .pro-card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  border-color: hsl(var(--foreground) / 0.16);
+  box-shadow: var(--shadow-sm);
+}
+
+.pro-theme a,
+.pro-theme button,
+.pro-theme [role='button'],
+.pro-theme summary {
+  outline: none;
+}
+.pro-theme a:focus-visible,
+.pro-theme button:focus-visible,
+.pro-theme [role='button']:focus-visible,
+.pro-theme summary:focus-visible,
+.pro-theme input:focus-visible,
+.pro-theme select:focus-visible,
+.pro-theme textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -218,9 +236,6 @@
   .pro-theme .pro-banner-in {
     animation: none !important;
   }
-
-  /* Marquee → grid estático de 3 columnas (sin scroll perpetuo). Se muestra
-     solo el primer set; la copia duplicada se oculta. */
   .pro-theme .pro-marquee {
     -webkit-mask-image: none;
     mask-image: none;

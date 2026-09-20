@@ -85,7 +85,7 @@ export function ProLangSwitcher() {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={t('pro.header.langCurrentLabel', { lang: current.toUpperCase() })}
-        className="inline-flex h-9 items-center gap-1.5 rounded-[10px] border border-border bg-card/60 px-2.5 text-sm text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="inline-flex h-11 min-h-11 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-sm text-foreground transition-colors duration-[180ms] ease-out hover:bg-secondary"
       >
         <Globe className="h-4 w-4 text-muted-foreground" aria-hidden />
         <span className="font-mono text-xs font-semibold uppercase tabular-nums">{current}</span>
@@ -95,7 +95,7 @@ export function ProLangSwitcher() {
         <div
           role="menu"
           aria-label={t('pro.header.langMenuLabel')}
-          className="pro-banner-in absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-[12px] border border-border bg-card p-1 shadow-[var(--shadow-lg)]"
+          className="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-lg border border-border bg-card p-1 shadow-[var(--shadow-md)]"
         >
           {OPTIONS.map((opt, i) => {
             const active = opt.code === current;
@@ -111,7 +111,7 @@ export function ProLangSwitcher() {
                 onClick={() => choose(opt.code)}
                 onKeyDown={(e) => onMenuKeyDown(e, i)}
                 className={cn(
-                  'flex w-full items-center justify-between gap-2 rounded-[8px] px-2.5 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                  'flex min-h-11 w-full items-center justify-between gap-2 rounded-md px-2.5 text-left text-sm transition-colors duration-[180ms] ease-out',
                   active
                     ? 'bg-accent text-accent-foreground'
                     : 'text-foreground hover:bg-accent/60',

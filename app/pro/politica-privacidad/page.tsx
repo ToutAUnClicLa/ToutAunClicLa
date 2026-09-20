@@ -40,7 +40,7 @@ export default function ProPrivacyPage({ searchParams }: PageProps) {
           <div className="flex items-center justify-between gap-4">
             <Link
               href="/pro"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="inline-flex min-h-11 items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-[180ms] ease-out hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
               {t.backToPro}
@@ -51,7 +51,7 @@ export default function ProPrivacyPage({ searchParams }: PageProps) {
                   key={code}
                   href={`/pro/politica-privacidad?lang=${code}`}
                   aria-current={lang === code ? 'true' : undefined}
-                  className={`rounded-[8px] px-2 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                  className={`inline-flex min-h-11 items-center rounded-md px-2 text-xs font-medium transition-colors duration-[180ms] ease-out ${
                     lang === code
                       ? 'bg-accent text-accent-foreground'
                       : 'text-muted-foreground hover:text-foreground'

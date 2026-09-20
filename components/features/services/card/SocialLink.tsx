@@ -41,7 +41,7 @@ export function SocialLink({ plataforma, url, slug }: Props) {
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => trackProEvent('clic_red', slug, { red: plataforma })}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 transition-all duration-150 hover:-translate-y-0.5 hover:border-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-400"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 transition-colors duration-[180ms] ease-out hover:border-indigo-300 hover:text-indigo-700"
       aria-label={label}
       title={label}
     >

@@ -22,8 +22,8 @@ export default function ProForgotPasswordPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const data = await forgotPassword(email);
-      toast.success(data.message || t('pro.auth.forgotPassword.success'));
+      await forgotPassword(email);
+      toast.success(t('pro.auth.forgotPassword.success'));
       router.push(`/pro/reset-password?email=${encodeURIComponent(email)}`);
     } catch (err) {
       toast.error(t(proAuthErrorKey(err, 'pro.auth.forgotPassword.error')));

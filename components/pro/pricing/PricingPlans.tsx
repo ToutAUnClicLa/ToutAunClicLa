@@ -12,7 +12,6 @@ import {
   changeSubscription,
   type SubscriptionState,
 } from '@/lib/pro/endpoints';
-import { ProApiError } from '@/lib/pro/api';
 import { Button } from '@/components/pro/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -66,8 +65,8 @@ export function PricingPlans() {
     try {
       const url = await createCheckout(plan, periodo);
       window.location.href = url;
-    } catch (err) {
-      toast.error((err as ProApiError).message || t('pro.pricingPage.checkoutError'));
+    } catch {
+      toast.error(t('pro.pricingPage.checkoutError'));
       setLoadingPlan(null);
     }
   };
@@ -81,7 +80,7 @@ export function PricingPlans() {
       setSub(next.subscription);
       await refresh();
       toast.success(t('pro.pricingPage.planUpdated'));
-    } catch (err) {
+    } catch {
       toast.error(t('pro.pricingPage.changeError'));
     } finally {
       setLoadingPlan(null);
@@ -97,14 +96,14 @@ export function PricingPlans() {
     <div>
       {/* Toggle */}
       <div className="mb-10 flex items-center justify-center">
-        <div className="inline-flex rounded-[10px] border border-border p-1">
+        <div className="inline-flex rounded-lg border border-border p-1">
           {periodos.map((p) => (
             <button
               key={p.id}
               type="button"
               onClick={() => setPeriodo(p.id)}
               className={cn(
-                'rounded-[7px] px-4 py-1.5 text-sm font-medium transition-colors',
+                'min-h-11 rounded-md px-4 text-sm font-medium transition-colors duration-[180ms] ease-out',
                 periodo === p.id
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground',
@@ -140,8 +139,8 @@ export function PricingPlans() {
             <div
               key={plan.id}
               className={cn(
-                'relative flex flex-col rounded-[14px] border bg-card p-6 text-left',
-                plan.destacado ? 'border-2 border-primary' : 'border-border',
+                'pro-card relative flex flex-col',
+                plan.destacado ? 'border-primary shadow-[var(--shadow-sm)]' : '',
               )}
             >
               {plan.destacado && (

@@ -5,10 +5,6 @@ import { HERO_SOCIALS } from './SocialGlyphs';
 
 type LandingT = ReturnType<typeof getProT>['landing'];
 
-// Miniatura fiel del diseño real de app/card/[slug]/page.tsx.
-// Datos ficticios; todo el texto sale de translations. Sin foto: avatar con
-// iniciales sobre emerald. El QR es real (data URL generado en el server) y
-// apunta a la página de registro.
 export function HeroCardMockup({ t, qrDataUrl }: { t: LandingT; qrDataUrl?: string | null }) {
   const c = t.card;
   const initials = c.name
@@ -19,31 +15,26 @@ export function HeroCardMockup({ t, qrDataUrl }: { t: LandingT; qrDataUrl?: stri
 
   return (
     <div className="pro-mock relative w-full max-w-[360px]">
-      {/* Chip flotante estilo iOS AirDrop */}
-      <div className="pro-airdrop-chip absolute -top-2 right-2 z-10 flex items-center gap-2 rounded-full border border-white/60 bg-white/85 px-3 py-1.5 text-xs font-medium text-white shadow-[0_12px_32px_-8px_rgb(2_6_23_/_0.18)] backdrop-blur">
+      <div className="pro-airdrop-chip absolute -top-2 right-2 z-10 flex items-center gap-2 rounded-full border border-zinc-200 bg-white/90 px-3 py-1.5 text-xs font-medium text-foreground shadow-[var(--shadow-sm)] backdrop-blur">
         <span
           aria-hidden
-          className="flex h-6 w-6 items-center justify-center rounded-full bg-[#007aff] text-white"
+          className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-white"
         >
           <AirDropIcon className="h-3.5 w-3.5" />
         </span>
         {c.airdrop}
       </div>
 
-      {/* Tarjeta */}
-      <div className="overflow-hidden rounded-[20px] border border-border bg-card shadow-[var(--shadow-lg)]">
-        {/* Banda degradada de marca (misma que /card) */}
-        <div className="h-20 bg-gradient-to-br from-[#004d40] to-[#00332a]" />
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-md)]">
+        <div className="h-16 bg-zinc-950" />
 
         <div className="px-5 pb-5">
-          {/* Avatar + acción */}
-          <div className="-mt-9 flex items-end justify-between">
-            <div className="flex h-[72px] w-[72px] items-center justify-center rounded-2xl border-4 border-card bg-emerald-100 text-xl font-semibold text-emerald-700 shadow-md">
+          <div className="-mt-8 flex items-end justify-between">
+            <div className="flex h-[72px] w-[72px] items-center justify-center rounded-lg border-4 border-card bg-accent text-xl font-semibold text-accent-foreground">
               {initials}
             </div>
           </div>
 
-          {/* Identidad */}
           <h3 className="mt-3 text-lg font-semibold tracking-tight text-foreground">{c.name}</h3>
           <p className="mt-0.5 text-sm text-muted-foreground">
             {c.title}
@@ -60,7 +51,7 @@ export function HeroCardMockup({ t, qrDataUrl }: { t: LandingT; qrDataUrl?: stri
               {['FR', 'EN', 'ES'].map((l) => (
                 <span
                   key={l}
-                  className="rounded-full bg-secondary px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-secondary-foreground"
+                  className="rounded-md bg-secondary px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-secondary-foreground"
                 >
                   {l}
                 </span>
@@ -68,21 +59,19 @@ export function HeroCardMockup({ t, qrDataUrl }: { t: LandingT; qrDataUrl?: stri
             </span>
           </div>
 
-          {/* Redes (pills con iconos reales, decorativas) */}
           <div className="mt-4 flex gap-2" aria-hidden>
             {HERO_SOCIALS.map(({ key, Icon }) => (
               <span
                 key={key}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-600"
+                className="flex h-8 w-8 items-center justify-center rounded-md bg-secondary text-muted-foreground"
               >
                 <Icon className="h-4 w-4" />
               </span>
             ))}
           </div>
 
-          {/* Botón guardar + mini QR */}
           <div className="mt-4 flex items-center gap-3">
-            <span className="pro-mock-cta inline-flex h-10 flex-1 items-center justify-center rounded-[10px] bg-primary text-sm font-medium text-primary-foreground">
+            <span className="inline-flex h-11 flex-1 items-center justify-center rounded-lg bg-primary text-sm font-medium text-primary-foreground">
               {c.saveContact}
             </span>
             {qrDataUrl ? (
@@ -95,10 +84,7 @@ export function HeroCardMockup({ t, qrDataUrl }: { t: LandingT; qrDataUrl?: stri
                 className="h-11 w-11 shrink-0 rounded-md border border-border bg-white p-1"
               />
             ) : (
-              <span
-                aria-hidden
-                className="h-11 w-11 shrink-0 rounded-md border border-border bg-white"
-              />
+              <span aria-hidden className="h-11 w-11 shrink-0 rounded-md border border-border bg-white" />
             )}
           </div>
         </div>

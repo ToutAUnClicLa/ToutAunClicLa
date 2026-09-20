@@ -8,6 +8,7 @@ import { ProfileForm } from '@/components/pro/profile/ProfileForm';
 import { AvatarUploader } from '@/components/pro/profile/AvatarUploader';
 import { SocialEditor } from '@/components/pro/profile/SocialEditor';
 import { BackButton } from '@/components/pro/ui/back-button';
+import { ProPageHeader } from '@/components/pro/ui/shell';
 
 export default function ProfilePage() {
   const { proUser, refresh } = useProAuth();
@@ -32,7 +33,7 @@ export default function ProfilePage() {
           <div className="pro-skeleton h-4 w-72 max-w-full" />
         </div>
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
-          <div className="rounded-[14px] border border-border bg-card p-6 lg:col-span-1">
+          <div className="pro-card border border-border bg-card p-6 lg:col-span-1">
             <div className="flex items-center gap-4">
               <div className="pro-skeleton h-20 w-20 rounded-full" />
               <div className="space-y-2">
@@ -42,7 +43,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="space-y-6 lg:col-span-2">
-            <div className="space-y-4 rounded-[14px] border border-border bg-card p-6">
+            <div className="space-y-4 pro-card border border-border bg-card p-6">
               <div className="pro-skeleton h-4 w-24" />
               <div className="pro-skeleton h-10 w-full" />
               <div className="pro-skeleton h-4 w-24" />
@@ -58,20 +59,15 @@ export default function ProfilePage() {
   return (
     <div>
       <BackButton href="/pro/dashboard" label={t('pro.dashboard.profile.back')} />
-
-      <div className="mt-4">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          {t('pro.dashboard.profile.title')}
-        </h1>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {t('pro.dashboard.profile.subtitle')}
-        </p>
-      </div>
+      <ProPageHeader
+        title={t('pro.dashboard.profile.title')}
+        subtitle={t('pro.dashboard.profile.subtitle')}
+      />
 
       <div className="mt-8 grid gap-6 lg:grid-cols-3">
         {/* Sidebar: avatar */}
         <aside className="min-w-0 lg:col-span-1">
-          <div className="rounded-[14px] border border-border bg-card p-6 lg:sticky lg:top-24">
+          <div className="pro-card border border-border bg-card p-6 lg:sticky lg:top-24">
             <AvatarUploader
               initialUrl={proUser.foto_url}
               nombre={proUser.nombre}
@@ -82,11 +78,11 @@ export default function ProfilePage() {
 
         {/* Principal: formulario + redes */}
         <div className="min-w-0 space-y-6 lg:col-span-2">
-          <div className="rounded-[14px] border border-border bg-card p-6">
+          <div className="pro-card border border-border bg-card p-6">
             <ProfileForm categorias={categorias} />
           </div>
 
-          <div className="rounded-[14px] border border-border bg-card p-6">
+          <div className="pro-card border border-border bg-card p-6">
             <h2 className="text-base font-semibold text-foreground">
               {t('pro.dashboard.profile.socialsTitle')}
             </h2>
