@@ -24,47 +24,49 @@ export function ProLandingHeader() {
 
   return (
     <header
-      className={`sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-card/90 px-4 backdrop-blur transition-[border-color] duration-200 sm:px-6 ${
+      className={`sticky top-0 z-40 border-b bg-card/90 backdrop-blur transition-[border-color] duration-200 ${
         scrolled ? 'border-border' : 'border-transparent'
       }`}
     >
-      <ProLogo />
+      <div className="mx-auto flex h-16 w-full max-w-4xl items-center justify-between px-4 sm:px-5">
+        <ProLogo />
 
-      <div className="flex items-center gap-2 sm:gap-3">
-        <ProLangSwitcher />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <ProLangSwitcher />
 
-        {loading ? (
-          <span className="h-8 w-24" />
-        ) : proUser ? (
-          <Link href="/pro/dashboard" className="flex items-center gap-3">
-            <div className="hidden items-center gap-2 sm:flex">
-              {proUser.foto_url ? (
-                <Image
-                  src={proUser.foto_url}
-                  alt=""
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 rounded-full object-cover"
-                />
-              ) : (
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
-                  {(proUser.nombre || '?').slice(0, 2).toUpperCase()}
+          {loading ? (
+            <span className="h-8 w-24" />
+          ) : proUser ? (
+            <Link href="/pro/dashboard" className="flex items-center gap-3">
+              <div className="hidden items-center gap-2 sm:flex">
+                {proUser.foto_url ? (
+                  <Image
+                    src={proUser.foto_url}
+                    alt=""
+                    width={32}
+                    height={32}
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
+                    {(proUser.nombre || '?').slice(0, 2).toUpperCase()}
+                  </span>
+                )}
+                <span className="text-sm font-medium text-foreground">
+                  {`${proUser.nombre} ${proUser.apellido || ''}`.trim()}
                 </span>
-              )}
-              <span className="text-sm font-medium text-foreground">
-                {`${proUser.nombre} ${proUser.apellido || ''}`.trim()}
-              </span>
-            </div>
-            <Button size="sm">{t('pro.header.dashboard')}</Button>
-          </Link>
-        ) : (
-          <Link
-            href="/pro/login"
-            className="inline-flex min-h-11 items-center whitespace-nowrap text-sm font-medium text-foreground hover:text-primary"
-          >
-            {t('pro.header.signIn')}
-          </Link>
-        )}
+              </div>
+              <Button size="sm">{t('pro.header.dashboard')}</Button>
+            </Link>
+          ) : (
+            <Link
+              href="/pro/login"
+              className="inline-flex min-h-11 items-center whitespace-nowrap text-sm font-medium text-foreground hover:text-primary"
+            >
+              {t('pro.header.signIn')}
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -34,6 +34,12 @@ export const getCategories = () =>
 export const updateMe = (patch: Record<string, unknown>) =>
   proFetch<{ pro: ProUser }>('/me', { method: 'PUT', body: patch }).then((r) => r.pro);
 
+export const changePassword = (currentPassword: string, newPassword: string) =>
+  proFetch<{ message: string }>('/me/password', {
+    method: 'PUT',
+    body: { currentPassword, newPassword },
+  });
+
 export const listSocial = () =>
   proFetch<{ redes: RedSocial[] }>('/me/social').then((r) => r.redes);
 

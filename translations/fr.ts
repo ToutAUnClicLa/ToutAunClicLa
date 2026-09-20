@@ -2589,7 +2589,7 @@ export default {
         dashboard: "Tableau de bord"
       },
       hero: {
-        badge: "Pour les professionnels indépendants",
+        badge: "Pour les professionnels",
         headline: "Ta carte professionnelle, en un clic.",
         subhead: "Crée ta carte digitale, partage-la par AirDrop et apparais dans l'annuaire de services. Plus de papier, plus de clients.",
         ctaPrimary: "Créer mon compte",
@@ -2627,7 +2627,7 @@ export default {
       features: {
         kicker: "Tout ce qu'il te faut",
         title: "Une carte qui travaille pour toi.",
-        subtitle: "Pensée pour les vrais indépendants, pas pour Silicon Valley.",
+        subtitle: "Pensée pour les professionnels, pas pour Silicon Valley.",
         walletTitle: "Apple Wallet + AirDrop",
         walletDesc: "Ta carte vit dans le Wallet du client. Partage par AirDrop, sans app. Elle se met à jour toute seule.",
         directoryTitle: "Annuaire avec vrai trafic local",
@@ -2676,15 +2676,17 @@ export default {
       },
       testimonials: {
         kicker: "Les premiers pros",
-        title: "Bâti avec de vrais indépendants.",
-        subtitle: "Nous démarrons avec nos utilisateurs beta. Leurs mots arrivent bientôt.",
-        betaName: "Professionnel·le beta",
+        title: "On démarre avec nos premiers utilisateurs.",
+        subtitle: "Professionnels beta au Québec. Cette boucle ne s'arrête pas.",
         betaBadge: "Beta",
         q1: "Enfin une carte que je partage d'un simple AirDrop. Mes clients l'adorent.",
+        q1Name: "Camille Bouchard",
         q1Niche: "Coiffure · Montréal",
         q2: "L'annuaire m'a amené de vrais appels de ma région. Ça change tout.",
+        q2Name: "Alex Rivera",
         q2Niche: "Rénovation · Laval",
         q3: "Zéro papier, zéro app. Mon profil se met à jour tout seul.",
+        q3Name: "Sophie Lavoie",
         q3Niche: "Photographie · Québec"
       },
       faq: {
@@ -2701,12 +2703,12 @@ export default {
       },
       finalCta: {
         title: "Ta carte. Un AirDrop. Nouveau client.",
-        subtitle: "Rejoins les professionnels indépendants qui partagent autrement.",
+        subtitle: "Rejoins les professionnels qui partagent autrement.",
         ctaPrimary: "Créer mon compte",
         ctaSecondary: "Voir les plans"
       },
       footer: {
-        tagline: "La carte professionnelle des indépendants.",
+        tagline: "La carte professionnelle des professionnels.",
         plans: "Plans",
         signIn: "Connexion",
         privacy: "Politique de confidentialité",
@@ -2817,6 +2819,18 @@ export default {
         back: "Tableau de bord",
         title: "Compte",
         subtitle: "Gère les paramètres de ton compte professionnel.",
+        credentialsTitle: "Courriel et mot de passe",
+        emailLabel: "Courriel",
+        currentPasswordLabel: "Mot de passe actuel",
+        newPasswordLabel: "Nouveau mot de passe",
+        confirmPasswordLabelChange: "Confirmer le nouveau mot de passe",
+        savePassword: "Mettre à jour le mot de passe",
+        forgotPassword: "Mot de passe oublié ?",
+        passwordUpdated: "Mot de passe mis à jour.",
+        passwordMismatch: "Les mots de passe ne correspondent pas.",
+        passwordTooShort: "Au moins 8 caractères.",
+        passwordError: "Impossible de mettre à jour le mot de passe.",
+        socialHint: "Ce compte utilise Google. Il n'y a pas de mot de passe à changer.",
         dangerZoneTitle: "Zone dangereuse",
         dangerZoneText: "Supprimer ton compte est irréversible et effacera ta présence professionnelle.",
         deleteButton: "Supprimer le compte",

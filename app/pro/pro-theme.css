@@ -221,16 +221,19 @@ html.pro-consent-open .pro-theme {
   display: flex;
   width: max-content;
   gap: 1rem;
-  padding-inline: 1rem;
   will-change: transform;
-  animation: pro-marquee 40s linear infinite;
+  animation: pro-marquee 36s linear infinite;
+}
+.pro-theme .pro-marquee:hover .pro-marquee-track,
+.pro-theme .pro-marquee:focus-within .pro-marquee-track {
+  animation-play-state: paused;
 }
 @keyframes pro-marquee {
   from {
     transform: translateX(0);
   }
   to {
-    transform: translateX(calc(-50% - 0.5rem));
+    transform: translateX(-50%);
   }
 }
 

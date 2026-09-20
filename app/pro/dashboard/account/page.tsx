@@ -6,6 +6,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { BackButton } from '@/components/pro/ui/back-button';
 import { Button } from '@/components/pro/ui/button';
 import { DeleteAccountModal } from '@/components/pro/account/DeleteAccountModal';
+import { CredentialsCard } from '@/components/pro/account/CredentialsCard';
 import { ProPageHeader } from '@/components/pro/ui/shell';
 
 export default function AccountPage() {
@@ -22,6 +23,8 @@ export default function AccountPage() {
         title={t('pro.dashboard.account.title')}
         subtitle={t('pro.dashboard.account.subtitle')}
       />
+
+      <CredentialsCard />
 
       <div className="pro-card mt-8 border-destructive/30 bg-destructive/5">
         <h2 className="text-base font-semibold text-destructive">

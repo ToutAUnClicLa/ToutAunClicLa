@@ -2595,7 +2595,7 @@ export default {
         dashboard: "Dashboard"
       },
       hero: {
-        badge: "For independent professionals",
+        badge: "For Professionals",
         headline: "Your professional card, in one click.",
         subhead: "Create your digital card, share it over AirDrop and show up in the services directory. Less paper, more clients.",
         ctaPrimary: "Create my account",
@@ -2633,7 +2633,7 @@ export default {
       features: {
         kicker: "Everything you need",
         title: "A card that works for you.",
-        subtitle: "Built for real independents, not for Silicon Valley.",
+        subtitle: "Built for professionals, not for Silicon Valley.",
         walletTitle: "Apple Wallet + AirDrop",
         walletDesc: "Your card lives in the client's Wallet. Share it over AirDrop, no app needed. It updates itself.",
         directoryTitle: "Directory with real local traffic",
@@ -2682,15 +2682,17 @@ export default {
       },
       testimonials: {
         kicker: "The first pros",
-        title: "Built with real independents.",
-        subtitle: "We're starting with our beta users. Their words are coming soon.",
-        betaName: "Beta professional",
+        title: "We're starting with our first users.",
+        subtitle: "Early beta professionals in Quebec. This loop keeps going.",
         betaBadge: "Beta",
         q1: "Finally a card I share with a simple AirDrop. My clients love it.",
+        q1Name: "Camille Bouchard",
         q1Niche: "Hair · Montreal",
         q2: "The directory brought me real calls from my area. It changes everything.",
+        q2Name: "Alex Rivera",
         q2Niche: "Renovation · Laval",
         q3: "Zero paper, zero app. My profile updates itself.",
+        q3Name: "Sophie Lavoie",
         q3Niche: "Photography · Quebec City"
       },
       faq: {
@@ -2707,12 +2709,12 @@ export default {
       },
       finalCta: {
         title: "Your card. One AirDrop. New client.",
-        subtitle: "Join the independent professionals who share differently.",
+        subtitle: "Join the professionals who share differently.",
         ctaPrimary: "Create my account",
         ctaSecondary: "See the plans"
       },
       footer: {
-        tagline: "The professional card for independents.",
+        tagline: "The professional card for professionals.",
         plans: "Plans",
         signIn: "Sign in",
         privacy: "Privacy policy",
@@ -2823,6 +2825,18 @@ export default {
         back: "Dashboard",
         title: "Account",
         subtitle: "Manage your professional account settings.",
+        credentialsTitle: "Email and password",
+        emailLabel: "Email",
+        currentPasswordLabel: "Current password",
+        newPasswordLabel: "New password",
+        confirmPasswordLabelChange: "Confirm new password",
+        savePassword: "Update password",
+        forgotPassword: "Forgot your password?",
+        passwordUpdated: "Password updated.",
+        passwordMismatch: "The passwords do not match.",
+        passwordTooShort: "At least 8 characters.",
+        passwordError: "Could not update the password.",
+        socialHint: "This account uses Google. There is no password to change.",
         dangerZoneTitle: "Danger zone",
         dangerZoneText: "Deleting your account is irreversible and will erase your professional presence.",
         deleteButton: "Delete account",

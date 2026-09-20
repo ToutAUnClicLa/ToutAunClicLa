@@ -95,7 +95,7 @@ export function ProLangSwitcher() {
         <div
           role="menu"
           aria-label={t('pro.header.langMenuLabel')}
-          className="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-lg border border-border bg-card p-1 shadow-[var(--shadow-md)]"
+          className="absolute right-0 z-50 mt-2 flex w-60 flex-col gap-3 rounded-lg border border-border bg-card p-3 shadow-[var(--shadow-md)]"
         >
           {OPTIONS.map((opt, i) => {
             const active = opt.code === current;
@@ -111,7 +111,7 @@ export function ProLangSwitcher() {
                 onClick={() => choose(opt.code)}
                 onKeyDown={(e) => onMenuKeyDown(e, i)}
                 className={cn(
-                  'flex min-h-11 w-full items-center justify-between gap-2 rounded-md px-2.5 text-left text-sm transition-colors duration-[180ms] ease-out',
+                  'flex min-h-12 w-full items-center justify-between gap-3 rounded-md px-3 py-2.5 text-left text-sm transition-colors duration-[180ms] ease-out',
                   active
                     ? 'bg-accent text-accent-foreground'
                     : 'text-foreground hover:bg-accent/60',
