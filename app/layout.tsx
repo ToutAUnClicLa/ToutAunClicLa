@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { cookies, headers } from 'next/headers';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/common/providers/ThemeProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
@@ -8,6 +9,8 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import StructuredData from './schema';
+
+const GA_MEASUREMENT_ID = 'G-7MSB178MLC';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -153,6 +156,18 @@ export default function RootLayout({
         <link rel="alternate" hrefLang="x-default" href="https://www.toutaunclicla.com" />
       </head>
       <body className={inter.className}>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
         <LanguageProvider initialLanguage={lang}>
           <AuthProvider>
             <ThemeProvider
