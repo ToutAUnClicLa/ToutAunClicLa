@@ -29,7 +29,7 @@ export function generateMetadata(): Metadata {
 export default function ProLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className={`${inter.variable} pro-theme min-h-screen bg-background text-foreground antialiased`}
+      className={`${inter.variable} pro-theme pro-canvas min-h-screen text-foreground antialiased`}
     >
       <ProAuthProvider>
         <ProLangSync />

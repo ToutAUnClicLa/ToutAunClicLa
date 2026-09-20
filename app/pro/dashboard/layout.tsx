@@ -24,7 +24,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   if (loading || !proUser) {
     return (
       <div className="min-h-screen" aria-busy="true">
-        <header className="flex h-16 items-center border-b border-border px-4 sm:px-6">
+        <header className="flex h-16 items-center border-b border-border bg-card px-4 sm:px-6">
           <div className="pro-skeleton h-8 w-40" />
         </header>
         <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
@@ -46,7 +46,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur sm:px-6">
+      <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-border bg-card/90 px-4 backdrop-blur sm:px-6">
         <ProLogo />
         <div className="flex items-center gap-2 sm:gap-3">
           <ProLangSwitcher />

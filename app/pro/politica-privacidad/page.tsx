@@ -31,11 +31,11 @@ export default function ProPrivacyPage({ searchParams }: PageProps) {
   const t = getProT(lang).privacy;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col">
       <ProLandingHeader />
 
       <main className="flex-1">
-        <div className="mx-auto max-w-prose px-4 py-12 sm:px-6 lg:py-16">
+        <div className="pro-paper mx-4 my-8 max-w-prose px-4 py-10 sm:mx-auto sm:px-8 lg:my-12 lg:py-12">
           {/* Volver + selector de idioma */}
           <div className="flex items-center justify-between gap-4">
             <Link
@@ -84,7 +84,7 @@ export default function ProPrivacyPage({ searchParams }: PageProps) {
         </div>
       </main>
 
-      <footer className="border-t border-border bg-card/40">
+      <footer className="pro-band border-t border-border">
         <div className="mx-auto max-w-prose px-4 py-8 text-center text-sm sm:px-6">
           <Link href="/pro" className="text-primary transition-colors hover:text-primary/80">
             {t.footerBack}

@@ -51,7 +51,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
   }).catch(() => null);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="pro-canvas flex min-h-screen flex-col">
       <ProLandingHeader />
 
       <main className="flex-1">
@@ -105,7 +105,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- BARRA DE CONFIANZA ---------- */}
-        <section className="border-b border-border bg-card/40">
+        <section className="pro-band border-y border-border">
           <ul className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-4 py-5 text-sm text-muted-foreground sm:px-6 lg:px-8">
             <li>{t.trust.madeInQuebec}</li>
             <li className="hidden sm:block" aria-hidden>·</li>
@@ -152,7 +152,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
 
         {/* ---------- FEATURES (bento) ---------- */}
         <section
-          className="pro-section border-t border-border bg-card/40"
+          className="pro-section pro-band border-y border-border"
           data-animate-section
           data-animate="bento"
         >
@@ -253,7 +253,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
 
         {/* ---------- TESTIMONIOS (marquee infinito) ---------- */}
         <section
-          className="pro-section border-t border-border bg-card/40"
+          className="pro-section pro-band border-y border-border"
           data-animate-section
           data-animate="fade"
         >
@@ -299,7 +299,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- CTA FINAL ---------- */}
-        <section className="px-4 pb-20 sm:px-6 lg:px-8" data-animate-section data-animate="cta">
+        <section className="pro-band-deep px-4 py-16 sm:px-6 lg:px-8" data-animate-section data-animate="cta">
           <div
             data-animate-item
             className="mx-auto max-w-5xl overflow-hidden rounded-lg bg-zinc-950 px-6 py-14 text-center sm:px-12 sm:py-16"
@@ -336,7 +336,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
       </main>
 
       {/* ---------- FOOTER ---------- */}
-      <footer className="border-t border-border bg-card/40">
+      <footer className="pro-band border-t border-border">
         <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
             <div>

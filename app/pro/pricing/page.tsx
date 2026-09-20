@@ -25,7 +25,7 @@ export default function PricingPage({ searchParams }: PageProps) {
   const t = getProT(lang).pricingPage;
 
   return (
-    <div>
+    <div className="min-h-screen">
       <ProLandingHeader />
 
       <div className="mx-auto max-w-5xl px-4 pt-6 sm:px-6">

@@ -46,7 +46,7 @@ export function ProConsentBanner() {
       role="dialog"
       aria-modal="false"
       aria-label={t.ariaLabel}
-      className="pro-banner-in fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-6"
+      className="pro-banner-in fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 px-4 py-3 backdrop-blur sm:px-6"
     >
       <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">

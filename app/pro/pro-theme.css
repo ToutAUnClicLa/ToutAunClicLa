@@ -1,6 +1,8 @@
 /* Tokens Pro — Stripe-like, scoped a .pro-theme (no afecta al e-commerce) */
 .pro-theme {
-  --background: 240 5% 98%;
+  --background: 240 7% 93.5%;
+  --surface: 240 6% 89.5%;
+  --surface-deep: 240 6% 86%;
   --foreground: 240 6% 10%;
   --card: 0 0% 100%;
   --card-foreground: 240 6% 10%;
@@ -8,11 +10,11 @@
   --popover-foreground: 240 6% 10%;
   --primary: 243 75% 59%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 240 5% 96%;
+  --secondary: 240 6% 91%;
   --secondary-foreground: 240 6% 10%;
-  --muted: 240 5% 96%;
-  --muted-foreground: 240 4% 46%;
-  --accent: 243 100% 97%;
+  --muted: 240 6% 90%;
+  --muted-foreground: 240 4% 42%;
+  --accent: 243 80% 95%;
   --accent-foreground: 243 55% 38%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
@@ -32,9 +34,11 @@
 }
 
 .dark .pro-theme {
-  --background: 240 6% 6%;
+  --background: 240 6% 8%;
+  --surface: 240 5% 11%;
+  --surface-deep: 240 5% 7%;
   --foreground: 240 5% 96%;
-  --card: 240 5% 8%;
+  --card: 240 5% 12%;
   --card-foreground: 240 5% 96%;
   --popover: 240 5% 8%;
   --popover-foreground: 240 5% 96%;
@@ -68,6 +72,29 @@
   border: 1px solid hsl(var(--border));
   background: hsl(var(--card));
   padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.pro-theme .pro-canvas {
+  background-color: hsl(var(--background));
+  background-image:
+    radial-gradient(70% 42% at 12% -8%, hsl(243 90% 94% / 0.7), transparent 58%),
+    radial-gradient(48% 36% at 100% 0%, hsl(240 10% 86% / 0.55), transparent 50%);
+}
+
+.pro-theme .pro-band {
+  background: hsl(var(--surface));
+}
+
+.pro-theme .pro-band-deep {
+  background: hsl(var(--surface-deep));
+}
+
+.pro-theme .pro-paper {
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  box-shadow: var(--shadow-sm);
 }
 
 .pro-theme .pro-empty {
@@ -128,7 +155,7 @@
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(55% 50% at 50% -8%, hsl(var(--accent) / 0.95), transparent 68%),
+    radial-gradient(70% 55% at 50% -12%, hsl(243 85% 92% / 0.95), transparent 62%),
     hsl(var(--background));
 }
 .pro-theme .pro-hero-bg::before {

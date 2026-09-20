@@ -24,7 +24,7 @@ export function ProLandingHeader() {
 
   return (
     <header
-      className={`sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur transition-[border-color] duration-200 sm:px-6 ${
+      className={`sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-card/90 px-4 backdrop-blur transition-[border-color] duration-200 sm:px-6 ${
         scrolled ? 'border-border' : 'border-transparent'
       }`}
     >
