@@ -68,7 +68,7 @@ export default async function PublicProfilePage({ params, searchParams }: PagePr
   if (lookup.status !== 'ok') {
     const unavailable = lookup.status === 'unavailable';
     return (
-      <div className="min-h-[70vh] bg-zinc-100">
+      <div className="min-h-[70vh] bg-indigo-50">
         <div className="mx-auto max-w-lg px-4 py-16 text-center sm:px-6">
           <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">
             <Lock className="h-5 w-5" aria-hidden />
@@ -122,7 +122,7 @@ export default async function PublicProfilePage({ params, searchParams }: PagePr
   };
 
   return (
-    <div className="bg-zinc-100">
+    <div className="bg-indigo-50">
       <ViewTracker slug={pro.slug} source={searchParams?.src} />
       <script
         type="application/ld+json"

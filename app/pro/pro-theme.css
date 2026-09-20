@@ -3,6 +3,7 @@
   --background: 240 7% 93.5%;
   --surface: 240 6% 89.5%;
   --surface-deep: 240 6% 86%;
+  --wash: 243 72% 95.5%;
   --foreground: 240 6% 10%;
   --card: 0 0% 100%;
   --card-foreground: 240 6% 10%;
@@ -37,6 +38,7 @@
   --background: 240 6% 8%;
   --surface: 240 5% 11%;
   --surface-deep: 240 5% 7%;
+  --wash: 243 28% 14%;
   --foreground: 240 5% 96%;
   --card: 240 5% 12%;
   --card-foreground: 240 5% 96%;
@@ -78,8 +80,8 @@
 .pro-theme .pro-canvas {
   background-color: hsl(var(--background));
   background-image:
-    radial-gradient(70% 42% at 12% -8%, hsl(243 90% 94% / 0.7), transparent 58%),
-    radial-gradient(48% 36% at 100% 0%, hsl(240 10% 86% / 0.55), transparent 50%);
+    radial-gradient(80% 48% at 50% -12%, hsl(243 85% 93% / 0.9), transparent 58%),
+    radial-gradient(42% 32% at 100% 0%, hsl(243 50% 90% / 0.4), transparent 48%);
 }
 
 .pro-theme .pro-band {
@@ -88,6 +90,11 @@
 
 .pro-theme .pro-band-deep {
   background: hsl(var(--surface-deep));
+}
+
+.pro-theme .pro-wash {
+  background-color: hsl(var(--wash));
+  background-image: radial-gradient(80% 55% at 50% 0%, hsl(243 90% 92% / 0.55), transparent 68%);
 }
 
 .pro-theme .pro-paper {
@@ -155,8 +162,8 @@
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(70% 55% at 50% -12%, hsl(243 85% 92% / 0.95), transparent 62%),
-    hsl(var(--background));
+    radial-gradient(70% 55% at 50% -12%, hsl(243 80% 91% / 0.98), transparent 62%),
+    hsl(var(--wash));
 }
 .pro-theme .pro-hero-bg::before {
   content: '';

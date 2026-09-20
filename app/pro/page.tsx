@@ -152,7 +152,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
 
         {/* ---------- FEATURES (bento) ---------- */}
         <section
-          className="pro-section pro-band border-y border-border"
+          className="pro-section pro-wash border-y border-border"
           data-animate-section
           data-animate="bento"
         >
@@ -270,7 +270,7 @@ export default async function ProHomePage({ searchParams }: PageProps) {
         </section>
 
         {/* ---------- FAQ ---------- */}
-        <section className="pro-section" data-animate-section data-animate="faq">
+        <section className="pro-section pro-wash border-y border-border" data-animate-section data-animate="faq">
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <SectionHead kicker={t.faq.kicker} title={t.faq.title} />
             <div
