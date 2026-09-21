@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run build:pro-css && next build",
+    "build:pro-css": "tailwindcss -c ./tailwind.pro.config.ts -i ./app/pro/tailwind-pro.src.css -o ./app/pro/tailwind-pro.css",
     "start": "next start",
     "lint": "next lint"
   },
@@ -55,6 +56,8 @@
     "eslint": "8.49.0",
     "eslint-config-next": "14.1.0",
     "framer-motion": "^11.1.15",
+    "geist": "^1.7.2",
+    "gsap": "^3.15.0",
     "i18next": "^25.2.0",
     "input-otp": "^1.2.4",
     "jose": "^6.0.11",
@@ -63,6 +66,7 @@
     "next-i18next": "^15.4.2",
     "next-themes": "^0.3.0",
     "postcss": "^8.5.3",
+    "qrcode": "^1.5.4",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.2.0",
@@ -83,6 +87,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^18.2.61",
     "typescript": "^5.3.3"
   }

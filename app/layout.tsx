@@ -1,19 +1,27 @@
-import './globals.css';
 import type { Metadata, Viewport } from 'next';
+import { cookies, headers } from 'next/headers';
 import { Inter } from 'next/font/google';
-import { Navbar } from '@/components/shared/layout/Navbar';
-import { Footer } from '@/components/shared/layout/Footer';
+import Script from 'next/script';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/common/providers/ThemeProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { Suspense } from 'react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import StructuredData from './schema';
-import { MainContentWrapper } from "@/components/shared/layout/MainContentWrapper";
+
+const GA_MEASUREMENT_ID = 'G-7MSB178MLC';
 
 const inter = Inter({ subsets: ['latin'] });
+
+type AppLang = 'es' | 'en' | 'fr';
+function initialAppLang(): AppLang {
+  const cookie = cookies().get('preferred-language')?.value;
+  if (cookie === 'en' || cookie === 'es' || cookie === 'fr') return cookie;
+  const header = headers().get('x-app-lang');
+  if (header === 'en' || header === 'es' || header === 'fr') return header;
+  return 'es';
+}
 
 export const viewport: Viewport = {
   themeColor: '#4f46e5',
@@ -32,8 +40,8 @@ export const metadata: Metadata = {
   keywords: 'productos latinos, tienda latinoamericana, Montreal, Quebec, productos latinoamericanos, comida latina, boutique latina, artesanías, importaciones, Canada',
   creator: 'Tout à un Clic LA',
   publisher: 'Tout à un Clic LA',
-  authors: [{ name: 'Tout à un Clic LA Team', url: 'https://toutaunclicla.com' }],
-  metadataBase: new URL('https://toutaunclicla.com'),
+  authors: [{ name: 'Tout à un Clic LA Team', url: 'https://www.toutaunclicla.com' }],
+  metadataBase: new URL('https://www.toutaunclicla.com'),
   alternates: {
     canonical: '/',
     languages: {
@@ -57,7 +65,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_ES',
     alternateLocale: ['fr_CA', 'en_CA'],
-    url: 'https://toutaunclicla.com',
+    url: 'https://www.toutaunclicla.com',
     siteName: 'Tout à un Clic LA',
     title: 'Tout à un Clic LA - Productos Latinoamericanos en Montreal',
     description: 'Descubre auténticos productos latinoamericanos en Montreal. Alimentos, artesanías, ropa típica y más. Entrega a domicilio en Quebec y todo Canadá.',
@@ -133,21 +141,34 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const lang = initialAppLang();
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icons/FaviconFinal.png" type="image/png" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
 
         {/* Etiquetas hreflang para SEO multilingüe */}
-        <link rel="alternate" hrefLang="es" href="https://toutaunclicla.com/es" />
-        <link rel="alternate" hrefLang="fr" href="https://toutaunclicla.com/fr" />
-        <link rel="alternate" hrefLang="en" href="https://toutaunclicla.com/en" />
-        <link rel="alternate" hrefLang="x-default" href="https://toutaunclicla.com" />
+        <link rel="alternate" hrefLang="es" href="https://www.toutaunclicla.com/es" />
+        <link rel="alternate" hrefLang="fr" href="https://www.toutaunclicla.com/fr" />
+        <link rel="alternate" hrefLang="en" href="https://www.toutaunclicla.com/en" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.toutaunclicla.com" />
       </head>
       <body className={inter.className}>
-        <LanguageProvider>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
+        <LanguageProvider initialLanguage={lang}>
           <AuthProvider>
             <ThemeProvider
               attribute="class"
@@ -155,19 +176,7 @@ export default function RootLayout({
               enableSystem={false}
               disableTransitionOnChange
             >
-              <Suspense fallback={
-                <div className="flex min-h-screen items-center justify-center">
-                  <div className="animate-pulse text-lg">Loading...</div>
-                </div>
-              }>
-                <div className="flex min-h-screen flex-col">
-                  <Navbar />
-                  <MainContentWrapper>
-                    {children}
-                  </MainContentWrapper>
-                  <Footer />
-                </div>
-              </Suspense>
+              {children}
               <Toaster
                 position="bottom-right"
                 expand={false}

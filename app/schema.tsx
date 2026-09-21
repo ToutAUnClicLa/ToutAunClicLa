@@ -10,12 +10,12 @@ type SchemaType = Record<string, any>;
 const organizationData: SchemaType = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://toutaunclicla.com/#organization",
+  "@id": "https://www.toutaunclicla.com/#organization",
   "name": "Tout à un Clic LA",
-  "url": "https://toutaunclicla.com",
+  "url": "https://www.toutaunclicla.com",
   "logo": {
     "@type": "ImageObject",
-    "url": "https://toutaunclicla.com/logoaunclic.svg",
+    "url": "https://www.toutaunclicla.com/logoaunclic.svg",
     "width": 180,
     "height": 60
   },
@@ -45,7 +45,7 @@ const organizationData: SchemaType = {
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "https://toutaunclicla.com/search?q={search_term_string}"
+      "urlTemplate": "https://www.toutaunclicla.com/search?q={search_term_string}"
     },
     "query-input": "required name=search_term_string"
   }
@@ -55,13 +55,13 @@ const organizationData: SchemaType = {
 const localBusinessData: SchemaType = {
   "@context": "https://schema.org",
   "@type": "Store",
-  "@id": "https://toutaunclicla.com/#store",
+  "@id": "https://www.toutaunclicla.com/#store",
   "name": "Tout à un Clic LA - Tienda de Productos Latinoamericanos",
-  "image": "https://toutaunclicla.com/store-image.jpg",
+  "image": "https://www.toutaunclicla.com/store-image.jpg",
   "priceRange": "$$",
   "telephone": "+15141234567",
   "email": "serviceclient@toutaunclicla.com",
-  "url": "https://toutaunclicla.com",
+  "url": "https://www.toutaunclicla.com",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "123 Rue Latino",
@@ -123,8 +123,8 @@ const localBusinessData: SchemaType = {
 const websiteData: SchemaType = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "@id": "https://toutaunclicla.com/#website",
-  "url": "https://toutaunclicla.com",
+  "@id": "https://www.toutaunclicla.com/#website",
+  "url": "https://www.toutaunclicla.com",
   "name": "Tout à un Clic LA - Productos Latinoamericanos en Montreal",
   "description": "Tienda online de productos latinoamericanos en Montreal con envío a todo Quebec y Canadá",
   "inLanguage": ["es-ES", "fr-CA", "en-CA"],
@@ -132,7 +132,7 @@ const websiteData: SchemaType = {
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "https://toutaunclicla.com/search?q={search_term_string}"
+      "urlTemplate": "https://www.toutaunclicla.com/search?q={search_term_string}"
     },
     "query-input": "required name=search_term_string"
   }
@@ -143,10 +143,10 @@ const ecommerceSchema: SchemaType = {
   "@context": "https://schema.org",
   "@type": "OnlineStore",
   "name": "Tout à un Clic LA",
-  "url": "https://toutaunclicla.com",
+  "url": "https://www.toutaunclicla.com",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://toutaunclicla.com/search?q={search_term_string}",
+    "target": "https://www.toutaunclicla.com/search?q={search_term_string}",
     "query-input": "required name=search_term_string"
   },
   "acceptsReservations": false,
@@ -157,17 +157,17 @@ const ecommerceSchema: SchemaType = {
       {
         "@type": "OfferCatalog",
         "name": "Alimentos",
-        "url": "https://toutaunclicla.com/productos/alimentos"
+        "url": "https://www.toutaunclicla.com/productos/alimentos"
       },
       {
         "@type": "OfferCatalog",
         "name": "Artesanías",
-        "url": "https://toutaunclicla.com/productos/artesanias"
+        "url": "https://www.toutaunclicla.com/productos/artesanias"
       },
       {
         "@type": "OfferCatalog",
         "name": "Ropa",
-        "url": "https://toutaunclicla.com/boutique/ropa"
+        "url": "https://www.toutaunclicla.com/boutique/ropa"
       }
     ]
   }
@@ -195,7 +195,7 @@ const getBreadcrumbSchema = (pathname: string): SchemaType => {
       "@type": "ListItem",
       "position": index + 2, // +2 porque la posición 1 es la página de inicio
       "name": name,
-      "item": `https://toutaunclicla.com${url}`
+      "item": `https://www.toutaunclicla.com${url}`
     };
   });
   
@@ -204,15 +204,15 @@ const getBreadcrumbSchema = (pathname: string): SchemaType => {
     "@type": "ListItem",
     "position": 1,
     "name": "Inicio",
-    "item": "https://toutaunclicla.com"
+    "item": "https://www.toutaunclicla.com"
   });
   
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "@id": "https://toutaunclicla.com/#breadcrumb",
+    "@id": "https://www.toutaunclicla.com/#breadcrumb",
     "name": "Breadcrumbs",
-    "url": `https://toutaunclicla.com${pathname}`,
+    "url": `https://www.toutaunclicla.com${pathname}`,
     "itemListElement": itemListElement
   };
 };

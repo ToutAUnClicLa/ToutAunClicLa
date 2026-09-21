@@ -328,8 +328,28 @@ export default {
         title: "Professional Services",
         description: "We are building a trusted network of lawyers, dentists, accountants and specialists who understand the Latin American community.",
         viewAll: "Meet our professionals"
+      },
+      testimonials: {
+        title: "What the community says",
+        description: "Real orders from restaurants, souvenirs, and services in Montreal and the South Shore."
       }
     },
+    testimonials: [
+      { quote: "I ordered arepas on a Friday and they arrived hot in Longueuil. Tastes like Caracas, not 'fusion'.", name: "Mariana López", place: "Longueuil", kind: "Restaurants" },
+      { quote: "Sunday pabellón is my aunt's recipe. We no longer cross the bridge just for that.", name: "Carlos Herrera", place: "Brossard", kind: "Restaurants" },
+      { quote: "Tamales for 12, on time for the birthday. Zero stress.", name: "Ana Ruiz", place: "Saint-Hubert", kind: "Restaurants" },
+      { quote: "The salteña empanadas arrived crisp. Downtown office ordered the same menu.", name: "Diego Fernández", place: "Ville-Marie", kind: "Restaurants" },
+      { quote: "Fresh ceviche on a Thursday night. I didn't think you could order that in Montreal.", name: "Lucía Mendoza", place: "Plateau", kind: "Restaurants" },
+      { quote: "A mate and a poncho for my sister in Laval. It arrived wrapped, not in a generic bag.", name: "Sofía Álvarez", place: "Laval", kind: "Souvenirs" },
+      { quote: "Molas and souvenir coffee were the Christmas gift. Not airport merchandise.", name: "Pierre Gagnon", place: "Boucherville", kind: "Souvenirs" },
+      { quote: "Needed a small hammock and Guatemala crafts. Found them here without a bazaar trip.", name: "Elena Castro", place: "Chambly", kind: "Souvenirs" },
+      { quote: "A magnet plus an embroidered blouse for a colleague moving away. Looks handmade.", name: "Nadia Benali", place: "Saint-Bruno", kind: "Souvenirs" },
+      { quote: "The bilingual dentist explained the quote in Spanish. That does not happen everywhere.", name: "Jorge Ramírez", place: "LaSalle", kind: "Services" },
+      { quote: "An accountant who gets T4s and remittances. We filed without translating papers in the car.", name: "Valentina Soto", place: "Verdun", kind: "Services" },
+      { quote: "Notary for the lease: one call, PDF the next day. Didn't miss the clinic appointment.", name: "Andrés Peña", place: "Greenfield Park", kind: "Services" },
+      { quote: "Certified birth-certificate translation in 48 hours. Immigration did not reject it.", name: "Camila Ortega", place: "Saint-Lambert", kind: "Services" },
+      { quote: "Immigration lawyer who answered in the same language as my mom. That's why the directory exists.", name: "Ricardo Núñez", place: "Hochelaga", kind: "Services" }
+    ],
     productCategories: [
       {
         id: 1,
@@ -2536,6 +2556,580 @@ export default {
       products: "Authentic products",
       customers: "Satisfied customers",
       deliveries: "Deliveries completed"
+    }
+  },
+  pro: {
+    directory: {
+      backToCategories: "All categories",
+      proCountOne: "professional",
+      proCountMany: "professionals",
+      filters: "Filters",
+      alsoHere: "Also here",
+      loadMore: "Load more",
+      loading: "Loading…",
+      searchLabel: "Search",
+      searchPlaceholder: "Name, company, title…",
+      languageLabel: "Spoken language",
+      cityLabel: "City",
+      cityPlaceholder: "Montréal, Laval…",
+      clearFilters: "Clear filters",
+      emptyFiltersTitle: "No results with those filters",
+      emptyCategoryTitle: "No professionals in this category yet",
+      emptyFiltersHint: "Try clearing filters or broadening your search.",
+      emptyCategoryHint: "Do you work in this category? Be the first to appear.",
+      createProfile: "Create my professional profile",
+      featured: "Featured"
+    },
+    card: {
+      backGeneric: "Services",
+      share: "Share",
+      shareAria: "Share profile",
+      copied: "Copied",
+      copyOk: "Link copied",
+      copyFail: "Couldn't copy link",
+      saveContact: "Save contact",
+      speaks: "Speaks",
+      socialsSection: "Social",
+      contactSection: "Contact",
+      gallery: "Gallery",
+      socialWebsite: "Website",
+      notFoundTitle: "Profile not found",
+      notFoundText: "This card does not exist or is no longer online.",
+      unavailableTitle: "Card available with Pro",
+      unavailableText: "This professional is on the free plan. Public digital cards are included with Pro and Max.",
+      unavailableCta: "See the plans",
+      metaDefaultDescription: "Professional card on Tout À Un Clic Là.",
+      footerTagline: "Digital card · Tout À Un Clic Là Pro",
+      qrTitle: "Scan this card",
+      qrDownload: "Download QR",
+      categoryNotFound: "Category not found",
+      metaCategoryDescription: "Find {nombre} professionals in Quebec."
+    },
+    landing: {
+      meta: {
+        title: "Your professional card, in one click — Tout À Un Clic Là Pro",
+        description: "Create your digital card, share it over AirDrop and appear in Quebec's services directory. Apple Wallet, vCard, QR and real local visibility. 7-day free trial."
+      },
+      nav: {
+        signIn: "Sign in",
+        dashboard: "Dashboard"
+      },
+      hero: {
+        badge: "For Professionals",
+        headline: "Your professional card, in one click.",
+        subhead: "Create your digital card, share it over AirDrop and show up in the services directory. Less paper, more clients.",
+        ctaPrimary: "Create my account",
+        ctaSecondary: "See the plans",
+        microcopy: "7-day free trial · No commitment"
+      },
+      card: {
+        airdrop: "AirDrop · Card shared",
+        name: "Marie Tremblay",
+        title: "Hair stylist",
+        company: "Salon Lumière",
+        city: "Montreal",
+        speaks: "Speaks",
+        saveContact: "Save contact",
+        scan: "Scan to open",
+        qrAlt: "QR code to the sign-up page"
+      },
+      trust: {
+        madeInQuebec: "Made in Quebec 🇨🇦",
+        loi25: "Law 25 compliant",
+        stripe: "Secure Stripe payments",
+        languages: "FR · EN · ES"
+      },
+      how: {
+        kicker: "How it works",
+        title: "Ready in three minutes.",
+        subtitle: "No app to install. No card to print.",
+        step1Title: "Create your account",
+        step1Desc: "Sign up for free and pick your unique URL.",
+        step2Title: "Customize your card",
+        step2Desc: "Photo, title, socials, spoken languages. In a few clicks.",
+        step3Title: "Share over AirDrop",
+        step3Desc: "One gesture, and your contact lands in the client's Wallet."
+      },
+      features: {
+        kicker: "Everything you need",
+        title: "A card that works for you.",
+        subtitle: "Built for professionals, not for Silicon Valley.",
+        walletTitle: "Apple Wallet + AirDrop",
+        walletDesc: "Your card lives in the client's Wallet. Share it over AirDrop, no app needed. It updates itself.",
+        directoryTitle: "Directory with real local traffic",
+        directoryDesc: "Appear in the /services directory and get found by real clients in your area.",
+        vcardTitle: "Unlimited vCard + QR",
+        vcardDesc: "One QR code for your storefront, your car, your counter. The contact saves with a single scan.",
+        statsTitle: "Clear statistics",
+        statsDesc: "Views, clicks and scans in real time. Know what draws your clients in."
+      },
+      pricing: {
+        kicker: "Simple plans",
+        title: "A price in Canadian dollars.",
+        subtitle: "No surprises, no USD. Cancel whenever you want.",
+        perMonth: "/mo",
+        badgeRecommended: "Recommended",
+        seeAll: "See all plans",
+        free: {
+          name: "Free",
+          price: "$0",
+          tagline: "To start showing up.",
+          f1: "Basic listing in the directory",
+          f2: "Name and category visible",
+          f3: "Public profile",
+          f4: "Ready to go Pro anytime"
+        },
+        pro: {
+          name: "Pro",
+          price: "$25",
+          tagline: "Your complete digital card.",
+          f1: "Digital card + Apple Wallet and AirDrop",
+          f2: "Public profile with unique URL",
+          f3: "Up to 5 social networks",
+          f4: "Downloadable vCard + QR",
+          f5: "Basic statistics"
+        },
+        max: {
+          name: "Max",
+          price: "$45",
+          tagline: "Maximum visibility and tools.",
+          f1: "Everything in Pro",
+          f2: "Featured in your category",
+          f3: "Project gallery",
+          f4: "Unlimited social networks",
+          f5: "Advanced statistics + NFC card"
+        }
+      },
+      testimonials: {
+        kicker: "The first pros",
+        title: "We're starting with our first users.",
+        subtitle: "Early beta professionals in Quebec. This loop keeps going.",
+        betaBadge: "Beta",
+        q1: "Finally a card I share with a simple AirDrop. My clients love it.",
+        q1Name: "Camille Bouchard",
+        q1Niche: "Hair · Montreal",
+        q2: "The directory brought me real calls from my area. It changes everything.",
+        q2Name: "Alex Rivera",
+        q2Niche: "Renovation · Laval",
+        q3: "Zero paper, zero app. My profile updates itself.",
+        q3Name: "Sophie Lavoie",
+        q3Niche: "Photography · Quebec City"
+      },
+      faq: {
+        kicker: "Questions",
+        title: "Everything you're wondering.",
+        q1: "Does it work on Android?",
+        a1: "Yes. The web profile and vCard work on every phone. The Apple Wallet pass is iPhone-only, but your Android clients still get your full web card.",
+        q2: "Do I need an app?",
+        a2: "No. No app to download, neither for you nor your clients. Everything runs on the web and Apple Wallet.",
+        q3: "Can I cancel anytime?",
+        a3: "Yes. You manage your subscription from the secure portal and cancel whenever you want, with no hidden fees.",
+        q4: "In which languages?",
+        a4: "French, English and Spanish, French first. Your card displays in your visitor's language."
+      },
+      finalCta: {
+        title: "Your card. One AirDrop. New client.",
+        subtitle: "Join the professionals who share differently.",
+        ctaPrimary: "Create my account",
+        ctaSecondary: "See the plans"
+      },
+      footer: {
+        tagline: "The professional card for professionals.",
+        plans: "Plans",
+        signIn: "Sign in",
+        privacy: "Privacy policy",
+        terms: "Terms",
+        directory: "Directory",
+        legal: "© 2026 Tout À Un Clic Là · Montreal, Quebec · Law 25 compliant"
+      }
+    },
+    header: {
+      signIn: "Sign in",
+      dashboard: "Dashboard",
+      langMenuLabel: "Change language",
+      langCurrentLabel: "Current language: {lang}",
+      backHome: "Home"
+    },
+    auth: {
+      login: {
+        title: "Sign in",
+        subtitle: "Access your professional dashboard.",
+        emailLabel: "Email",
+        emailPlaceholder: "name@example.com",
+        passwordLabel: "Password",
+        forgotPassword: "Forgot your password?",
+        submit: "Sign in",
+        noAccount: "No account yet?",
+        createAccount: "Create an account",
+        needsVerification: "Verify your email before signing in.",
+        error: "Incorrect email or password.",
+        locked: "Account temporarily locked. Try again later."
+      },
+      register: {
+        title: "Create an account",
+        subtitle: "Start your professional presence.",
+        firstNameLabel: "First name",
+        lastNameLabel: "Last name",
+        emailLabel: "Email",
+        emailPlaceholder: "name@example.com",
+        passwordLabel: "Password",
+        passwordPlaceholder: "At least 8 characters",
+        submit: "Create an account",
+        haveAccount: "Already have an account?",
+        signIn: "Sign in",
+        success: "Account created. We sent you a code by email.",
+        exists: "A professional account already exists with this email.",
+        error: "Could not create the account."
+      },
+      verify: {
+        title: "Verify your email",
+        subtitlePrefix: "Enter the 6-digit code we sent to",
+        subtitleFallback: "your email",
+        codeLabel: "Code",
+        submit: "Verify",
+        resend: "Resend code",
+        resending: "Sending…",
+        verified: "Email verified.",
+        verifyError: "Invalid code.",
+        resent: "New code sent.",
+        resendError: "Could not resend."
+      },
+      forgotPassword: {
+        title: "Forgot your password?",
+        subtitle: "Enter your email. If an account is associated with it, you'll receive a code to reset your password.",
+        emailLabel: "Email",
+        emailPlaceholder: "name@example.com",
+        submit: "Send code",
+        backToLogin: "Back to sign in",
+        success: "If an account exists with this email, you'll receive a code.",
+        socialHint: "Sign in with Google instead.",
+        error: "Could not process the request."
+      },
+      resetPassword: {
+        title: "Enter the code",
+        subtitlePrefix: "Enter the 6-digit code we sent to",
+        subtitleFallback: "your email",
+        codeLabel: "Code",
+        newPasswordLabel: "New password",
+        newPasswordPlaceholder: "At least 8 characters",
+        confirmPasswordLabel: "Confirm password",
+        confirmPasswordPlaceholder: "Repeat the password",
+        submit: "Reset password",
+        invalidCodeFormat: "The code must have 6 digits.",
+        passwordTooShort: "The password must be at least 8 characters.",
+        passwordMismatch: "The passwords don't match.",
+        success: "Password updated. You can now sign in.",
+        invalidCode: "The code is invalid.",
+        expired: "The code has expired.",
+        requestNew: "Request a new code",
+        error: "Could not reset the password."
+      }
+    },
+    dashboard: {
+      metaTitle: "Dashboard",
+      logout: "Sign out",
+      greeting: "Hi, {name}",
+      intro: "This is your professional dashboard. Edit your profile and manage your subscription.",
+      profileCardTitle: "Your profile",
+      profileCardDesc: "Edit your title, bio, category, languages, socials and photo.",
+      analyticsCardTitle: "My stats",
+      analyticsCardDesc: "Views, clicks, vCard downloads and QR scans for your card.",
+      cardCardTitle: "Your public card",
+      cardCardDesc: "Exactly what your clients see when they visit your card.",
+      vcardCardTitle: "Save contact (vCard)",
+      vcardCardDesc: "What happens when someone taps \"Save contact\" on your card.",
+      walletCardTitle: "Apple Wallet",
+      walletCardDesc: "Your digital card in the iPhone Wallet, shareable via AirDrop.",
+      accountCardTitle: "Account",
+      accountCardDesc: "Manage your account and, if needed, delete it.",
+      account: {
+        back: "Dashboard",
+        title: "Account",
+        subtitle: "Manage your professional account settings.",
+        credentialsTitle: "Email and password",
+        emailLabel: "Email",
+        currentPasswordLabel: "Current password",
+        newPasswordLabel: "New password",
+        confirmPasswordLabelChange: "Confirm new password",
+        savePassword: "Update password",
+        forgotPassword: "Forgot your password?",
+        passwordUpdated: "Password updated.",
+        passwordMismatch: "The passwords do not match.",
+        passwordTooShort: "At least 8 characters.",
+        passwordError: "Could not update the password.",
+        socialHint: "This account uses Google. There is no password to change.",
+        dangerZoneTitle: "Danger zone",
+        dangerZoneText: "Deleting your account is irreversible and will erase your professional presence.",
+        deleteButton: "Delete account",
+        modalTitle: "Delete your account?",
+        itemProfile: "Your public profile",
+        itemSocials: "Your social networks",
+        itemStats: "Your stats and analytics",
+        itemSubscription: "Your active subscription (will be cancelled in Stripe)",
+        itemGallery: "Your gallery",
+        irreversible: "This action cannot be undone.",
+        confirmPasswordLabel: "Current password",
+        confirmEmailLabel: "Type your email to confirm",
+        confirmEmailPlaceholder: "name@example.com",
+        cancel: "Cancel",
+        confirmDelete: "Yes, delete my account",
+        deleteSuccess: "Account deleted successfully.",
+        deleteError: "Could not delete the account. Try again or contact support.",
+        invalidPassword: "Incorrect password.",
+        confirmationMismatch: "The email doesn't match.",
+        stripeError: "Could not process your subscription cancellation. Try again or contact support."
+      },
+      profile: {
+        metaTitle: "My profile",
+        back: "Dashboard",
+        title: "My profile",
+        subtitle: "This is how you'll appear on your digital card and in the directory.",
+        socialsTitle: "Social networks",
+        socialsHint: "Pro allows up to 5 · Max, unlimited."
+      },
+      analytics: {
+        metaTitle: "My stats",
+        back: "Dashboard",
+        title: "My stats",
+        subtitle: "How your digital card is doing this week.",
+        statVistas: "Profile views",
+        statClics: "Social clicks",
+        statDescargas: "vCard downloads",
+        statScans: "QR scans",
+        chartTitle: "Views over the last 7 days",
+        emptyState: "No activity recorded yet. Share your card to start seeing stats.",
+        upsellTitle: "Analytics not available on Free",
+        upsellText: "Subscribe to Pro or Max to see views, clicks, vCard downloads and QR scans.",
+        upsellCta: "See plans",
+        sourcesTitle: "Traffic sources",
+        devicesTitle: "Devices",
+        noData: "Not enough data yet.",
+        deviceTypes: {
+          ios: "iOS",
+          android: "Android",
+          desktop: "Desktop",
+          unknown: "Unknown"
+        },
+        sourceTypes: {
+          directorio: "Directory",
+          qr: "QR code",
+          directo: "Direct"
+        }
+      },
+      card: {
+        back: "Dashboard",
+        title: "Your public card",
+        subtitle: "An exact preview of what your clients see on your digital card. To edit it, go to My profile.",
+        viewLive: "View live",
+        upsellTitle: "Public card not available on Free",
+        upsellText: "Subscribe to Pro or Max to activate your public digital card.",
+        upsellCta: "See plans",
+        notReady: "Not enough data yet to show your card. Complete your profile first."
+      },
+      vcard: {
+        back: "Dashboard",
+        title: "Save contact (vCard)",
+        subtitle: "When someone taps \"Save contact\" on your card, here's what gets saved to their phone.",
+        upsellTitle: "vCard not available on Free",
+        upsellText: "Subscribe to Pro or Max so your clients can save your contact in one tap.",
+        upsellCta: "See plans",
+        notReady: "Complete your profile to generate your vCard.",
+        fileNote: ".vcf file · works on iPhone and Android",
+        fieldsTitle: "Included data",
+        fieldName: "Name",
+        fieldTitle: "Title / company",
+        fieldPhone: "Phone",
+        fieldEmail: "Email",
+        fieldWebsite: "Website",
+        fieldPhoto: "Profile photo",
+        fieldPhotoValue: "Included",
+        testButton: "Test it: download my vCard",
+        howItWorks: "The button above downloads the same file your clients get when they tap \"Save contact\" on your public card."
+      },
+      wallet: {
+        back: "Dashboard",
+        title: "Apple Wallet",
+        subtitle: "Your digital card as an Apple Wallet pass, shareable via AirDrop with no apps or friction.",
+        comingSoonBadge: "Coming soon",
+        comingSoonTitle: "Not available yet",
+        comingSoonText: "We're building the Apple Wallet integration. We'll let you know as soon as it's ready for your plan.",
+        featureWalletTitle: "Lives in your Wallet",
+        featureWalletDesc: "Like a boarding pass or movie ticket: your professional card always one tap away on iPhone.",
+        featureAirdropTitle: "Share via AirDrop",
+        featureAirdropDesc: "Share it with any nearby iPhone without installing an app."
+      }
+    },
+    subscription: {
+      title: "Your plan",
+      loading: "Loading…",
+      statusLabel: "Status:",
+      planLabel: "Plan:",
+      trialEnds: "The trial ends on {date}.",
+      renewsOn: "Renews on {date}.",
+      endsOn: "Ends on {date}.",
+      freeText: "You're on the free plan. Subscribe for your digital card.",
+      manage: "Manage",
+      seePlans: "See plans",
+      activated: "Subscription activated!",
+      portalError: "Could not open the portal.",
+      status: {
+        trialing: "Free trial",
+        active: "Active",
+        past_due: "Payment due",
+        canceled: "Canceled",
+        unpaid: "Unpaid",
+        incomplete: "Incomplete"
+      }
+    },
+    pricingPage: {
+      metaTitle: "Plans",
+      metaDescription: "Start free and move up to Pro or Max whenever you want. 7-day trial on paid plans.",
+      back: "Home",
+      title: "Plans for professionals",
+      subtitle: "Start free and move up to Pro or Max whenever you want. 7-day trial on paid plans.",
+      trialOnceNote: "The 7-day free trial is valid once per person. If you've already used it, your subscription is charged immediately.",
+      monthly: "Monthly",
+      yearly: "Yearly",
+      yearlyNote: "· 2 months free",
+      perMonth: "mo",
+      perYear: "yr",
+      recommended: "Recommended",
+      currentPlan: "Your current plan",
+      changePlan: "Change plan",
+      goToDashboard: "Go to dashboard",
+      createAccount: "Create an account",
+      subscribe: "Subscribe",
+      start: "Get started",
+      checkoutError: "Could not start the payment.",
+      planUpdated: "Plan updated.",
+      changeError: "Could not change plan.",
+      plans: {
+        free: {
+          name: "Free",
+          description: "To start showing up.",
+          f1: "Basic listing in the directory",
+          f2: "Name and category visible"
+        },
+        pro: {
+          name: "Pro",
+          description: "Your complete digital card.",
+          f1: "Digital card + Apple Wallet and AirDrop",
+          f2: "Public profile with unique URL",
+          f3: "Up to 5 social networks",
+          f4: "Downloadable vCard",
+          f5: "Standard listing with photo",
+          f6: "Basic analytics"
+        },
+        max: {
+          name: "Max",
+          description: "Maximum visibility and tools.",
+          f1: "Everything in Pro",
+          f2: "Featured first in your category",
+          f3: "Advertising banner",
+          f4: "Project gallery",
+          f5: "Unlimited social networks",
+          f6: "Advanced analytics",
+          f7: "1 physical NFC card included"
+        }
+      }
+    },
+    profileForm: {
+      firstNameLabel: "First name",
+      lastNameLabel: "Last name",
+      companyLabel: "Company",
+      companyPlaceholder: "Optional",
+      titleBioHeading: "Title and bio",
+      titleBioHint: "Fill in at least your primary language. The others show based on the visitor.",
+      titleLabel: "Title ({lang})",
+      titlePlaceholderFr: "Real estate broker",
+      titlePlaceholder: "Your professional title",
+      bioLabel: "Bio ({lang})",
+      bioPlaceholder: "Tell your clients who you are and what you offer.",
+      primaryLangLabel: "Primary language (fallback)",
+      categoryHeading: "Category",
+      categoryLabel: "Category",
+      subcategoryLabel: "Subcategory",
+      selectPlaceholder: "Select…",
+      subcategoryPlaceholder: "Pick a category",
+      spokenHeading: "Languages you speak",
+      spokenHint: "Your clients will be able to filter by language in the directory.",
+      contactHeading: "Contact",
+      phoneLabel: "Phone",
+      cityLabel: "City",
+      websiteLabel: "Website",
+      contactEmailLabel: "Contact email",
+      contactEmailPlaceholder: "contact@example.com",
+      save: "Save changes",
+      saved: "Profile updated.",
+      saveError: "Could not save."
+    },
+    avatar: {
+      change: "Change photo",
+      hint: "This photo appears on your public card and in the directory. Use a vertical photo (4:5 ratio) so it shows in full, without cropping. JPG or PNG, 5 MB max.",
+      invalidType: "Select an image.",
+      uploaded: "Photo updated.",
+      uploadError: "Could not upload the photo."
+    },
+    social: {
+      loading: "Loading…",
+      empty: "You haven't added any social networks yet.",
+      platformAria: "Choose platform",
+      urlPlaceholder: "https://…",
+      add: "Add",
+      remove: "Remove",
+      added: "Network added.",
+      addError: "Could not add (plan limit?).",
+      removeError: "Could not remove."
+    },
+    consent: {
+      title: "Privacy",
+      message: "We use local storage and cookies to run the site and measure its usage. Your choice.",
+      accept: "Accept",
+      reject: "Essentials only",
+      learnMore: "Privacy policy",
+      ariaLabel: "Privacy consent banner"
+    },
+    privacy: {
+      backToPro: "Back to Pro",
+      title: "Privacy policy",
+      effective: "Effective: July 2026",
+      intro: "This policy explains what data Tout À Un Clic Là Pro collects, why, and what your rights are under Quebec's Law 25.",
+      langLabel: "Language",
+      sections: [
+        {
+          h: "1. Data controller",
+          p: "The controller of personal information is Tout À Un Clic Là, based in Montreal, Quebec. For any privacy question, write to us at privacy@toutaunclicla.com."
+        },
+        {
+          h: "2. Data we collect",
+          p: "Account data: name, email address and, if you provide it, your phone number. Public professional profile: title, company, city, spoken languages, social networks and the photo you choose to display. Usage data: profile views, clicks and scans, with a truncated IP address and user agent, for statistics."
+        },
+        {
+          h: "3. Purpose of processing",
+          p: "We use this data to create and display your card and public profile, manage your account and subscription, provide you with statistics, keep the service secure and meet our legal obligations."
+        },
+        {
+          h: "4. Cookies and local storage",
+          p: "We use a language cookie (preferred-language) to display the right language, a local storage value (pro_consent) to remember your consent choice, and session and payment cookies provided by Stripe. No third-party advertising cookies are used."
+        },
+        {
+          h: "5. Data sharing",
+          p: "We rely on trusted processors: Supabase (data hosting) and Stripe (payments). We never sell your personal information and never share it for advertising purposes."
+        },
+        {
+          h: "6. Your rights under Law 25",
+          p: "You have the right to access your information, have it corrected, withdraw your consent, request its deletion and obtain the portability of your data. To exercise these rights, write to us at privacy@toutaunclicla.com; we respond within the timeframes required by law."
+        },
+        {
+          h: "7. Retention",
+          p: "We keep your data as long as your account is active. After the account is closed, we delete or anonymize it, except where the law requires longer retention."
+        },
+        {
+          h: "8. Changes to this policy",
+          p: "We may update this policy. If there is a material change, we will let you know. The effective date above indicates the most recent version."
+        }
+      ],
+      footerBack: "Back to Tout À Un Clic Là Pro"
     }
   }
 };

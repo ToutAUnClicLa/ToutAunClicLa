@@ -1,12 +1,15 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 
 type Language = 'es' | 'en' | 'fr';
 
 interface LanguageContextType {
   currentLanguage: Language;
   setLanguage: (language: Language) => void;
+  /** Alinea el estado en memoria sin persistir (cookie/localStorage intactos). */
+  syncLanguage: (language: Language) => void;
   availableLanguages: { code: Language; name: string; flag: string }[];
 }
 
@@ -18,36 +21,65 @@ export const availableLanguages = [
   { code: 'fr' as Language, name: 'Français', flag: '🇫🇷' },
 ];
 
+// Cookie legible por el server (SSR de /card/[slug], metadata OG, etc.)
+const COOKIE_KEY = 'preferred-language';
+const setLangCookie = (lang: Language) => {
+  if (typeof document === 'undefined') return;
+  // 1 año, todo el dominio, SameSite=Lax para no romper navegación normal
+  document.cookie = `${COOKIE_KEY}=${lang}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+};
+
 interface LanguageProviderProps {
   children: ReactNode;
+  initialLanguage?: Language;
 }
 
-export function LanguageProvider({ children }: LanguageProviderProps) {
-  const [currentLanguage, setCurrentLanguage] = useState<Language>('es');
+export function LanguageProvider({ children, initialLanguage = 'es' }: LanguageProviderProps) {
+  const router = useRouter();
+  const [currentLanguage, setCurrentLanguage] = useState<Language>(initialLanguage);
 
-  const setLanguage = (language: Language) => {
-    setCurrentLanguage(language);
-    // Optionally save to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('preferred-language', language);
-    }
-  };
-
-  // Load saved language on mount
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedLanguage = localStorage.getItem('preferred-language') as Language;
-      if (savedLanguage && availableLanguages.some(lang => lang.code === savedLanguage)) {
-        setCurrentLanguage(savedLanguage);
+  const setLanguage = useCallback(
+    (language: Language) => {
+      setCurrentLanguage(language);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(COOKIE_KEY, language);
+        setLangCookie(language);
+        document.documentElement.lang = language;
+        // Refresca los server components (SSR) para que rehidraten con el idioma nuevo.
+        router.refresh();
       }
+    },
+    [router],
+  );
+
+  // Alinea el estado sin escribir cookie/localStorage (p. ej. /pro default fr vía SSR).
+  const syncLanguage = useCallback((language: Language) => {
+    setCurrentLanguage(language);
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = language;
     }
   }, []);
+
+  // Load saved language on mount + sincroniza cookie por si venía solo de localStorage
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLanguage = localStorage.getItem(COOKIE_KEY) as Language;
+      if (savedLanguage && availableLanguages.some((l) => l.code === savedLanguage)) {
+        setCurrentLanguage(savedLanguage);
+        setLangCookie(savedLanguage);
+        document.documentElement.lang = savedLanguage;
+      } else {
+        document.documentElement.lang = initialLanguage;
+      }
+    }
+  }, [initialLanguage]);
 
   return (
     <LanguageContext.Provider
       value={{
         currentLanguage,
         setLanguage,
+        syncLanguage,
         availableLanguages,
       }}
     >

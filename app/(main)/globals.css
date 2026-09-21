@@ -1,0 +1,159 @@
+/* Pin this sheet to the shop config. Without @config, Next's shared PostCSS
+   Tailwind instance can inherit `tailwind.pro.config.ts` (`important: '.pro-theme'`,
+   preflight off) and ship `/` with unprefixed-looking markup and no utilities. */
+@config "../../tailwind.config.ts";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Preflight already resets buttons; it does not set pointer. Shop-only, not a second Preflight. */
+button:not(:disabled),
+[type='button']:not(:disabled),
+[type='submit']:not(:disabled),
+[type='reset']:not(:disabled),
+[role='button']:not([aria-disabled='true']) {
+  cursor: pointer;
+}
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221.2 83.2% 53.3%;
+  --radius: 0.5rem;
+}
+
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Custom styles for better mobile experience */
+@media (max-width: 640px) {
+  .dialog-content {
+    @apply p-4;
+  }
+  
+  .input-group {
+    @apply space-y-3;
+  }
+  
+  .button-group {
+    @apply flex-col space-y-2;
+  }
+}
+
+/* Improved form styles */
+.form-input {
+  @apply h-10 px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+/* Better button visibility */
+.button-primary {
+  @apply bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+}
+
+.button-secondary {
+  @apply bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+}
+
+/* Ocultar el botón de cierre por defecto de los diálogos de Radix UI */
+[data-radix-popper-content-wrapper] [data-radix-dialog-close] {
+  display: none !important;
+}
+
+@keyframes pulse-green {
+  0% { background-color: transparent; }
+  15% { background-color: rgba(34, 197, 94, 0.2); }
+  100% { background-color: transparent; }
+}
+
+.animate-new-order {
+  animation: pulse-green 15s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* ── Cards del directorio Pro: borde de gradiente iluminado ──────────────────
+   El borde real es un ::before enmascarado (solo el anillo de 1.5px se ve).
+   Un shimmer lento desplaza el gradiente; el glow (box-shadow tintado) sube en
+   hover. Restrained a propósito (guía: movimiento con propósito, no neón). */
+.pro-glow {
+  position: relative;
+  isolation: isolate;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+.pro-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background-size: 220% 220%;
+  background-position: 0% 50%;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* MAX — dorado + esmeralda */
+.pro-glow-max::before {
+  background-image: linear-gradient(115deg, #f59e0b, #10b981, #fbbf24, #059669, #f59e0b);
+  animation: pro-border-shimmer 9s ease-in-out infinite;
+}
+.pro-glow-max {
+  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0), 0 8px 24px -12px rgba(16, 185, 129, 0.25);
+}
+.pro-glow-max:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 22px -6px rgba(245, 158, 11, 0.35), 0 12px 30px -14px rgba(16, 185, 129, 0.4);
+}
+
+/* PRO — esmeralda (más sobrio) */
+.pro-glow-pro::before {
+  background-image: linear-gradient(115deg, #34d399, #059669, #6ee7b7, #10b981);
+  animation: pro-border-shimmer 11s ease-in-out infinite;
+  opacity: 0.85;
+}
+.pro-glow-pro {
+  box-shadow: 0 6px 20px -14px rgba(16, 185, 129, 0.35);
+}
+.pro-glow-pro:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 18px -8px rgba(16, 185, 129, 0.4), 0 10px 26px -14px rgba(16, 185, 129, 0.35);
+}
+
+@keyframes pro-border-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pro-glow-max::before,
+  .pro-glow-pro::before {
+    animation: none;
+  }
+  .pro-glow:hover {
+    transform: none;
+  }
+}
