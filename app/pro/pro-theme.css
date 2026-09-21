@@ -450,15 +450,14 @@ html.pro-consent-open .pro-theme {
 
 .pro-theme .pro-marquee {
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
 .pro-theme .pro-marquee-track {
   display: flex;
   width: max-content;
   gap: 1rem;
-  will-change: transform;
-  animation: pro-marquee 36s linear infinite;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  animation: pro-marquee 70s linear infinite;
 }
 .pro-theme .pro-marquee:hover .pro-marquee-track,
 .pro-theme .pro-marquee:focus-within .pro-marquee-track {
@@ -466,10 +465,10 @@ html.pro-consent-open .pro-theme {
 }
 @keyframes pro-marquee {
   from {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
@@ -511,10 +510,6 @@ html.pro-consent-open .pro-theme {
   .pro-theme .pro-airdrop-chip,
   .pro-theme .pro-banner-in {
     animation: none !important;
-  }
-  .pro-theme .pro-marquee {
-    -webkit-mask-image: none;
-    mask-image: none;
   }
   .pro-theme .pro-marquee-track {
     animation: none !important;

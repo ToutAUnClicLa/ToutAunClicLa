@@ -2697,7 +2697,7 @@ export default {
       testimonials: {
         kicker: "Les premiers pros",
         title: "On démarre avec nos premiers utilisateurs.",
-        subtitle: "Professionnels beta au Québec. Cette boucle ne s'arrête pas.",
+        subtitle: "Professionnels beta au Québec.",
         betaBadge: "Beta",
         q1: "Enfin une carte que je partage d'un simple AirDrop. Mes clients l'adorent.",
         q1Name: "Camille Bouchard",
