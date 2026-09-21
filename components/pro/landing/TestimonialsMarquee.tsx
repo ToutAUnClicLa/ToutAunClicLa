@@ -9,19 +9,24 @@ export function TestimonialsMarquee({ t }: { t: LandingT }) {
     { quote: t.testimonials.q3, name: t.testimonials.q3Name, niche: t.testimonials.q3Niche },
   ];
 
-  // 8 copias idénticas: translateX(-50%) reinicia sin salto (loop infinito).
-  const track = [...items, ...items, ...items, ...items, ...items, ...items, ...items, ...items];
+  // Dos copias llenan ~1920px; el track duplica esa mitad para translate3d(-50%) sin salto.
+  const set = [...items, ...items];
 
   const Card = ({
     quote,
     name,
     niche,
+    hidden,
   }: {
     quote: string;
     name: string;
     niche: string;
+    hidden?: boolean;
   }) => (
-    <figure className="pro-card pro-card-hover flex w-[300px] shrink-0 flex-col sm:w-[340px]">
+    <figure
+      className="pro-card pro-card-hover flex w-[300px] shrink-0 flex-col sm:w-[340px]"
+      aria-hidden={hidden || undefined}
+    >
       <blockquote className="flex-1 text-[15px] leading-relaxed text-foreground">
         “{quote}”
       </blockquote>
@@ -49,8 +54,11 @@ export function TestimonialsMarquee({ t }: { t: LandingT }) {
   return (
     <div className="pro-marquee mt-12">
       <div className="pro-marquee-track">
-        {track.map((it, i) => (
+        {set.map((it, i) => (
           <Card key={`${it.name}-${i}`} quote={it.quote} name={it.name} niche={it.niche} />
+        ))}
+        {set.map((it, i) => (
+          <Card key={`dup-${it.name}-${i}`} quote={it.quote} name={it.name} niche={it.niche} hidden />
         ))}
       </div>
     </div>

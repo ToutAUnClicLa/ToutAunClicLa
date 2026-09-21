@@ -2703,7 +2703,7 @@ export default {
       testimonials: {
         kicker: "The first pros",
         title: "We're starting with our first users.",
-        subtitle: "Early beta professionals in Quebec. This loop keeps going.",
+        subtitle: "Early beta professionals in Quebec.",
         betaBadge: "Beta",
         q1: "Finally a card I share with a simple AirDrop. My clients love it.",
         q1Name: "Camille Bouchard",

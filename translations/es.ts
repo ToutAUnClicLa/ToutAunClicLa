@@ -2735,7 +2735,7 @@ export default {
       testimonials: {
         kicker: "Los primeros pros",
         title: "Empezamos con nuestros primeros usuarios.",
-        subtitle: "Profesionales beta en Quebec. Este loop no se detiene.",
+        subtitle: "Profesionales beta en Quebec.",
         betaBadge: "Beta",
         q1: "Por fin una tarjeta que comparto con un simple AirDrop. A mis clientes les encanta.",
         q1Name: "Camille Bouchard",
