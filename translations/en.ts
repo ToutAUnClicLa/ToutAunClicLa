@@ -2695,9 +2695,9 @@ export default {
           tagline: "Maximum visibility and tools.",
           f1: "Everything in Pro",
           f2: "Featured in your category",
-          f3: "Project gallery",
+          f3: "Project gallery (Coming soon)",
           f4: "Unlimited social networks",
-          f5: "Advanced statistics + NFC card"
+          f5: "Advanced statistics"
         }
       },
       testimonials: {
@@ -3026,10 +3026,9 @@ export default {
           f1: "Everything in Pro",
           f2: "Featured first in your category",
           f3: "Advertising banner",
-          f4: "Project gallery",
+          f4: "Project gallery (Coming soon)",
           f5: "Unlimited social networks",
-          f6: "Advanced analytics",
-          f7: "1 physical NFC card included"
+          f6: "Advanced analytics"
         }
       }
     },

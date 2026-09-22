@@ -2689,9 +2689,9 @@ export default {
           tagline: "Visibilité et outils au maximum.",
           f1: "Tout ce qu'inclut Pro",
           f2: "En vedette dans ta catégorie",
-          f3: "Galerie de projets",
+          f3: "Galerie de projets (Bientôt disponible)",
           f4: "Réseaux sociaux illimités",
-          f5: "Statistiques avancées + carte NFC"
+          f5: "Statistiques avancées"
         }
       },
       testimonials: {
@@ -3020,10 +3020,9 @@ export default {
           f1: "Tout ce qu'inclut Pro",
           f2: "En vedette en premier dans ta catégorie",
           f3: "Bannière publicitaire",
-          f4: "Galerie de projets",
+          f4: "Galerie de projets (Bientôt disponible)",
           f5: "Réseaux sociaux illimités",
-          f6: "Statistiques avancées",
-          f7: "1 carte physique NFC incluse"
+          f6: "Statistiques avancées"
         }
       }
     },

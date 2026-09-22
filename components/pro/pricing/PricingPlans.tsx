@@ -34,7 +34,7 @@ const PLANS: Plan[] = [
 const PLAN_FEATURE_KEYS: Record<PlanId, string[]> = {
   free: ['f1', 'f2'],
   pro: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6'],
-  max: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'],
+  max: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6'],
 };
 
 export function PricingPlans() {
