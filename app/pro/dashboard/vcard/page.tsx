@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import {
   Briefcase,
   Check,
-  Contact,
   Download,
   ImageIcon,
   Lock,
@@ -18,6 +17,7 @@ import {
 import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { fetchPublicProfile, vcardUrl, type PublicPro } from '@/lib/pro/publicProfile';
+import { ProAvatar } from '@/components/pro/ProAvatar';
 import { BackButton } from '@/components/pro/ui/back-button';
 import { Button } from '@/components/pro/ui/button';
 import { ProEmptyState, ProPageHeader } from '@/components/pro/ui/shell';
@@ -30,6 +30,8 @@ export default function VCardPreviewPage() {
   const [loading, setLoading] = useState(true);
 
   const isFree = proUser?.tier === 'free';
+  const photoUrl = pro?.foto_url || proUser?.foto_url || null;
+  const displayName = `${(pro?.nombre || proUser?.nombre) ?? ''} ${(pro?.apellido || proUser?.apellido) ?? ''}`.trim();
 
   useEffect(() => {
     if (isFree || !proUser?.slug) {
@@ -67,8 +69,24 @@ export default function VCardPreviewPage() {
           <div className="pro-skeleton h-8 w-48" />
           <div className="pro-skeleton h-4 w-72 max-w-full" />
         </div>
-        <div className="mt-8">
-          <div className="pro-skeleton h-72 w-full rounded-lg" />
+        <div className="mt-8 pro-card">
+          <div className="flex items-center gap-3">
+            <ProAvatar src={photoUrl} name={displayName} pending={!photoUrl} />
+            <div className="min-w-0 flex-1 space-y-2">
+              <div className="pro-skeleton h-4 w-40" />
+              <div className="pro-skeleton h-3 w-56 max-w-full" />
+            </div>
+          </div>
+          <div className="mt-4 pro-skeleton h-3 w-24" />
+          <ul className="mt-3 flex flex-col gap-2.5">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <li key={i} className="flex items-center gap-3">
+                <span className="pro-skeleton h-4 w-4 rounded" />
+                <span className="pro-skeleton h-4 flex-1" />
+              </li>
+            ))}
+          </ul>
+          <div className="pro-skeleton mt-6 h-12 w-full rounded-lg" />
         </div>
       </div>
     );
@@ -104,9 +122,7 @@ export default function VCardPreviewPage() {
 
       <div className="mt-8 pro-card">
         <div className="flex items-center gap-3">
-          <span className="pro-icon-tile">
-            <Contact className="h-5 w-5" aria-hidden />
-          </span>
+          <ProAvatar src={photoUrl} name={name} />
           <div>
             <h2 className="text-base font-semibold text-foreground">{name}</h2>
             <p className="text-xs text-muted-foreground">{t('pro.dashboard.vcard.fileNote')}</p>

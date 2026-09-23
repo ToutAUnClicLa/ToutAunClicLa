@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   Menu,
   X,
@@ -24,8 +24,6 @@ import {
   ArrowRight,
   Grid,
   Layers,
-  Globe,
-  ChevronDown,
   Shield,
   AlertCircle,
   CheckCircle
@@ -51,15 +49,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/common/ui/dropdown-menu";
 import { useTranslation } from '@/hooks/useTranslation';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { ShopLangSwitcher } from '@/components/shared/layout/ShopLangSwitcher';
+import { shopChrome } from '@/lib/shop-theme';
 
 const LINKS = [
   { href: "/", label: "nav.home", icon: Home },
   // Productos ocultado temporalmente (conservar para reactivar)
   // { href: "/productos", label: "nav.products", icon: Package },
   { href: "/comidas", label: "nav.foods", icon: ShoppingBag },
-  { href: "/boutique", label: "nav.boutique", icon: Store },
-  { href: "/servicios", label: "nav.services", icon: Layers }
+  { href: "/servicios", label: "nav.services", icon: Layers },
+  { href: "/boutique", label: "nav.boutique", icon: Store }
 ];
 
 const PROFILE_MENU_ITEMS = [
@@ -84,11 +83,12 @@ export function Navbar() {
     error: authError
   } = useAuth();
 
-  const { currentLanguage, setLanguage, availableLanguages } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgotPassword'>('login');
   const { t } = useTranslation();
+  const reduceMotion = useReducedMotion();
 
   // Hook optimizado para contador del carrito
   const { count: cartCount } = useCartCount();
@@ -137,6 +137,27 @@ export function Navbar() {
 
   const isUserVerified = () => user?.verified || false;
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsMobileMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [isMobileMenuOpen]);
+
   // Nuevo código: Agrupar los enlaces para el menú móvil
   const MENU_GROUPS = [
     {
@@ -148,11 +169,7 @@ export function Navbar() {
       items: PROFILE_MENU_ITEMS,
       showWhen: "authenticated"
     }
-  ]; const handleLanguageChange = (langCode: string) => {
-    const newLang = availableLanguages.find(lang => lang.code === langCode) || availableLanguages[0];
-    setLanguage(newLang.code);
-    toast.success(`${t('navbar.languageChanged')} ${newLang.name}`);
-  };
+  ];
 
   // No renderizar Navbar en las rutas de administrador, EXCEPTO en las páginas de login.
   // Tampoco en /factura/* (la factura debe imprimirse sin navbar).
@@ -166,26 +183,31 @@ export function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 bg-white border-b z-50">
-        <nav className="container mx-auto">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center">
-              <motion.img
+      <header className={cn(
+        "fixed top-0 left-0 right-0 z-50 h-[4.5rem] bg-white/90 backdrop-blur-md border-b border-[var(--shop-hairline)]",
+        scrolled ? "shadow-[0_1px_0_0_var(--shop-hairline)]" : ""
+      )}>
+        <nav className="container mx-auto h-full" aria-label="Principal">
+          <div className="flex h-[4.5rem] min-w-0 flex-nowrap items-center gap-1.5 sm:gap-3">
+            <Link
+              href="/"
+              className={cn("flex min-h-11 shrink-0 items-center gap-0", shopChrome.focus)}
+              aria-label="Tout à un Clic Là"
+            >
+              <img
                 src="/logoaunclic.svg"
-                alt="Logo A un clic"
-                className="h-[60px] w-[60px] xs:h-[60px] xs:w-[60px] sm:h-[65px] sm:w-[65px] md:h-[70px] md:w-[70px] filter drop-shadow-md"
-                width="88"
-                height="88"
+                alt=""
+                className="h-[60px] w-[60px] shrink-0"
+                width="60"
+                height="60"
               />
-              <div className="flex flex-col -ml-4">
-                <span className="text-sm font-medium leading-none">Tout À Un</span>
-                <span className="text-xl font-bold leading-none text-indigo-600">Clic là</span>
-              </div>
+              <span className={cn(shopChrome.wordmark, "shrink-0")}>
+                <span className="text-sm font-medium text-[var(--shop-ink)] whitespace-nowrap sm:text-[15px]">Tout à un</span>
+                <span className="text-sm font-bold text-[var(--shop-purple)] whitespace-nowrap sm:text-[15px]">Clic Là</span>
+              </span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-4 xl:space-x-8">
+            <div className="hidden min-w-0 flex-1 items-center justify-center gap-5 lg:flex xl:gap-7">
               {LINKS.map((link) => {
                 const isActive = pathname === link.href;
                 return (
@@ -193,70 +215,32 @@ export function Navbar() {
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      "relative py-2 text-base font-medium transition-colors duration-200",
-                      isActive ? "text-indigo-600" : "text-gray-600 hover:text-indigo-600"
+                      shopChrome.navLink,
+                      shopChrome.focus,
+                      isActive ? "text-[var(--shop-purple)]" : "text-gray-600 hover:text-[var(--shop-purple)]"
                     )}
                   >
                     {t(link.label)}
                     {isActive && (
-                      <motion.div
-                        className="absolute bottom-0 left-0 h-0.5 w-full bg-indigo-600"
-                        layoutId="navbar-underline"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 380,
-                          damping: 30
-                        }}
-                      />
+                      <span className="absolute inset-x-0 bottom-2 h-px bg-[var(--shop-purple)]" />
                     )}
                   </Link>
                 );
               })}
-            </div>            {/* Actions */}
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              {/* Language Selector - Desktop */}
-              <div className="hidden lg:flex">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-9 px-2 gap-1 text-gray-600 hover:text-indigo-600"
-                    >                      <Globe className="h-4 w-4" />
-                      <span className="text-sm font-medium">{availableLanguages.find(lang => lang.code === currentLanguage)?.flag}</span>
-                      <ChevronDown className="h-3 w-3 opacity-50" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-[150px]">
-                    {availableLanguages.map((lang) => (
-                      <DropdownMenuItem
-                        key={lang.code}
-                        onClick={() => handleLanguageChange(lang.code)}
-                        className="flex items-center gap-3 cursor-pointer"
-                      >
-                        <span className="text-base">{lang.flag}</span>
-                        <span className="flex-1">{lang.name}</span>
-                        {currentLanguage === lang.code && (
-                          <div className="h-2 w-2 rounded-full bg-indigo-600" />
-                        )}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+            </div>
+            <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-3">
+              <ShopLangSwitcher />
 
               {/* Botón de favoritos - solo para usuarios autenticados */}
               {isAuthenticated && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="relative"
+                  className={cn("relative hidden lg:inline-flex", shopChrome.iconBtn)}
                   title="Mis favoritos"
                   onClick={() => router.push('/profile/favorites')}
                 >
-                  <Heart className="h-5 w-5 text-gray-600 hover:text-red-500 transition-colors duration-200" />
+                  <Heart className="h-5 w-5" />
                 </Button>
               )}
 
@@ -264,59 +248,35 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative"
+                className={cn("relative", shopChrome.iconBtn)}
                 title={`Carrito de compras${cartCount > 0 ? ` (${cartCount} productos)` : ''}`}
                 onClick={() => router.push('/cart')}
               >
-                <ShoppingCart className="h-5 w-5 text-gray-600 hover:text-indigo-600 transition-colors duration-200" />
+                <ShoppingCart className="h-5 w-5" />
                 {cartCount > 0 && (
                   <Badge
-                    className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold shadow-lg animate-pulse"
+                    className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-red-500 text-white text-xs font-bold shadow-lg"
                   >
                     {cartCount > 99 ? '99+' : cartCount}
                   </Badge>
                 )}
               </Button>
 
-              {/* Language Selector - Mobile (visible only on mobile) */}
-              <div className="lg:hidden">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors duration-200"
-                    >
-                      <span className="text-lg">{availableLanguages.find(lang => lang.code === currentLanguage)?.flag}</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-[140px]">
-                    {availableLanguages.map((lang) => (
-                      <DropdownMenuItem
-                        key={lang.code}
-                        onClick={() => handleLanguageChange(lang.code)}
-                        className="flex items-center gap-3 cursor-pointer"
-                      >
-                        <span className="text-base">{lang.flag}</span>
-                        <span className="flex-1">{lang.name}</span>
-                        {currentLanguage === lang.code && (
-                          <div className="h-2 w-2 rounded-full bg-indigo-600" />
-                        )}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
               {/* Autenticación */}
-              <div className="hidden lg:flex">
+              <div className="hidden lg:flex items-center gap-5">
+                <Link
+                  href="/pro"
+                  className={cn("inline-flex h-11 min-h-11 items-center px-1 text-sm font-medium", shopChrome.textLink)}
+                >
+                  Pro
+                </Link>
                 {isAuthenticated ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <div className="relative cursor-pointer group">
-                        <Avatar className="h-10 w-10 border-2 border-gray-200 hover:border-indigo-500 transition-colors duration-200 ring-2 ring-transparent group-hover:ring-indigo-100">
+                        <Avatar className="h-10 w-10 border-2 border-gray-200 hover:border-[var(--shop-purple)] transition-colors duration-200 ring-2 ring-transparent group-hover:ring-[var(--shop-purple-wash)]">
                           <AvatarImage src="" />
-                          <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-semibold">
+                          <AvatarFallback className="bg-[var(--shop-purple)] text-white font-semibold">
                             {getUserInitials()}
                           </AvatarFallback>
                         </Avatar>
@@ -330,7 +290,7 @@ export function Navbar() {
                     <DropdownMenuContent className="w-64 p-0 shadow-lg border-0" align="end">
                       {user && (
                         <>
-                          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-white">
+                          <div className="bg-[var(--shop-purple)] p-4 text-white">
                             <div className="flex items-center gap-3">
                               <Avatar className="h-12 w-12 border-2 border-white/30">
                                 <AvatarImage src="" />
@@ -401,25 +361,25 @@ export function Navbar() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openAuthModal('login')}
-                      className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
-                    >
-                      {t('nav.login')}
-                    </Button>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    onClick={() => openAuthModal('login')}
+                    className={cn("h-9 min-h-11 px-4 py-2 rounded-full bg-[var(--shop-purple)] text-white hover:bg-[var(--shop-purple-hover)] hover:text-white", shopChrome.focus)}
+                  >
+                    {t('nav.login')}
+                  </Button>
                 )}
               </div>              {/* Mobile Menu Button */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden h-9 w-9 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors duration-200"
+                className={cn("lg:hidden", shopChrome.iconBtn)}
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="shop-mobile-nav"
                 onClick={() => setIsMobileMenuOpen(true)}
               >
                 <Menu className="h-5 w-5" />
+                <span className="sr-only">{t('navbar.mobile.menu')}</span>
               </Button>
             </div>
           </div>
@@ -430,36 +390,46 @@ export function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
+            id="shop-mobile-nav"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('navbar.mobile.menu')}
             className="fixed inset-0 bg-white z-50 lg:hidden flex flex-col w-full overflow-hidden"
-            initial={{ opacity: 0, x: '100%' }}
+            initial={reduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: '100%' }}
+            transition={reduceMotion ? { duration: 0 } : { type: 'spring', damping: 30, stiffness: 400 }}
           >
-            {/* Header del menú móvil */}
-            <div className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 px-4 py-4 w-full">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-              <div className="relative flex items-center justify-between">
-                {/* Título */}
-                <div className="text-white">
-                  <div className="text-xl font-bold tracking-tight">{t('navbar.mobile.menu')}</div>
-                  <div className="text-sm opacity-90 font-medium">{t('navbar.mobile.navigation')}</div>
-                </div>
-
-                {/* Botón cerrar */}
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+            {/* Header del menú móvil — mismo alto y wordmark que el chrome */}
+            <div className="relative h-[4.5rem] w-full shrink-0 border-b border-[var(--shop-hairline)] bg-white px-4">
+              <div className="flex h-[4.5rem] items-center justify-between gap-2">
+                <Link
+                  href="/"
+                  className={cn("flex min-h-11 shrink-0 items-center gap-0", shopChrome.focus)}
+                  aria-label="Tout à un Clic Là"
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-white hover:bg-white/20 rounded-full h-10 w-10 backdrop-blur-sm border border-white/20"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <X className="h-5 w-5" />
-                  </Button>
-                </motion.div>
+                  <img
+                    src="/logoaunclic.svg"
+                    alt=""
+                    className="h-[60px] w-[60px] shrink-0"
+                    width="60"
+                    height="60"
+                  />
+                  <span className={cn(shopChrome.wordmark, "shrink-0")}>
+                    <span className="text-sm font-medium text-[var(--shop-ink)] whitespace-nowrap sm:text-[15px]">Tout à un</span>
+                    <span className="text-sm font-bold text-[var(--shop-purple)] whitespace-nowrap sm:text-[15px]">Clic Là</span>
+                  </span>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn("border-0 shadow-none", shopChrome.iconBtn)}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <X className="h-5 w-5" />
+                  <span className="sr-only">{t('navbar.mobile.menu')}</span>
+                </Button>
               </div>
             </div>
 
@@ -468,7 +438,7 @@ export function Navbar() {
               {isAuthenticated ? (
                 <>
                   {/* Sección de usuario autenticado */}
-                  <div className="px-4 py-5 bg-gradient-to-b from-gray-50 to-white w-full">
+                  <div className="px-4 py-5 bg-gray-50 w-full">
                     <motion.div
                       className="relative p-4 bg-white rounded-2xl shadow-sm border border-gray-100"
                       initial={{ opacity: 0, y: 20 }}
@@ -479,7 +449,7 @@ export function Navbar() {
                         <div className="relative">
                           <Avatar className="h-14 w-14 border-3 border-white shadow-lg">
                             <AvatarImage src="" />
-                            <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-lg">
+                            <AvatarFallback className="bg-[var(--shop-purple)] text-white font-bold text-lg">
                               {getUserInitials()}
                             </AvatarFallback>
                           </Avatar>
@@ -513,8 +483,7 @@ export function Navbar() {
                   {/* Accesos rápidos mejorados - solo para usuarios autenticados */}
                   <div className="px-4 py-4 w-full">
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="h-6 w-1 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full"></div>
-                      <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
+                      <h3 className="text-sm font-semibold text-[var(--shop-ink)]">
                         {t('navbar.mobile.quickAccess')}
                       </h3>
                     </div>
@@ -527,14 +496,13 @@ export function Navbar() {
                       >
                         <Button
                           variant="outline"
-                          className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100 hover:border-indigo-200 relative overflow-hidden group"
+                          className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-[var(--shop-purple-wash)] border-[var(--shop-purple-muted)] hover:border-[var(--shop-purple)] relative overflow-hidden group"
                           onClick={() => {
                             setIsMobileMenuOpen(false);
                             router.push('/profile');
                           }}
                         >
-                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                          <User className="h-5 w-5 text-indigo-600 flex-shrink-0" />
+                          <User className="h-5 w-5 text-[var(--shop-purple)] flex-shrink-0" />
                           <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{t('navbar.mobile.myProfile')}</span>
                         </Button>
                       </motion.div>
@@ -547,14 +515,13 @@ export function Navbar() {
                       >
                         <Button
                           variant="outline"
-                          className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-100 hover:border-amber-200 relative overflow-hidden group"
+                          className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-[var(--food-wash)] border-gray-200 hover:border-[var(--food-accent)] relative overflow-hidden group"
                           onClick={() => {
                             setIsMobileMenuOpen(false);
                             router.push('/profile/orders');
                           }}
                         >
-                          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                          <ShoppingBag className="h-5 w-5 text-amber-600 flex-shrink-0" />
+                          <ShoppingBag className="h-5 w-5 text-[var(--food-accent)] flex-shrink-0" />
                           <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{t('navbar.mobile.orders')}</span>
                         </Button>
                       </motion.div>
@@ -567,14 +534,13 @@ export function Navbar() {
                       >
                         <Button
                           variant="outline"
-                          className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100 hover:border-blue-200 relative overflow-hidden group"
+                          className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-[var(--svc-wash)] border-gray-200 hover:border-[var(--svc-primary)] relative overflow-hidden group"
                           onClick={() => {
                             setIsMobileMenuOpen(false);
                             router.push('/profile/addresses');
                           }}
                         >
-                          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                          <MapPin className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                          <MapPin className="h-5 w-5 text-[var(--svc-primary)] flex-shrink-0" />
                           <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{t('navbar.mobile.addresses')}</span>
                         </Button>
                       </motion.div>
@@ -588,57 +554,32 @@ export function Navbar() {
               {/* Navegación principal - siempre visible, arriba del todo para usuarios no autenticados */}
               <div className="px-4 py-4 w-full">
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="h-6 w-1 bg-gradient-to-b from-green-500 to-blue-500 rounded-full"></div>
-                  <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
+                  <h3 className="text-sm font-semibold text-[var(--shop-ink)]">
                     {t('navbar.mobile.exploreStore')}
                   </h3>
                 </div>
-                <div className="space-y-2">
-                  {LINKS.map((link, index) => {
+                <div className="space-y-1">
+                  {LINKS.map((link) => {
                     const isActive = pathname === link.href;
                     const LinkIcon = link.icon;
+                    const label = t(link.label);
 
                     return (
-                      <motion.div
+                      <Button
                         key={link.href}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 * index }}
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.99 }}
+                        variant="ghost"
+                        className={cn(
+                          shopChrome.drawerRow,
+                          isActive && "bg-[var(--shop-purple-wash)] text-[var(--shop-purple)]"
+                        )}
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          router.push(link.href);
+                        }}
                       >
-                        <Button
-                          variant={isActive ? "secondary" : "ghost"}
-                          className={cn(
-                            "w-full justify-start h-14 px-4 rounded-xl transition-all duration-200",
-                            isActive
-                              ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 border border-indigo-200 shadow-sm"
-                              : "text-gray-700 hover:bg-gray-50 hover:shadow-sm"
-                          )}
-                          onClick={() => {
-                            setIsMobileMenuOpen(false);
-                            router.push(link.href);
-                          }}
-                        >
-                          <div className="flex items-center w-full">
-                            <div className={cn(
-                              "mr-4 p-2.5 rounded-xl transition-colors",
-                              isActive
-                                ? "bg-gradient-to-br from-indigo-100 to-purple-100"
-                                : "bg-gray-100"
-                            )}>
-                              <LinkIcon className={cn(
-                                "h-5 w-5",
-                                isActive ? "text-indigo-600" : "text-gray-500"
-                              )} />
-                            </div>
-                            <span className="flex-1 text-left font-semibold">{t(link.label)}</span>
-                            {isActive && (
-                              <div className="h-2 w-2 bg-indigo-500 rounded-full"></div>
-                            )}
-                          </div>
-                        </Button>
-                      </motion.div>
+                        <LinkIcon className={cn("mr-3 h-5 w-5", isActive ? "text-[var(--shop-purple)]" : "text-gray-500")} />
+                        <span className="flex-1 text-left font-medium">{label}</span>
+                      </Button>
                     );
                   })}
                 </div>
@@ -651,24 +592,16 @@ export function Navbar() {
 
                   <div className="px-4 py-4 w-full">
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="h-6 w-1 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
-                      <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">
+                      <h3 className="text-sm font-semibold text-[var(--shop-ink)]">
                         {t('navbar.mobile.myAccount')}
                       </h3>
                     </div>
                     <div className="space-y-2">
-                      {PROFILE_MENU_ITEMS.map((item, index) => (
-                        <motion.div
-                          key={item.href}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 * index }}
-                          whileHover={{ scale: 1.01 }}
-                          whileTap={{ scale: 0.99 }}
-                        >
+                      {PROFILE_MENU_ITEMS.map((item) => (
+                        <div key={item.href}>
                           <Button
                             variant="ghost"
-                            className="w-full justify-start h-12 px-4 rounded-xl hover:bg-gray-50 hover:shadow-sm transition-all duration-200"
+                            className={shopChrome.drawerRow}
                             onClick={() => {
                               setIsMobileMenuOpen(false);
                               router.push(item.href);
@@ -682,7 +615,7 @@ export function Navbar() {
                               <ChevronRight className="h-4 w-4 text-gray-400" />
                             </div>
                           </Button>
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -702,7 +635,7 @@ export function Navbar() {
                   <div className="px-4 py-3">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 h-12 px-3 rounded-xl"
+                      className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 min-h-11 h-11 px-3 rounded-lg focus-visible:ring-2 focus-visible:ring-[var(--shop-purple)]"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         handleSignOut();
@@ -726,7 +659,7 @@ export function Navbar() {
                     transition={{ delay: 0.2 }}
                   >
                     <Button
-                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold h-12 rounded-xl shadow-lg"
+                      className="w-full min-h-11 bg-[var(--shop-purple)] hover:bg-[var(--shop-purple-hover)] text-white font-medium h-11 rounded-lg focus-visible:ring-2 focus-visible:ring-[var(--shop-purple)] focus-visible:ring-offset-2"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         openAuthModal('login');

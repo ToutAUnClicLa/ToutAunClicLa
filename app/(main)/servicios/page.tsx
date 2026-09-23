@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
 import {
@@ -19,12 +20,21 @@ import {
   Wrench
 } from 'lucide-react';
 import ServiceCard from '@/components/features/services/ServiceCard';
+import { shopChrome, shopHeroFigure } from '@/lib/shop-theme';
+import { cn } from '@/lib/utils';
+
+const HERO_MOSAIC = [
+  { id: 'lawyers', image: '/services/lawyers.png' },
+  { id: 'health', image: '/services/health.png' },
+  { id: 'beauty', image: '/services/beauty.png' },
+  { id: 'accounting', image: '/services/accounting.png' },
+] as const;
 
 const normalize = (str: string) =>
   str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 export default function ServicesPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const gridRef = useRef<HTMLDivElement>(null);
   const scrollTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -135,7 +145,7 @@ export default function ServicesPage() {
 
   const scrollToGrid = useCallback(() => {
     if (gridRef.current) {
-      const navbarHeight = window.innerWidth < 768 ? 80 : 64;
+      const navbarHeight = 72;
       const top = gridRef.current.getBoundingClientRect().top + window.scrollY - navbarHeight - 16;
       window.scrollTo({ top, behavior: 'smooth' });
     }
@@ -161,111 +171,122 @@ export default function ServicesPage() {
   };
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans transition-colors duration-200 min-h-screen">
+    <div className="min-h-screen bg-white text-[var(--shop-ink)]">
+      <section className="border-b border-[var(--shop-hairline)] bg-white">
+        <div className="container py-12 sm:py-16 lg:py-20">
+          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-14">
+            <div>
+              <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--shop-hairline)] px-3 py-1 text-xs font-medium text-[var(--shop-purple)]">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                {t('services.hero.badge')}
+                <span className="text-[var(--shop-hairline)]">·</span>
+                <span className="text-[var(--shop-muted)]">{services.length}</span>
+              </p>
+              <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-[var(--shop-ink)] sm:text-5xl lg:text-[3.25rem]">
+                {t('services.hero.title')} {t('services.hero.subtitle')}
+              </h1>
+              <p className="mt-5 max-w-2xl text-base leading-relaxed text-[var(--shop-muted)] sm:text-lg">
+                {t('services.hero.description')}
+              </p>
 
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-[#004d40] via-[#00332a] to-[#0f172a] text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.07] pointer-events-none"
-          style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}
-        />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent" />
+              <div className="mt-8 max-w-xl">
+                <div className={shopChrome.searchField}>
+                  <Search className="h-4 w-4 shrink-0 text-[var(--shop-muted)]" />
+                  <input
+                    className={shopChrome.searchInput}
+                    placeholder={t('services.search.placeholder')}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      className={cn('-mr-1', shopChrome.iconBtn)}
+                      aria-label={t('services.search.clearFilter')}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-6">
-            <CheckCircle2 className="w-4 h-4 text-green-300" />
-            <span className="text-xs font-medium tracking-wide text-green-100 uppercase">
-              {t('services.hero.badge')}
-            </span>
-          </div>
-
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-            {t('services.hero.title')} <br className="hidden md:block" /> {t('services.hero.subtitle')}
-          </h1>
-
-          <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-300 mb-10 leading-relaxed">
-            {t('services.hero.description')}
-          </p>
-
-          {/* Search Box */}
-          <div className="max-w-2xl mx-auto relative z-10">
-            <div className="relative flex items-center bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-white/10">
-              <div className="flex-grow flex items-center w-full px-5 py-4">
-                <Search className="text-gray-400 w-5 h-5 mr-3 flex-shrink-0" />
-                <input
-                  className="w-full bg-transparent border-none focus:ring-0 text-slate-800 dark:text-slate-100 placeholder-gray-400 text-base outline-none"
-                  placeholder={t('services.search.placeholder')}
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
+              <div className="mt-5 flex flex-wrap items-center gap-1.5">
+                <span className="mr-1 text-sm text-[var(--shop-muted)]">{t('services.search.popular')}:</span>
+                {[
+                  { key: 'services.categories.lawyers.short', fallback: 'Legal' },
+                  { key: 'services.categories.health.short', fallback: 'Salud' },
+                  { key: 'services.categories.accounting.short', fallback: 'Contabilidad' },
+                ].map((tag) => {
+                  const label = t(tag.key) === tag.key ? tag.fallback : t(tag.key);
+                  return (
+                    <button
+                      type="button"
+                      key={tag.key}
+                      onClick={() => handleTagClick(label)}
+                      className={cn(shopChrome.filterChip, shopChrome.focus)}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
-          </div>
 
-          <div className="mt-6 flex flex-wrap justify-center gap-2 text-sm">
-            <span className="text-gray-400">{t('services.search.popular')}:</span>
-            {[
-              { key: 'services.categories.lawyers.short', fallback: 'Legal' },
-              { key: 'services.categories.health.short', fallback: 'Salud' },
-              { key: 'services.categories.accounting.short', fallback: 'Contabilidad' },
-            ].map((tag) => {
-              const label = t(tag.key) === tag.key ? tag.fallback : t(tag.key);
-              return (
-                <button
-                  key={tag.key}
-                  onClick={() => handleTagClick(label)}
-                  className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white text-sm transition-colors"
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {HERO_MOSAIC.map((tile, i) => (
+                <Link
+                  key={tile.id}
+                  href={`/servicios/${tile.id}`}
+                  className={cn(
+                    shopHeroFigure,
+                    'max-h-none aspect-[16/10] lg:aspect-[5/4]',
+                    i % 2 === 1 ? 'lg:translate-y-6' : '',
+                    shopChrome.focus,
+                  )}
                 >
-                  {label}
-                </button>
-              );
-            })}
+                  <Image
+                    src={tile.image}
+                    alt=""
+                    fill
+                    className="object-cover object-top"
+                    sizes="(max-width: 1024px) 50vw, 28vw"
+                    priority
+                  />
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-14">
-          <div className="inline-block mb-4">
-            <div className="h-1 w-12 bg-[#00875A] rounded-full mx-auto" />
-          </div>
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 sm:text-4xl mb-4">{t('services.grid.title')}</h2>
-          <p className="max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+      <div className="container py-16 sm:py-20">
+        <div className="mb-10 max-w-2xl sm:mb-14">
+          <h2 className="text-3xl font-semibold tracking-tight text-[var(--shop-ink)] sm:text-4xl">
+            {t('services.grid.title')}
+          </h2>
+          <p className="mt-3 text-base leading-relaxed text-[var(--shop-muted)] sm:text-lg">
             {t('services.grid.subtitle')}
           </p>
         </div>
 
         <div ref={gridRef} />
-        {/* Results count when filtering */}
         {searchQuery && (
-          <div className="mb-8 flex items-center justify-between">
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              {filteredServices.length} {filteredServices.length === 1 ? t('services.search.result') : t('services.search.results')}
-              {' '}<span className="text-slate-400">·</span>{' '}
-              <button onClick={() => setSearchQuery('')} className="text-[#00875A] hover:underline font-medium">
-                {t('services.search.clearFilter')}
-              </button>
-            </p>
-          </div>
+          <p className="mb-8 text-sm text-[var(--shop-muted)]">
+            {filteredServices.length} {filteredServices.length === 1 ? t('services.search.result') : t('services.search.results')}
+            {' '}<span className="text-[var(--shop-hairline)]">·</span>{' '}
+            <button type="button" onClick={() => setSearchQuery('')} className={cn('font-medium text-[var(--shop-purple)]', shopChrome.focus)}>
+              {t('services.search.clearFilter')}
+            </button>
+          </p>
         )}
 
         {filteredServices.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {filteredServices.map((service) => (
-              <Link
-                key={service.id}
-                href={`/servicios/${service.id}`}
-                className="block rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00875A] focus-visible:ring-offset-2"
-              >
                 <ServiceCard
+                  key={service.id}
                   icon={service.icon}
                   title={t(service.titleKey)}
                   description={t(service.descKey)}
@@ -274,50 +295,64 @@ export default function ServicesPage() {
                   subServicesText={t('services.card.subservices')}
                   viewMoreText={t('services.card.viewMore')}
                   image={service.image}
+                  variant="pro"
+                  showMeta
+                  href={`/servicios/${service.id}`}
                 />
-              </Link>
             ))}
           </div>
         ) : (
-          <div className="text-center py-20">
-            <Search className="w-12 h-12 text-gray-300 dark:text-slate-600 mx-auto mb-4" />
-            <p className="text-lg font-medium text-slate-600 dark:text-slate-400 mb-2">
+          <div className="rounded-xl border border-[var(--shop-hairline)] py-16 text-center">
+            <Search className="mx-auto mb-4 h-8 w-8 text-[var(--shop-hairline)]" />
+            <p className="text-lg font-medium text-[var(--shop-ink)]">
               {t('services.search.noResults')}
             </p>
-            <p className="text-sm text-slate-400 dark:text-slate-500 mb-6">
+            <p className="mt-2 text-sm text-[var(--shop-muted)]">
               {t('services.search.noResultsHint')}
             </p>
             <button
+              type="button"
               onClick={() => setSearchQuery('')}
-              className="text-[#00875A] hover:underline font-medium text-sm"
+              className={cn('mt-6 font-medium text-[var(--shop-purple)]', shopChrome.focus)}
             >
               {t('services.search.showAll')}
             </button>
           </div>
         )}
 
-        <div className="mt-20">
-          <div className="relative bg-gradient-to-br from-[#004d40] to-[#0f172a] rounded-3xl p-8 md:p-14 text-center overflow-hidden">
-            <div className="absolute inset-0 opacity-[0.05] pointer-events-none"
-              style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}
-            />
-            <div className="relative z-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">{t('services.cta.title')}</h2>
-              <p className="text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed">
-                {t('services.cta.description')}
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <button className="bg-[#00875A] hover:bg-emerald-600 text-white px-8 py-3.5 rounded-xl font-medium shadow-lg shadow-emerald-900/30 hover:shadow-xl transition-all hover:-translate-y-0.5">
-                  {t('services.cta.notifyButton')}
-                </button>
-                <button className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 px-8 py-3.5 rounded-xl font-medium transition-all hover:-translate-y-0.5">
-                  {t('services.cta.suggestButton')}
-                </button>
-              </div>
-            </div>
+        <div className="mt-20 rounded-xl border border-[var(--shop-hairline)] bg-white px-6 py-12 text-center sm:px-12 sm:py-16">
+          <h2 className="text-2xl font-semibold tracking-tight text-[var(--shop-ink)] sm:text-3xl">
+            {t('services.cta.title')}
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-[var(--shop-muted)]">
+            {t('services.cta.description')}
+          </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <a
+              href="/pro"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={shopChrome.inkCta}
+            >
+              {t('services.cta.notifyButton')}
+            </a>
+            <a
+              href={`https://wa.me/14384626255?text=${encodeURIComponent(
+                locale === 'fr'
+                  ? 'Bonjour, je voudrais suggérer un service pour le répertoire Tout à un Clic Là.'
+                  : locale === 'en'
+                    ? 'Hi, I would like to suggest a service for the Tout à un Clic Là directory.'
+                    : 'Hola, me gustaría sugerir un servicio para el directorio de Tout à un Clic Là.',
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(shopChrome.filterChip, 'h-11 min-h-11 px-5 text-sm', shopChrome.focus)}
+            >
+              {t('services.cta.suggestButton')}
+            </a>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

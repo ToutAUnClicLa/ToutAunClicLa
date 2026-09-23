@@ -8,6 +8,7 @@ const config: Config = {
     '!./components/pro/**/*',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     '!./app/pro/**/*',
+    './lib/shop-theme.ts',
   ],
   theme: {
     extend: {
@@ -90,6 +91,26 @@ const config: Config = {
       },
     },
   },
+  safelist: [
+    'bg-[var(--food-wash)]',
+    'bg-[var(--food-accent)]',
+    'bg-[var(--food-canvas)]',
+    'bg-[var(--svc-wash)]',
+    'bg-[var(--svc-primary)]',
+    'bg-[var(--svc-canvas)]',
+    'bg-[var(--souv-canvas)]',
+    'bg-[var(--shop-purple-wash)]',
+    'bg-[var(--food-accent)]/15',
+    'bg-[var(--food-accent)]/10',
+    'bg-[var(--svc-primary)]/14',
+    'bg-[var(--svc-primary)]/8',
+    'bg-[var(--shop-purple)]/14',
+    'bg-[var(--shop-purple)]/8',
+    'text-[var(--food-ink)]',
+    'text-[var(--svc-ink)]',
+    'text-[var(--shop-ink)]',
+    'text-[var(--shop-purple)]',
+  ],
   plugins: [require('tailwindcss-animate')],
 };
 export default config;

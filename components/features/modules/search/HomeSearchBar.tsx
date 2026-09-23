@@ -642,10 +642,10 @@ const HomeSearchBar = memo(function HomeSearchBar() {
   }, []);
 
   return (
-    <div ref={searchRef} className="relative w-full max-w-xl mx-auto">
+    <div ref={searchRef} className="relative w-full max-w-xl">
       <div className="relative">
-        <div className="flex items-center bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-white/20 overflow-hidden transition-all duration-200 hover:shadow-xl">
-          <div className="flex-1 flex items-center">
+        <div className="flex items-center bg-white rounded-full border border-[var(--shop-hairline)] overflow-hidden shadow-[0_1px_2px_rgba(15,23,42,0.06)] focus-within:border-[var(--shop-purple-muted)]">
+          <div className="flex-1 flex items-center min-h-11">
             <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500 ml-3 sm:ml-4" />
             <input
               ref={inputRef}
@@ -659,7 +659,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
               }}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               placeholder={t('landing.search.placeholder')}
-              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-gray-900 placeholder-gray-500 focus:outline-none text-sm sm:text-base bg-transparent"
+              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-[var(--shop-ink)] placeholder-gray-500 focus:outline-none text-sm sm:text-base bg-transparent"
               autoComplete="off"
             />
             {searchQuery && (
@@ -670,7 +670,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
                   setTotalResults(0);
                   inputRef.current?.focus();
                 }}
-                className="p-1.5 sm:p-2 hover:bg-gray-100/50 rounded-full mr-1 sm:mr-2 transition-colors"
+                className="min-h-11 min-w-11 p-1.5 sm:p-2 hover:bg-gray-50 rounded-lg mr-1 sm:mr-2"
                 aria-label={t('landing.search.clearSearch')}
               >
                 <X className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-500" />
@@ -680,7 +680,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
           <button
             onClick={handleSearch}
             disabled={!searchQuery.trim()}
-            className="px-3 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-r-full"
+            className="inline-flex self-stretch min-h-11 min-w-11 items-center justify-center px-4 sm:px-5 py-2.5 bg-[var(--shop-purple)] text-white font-medium hover:bg-[var(--shop-purple-hover)] disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label={t('landing.search.button')}
           >
             <span className="hidden sm:inline text-sm">{t('landing.search.button')}</span>
@@ -690,7 +690,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
 
         {/* Dropdown de resultados - NO SE SUPERPONE, empuja contenido hacia abajo */}
         <AnimatePresence>
-          {isFocused && (
+          {isFocused && searchQuery.trim().length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: -10, height: 0 }}
               animate={{ opacity: 1, y: 0, height: 'auto' }}
@@ -741,7 +741,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
                     <span>{t('landing.search.showingResults', { count: searchResults.length, plural: searchResults.length !== 1 ? 's' : '' })}</span>
                     <button
                       onClick={handleSearch}
-                      className="text-xs text-indigo-600 hover:text-indigo-700 font-medium normal-case"
+                      className="text-xs text-[var(--shop-purple)] hover:text-[var(--shop-purple-hover)] font-medium normal-case"
                     >
                       {t('landing.search.viewAllResults')} ({totalResults})
                     </button>
@@ -773,7 +773,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
                         
                         {/* Información del producto */}
                         <div className="flex-1 text-left min-w-0">
-                          <div className="text-sm font-medium text-gray-900 group-hover:text-indigo-600 truncate">
+                          <div className="text-sm font-medium text-gray-900 group-hover:text-[var(--shop-purple)] truncate">
                             {result.nombre}
                           </div>
                           <div className="text-xs text-gray-500 flex items-center gap-2">
@@ -810,7 +810,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
                   <div className="mt-3 px-2 sm:hidden">
                     <button
                       onClick={handleSearch}
-                      className="w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200"
+                      className="w-full py-2.5 bg-[var(--shop-purple)] text-white text-sm font-medium rounded-lg hover:bg-[var(--shop-purple-hover)] transition-colors duration-200"
                     >
                       {t('landing.search.viewAllResults')} ({totalResults})
                     </button>
@@ -853,7 +853,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
                     </span>
                     <button
                       onClick={clearRecentSearches}
-                      className="text-xs text-indigo-600 hover:text-indigo-700"
+                      className="text-xs text-[var(--shop-purple)] hover:text-[var(--shop-purple-hover)]"
                     >
                       {t('landing.search.clearSearch')}
                     </button>
@@ -865,7 +865,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
                         onClick={() => handleQuickSearch(search)}
                         className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center group"
                       >
-                        <Clock className="h-4 w-4 text-gray-400 mr-2 group-hover:text-indigo-500" />
+                        <Clock className="h-4 w-4 text-gray-400 mr-2 group-hover:text-[var(--shop-purple)]" />
                         {search}
                       </button>
                     ))}
