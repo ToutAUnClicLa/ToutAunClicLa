@@ -4,6 +4,58 @@ import React from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
 import { Card, CardContent } from '@/components/common/ui/card';
+import { useTranslation } from '@/hooks/useTranslation';
+import { shopChrome } from '@/lib/shop-theme';
+import { cn } from '@/lib/utils';
+
+function DefaultCartErrorFallback({
+  error,
+  resetError,
+}: {
+  error: Error;
+  resetError: () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <Card className="mx-auto mt-10 max-w-md border border-[var(--shop-hairline)] bg-white p-6 shadow-none">
+      <CardContent className="pt-6">
+        <div className="flex flex-col items-center space-y-4 text-center">
+          <div className="rounded-full bg-[var(--shop-purple-wash)] p-3">
+            <AlertTriangle className="h-6 w-6 text-[var(--shop-purple)]" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="font-semibold text-[var(--shop-ink)]">{t('cart.error.title')}</h3>
+            <p className="text-sm text-[var(--shop-muted)]">{t('cart.error.description')}</p>
+            {process.env.NODE_ENV === 'development' && error && (
+              <details className="mt-4 text-left">
+                <summary className="cursor-pointer text-xs text-[var(--shop-muted)]">
+                  {t('cart.error.details')}
+                </summary>
+                <pre className="mt-2 max-h-32 overflow-auto rounded-xl bg-[var(--shop-canvas-muted)] p-2 text-xs text-[var(--shop-ink)]">
+                  {error.message}
+                  {error.stack}
+                </pre>
+              </details>
+            )}
+          </div>
+          <div className="flex w-full flex-col gap-2 sm:flex-row">
+            <Button
+              onClick={resetError}
+              variant="outline"
+              className="inline-flex h-11 min-h-11 flex-1 items-center justify-center rounded-full border border-[var(--shop-hairline)] bg-white px-5 py-2.5 text-sm font-medium text-[var(--shop-ink)] hover:bg-[var(--shop-canvas-muted)]"
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              {t('cart.error.retry')}
+            </Button>
+            <Button onClick={() => window.location.reload()} className={cn('flex-1', shopChrome.inkCta)}>
+              {t('cart.error.reload')}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 interface CartErrorBoundaryState {
   hasError: boolean;
@@ -90,57 +142,11 @@ export class CartErrorBoundary extends React.Component<
         );
       }
 
-      // Default cart error UI
       return (
-        <Card className="mx-auto max-w-md p-6 mt-10">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="p-3 bg-red-50 rounded-full">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="font-semibold text-gray-900">
-                  Error en el carrito
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Ocurrió un problema al cargar tu carrito de compras. 
-                  Por favor intenta nuevamente.
-                </p>
-                
-                {process.env.NODE_ENV === 'development' && this.state.error && (
-                  <details className="mt-4 text-left">
-                    <summary className="text-xs text-gray-500 cursor-pointer">
-                      Detalles del error (desarrollo)
-                    </summary>
-                    <pre className="mt-2 text-xs text-gray-600 bg-gray-50 p-2 rounded overflow-auto max-h-32">
-                      {this.state.error.message}
-                      {this.state.error.stack}
-                    </pre>
-                  </details>
-                )}
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-2 w-full">
-                <Button 
-                  onClick={this.resetError}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Intentar nuevamente
-                </Button>
-                
-                <Button 
-                  onClick={() => window.location.reload()}
-                  className="flex-1"
-                >
-                  Recargar página
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <DefaultCartErrorFallback
+          error={this.state.error!}
+          resetError={this.resetError}
+        />
       );
     }
 

@@ -9,6 +9,11 @@ export const shopSection = {
     icon: 'text-[var(--food-ink)]',
     tile: 'bg-[var(--food-wash)]',
     cta: 'bg-[var(--food-accent)] hover:brightness-95 text-white',
+    focus:
+      'outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0',
+    hoverText: 'hover:text-[var(--food-ink)]',
+    iconBtn:
+      'min-h-11 min-w-11 h-11 w-11 shrink-0 text-gray-600 hover:text-[var(--food-ink)] hover:bg-[var(--food-wash)] outline-none focus:outline-none focus-visible:outline-none',
   },
   svc: {
     wash: 'bg-white',

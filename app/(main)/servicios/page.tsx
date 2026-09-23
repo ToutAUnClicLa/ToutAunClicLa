@@ -234,7 +234,7 @@ export default function ServicesPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <div className="hidden md:grid md:grid-cols-2 md:gap-3">
               {HERO_MOSAIC.map((tile, i) => (
                 <Link
                   key={tile.id}

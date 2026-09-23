@@ -91,14 +91,14 @@ export function CouponInput({
     <div className={`space-y-3 ${className}`}>
       {/* Cupón aplicado */}
       {appliedCoupon ? (
-        <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-center gap-2">
-            <Ticket className="h-4 w-4 text-green-600" />
-            <div>
-              <p className="text-sm font-medium text-green-800">
+        <div className="flex items-center justify-between gap-2 rounded-xl border border-[var(--shop-hairline)] bg-[var(--shop-purple-wash)] p-3">
+          <div className="flex min-w-0 items-center gap-2">
+            <Ticket className="h-4 w-4 shrink-0 text-[var(--shop-purple)]" />
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-[var(--shop-ink)]">
                 {t('cart.summary.coupon.applied')}: {appliedCoupon.code || appliedCoupon.codigo}
               </p>
-              <p className="text-xs text-green-600">
+              <p className="text-xs text-[var(--shop-muted)]">
                 {appliedCoupon.description || appliedCoupon.descripcion || 
                  (appliedCoupon.type === 'free_shipping' 
                   ? t('cart.summary.coupon.freeShippingDescription') 
@@ -106,10 +106,10 @@ export function CouponInput({
               </p>
             </div>
           </div>
-          <Badge variant="secondary" className="bg-green-100 text-green-700">
+          <Badge variant="secondary" className="rounded-full border-0 bg-white text-[var(--shop-purple)]">
             {appliedCoupon.type === 'free_shipping' 
-              ? `🚚 ${t('cart.freeShipping')}` 
-              : `🏷️ ${appliedCoupon.discount || appliedCoupon.valor}% OFF`}
+              ? t('cart.freeShipping')
+              : `${appliedCoupon.discount || appliedCoupon.valor}%`}
           </Badge>
           {onRemoveCoupon && (
             <Button
@@ -117,19 +117,19 @@ export function CouponInput({
               size="sm"
               onClick={handleRemoveCoupon}
               disabled={isLoading}
-              className="h-6 w-6 p-0 text-green-600 hover:text-green-700 hover:bg-green-100"
+              className="h-11 w-11 p-0 text-[var(--shop-muted)] hover:text-[var(--shop-ink)]"
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </Button>
           )}
         </div>
       ) : (
         /* Input para cupón */
         <div className="space-y-2">
-          <p className="text-sm font-medium text-gray-700">
+          <p className="text-sm font-medium text-[var(--shop-ink)]">
             {t('cart.summary.coupon.question')}
           </p>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <div className="flex-1">
               <Input
                 type="text"
@@ -138,7 +138,7 @@ export function CouponInput({
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                 onKeyPress={handleKeyPress}
                 disabled={disabled || isLoading}
-                className="text-sm"
+                className="h-11 min-h-11 rounded-full border-[var(--shop-hairline)] text-sm"
                 maxLength={40}
               />
             </div>
@@ -146,7 +146,7 @@ export function CouponInput({
               onClick={handleApplyCoupon}
               disabled={disabled || isLoading || !couponCode.trim()}
               size="sm"
-              className="px-4"
+              className="inline-flex h-11 min-h-11 items-center justify-center rounded-full bg-[var(--shop-purple)] px-5 py-2.5 text-sm font-medium text-white hover:bg-[var(--shop-purple-hover)]"
             >
               {isLoading ? (
                 <Loader2 className="h-3 w-3 animate-spin" />

@@ -25,15 +25,15 @@ export function ShippingStatus({ summary, className = '', variant = 'box' }: Shi
 
     if (summary.deliverable === false) {
       return (
-        <span className="text-sm sm:text-base font-medium text-red-600">
-          {summary.shippingMessage || 'No disponible esta ubicación por el momento!'}
+        <span className="text-sm font-medium text-red-600 sm:text-base">
+          {summary.shippingMessage || t('cart.errors.notDeliverable')}
         </span>
       );
     }
 
     if (summary.needsAddress) {
       return (
-        <span className="text-sm sm:text-base font-medium text-amber-600">
+        <span className="text-sm font-medium text-[var(--shop-purple)] sm:text-base">
           {t('cart.summary.addressRequired')}
         </span>
       );
@@ -41,7 +41,7 @@ export function ShippingStatus({ summary, className = '', variant = 'box' }: Shi
 
     if (isFree) {
       return (
-        <span className="text-sm sm:text-base font-medium text-green-600 whitespace-nowrap">
+        <span className="whitespace-nowrap text-sm font-medium text-[var(--shop-purple)] sm:text-base">
           {t('cart.summary.freeShipping')}
         </span>
       );
@@ -49,7 +49,7 @@ export function ShippingStatus({ summary, className = '', variant = 'box' }: Shi
 
     return (
       <div className="flex items-center gap-1">
-        <span className="text-sm sm:text-base font-medium text-gray-900 whitespace-nowrap">
+        <span className="whitespace-nowrap text-sm font-medium text-[var(--shop-ink)] sm:text-base">
           {formatPrice(summary.shippingCost || 0)}
         </span>
       </div>
@@ -61,11 +61,11 @@ export function ShippingStatus({ summary, className = '', variant = 'box' }: Shi
   // 0. Fuera de zona de cobertura
   if (summary.deliverable === false) {
     return (
-      <div className={`bg-red-50/50 border border-red-200/50 rounded-lg p-2 ${className}`}>
+      <div className={`rounded-xl border border-[var(--shop-hairline)] bg-white p-2 ${className}`}>
         <div className="flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-red-600 flex-shrink-0" />
-          <span className="text-xs font-medium text-red-800">
-            {summary.shippingMessage || 'No disponible esta ubicación por el momento!'}
+          <AlertTriangle className="h-4 w-4 flex-shrink-0 text-red-600" />
+          <span className="text-xs font-medium text-[var(--shop-ink)]">
+            {summary.shippingMessage || t('cart.errors.notDeliverable')}
           </span>
         </div>
       </div>
@@ -75,10 +75,10 @@ export function ShippingStatus({ summary, className = '', variant = 'box' }: Shi
   // 1. Necesita dirección
   if (summary.needsAddress) {
     return (
-      <div className={`bg-amber-50/50 border border-amber-200/50 rounded-lg p-2 ${className}`}>
+      <div className={`rounded-xl border border-[var(--shop-hairline)] bg-[var(--shop-canvas-muted)] p-2 ${className}`}>
         <div className="flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-amber-600 flex-shrink-0" />
-          <span className="text-xs font-medium text-amber-800">
+          <MapPin className="h-4 w-4 flex-shrink-0 text-[var(--shop-purple)]" />
+          <span className="text-xs font-medium text-[var(--shop-ink)]">
             {t('cart.summary.addressRequiredForShipping')}
           </span>
         </div>
@@ -93,14 +93,14 @@ export function ShippingStatus({ summary, className = '', variant = 'box' }: Shi
   // 2. Envío gratis aplicado (con banner especial de Maison de Poulet)
   if (isFreeShipping && summary.promotionApplied && summary.shippingDiscount && summary.shippingDiscount > 0) {
     return (
-      <div className={`bg-green-50 border border-green-200 rounded-lg p-3 ${className}`}>
+      <div className={`rounded-xl border border-[var(--shop-hairline)] bg-[var(--shop-purple-wash)] p-3 ${className}`}>
         <div className="flex items-center gap-2">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <span className="text-sm font-medium text-green-800">
+          <CheckCircle className="h-4 w-4 text-[var(--shop-purple)]" />
+          <span className="text-sm font-medium text-[var(--shop-ink)]">
             {t('cart.promotions.maisonPoulet.freeShipping')}
           </span>
         </div>
-        <div className="text-[10px] text-green-700 bg-green-100/50 rounded px-2 py-0.5 mt-2 flex items-center gap-1 w-fit">
+        <div className="mt-2 flex w-fit items-center gap-1 rounded-full border border-[var(--shop-hairline)] bg-white px-2 py-0.5 text-[10px] text-[var(--shop-muted)]">
           <Gift className="h-3 w-3" />
           <span>{t('cart.promotions.maisonPoulet.title')}</span>
         </div>
@@ -111,14 +111,14 @@ export function ShippingStatus({ summary, className = '', variant = 'box' }: Shi
   // 3. Nudge para promoción (especialmente Herencia)
   if (summary.isPromotionEligible && !isFreeShipping && summary.promotionThreshold) {
     return (
-      <div className={`bg-amber-50 border border-amber-100 rounded-md p-2 ${className}`}>
+      <div className={`rounded-xl border border-[var(--shop-hairline)] bg-[var(--shop-canvas-muted)] p-2 ${className}`}>
         <div className="flex items-center gap-2">
-          <Info className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
+          <Info className="h-3.5 w-3.5 flex-shrink-0 text-[var(--shop-purple)]" />
           <div className="flex-1 leading-tight">
-            <span className="text-[11px] sm:text-xs font-medium text-amber-900">
+            <span className="text-[11px] font-medium text-[var(--shop-ink)] sm:text-xs">
               {t('cart.promotions.herencia.minimumOrder', { amount: formatPrice(summary.promotionThreshold) })}
             </span>
-            <p className="text-[9px] text-amber-700/70 italic mt-0.5">
+            <p className="mt-0.5 text-[9px] italic text-[var(--shop-muted)]">
               {t('cart.promotions.herencia.exclusiveNote')}
             </p>
           </div>
@@ -130,19 +130,19 @@ export function ShippingStatus({ summary, className = '', variant = 'box' }: Shi
   // 4. Mensaje de error/estimado del backend
   if (summary.shippingMessage && !isFreeShipping) {
     return (
-      <div className={`bg-orange-50 border border-orange-200 rounded-lg p-3 ${className}`}>
+      <div className={`rounded-xl border border-[var(--shop-hairline)] bg-white p-3 ${className}`}>
         <div className="flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-orange-800">
+          <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-[var(--shop-purple)]" />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-medium text-[var(--shop-ink)]">
                 {t('shipping.estimated')}
               </span>
-              <span className="text-sm font-semibold text-orange-900">
+              <span className="text-sm font-semibold text-[var(--shop-ink)]">
                 {formatPrice(summary.shippingCost || 0)}
               </span>
             </div>
-            <p className="text-xs text-orange-700 mt-1">
+            <p className="mt-1 text-xs text-[var(--shop-muted)]">
               {summary.shippingMessage}
             </p>
           </div>
@@ -154,10 +154,10 @@ export function ShippingStatus({ summary, className = '', variant = 'box' }: Shi
   // 5. Envío gratis regular
   if (isFreeShipping) {
     return (
-      <div className={`bg-green-50 border border-green-200 rounded-lg p-3 ${className}`}>
+      <div className={`rounded-xl border border-[var(--shop-hairline)] bg-[var(--shop-purple-wash)] p-3 ${className}`}>
         <div className="flex items-center gap-2">
-          <CheckCircle className="h-5 w-5 text-green-600" />
-          <span className="text-sm font-medium text-green-800">
+          <CheckCircle className="h-5 w-5 text-[var(--shop-purple)]" />
+          <span className="text-sm font-medium text-[var(--shop-ink)]">
             {t('cart.summary.freeShipping')}
           </span>
         </div>

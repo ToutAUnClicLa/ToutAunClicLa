@@ -19,7 +19,7 @@ export default {
     },
     grid: {
       title: "Explore Our Services",
-      subtitle: "A curated selection of professionals ready to help you."
+      subtitle: "A selection of professionals ready to help you."
     },
     card: {
       comingSoon: "Coming Soon",
@@ -584,6 +584,13 @@ export default {
       description: "Add some products to start shopping!",
       exploreProducts: "Explore products"
     },
+    error: {
+      title: "Cart error",
+      description: "We couldn’t load your cart. Please try again.",
+      retry: "Try again",
+      reload: "Reload page",
+      details: "Error details (development)"
+    },
     categories: {
       productos: "Products",
       comidas: "Foods",
@@ -673,6 +680,7 @@ export default {
       notesOptional: "optional",
       apply: "Apply changes",
       applying: "Applying...",
+      addressRequired: "Add an address to confirm delivery.",
       estimatedTime: "Estimated delivery time: 30-45 minutes once order is confirmed",
       success: "Delivery options updated",
       schedule: "Deliveries available from 11:00 AM to 9:00 PM daily",
@@ -686,7 +694,8 @@ export default {
     success: {
       quantityUpdated: "Quantity updated",
       productRemoved: "Product removed",
-      cartCleared: "Cart cleared"
+      cartCleared: "Cart cleared",
+      addressAdded: "Address added. Updating cart..."
     },
     promotions: {
       maisonPoulet: {
@@ -709,7 +718,12 @@ export default {
       emptyCart: "Your cart is empty",
       deliveryMethodRequired: "You must select a delivery method",
       sessionExpired: "Session expired. Please log in again",
-      couponError: "Error with applied coupon. Please apply the coupon again."
+      couponError: "Error with applied coupon. Please apply the coupon again.",
+      notDeliverable: "This location is not available right now.",
+      addressNotReady: "The address isn’t ready yet. Try again in a few seconds.",
+      addressVerifyFailed: "Could not verify the address. Please try again.",
+      checkoutFailed: "Payment could not be processed. Please try again.",
+      couponWithMessage: "Coupon error: {message}"
     },
     nonTaxable: "Non Taxable",
     variationDetails: {
@@ -724,7 +738,10 @@ export default {
       savingsShipping: "Shipping savings",
       unavailable: "We're updating our system right now. Checkout is temporarily unavailable.",
       closedToday: "We're not receiving orders today! Check our schedule at @toutaunclicla",
-      cutoff: "9:00 PM is the order cutoff (Montreal, Canada time). Please check our hours on Instagram @toutaunclicla"
+      cutoff: "9:00 PM is the order cutoff (Montreal, Canada time). Please check our hours on Instagram @toutaunclicla",
+      verifyingAddress: "Verifying address...",
+      processingAddress: "Processing address...",
+      estimated: "estimated"
     },
     notifications: {
       networkError: "No internet connection. Check your connection.",
@@ -839,6 +856,8 @@ export default {
       add: "Add",
       deliveryInfo: "The address is within Montreal metropolitan area",
       deliveryNote: "We validate that the address is within Montreal metropolitan area",
+      syncing: "Syncing...",
+      firstCreated: "First address created and selected. You can pay now.",
       montrealOnly: "Montreal metropolitan area addresses only",
       validationNote: "We validate that the city is Montreal and the postal code is valid (H1A-H5B)"
     },
