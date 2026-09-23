@@ -329,8 +329,8 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }} 
             transition={reduceMotion ? { duration: 0 } : { duration: 0.4, ease: 'easeOut' }}
           >
-            <h1 className="max-w-[11ch] text-[4rem] font-semibold leading-[1.05] tracking-tight text-white sm:text-7xl md:text-8xl">
-              Tout À Un Clic Là
+            <h1 className="max-w-[11ch] text-[4rem] font-semibold leading-[1.05] tracking-tight text-white sm:text-7xl md:text-8xl flex flex-col">
+              Tout À Un <span>Clic Là</span>
             </h1>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-white sm:text-lg">
               {t('landing.hero.description')}
