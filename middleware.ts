@@ -6,7 +6,8 @@ export async function middleware(req: NextRequest) {
   const cookieLang = req.cookies.get('preferred-language')?.value;
   const validLang =
     cookieLang === 'en' || cookieLang === 'es' || cookieLang === 'fr' ? cookieLang : null;
-  const isPro = req.nextUrl.pathname.startsWith('/pro');
+  const path = req.nextUrl.pathname;
+  const isPro = path === '/pro' || path.startsWith('/pro/');
   requestHeaders.set('x-app-lang', validLang ?? (isPro ? 'fr' : 'es'));
 
   const res = NextResponse.next({

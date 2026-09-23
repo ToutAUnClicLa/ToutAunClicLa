@@ -13,6 +13,7 @@ import {
 } from '@/components/common/ui/dropdown-menu';
 import { Badge } from '@/components/common/ui/badge';
 import { loginPath, registerPath, verifyPath } from '@/lib/shop-auth';
+import { PROFILE } from '@/lib/shop-profile';
 import { User, Settings, Heart, MapPin, ShoppingBag, LogOut, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -77,7 +78,7 @@ export function AuthButton({
           variant={variant}
           size={size}
           className={className}
-          onClick={() => router.push('/profile')}
+          onClick={() => router.push(PROFILE.root)}
         >
           <User className="h-4 w-4 mr-2" />
           Perfil
@@ -134,23 +135,23 @@ export function AuthButton({
             </>
           )}
           
-          <DropdownMenuItem onClick={() => router.push('/profile')}>
+          <DropdownMenuItem onClick={() => router.push(PROFILE.root)}>
             <User className="mr-2 h-4 w-4" />
             Mi perfil
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push('/profile/favorites')}>
+          <DropdownMenuItem onClick={() => router.push(PROFILE.favorites)}>
             <Heart className="mr-2 h-4 w-4" />
             Favoritos
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push('/profile/addresses')}>
+          <DropdownMenuItem onClick={() => router.push(PROFILE.addresses)}>
             <MapPin className="mr-2 h-4 w-4" />
             Direcciones
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push('/profile/orders')}>
+          <DropdownMenuItem onClick={() => router.push(PROFILE.orders)}>
             <ShoppingBag className="mr-2 h-4 w-4" />
             Pedidos
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push('/profile/settings')}>
+          <DropdownMenuItem onClick={() => router.push(PROFILE.settings)}>
             <Settings className="mr-2 h-4 w-4" />
             Configuración
           </DropdownMenuItem>

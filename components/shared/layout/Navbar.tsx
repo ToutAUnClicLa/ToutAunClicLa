@@ -37,6 +37,7 @@ import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import { useCartCount } from "@/hooks/useCartCount";
 import { loginPath } from "@/lib/shop-auth";
+import { PROFILE } from "@/lib/shop-profile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/common/ui/avatar";
 import { Badge } from "@/components/common/ui/badge";
 import { Separator } from "@/components/common/ui/separator";
@@ -62,12 +63,12 @@ const LINKS = [
 ];
 
 const PROFILE_MENU_ITEMS = [
-  { icon: User, label: "nav.profile.myProfile", href: "/profile" },
-  { icon: Heart, label: "nav.profile.favorites", href: "/profile/favorites" },
-  { icon: MapPin, label: "nav.profile.addresses", href: "/profile/addresses" },
-  { icon: ShoppingBag, label: "nav.profile.myOrders", href: "/profile/orders" },
-  { icon: Shield, label: "nav.profile.security", href: "/profile/security" },
-  { icon: Settings, label: "nav.profile.settings", href: "/profile/settings" }
+  { icon: User, label: "nav.profile.myProfile", href: PROFILE.root },
+  { icon: Heart, label: "nav.profile.favorites", href: PROFILE.favorites },
+  { icon: MapPin, label: "nav.profile.addresses", href: PROFILE.addresses },
+  { icon: ShoppingBag, label: "nav.profile.myOrders", href: PROFILE.orders },
+  { icon: Shield, label: "nav.profile.security", href: PROFILE.security },
+  { icon: Settings, label: "nav.profile.settings", href: PROFILE.settings }
 ];
 
 export function Navbar() {
@@ -231,7 +232,7 @@ export function Navbar() {
                   size="icon"
                   className={cn("relative hidden lg:inline-flex", shopChrome.iconBtn)}
                   title="Mis favoritos"
-                  onClick={() => router.push('/profile/favorites')}
+                  onClick={() => router.push(PROFILE.favorites)}
                 >
                   <Heart className="h-5 w-5" />
                 </Button>
@@ -492,7 +493,7 @@ export function Navbar() {
                           className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-[var(--shop-purple-wash)] border-[var(--shop-purple-muted)] hover:border-[var(--shop-purple)] relative overflow-hidden group"
                           onClick={() => {
                             setIsMobileMenuOpen(false);
-                            router.push('/profile');
+                            router.push(PROFILE.root);
                           }}
                         >
                           <User className="h-5 w-5 text-[var(--shop-purple)] flex-shrink-0" />
@@ -511,7 +512,7 @@ export function Navbar() {
                           className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-[var(--food-wash)] border-gray-200 hover:border-[var(--food-accent)] relative overflow-hidden group"
                           onClick={() => {
                             setIsMobileMenuOpen(false);
-                            router.push('/profile/orders');
+                            router.push(PROFILE.orders);
                           }}
                         >
                           <ShoppingBag className="h-5 w-5 text-[var(--food-accent)] flex-shrink-0" />
@@ -530,7 +531,7 @@ export function Navbar() {
                           className="w-full h-20 flex flex-col items-center justify-center gap-1.5 bg-[var(--svc-wash)] border-gray-200 hover:border-[var(--svc-primary)] relative overflow-hidden group"
                           onClick={() => {
                             setIsMobileMenuOpen(false);
-                            router.push('/profile/addresses');
+                            router.push(PROFILE.addresses);
                           }}
                         >
                           <MapPin className="h-5 w-5 text-[var(--svc-primary)] flex-shrink-0" />

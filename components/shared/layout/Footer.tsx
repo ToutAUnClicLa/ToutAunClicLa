@@ -155,9 +155,9 @@ export function Footer() {
                     {t('footer.contact.address')}
                   </span>
                 </li>
-                <li className="flex items-center text-sm">
+                <li className="flex min-w-0 items-center text-sm">
                   <Mail className="h-4 w-4 text-white/70 mr-2 flex-shrink-0" />
-                  <a href="mailto:serviceclient@toutaunclicla.com" className={link} itemProp="email">
+                  <a href="mailto:serviceclient@toutaunclicla.com" className={cn(link, 'block min-w-0 max-w-full break-all')} itemProp="email">
                     {t('footer.contact.email')}
                   </a>
                 </li>

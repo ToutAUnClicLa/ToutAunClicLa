@@ -1,73 +1,137 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { 
-  Package, 
-  ArrowLeft, 
-  Calendar, 
-  CreditCard, 
-  MapPin, 
+import {
+  Package,
+  CreditCard,
+  MapPin,
   Truck,
   CheckCircle,
   AlertCircle,
   Clock,
   RefreshCcw,
-  Download,
-  Star,
   MessageCircle,
-  Share2
 } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
 import { Badge } from '@/components/common/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
-import { Separator } from '@/components/common/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
 import { useOrderDetail } from '@/hooks/useOrders';
 import { useTranslation } from '@/hooks/useTranslation';
-import { 
+import {
   OrderDetail,
-  getOrderStatusText, 
-  getOrderStatusColor, 
-  formatOrderDate, 
-  canTrackOrder,
-  canCancelOrder,
-  getOrderProgress
+  getOrderStatusText,
+  getOrderStatusColor,
+  formatOrderDate,
+  getOrderProgress,
 } from '@/lib/services/orders';
+import { parseOrderNotes } from '@/lib/order-notes';
+import { loginPath } from '@/lib/shop-auth';
+import { PROFILE, orderPath } from '@/lib/shop-profile';
+import {
+  ProfileCard,
+  ProfilePageHeader,
+  ProfileOrderDetailSkeleton,
+  profileCtaClass,
+  profileOutlineClass,
+} from '@/components/features/profile/ProfileChrome';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
+const NOTE_TITLES: Record<string, string> = {
+  'información de entrega': 'orders.detail.noteDelivery',
+  'información de cupón': 'orders.detail.noteCoupon',
+  'información de envío': 'orders.detail.noteShippingInfo',
+};
+const NOTE_FIELDS: Record<string, string> = {
+  método: 'orders.detail.noteMethod',
+  código: 'orders.detail.noteCode',
+  tipo: 'orders.detail.noteType',
+  'ahorro en envío': 'orders.detail.noteShippingSavings',
+  'costo de envío': 'orders.detail.noteShippingCost',
+};
+const NOTE_VALUES: Record<string, string> = {
+  puerta: 'orders.detail.noteDoor',
+  'envío gratis': 'orders.detail.noteFreeShipping',
+  'envío gratis aplicado por cupón': 'orders.detail.noteFreeShippingCoupon',
+};
+
+function localizedNote(raw: string, dict: Record<string, string>, t: (key: string) => string) {
+  const key = dict[raw.trim().toLocaleLowerCase('es')];
+  if (!key) return raw;
+  const next = t(key);
+  return next === key ? raw : next;
+}
+
+function OrderNotesCard({ notes }: { notes: string }) {
+  const { t } = useTranslation();
+  const sections = parseOrderNotes(notes);
+  return (
+    <ProfileCard className="p-5 sm:p-6">
+      <h2 className="text-base font-semibold text-[var(--shop-ink)]">{t('orders.detail.notes')}</h2>
+      {!sections ? (
+        <p className="mt-2 whitespace-pre-wrap text-sm text-[var(--shop-muted)]">{notes}</p>
+      ) : (
+        <div className="mt-4 space-y-5">
+          {sections.map((section) => (
+            <div key={section.title || section.lines[0]?.value}>
+              {section.title ? (
+                <h3 className="text-sm font-semibold text-[var(--shop-ink)]">
+                  {localizedNote(section.title, NOTE_TITLES, t)}
+                </h3>
+              ) : null}
+              <dl className="mt-2 space-y-1.5">
+                {section.lines.map((line, index) => (
+                  <div key={index} className="flex items-baseline justify-between gap-4 text-sm">
+                    {line.label ? (
+                      <dt className="text-[var(--shop-muted)]">
+                        {localizedNote(line.label, NOTE_FIELDS, t)}
+                      </dt>
+                    ) : null}
+                    <dd
+                      className={cn(
+                        line.label
+                          ? 'text-right font-medium text-[var(--shop-ink)]'
+                          : 'text-[var(--shop-muted)]'
+                      )}
+                    >
+                      {localizedNote(line.value, NOTE_VALUES, t)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ))}
+        </div>
+      )}
+    </ProfileCard>
+  );
+}
+
 interface OrderDetailPageProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
 }
 
 export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const router = useRouter();
   const { user, isLoading: authLoading } = useAuth();
   const { t } = useTranslation();
-  
   const orderId = parseInt(params.id, 10);
-  
-  const { 
-    order, 
-    loading, 
-    error, 
-    refetch 
-  } = useOrderDetail({ orderId: isNaN(orderId) ? null : orderId });
+  const { order, loading, error, refetch } = useOrderDetail({
+    orderId: isNaN(orderId) ? null : orderId,
+  });
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/');
+      router.replace(loginPath(orderPath(params.id)));
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading, router, params.id]);
 
   useEffect(() => {
     if (isNaN(orderId)) {
       toast.error(t('orders.detail.invalidId'));
-      router.push('/profile/orders');
+      router.push(PROFILE.orders);
     }
   }, [orderId, router, t]);
 
@@ -80,454 +144,244 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       entregado: Package,
       cancelado: AlertCircle,
       reembolsado: RefreshCcw,
-      parcialmente_reembolsado: AlertCircle
+      parcialmente_reembolsado: AlertCircle,
     };
-    
     const IconComponent = iconMap[status] || Package;
-    return <IconComponent className="h-5 w-5" />;
-  };
-
-  const handleDownloadInvoice = () => {
-    toast.info(t('orders.detail.downloadInvoice'));
-  };
-
-  const handleCancelOrder = () => {
-    toast.info(t('orders.detail.cancelOrder'));
-  };
-
-  const handleTrackOrder = () => {
-    toast.info(t('orders.detail.trackOrder'));
-  };
-
-  const handleContactSupport = () => {
-    router.push('/support');
+    return <IconComponent className="h-4 w-4" />;
   };
 
   if (authLoading || loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50/30 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-          <p className="text-gray-600">Cargando detalles del pedido...</p>
-        </div>
-      </div>
-    );
+    return <ProfileOrderDetailSkeleton />;
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50/30 flex items-center justify-center">
-        <Card className="max-w-md mx-4 p-6 text-center border-red-200 bg-red-50">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-red-700 mb-2">Error al cargar pedido</h2>
-          <p className="text-red-600 mb-4">{error}</p>
-          <div className="flex gap-2 justify-center">
-            <Button onClick={refetch} variant="outline">
-              Reintentar
-            </Button>
-            <Button onClick={() => router.push('/profile/orders')}>
-              Volver a Pedidos
-            </Button>
-          </div>
-        </Card>
-      </div>
+      <ProfileCard className="p-6 text-center">
+        <AlertCircle className="mx-auto mb-3 h-8 w-8 text-red-500" />
+        <h2 className="text-lg font-semibold text-[var(--shop-ink)]">{t('orders.detail.loadError')}</h2>
+        <p className="mt-1 text-sm text-[var(--shop-muted)]">{error}</p>
+        <div className="mt-4 flex justify-center gap-2">
+          <Button onClick={refetch} variant="outline" className={profileOutlineClass()}>
+            {t('orders.actions.retry')}
+          </Button>
+          <Button onClick={() => router.push(PROFILE.orders)} className={profileCtaClass()}>
+            {t('orders.detail.backToOrders')}
+          </Button>
+        </div>
+      </ProfileCard>
     );
   }
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50/30 flex items-center justify-center">
-        <Card className="max-w-md mx-4 p-6 text-center">
-          <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Pedido no encontrado</h2>
-          <p className="text-gray-600 mb-4">El pedido solicitado no existe o no tienes acceso a él.</p>
-          <Button onClick={() => router.push('/profile/orders')}>
-            Volver a Pedidos
-          </Button>
-        </Card>
-      </div>
+      <ProfileCard className="p-6 text-center">
+        <Package className="mx-auto mb-3 h-8 w-8 text-[var(--shop-muted)]" />
+        <h2 className="text-lg font-semibold text-[var(--shop-ink)]">{t('orders.detail.notFound')}</h2>
+        <p className="mt-1 text-sm text-[var(--shop-muted)]">{t('orders.detail.notFoundDesc')}</p>
+        <Button className={cn('mt-4', profileCtaClass())} onClick={() => router.push(PROFILE.orders)}>
+          {t('orders.detail.backToOrders')}
+        </Button>
+      </ProfileCard>
     );
   }
 
   const progress = order.tracking ? getOrderProgress(order.tracking) : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50/30">
-      <div className="container max-w-4xl mx-auto py-2 sm:py-4 md:py-6 px-3 sm:px-4">
-        
-        {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-4 sm:mb-6"
-        >
-          <Card className="overflow-hidden shadow-lg border-0">
-            <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 p-3 sm:p-4 md:p-6 text-white relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/20 to-teal-600/20"></div>
-              
-              <div className="relative">
-                <div className="flex items-center justify-between mb-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => router.back()}
-                    className="bg-white/10 border border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Volver
-                  </Button>
-                  
-                  <div className="flex items-center gap-2">
-                    <Badge 
-                      className={`${getOrderStatusColor(order.status)} border font-medium`}
-                    >
-                      {getStatusIcon(order.status)}
-                      <span className="ml-1">{getOrderStatusText(order.status)}</span>
-                    </Badge>
+    <div>
+      <ProfilePageHeader
+        title={order.orderNumber}
+        description={t('orders.detail.placedOn', { date: formatOrderDate(order.orderDate) })}
+        action={
+          <Badge className={`${getOrderStatusColor(order.status)} border font-medium`}>
+            <span className="mr-1 inline-flex">{getStatusIcon(order.status)}</span>
+            {getOrderStatusText(order.status)}
+          </Badge>
+        }
+      />
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <ProfileCard className="p-5 sm:p-6">
+            <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-[var(--shop-ink)]">
+              <Package className="h-4 w-4 text-[var(--shop-purple)]" />
+              {t('orders.detail.products', { count: order.summary.productCount })}
+            </h2>
+            <div className="space-y-3">
+              {order.items.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex gap-4 rounded-lg bg-[var(--shop-canvas-muted)] p-3"
+                >
+                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-white">
+                    {item.images?.[0] ? (
+                      <Image
+                        src={item.images[0]}
+                        alt={item.name}
+                        width={64}
+                        height={64}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <Package className="h-6 w-6 text-[var(--shop-muted)]" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-medium text-[var(--shop-ink)]">{item.name}</h4>
+                    {item.description ? (
+                      <p className="mt-0.5 text-sm text-[var(--shop-muted)]">{item.description}</p>
+                    ) : null}
+                    <div className="mt-2 flex items-center justify-between text-sm">
+                      <span className="text-[var(--shop-muted)]">
+                        {t('orders.detail.quantity')}: {item.quantity} · {t('orders.detail.unitPrice')}: $
+                        {item.unitPrice.toFixed(2)} CAD
+                      </span>
+                      <span className="font-semibold text-[var(--shop-ink)]">
+                        ${item.totalPrice.toFixed(2)} CAD
+                      </span>
+                    </div>
                   </div>
                 </div>
-                
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                    Pedido {order.orderNumber}
-                  </h1>
-                  <p className="text-emerald-100 opacity-90">
-                    Realizado el {formatOrderDate(order.orderDate)}
-                  </p>
+              ))}
+            </div>
+          </ProfileCard>
+
+          <ProfileCard className="p-5 sm:p-6">
+            <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-[var(--shop-ink)]">
+              <MapPin className="h-4 w-4 text-[var(--shop-purple)]" />
+              {t('orders.detail.shippingAddress')}
+            </h2>
+            <div className="rounded-lg bg-[var(--shop-canvas-muted)] p-4 text-sm">
+              <p className="font-medium text-[var(--shop-ink)]">{order.shipping.recipientName}</p>
+              <p className="text-[var(--shop-muted)]">{order.shipping.address}</p>
+              <p className="text-[var(--shop-muted)]">
+                {order.shipping.city}, {order.shipping.state} {order.shipping.postalCode}
+              </p>
+              <p className="text-[var(--shop-muted)]">{order.shipping.country}</p>
+              {order.shipping.phone ? (
+                <p className="mt-2 text-[var(--shop-muted)]">
+                  {t('orders.detail.phone')}: {order.shipping.phone}
+                </p>
+              ) : null}
+            </div>
+          </ProfileCard>
+
+          {order.tracking ? (
+            <ProfileCard className="p-5 sm:p-6">
+              <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-[var(--shop-ink)]">
+                <Truck className="h-4 w-4 text-[var(--shop-purple)]" />
+                {t('orders.detail.shippingStatus')}
+              </h2>
+              <div className="mb-3 flex items-center justify-between text-sm">
+                <span className="text-[var(--shop-muted)]">{t('orders.detail.progress')}</span>
+                <span className="font-medium text-[var(--shop-ink)]">{progress.toFixed(0)}%</span>
+              </div>
+              <div className="mb-4 h-2 w-full rounded-full bg-[var(--shop-canvas-muted)]">
+                <div
+                  className="h-2 rounded-full bg-[var(--shop-purple)]"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <div className="space-y-3">
+                {(
+                  [
+                    { key: 'orderPlaced', label: t('orders.detail.stages.orderPlaced'), icon: CheckCircle },
+                    { key: 'paymentConfirmed', label: t('orders.detail.stages.paymentConfirmed'), icon: CreditCard },
+                    { key: 'processing', label: t('orders.detail.stages.processing'), icon: RefreshCcw },
+                    { key: 'shipped', label: t('orders.detail.stages.shipped'), icon: Truck },
+                    { key: 'delivered', label: t('orders.detail.stages.delivered'), icon: Package },
+                  ] as const
+                ).map((stage) => {
+                  const isCompleted = !!order.tracking?.[stage.key as keyof typeof order.tracking];
+                  const Icon = stage.icon;
+                  return (
+                    <div key={stage.key} className="flex items-center gap-3">
+                      <div
+                        className={cn(
+                          'rounded-full p-2',
+                          isCompleted
+                            ? 'bg-[var(--shop-purple-wash)] text-[var(--shop-purple)]'
+                            : 'bg-[var(--shop-canvas-muted)] text-[var(--shop-muted)]'
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <span
+                        className={cn(
+                          isCompleted ? 'font-medium text-[var(--shop-ink)]' : 'text-[var(--shop-muted)]'
+                        )}
+                      >
+                        {stage.label}
+                      </span>
+                      {isCompleted && order.tracking?.[stage.key as keyof typeof order.tracking] ? (
+                        <span className="ml-auto text-sm text-[var(--shop-muted)]">
+                          {formatOrderDate(order.tracking[stage.key as keyof typeof order.tracking] as string)}
+                        </span>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </ProfileCard>
+          ) : null}
+        </div>
+
+        <div className="space-y-6">
+          <ProfileCard className="p-5 sm:p-6">
+            <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-[var(--shop-ink)]">
+              <CreditCard className="h-4 w-4 text-[var(--shop-purple)]" />
+              {t('orders.detail.summary')}
+            </h2>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-[var(--shop-muted)]">{t('orders.detail.subtotal')}</span>
+                <span>${order.pricing.subtotal.toFixed(2)} CAD</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[var(--shop-muted)]">TPS</span>
+                <span>${order.pricing.taxes.tps.toFixed(2)} CAD</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[var(--shop-muted)]">TVQ</span>
+                <span>${order.pricing.taxes.tvq.toFixed(2)} CAD</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[var(--shop-muted)]">{t('orders.detail.shipping')}</span>
+                <span>${order.pricing.shipping.toFixed(2)} CAD</span>
+              </div>
+              {order.pricing.discount > 0 ? (
+                <div className="flex justify-between text-green-700">
+                  <span>
+                    {t('orders.detail.discount')}
+                    {order.pricing.couponCode ? ` (${order.pricing.couponCode})` : ''}
+                  </span>
+                  <span>-${order.pricing.discount.toFixed(2)} CAD</span>
                 </div>
+              ) : null}
+              <div className="flex justify-between border-t border-[var(--shop-hairline)] pt-2 text-base font-semibold">
+                <span>{t('orders.detail.total')}</span>
+                <span>${order.pricing.finalTotal.toFixed(2)} CAD</span>
               </div>
             </div>
-          </Card>
-        </motion.div>
+          </ProfileCard>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Columna Principal */}
-          <div className="lg:col-span-2 space-y-6">
-            
-            {/* Productos */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+          <ProfileCard className="p-5 sm:p-6">
+            <h2 className="mb-4 text-base font-semibold text-[var(--shop-ink)]">
+              {t('orders.detail.actionsTitle')}
+            </h2>
+            <Button
+              onClick={() => router.push('/support')}
+              className={cn('w-full', profileOutlineClass())}
+              variant="outline"
             >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Package className="h-5 w-5" />
-                    Productos ({order.summary.productCount})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {order.items.map((item, index) => (
-                      <div key={item.id} className="flex gap-4 p-4 bg-gray-50 rounded-lg">
-                        <div className="w-16 h-16 bg-white rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
-                          {item.images && item.images[0] ? (
-                            <Image
-                              src={item.images[0]}
-                              alt={item.name}
-                              width={64}
-                              height={64}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Package className="h-8 w-8 text-gray-400" />
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900 mb-1">{item.name}</h4>
-                          {item.description && (
-                            <p className="text-sm text-gray-600 mb-2">{item.description}</p>
-                          )}
-                          <div className="flex items-center justify-between">
-                            <div className="text-sm text-gray-600">
-                              <span>Cantidad: {item.quantity}</span>
-                              <span className="ml-4">Precio: ${item.unitPrice.toFixed(2)} CAD</span>
-                            </div>
-                            <div className="font-semibold text-gray-900">
-                              ${item.totalPrice.toFixed(2)} CAD
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+              <MessageCircle className="mr-2 h-4 w-4" />
+              {t('orders.detail.contactSupport')}
+            </Button>
+          </ProfileCard>
 
-            {/* Información de Envío */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    Dirección de Envío
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="font-semibold text-gray-900 mb-1">
-                      {order.shipping.recipientName}
-                    </p>
-                    <p className="text-gray-700">{order.shipping.address}</p>
-                    <p className="text-gray-700">
-                      {order.shipping.city}, {order.shipping.state} {order.shipping.postalCode}
-                    </p>
-                    <p className="text-gray-700">{order.shipping.country}</p>
-                    {order.shipping.phone && (
-                      <p className="text-gray-600 mt-2">Tel: {order.shipping.phone}</p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Tracking Progress */}
-            {order.tracking && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Truck className="h-5 w-5" />
-                      Estado del Envío
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-sm text-gray-600">Progreso</span>
-                        <span className="text-sm font-medium text-gray-900">{progress.toFixed(0)}%</span>
-                      </div>
-                      
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-emerald-600 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${progress}%` }}
-                        ></div>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        {[
-                          { key: 'orderPlaced', label: 'Pedido Realizado', icon: CheckCircle },
-                          { key: 'paymentConfirmed', label: 'Pago Confirmado', icon: CreditCard },
-                          { key: 'processing', label: 'Procesando', icon: RefreshCcw },
-                          { key: 'shipped', label: 'Enviado', icon: Truck },
-                          { key: 'delivered', label: 'Entregado', icon: Package }
-                        ].map((stage) => {
-                          const isCompleted = !!order.tracking?.[stage.key as keyof typeof order.tracking];
-                          const Icon = stage.icon;
-                          
-                          return (
-                            <div key={stage.key} className="flex items-center gap-3">
-                              <div className={`p-2 rounded-full ${
-                                isCompleted ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-400'
-                              }`}>
-                                <Icon className="h-4 w-4" />
-                              </div>
-                              <span className={`${
-                                isCompleted ? 'text-gray-900 font-medium' : 'text-gray-500'
-                              }`}>
-                                {stage.label}
-                              </span>
-                              {isCompleted && order.tracking?.[stage.key as keyof typeof order.tracking] && (
-                                <span className="text-sm text-gray-500 ml-auto">
-                                  {formatOrderDate(order.tracking[stage.key as keyof typeof order.tracking] as string)}
-                                </span>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            
-            {/* Resumen de Precios */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" />
-                    Resumen del Pedido
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Subtotal</span>
-                      <span>${order.pricing.subtotal.toFixed(2)} CAD</span>
-                    </div>
-                    
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">TPS</span>
-                      <span>${order.pricing.taxes.tps.toFixed(2)} CAD</span>
-                    </div>
-                    
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">TVQ</span>
-                      <span>${order.pricing.taxes.tvq.toFixed(2)} CAD</span>
-                    </div>
-                    
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Envío</span>
-                      <span>${order.pricing.shipping.toFixed(2)} CAD</span>
-                    </div>
-                    
-                    {order.pricing.discount > 0 && (
-                      <div className="flex justify-between text-green-600">
-                        <span>Descuento{order.pricing.couponCode && ` (${order.pricing.couponCode})`}</span>
-                        <span>-${order.pricing.discount.toFixed(2)} CAD</span>
-                      </div>
-                    )}
-                    
-                    <Separator />
-                    
-                    <div className="flex justify-between text-lg font-bold">
-                      <span>Total</span>
-                      <span>${order.pricing.finalTotal.toFixed(2)} CAD</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Información de Pago */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle>Información de Pago</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div>
-                      <span className="text-gray-600 text-sm">Método de pago</span>
-                      <p className="font-medium">{order.paymentInfo.method}</p>
-                    </div>
-                    
-                    <div>
-                      <span className="text-gray-600 text-sm">Fecha de pago</span>
-                      <p className="font-medium">{formatOrderDate(order.paymentInfo.paymentDate)}</p>
-                    </div>
-                    
-                    {order.paymentInfo.refundInfo && order.paymentInfo.refundInfo.isRefunded && (
-                      <div className="p-3 bg-red-50 rounded-lg border border-red-200">
-                        <p className="text-red-800 font-medium">Reembolsado</p>
-                        <p className="text-red-600 text-sm">
-                          ${order.paymentInfo.refundInfo.refundAmount.toFixed(2)} CAD
-                        </p>
-                        {order.paymentInfo.refundInfo.refundDate && (
-                          <p className="text-red-600 text-sm">
-                            {formatOrderDate(order.paymentInfo.refundInfo.refundDate)}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Acciones */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle>Acciones</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <Button 
-                      onClick={handleDownloadInvoice} 
-                      className="w-full"
-                      variant="outline"
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Descargar Factura
-                    </Button>
-                    
-                    {canTrackOrder(order) && (
-                      <Button 
-                        onClick={handleTrackOrder} 
-                        className="w-full"
-                        variant="outline"
-                      >
-                        <Truck className="h-4 w-4 mr-2" />
-                        Rastrear Envío
-                      </Button>
-                    )}
-                    
-                    <Button 
-                      onClick={handleContactSupport} 
-                      className="w-full"
-                      variant="outline"
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Contactar Soporte
-                    </Button>
-                    
-                    {canCancelOrder(order) && (
-                      <Button 
-                        onClick={handleCancelOrder} 
-                        className="w-full"
-                        variant="destructive"
-                      >
-                        <AlertCircle className="h-4 w-4 mr-2" />
-                        Cancelar Pedido
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-            
-            {/* Notas del Pedido */}
-            {order.notes && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Notas del Pedido</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-700 text-sm">{order.notes}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-          </div>
+          {order.notes ? <OrderNotesCard notes={order.notes} /> : null}
         </div>
       </div>
     </div>
