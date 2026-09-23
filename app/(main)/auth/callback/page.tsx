@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { consumeShopAuthNext, loginPath } from '@/lib/shop-auth';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -35,19 +36,19 @@ export default function AuthCallbackPage() {
         });
         
         // Esperar un momento antes de redirigir
+        const next = consumeShopAuthNext();
         setTimeout(() => {
-          // Redirigir al dashboard o página principal
-          router.push('/');
+          router.push(next);
         }, 2000);
         
       } catch (error: any) {
         console.error('Error en callback:', error);
         setStatus('error');
         setMessage(error.message || t('auth.callback.authError'));
+        const next = consumeShopAuthNext();
         
-        // Redirigir al login después de un error
         setTimeout(() => {
-          router.push('/');
+          router.push(loginPath(next));
         }, 3000);
       }
     };
@@ -69,9 +70,9 @@ export default function AuthCallbackPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="flex min-h-[60vh] items-center justify-center bg-white">
       <div className="max-w-md w-full mx-4">
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+        <div className="rounded-xl border border-[var(--shop-hairline)] bg-white p-8">
           <div className="text-center space-y-6">
             {/* Logo o icono */}
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg">

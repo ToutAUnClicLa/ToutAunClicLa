@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import * as authService from '@/lib/services/auth';
+import { persistShopAuthNext } from '@/lib/shop-auth';
 import { toast } from 'sonner';
 
 interface AuthContextType {
@@ -21,7 +22,7 @@ interface AuthContextType {
   refreshAuth: () => Promise<void>;
   
   // Google Auth
-  initiateGoogleAuth: () => Promise<void>;
+  initiateGoogleAuth: (next?: string) => Promise<void>;
   handleGoogleCallback: () => Promise<authService.AuthResponse>;
   
   // Utilidades
@@ -262,11 +263,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const initiateGoogleAuth = useCallback(async () => {
+  const initiateGoogleAuth = useCallback(async (next?: string) => {
     setIsLoading(true);
     setError(null);
     
     try {
+      persistShopAuthNext(next);
       const { url } = await authService.initiateGoogleAuth();
       // Redirigir a Google OAuth
       window.location.href = url;

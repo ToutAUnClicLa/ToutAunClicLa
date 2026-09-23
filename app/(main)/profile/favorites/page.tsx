@@ -12,7 +12,7 @@ import { Separator } from '@/components/common/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { useFavoritesList } from '@/hooks/useFavoritesList';
-import AuthModal from '@/components/features/auth/AuthModal';
+import { loginPath } from '@/lib/shop-auth';
 import { addToCart } from '@/lib/services/cart';
 import { removeFromFavorites } from '@/lib/services/favorites';
 import { toast } from 'sonner';
@@ -69,7 +69,7 @@ const categoryOrder = ['productos', 'comidas', 'boutique'];
 
 export default function FavoritesPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { t } = useTranslation();
   const { addToCart: addToCartHook } = useCart();
   const { 
@@ -82,16 +82,11 @@ export default function FavoritesPage() {
   
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
   const [addingToCart, setAddingToCart] = useState<Set<string>>(new Set());
-  const [showAuthModal, setShowAuthModal] = useState(false);
-
-  // Mostrar modal si no está autenticado
   useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      setShowAuthModal(true);
-    } else {
-      setShowAuthModal(false);
+    if (!authLoading && !isAuthenticated) {
+      router.replace(loginPath('/profile/favorites'));
     }
-  }, [isAuthenticated, isLoading]);
+  }, [authLoading, isAuthenticated, router]);
 
   useEffect(() => {
     if (user) {
@@ -507,11 +502,6 @@ export default function FavoritesPage() {
         </div>
       </div>
       
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)}
-        redirectUrl="/profile/favorites"
-      />
     </div>
   );
 }

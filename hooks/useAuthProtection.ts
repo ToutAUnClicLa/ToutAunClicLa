@@ -3,6 +3,8 @@
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { loginPath } from '@/lib/shop-auth';
 
 /**
  * Hook simple para proteger acciones que requieren autenticación
@@ -10,6 +12,8 @@ import { useState, useCallback, useRef, useEffect } from 'react';
  */
 export function useAuthProtection() {
   const { isAuthenticated, user } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
 
@@ -41,20 +45,20 @@ export function useAuthProtection() {
     if (!auth || !currentUser) {
       toast.error(errorMessage);
       setAuthModalMode('login');
-      setIsAuthModalOpen(true);
+      router.push(loginPath(pathname));
       return false;
     }
     
     if (!currentUser.verified) {
       toast.error("Debes verificar tu cuenta para realizar esta acción");
       setAuthModalMode('login');
-      setIsAuthModalOpen(true);
+      router.push(loginPath(pathname));
       return false;
     }
     
     action();
     return true;
-  }, []);
+  }, [router, pathname]);
 
   /**
    * Para favoritos específicamente
@@ -84,7 +88,7 @@ export function useAuthProtection() {
     // Modal de autenticación
     isAuthModalOpen,
     authModalMode,
-    openAuthModal: useCallback(() => setIsAuthModalOpen(true), []),
+    openAuthModal: useCallback(() => router.push(loginPath(pathname)), [router, pathname]),
     closeAuthModal: useCallback(() => setIsAuthModalOpen(false), []),
   };
 }

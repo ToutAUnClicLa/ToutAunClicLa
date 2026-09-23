@@ -12,7 +12,7 @@ import { Separator } from '@/components/common/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { useAddresses } from '@/hooks/useAddresses';
-import AuthModal from '@/components/features/auth/AuthModal';
+import { loginPath } from '@/lib/shop-auth';
 import { AddressSelector } from '@/components/features/modules/cart/AddressSelector';
 import DeliveryOptions from '@/components/features/modules/cart/DeliveryOptions';
 import { CouponInput } from '@/components/features/modules/cart/CouponInput';
@@ -107,7 +107,6 @@ export default function CartPage() {
     refreshAddresses
   } = useAddresses();
 
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [verifyingAddress, setVerifyingAddress] = useState(false);
@@ -133,7 +132,7 @@ export default function CartPage() {
         toast.error(t('auth.requiredForCart'));
         hasNotifiedAuth.current = true;
       }
-      router.push('/?auth=login');
+      router.push(loginPath('/cart'));
     } else if (isAuthenticated) {
       // Resetear el ref si el usuario se autentica
       hasNotifiedAuth.current = false;
@@ -394,12 +393,6 @@ export default function CartPage() {
     };
   }, [appliedCoupon, applyCoupon, refreshCart, refreshAddresses]);
 
-  // Mostrar modal de autenticación si no está autenticado
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      setShowAuthModal(true);
-    }
-  }, [isAuthenticated, isLoading]);
 
   // Agrupar items por categoría
   const groupedItems = useMemo(() => {
@@ -502,7 +495,7 @@ export default function CartPage() {
     }
 
     if (!isAuthenticated) {
-      setShowAuthModal(true);
+      router.push(loginPath('/cart'));
       return;
     }
 
@@ -621,7 +614,7 @@ export default function CartPage() {
       const token = localStorage.getItem('auth_token');
       if (!token) {
         toast.error(t('cart.errors.sessionExpired'));
-        setShowAuthModal(true);
+        router.push(loginPath('/cart'));
         return;
       }
 
@@ -1350,11 +1343,6 @@ export default function CartPage() {
           </div>
         </div>
 
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          redirectUrl="/cart"
-        />
       </div>
     </CartErrorBoundary>
   );

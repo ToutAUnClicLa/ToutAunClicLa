@@ -36,7 +36,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import { useCartCount } from "@/hooks/useCartCount";
-import AuthModal from "@/components/features/auth/AuthModal";
+import { loginPath } from "@/lib/shop-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/common/ui/avatar";
 import { Badge } from "@/components/common/ui/badge";
 import { Separator } from "@/components/common/ui/separator";
@@ -85,8 +85,6 @@ export function Navbar() {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgotPassword'>('login');
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
 
@@ -115,13 +113,8 @@ export function Navbar() {
     }
   };
 
-  const openAuthModal = (mode: 'login' | 'register' | 'forgotPassword' = 'login') => {
-    setAuthModalMode(mode);
-    setIsAuthModalOpen(true);
-  };
-
-  const closeAuthModal = () => {
-    setIsAuthModalOpen(false);
+  const goLogin = () => {
+    router.push(loginPath(`${pathname}${typeof window !== 'undefined' ? window.location.search : ''}`));
   };
 
   // Funciones optimizadas para obtener datos del usuario
@@ -363,7 +356,7 @@ export function Navbar() {
                 ) : (
                   <Button
                     variant="ghost"
-                    onClick={() => openAuthModal('login')}
+                    onClick={goLogin}
                     className={cn("h-9 min-h-11 px-4 py-2 rounded-full bg-[var(--shop-purple)] text-white hover:bg-[var(--shop-purple-hover)] hover:text-white", shopChrome.focus)}
                   >
                     {t('nav.login')}
@@ -662,7 +655,7 @@ export function Navbar() {
                       className="w-full min-h-11 bg-[var(--shop-purple)] hover:bg-[var(--shop-purple-hover)] text-white font-medium h-11 rounded-lg focus-visible:ring-2 focus-visible:ring-[var(--shop-purple)] focus-visible:ring-offset-2"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
-                        openAuthModal('login');
+                        goLogin();
                       }}
                     >
                       <div className="flex items-center justify-center gap-3">
@@ -678,11 +671,6 @@ export function Navbar() {
         )}
       </AnimatePresence>
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={closeAuthModal}
-        initialMode={authModalMode}
-      />
     </>
   );
 }

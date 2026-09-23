@@ -4,9 +4,9 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, BadgeDollarSign, Calculator, Car, Gavel, Gift, GlassWater, Home as HomeIcon, Languages, Package, Scissors, Shirt, Sparkles, Stethoscope, Store, TrendingUp, Utensils, Wrench } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { useTranslation } from '@/hooks/useTranslation';
-import AuthModal from '@/components/features/auth/AuthModal';
+import { loginPath } from '@/lib/shop-auth';
 import HomeSearchBar from '@/components/features/modules/search/HomeSearchBar';
 import WorkWithUsButton from '@/components/features/landing/WorkWithUsButton';
 import ServiceCard from '@/components/features/services/ServiceCard';
@@ -60,33 +60,22 @@ const Section = ({ title, description, icon: Icon, tone, children, id, kicker, c
 export default function Home() {
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgotPassword'>('register');
-
-  const openAuthModal = useCallback((mode: 'login' | 'register' | 'forgotPassword' = 'register') => {
-    setAuthModalMode(mode);
-    setIsAuthModalOpen(true);
-  }, []);
-
-  // Open modal if redirected from cart (or other protected pages).
-  // Se lee window.location.search directo (en vez de useSearchParams) porque
-  // solo hace falta el valor al montar, y useSearchParams fuerza que todo el
-  // árbol quede detrás del Suspense del layout y se renderice solo en cliente.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('auth') === 'login') {
-      openAuthModal('login');
-
-      // Clean up URL to avoid reopening on refresh
-      params.delete('auth');
-      const newPath = window.location.pathname + (params.toString() ? `?${params.toString()}` : '');
-      window.history.replaceState(null, '', newPath);
+    const auth = params.get('auth');
+    const redirectTo = params.get('redirectTo');
+    if (auth === 'forgot') {
+      window.location.replace('/forgot-password');
+      return;
     }
-  }, [openAuthModal]);
-
-  const closeAuthModal = () => {
-    setIsAuthModalOpen(false);
-  };
+    if (auth === 'reset') {
+      window.location.replace('/reset-password');
+      return;
+    }
+    if (auth === 'login' || redirectTo) {
+      window.location.replace(loginPath(redirectTo || '/'));
+    }
+  }, []);
 
   // Función para formatear la descripción del hero con texto destacado
   const formatHeroDescription = () => {
@@ -609,13 +598,6 @@ export default function Home() {
           ))}
         </div>
       </Section>
-
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={closeAuthModal}
-        initialMode={authModalMode}
-      />
 
       {/* Work With Us Floating Button */}
       <WorkWithUsButton />

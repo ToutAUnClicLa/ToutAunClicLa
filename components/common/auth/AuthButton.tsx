@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/common/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/ui/avatar';
@@ -13,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/common/ui/dropdown-menu';
 import { Badge } from '@/components/common/ui/badge';
-import AuthModal from '@/components/features/auth/AuthModal';
+import { loginPath, registerPath, verifyPath } from '@/lib/shop-auth';
 import { User, Settings, Heart, MapPin, ShoppingBag, LogOut, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -35,8 +34,6 @@ export function AuthButton({
 }: AuthButtonProps) {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const router = useRouter();
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
 
   // Función para obtener las iniciales del usuario
   const getUserInitials = () => {
@@ -60,15 +57,8 @@ export function AuthButton({
   };
 
   // Funciones para abrir el modal
-  const openLoginModal = () => {
-    setAuthModalMode('login');
-    setIsAuthModalOpen(true);
-  };
-
-  const openRegisterModal = () => {
-    setAuthModalMode('register');
-    setIsAuthModalOpen(true);
-  };
+  const openLoginModal = () => router.push(loginPath());
+  const openRegisterModal = () => router.push(registerPath());
 
   // Estado de carga
   if (isLoading) {
@@ -136,7 +126,7 @@ export function AuthButton({
           
           {!user.verified && (
             <>
-              <DropdownMenuItem onClick={() => router.push('/verify-email')} className="text-yellow-700">
+              <DropdownMenuItem onClick={() => router.push(user.email ? verifyPath(user.email) : '/verify-email')} className="text-yellow-700">
                 <Shield className="mr-2 h-4 w-4" />
                 Verificar cuenta
               </DropdownMenuItem>
@@ -195,14 +185,6 @@ export function AuthButton({
         </Button>
       </div>
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        initialMode={authModalMode}
-        onLoginSuccess={() => {
-          setIsAuthModalOpen(false);
-        }}
-      />
     </>
   );
 }

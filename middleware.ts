@@ -45,7 +45,18 @@ export async function middleware(req: NextRequest) {
   ];
 
   // Rutas de autenticación
-  const authPages = ['/auth', '/login', '/register'];
+  const authPages = [
+    '/auth',
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/reset-password',
+    '/verify-email',
+    '/registro',
+    '/recuperar',
+    '/restablecer',
+    '/verificar-email',
+  ];
 
   // Verificar si es una ruta de autenticación del lado del cliente
   const isClientSideAuthRoute = clientSideAuthRoutes.some(route =>
@@ -87,8 +98,8 @@ export async function middleware(req: NextRequest) {
     }
 
     if (!isAuthenticated) {
-      const redirectUrl = new URL('/', req.url);
-      redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname);
+      const redirectUrl = new URL('/login', req.url);
+      redirectUrl.searchParams.set('next', req.nextUrl.pathname);
       return NextResponse.redirect(redirectUrl);
     }
   }

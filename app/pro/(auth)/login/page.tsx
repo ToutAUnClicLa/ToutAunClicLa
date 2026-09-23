@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -14,11 +14,17 @@ import { Label } from '@/components/pro/ui/label';
 
 export default function ProLoginPage() {
   const router = useRouter();
-  const { login } = useProAuth();
+  const { login, proUser, loading: sessionLoading } = useProAuth();
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!sessionLoading && proUser) {
+      router.replace('/pro/dashboard');
+    }
+  }, [sessionLoading, proUser, router]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

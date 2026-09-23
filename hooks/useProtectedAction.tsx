@@ -3,7 +3,8 @@
 import React, { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
-import AuthModal from '@/components/features/auth/AuthModal';
+import { usePathname, useRouter } from 'next/navigation';
+import { loginPath, verifyPath } from '@/lib/shop-auth';
 
 interface UseProtectedActionOptions {
   requireVerification?: boolean;
@@ -23,6 +24,8 @@ export function useProtectedAction(options: UseProtectedActionOptions = {}) {
   } = options;
 
   const { user, isAuthenticated } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'verification'>('login');
 
@@ -54,7 +57,7 @@ export function useProtectedAction(options: UseProtectedActionOptions = {}) {
       if (!isAuthenticated || !user) {
         toast.error(loginMessage);
         setAuthModalMode('login');
-        setIsAuthModalOpen(true);
+        router.push(loginPath(pathname));
         resolve(null);
         return;
       }
@@ -63,7 +66,7 @@ export function useProtectedAction(options: UseProtectedActionOptions = {}) {
       if (requireVerification && !user.verified) {
         toast.error(verificationMessage);
         setAuthModalMode('verification');
-        setIsAuthModalOpen(true);
+        router.push(verifyPath(user.email, pathname));
         resolve(null);
         return;
       }
@@ -90,7 +93,7 @@ export function useProtectedAction(options: UseProtectedActionOptions = {}) {
         resolve(null);
       }
     });
-  }, [isAuthenticated, user, requireVerification, loginMessage, verificationMessage]);
+  }, [isAuthenticated, user, requireVerification, loginMessage, verificationMessage, router, pathname]);
 
   /**
    * Función específica para favoritos
@@ -141,14 +144,7 @@ export function useProtectedAction(options: UseProtectedActionOptions = {}) {
     handleAuthSuccess,
     
     // Componente del modal
-    renderAuthModal: () => (
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={closeAuthModal}
-        initialMode={authModalMode}
-        onLoginSuccess={handleAuthSuccess}
-      />
-    )
+    renderAuthModal: () => null
   };
 }
 

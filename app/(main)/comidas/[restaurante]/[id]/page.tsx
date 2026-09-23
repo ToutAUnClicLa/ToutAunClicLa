@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense, useCallback, useMemo } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { Star, ShoppingCart, Heart, Share2, ChevronRight, Package, Shield, Truck, ArrowRight, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -16,7 +16,7 @@ import { cn, getImageUrl, getProductImages } from '@/lib/utils';
 import { getFavoriteStatus, addToFavorites, removeFromFavorites } from '@/lib/services/favorites';
 import { addToCart } from '@/lib/services/cart';
 import { useAuth } from '@/hooks/useAuth';
-import AuthModal from '@/components/features/auth/AuthModal';
+import { loginPath } from '@/lib/shop-auth';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
 import { ProductPriceDisplay } from '@/components/features/modules/catalog/ProductPriceDisplay';
@@ -75,7 +75,8 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
   const [isFavorited, setIsFavorited] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
   const { user } = useAuth();
 
   // Get restaurant details from URL
@@ -145,7 +146,7 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
 
   const handleAddToCart = async () => {
     if (!user) {
-      setIsAuthModalOpen(true);
+      router.push(loginPath(pathname));
       return;
     }
 
@@ -187,7 +188,7 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
 
   const handleToggleFavorite = async () => {
     if (!user) {
-      setIsAuthModalOpen(true);
+      router.push(loginPath(pathname));
       return;
     }
 
@@ -472,11 +473,6 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
         </div>
       )}
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        initialMode="login"
-      />
     </>
   );
 }
