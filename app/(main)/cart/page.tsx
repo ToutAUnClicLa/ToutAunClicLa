@@ -20,6 +20,7 @@ import DeliveryOptions from '@/components/features/modules/cart/DeliveryOptions'
 import { CouponInput } from '@/components/features/modules/cart/CouponInput';
 import { ShippingStatus } from '@/components/features/modules/cart/ShippingStatus';
 import { CartErrorBoundary } from '@/components/features/modules/cart/CartErrorBoundary';
+import { CartPageSkeleton } from '@/components/features/modules/cart/CartPageSkeleton';
 import { toast } from 'sonner';
 import { CartItem } from '@/lib/services/cart';
 import type { DeliveryOptions as DeliveryOptionsType } from '@/lib/services/cart';
@@ -68,12 +69,13 @@ export default function CartPage() {
     removeFromCart,
     clearCart,
     isEmpty,
-    refreshCart,
+    loadCart,
+    hasLoadedOnce,
     applyCoupon,
     removeCoupon,
     appliedCoupon,
     summary
-  } = useCart();
+  } = useCart({ skipSessionInit: true });
 
   const {
     selectedAddress,
@@ -242,19 +244,17 @@ export default function CartPage() {
   // 🚨 REMOVED: renderShippingDisplay - replaced with ShippingStatus component
   // This function is no longer needed as ShippingStatus component handles all shipping display logic
 
-  // Efecto para cargar el carrito inicial y cuando cambia la dirección principal
-  useEffect(() => {
-    if (isAuthenticated) {
-      console.log('🔄 Cargando carrito inicial:', {
-        isAuthenticated,
-        hasSelectedAddress: !!selectedAddress?.id,
-        hasCoupon: !!appliedCoupon
-      });
+  const startedCartLoad = useRef(false);
 
-      // Cargar carrito inicial o cuando cambia dirección válida
-      refreshCart();
+  useEffect(() => {
+    if (!isAuthenticated) {
+      startedCartLoad.current = false;
+      return;
     }
-  }, [isAuthenticated, selectedAddress?.id, refreshCart, appliedCoupon]);
+    if (startedCartLoad.current) return;
+    startedCartLoad.current = true;
+    void loadCart(false);
+  }, [isAuthenticated, loadCart]);
 
   // Efecto para reiniciar opciones de entrega cuando cambia la dirección
   useEffect(() => {
@@ -287,25 +287,8 @@ export default function CartPage() {
       timestamp: new Date().toISOString()
     });
 
-    // SIEMPRE actualizar el estado, incluso si parece igual (para forzar re-renders)
     setHasValidAddress(addressValid);
-
-    // 🚨 CRITICAL: Si se habilitó una dirección válida, refrescar carrito INMEDIATAMENTE
-    if (addressValid && (!hasValidAddress || hasValidAddress !== addressValid)) {
-      console.log('🚨 DIRECCIÓN VÁLIDA DETECTADA - REFRESCANDO CARRITO INMEDIATAMENTE');
-
-      // Múltiples intentos para asegurar éxito
-      setTimeout(async () => {
-        try {
-          console.log('🔄 REFRESCANDO carrito por dirección válida...');
-          await refreshCart();
-          console.log('✅ Carrito refrescado por dirección válida');
-        } catch (error) {
-          console.error('❌ Error refrescando carrito por dirección válida:', error);
-        }
-      }, 100);
-    }
-  }, [isAuthenticated, hasAddresses, addresses?.length, selectedAddress?.id, selectedAddress?.city, selectedAddress?.isPrimary, hasValidAddress, refreshCart]);
+  }, [isAuthenticated, hasAddresses, addresses?.length, selectedAddress?.id, selectedAddress?.city, selectedAddress?.isPrimary]);
 
   // 🚨 CRITICAL FIX: Listener sincronizado para cambios de direcciones
   useEffect(() => {
@@ -340,20 +323,7 @@ export default function CartPage() {
           toast.success(t('cart.success.addressAdded'), {
             duration: 2000,
           });
-
-          // 🚨 CRITICAL: Refresh both addresses and cart for complete sync
-          setTimeout(async () => {
-            console.log('🏠 PÁGINA CARRITO: Refrescando direcciones y carrito después de creación');
-            try {
-              // First refresh addresses to get the new selection
-              await refreshAddresses();
-              // Then refresh cart with the new address
-              await refreshCart();
-              console.log('✅ Direcciones y carrito refrescados exitosamente');
-            } catch (error) {
-              console.error('❌ Error refrescando:', error);
-            }
-          }, 100); // Reduced delay for immediate feedback
+          void refreshAddresses();
         }
       }
     };
@@ -369,7 +339,7 @@ export default function CartPage() {
         window.removeEventListener('addressChanged', handleAddressChange);
       }
     };
-  }, [appliedCoupon, applyCoupon, refreshCart, refreshAddresses, t]);
+  }, [refreshAddresses, t]);
 
 
   // Agrupar items por categoría
@@ -1021,15 +991,8 @@ export default function CartPage() {
     return null;
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center bg-[var(--shop-canvas-muted)] py-24 text-[var(--shop-ink)]">
-        <div className="space-y-4 text-center">
-          <div className="mx-auto h-11 w-11 animate-spin rounded-full border-2 border-[var(--shop-hairline)] border-t-[var(--shop-purple)]" />
-          <p className="text-sm text-[var(--shop-muted)]">{t('cart.loading')}</p>
-        </div>
-      </div>
-    );
+  if (!hasLoadedOnce) {
+    return <CartPageSkeleton />;
   }
 
   return (

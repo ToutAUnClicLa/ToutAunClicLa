@@ -95,7 +95,7 @@ export default function DeliveryOptionsComponent({
   showAddressNote = false
 }: DeliveryOptionsComponentProps) {
   const { t } = useTranslation();
-  const { updateDeliveryOptions } = useCart();
+  const { updateDeliveryOptions } = useCart({ skipSessionInit: true });
 
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOptions>({
     metodoEntrega: 'puerta',

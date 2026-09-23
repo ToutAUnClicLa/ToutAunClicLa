@@ -27,6 +27,8 @@ interface UseCartOptions {
   page?: number;
   limit?: number;
   lazy?: boolean; // Solo cargar cuando se solicite explícitamente
+  /** Skip the session coupon-clear + GET. /cart owns the one initial fetch. */
+  skipSessionInit?: boolean;
 }
 
 // Cache global para evitar múltiples peticiones
@@ -40,7 +42,7 @@ const CACHE_DURATION = 30000; // 30 segundos de cache
 const DEBOUNCE_DELAY = 300; // 300ms de debounce
 
 export function useCart(options: UseCartOptions = {}) {
-  const { autoLoad = false, page = 1, limit = 20, lazy = true } = options; // lazy por defecto
+  const { autoLoad = false, page = 1, limit = 20, lazy = true, skipSessionInit = false } = options;
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
 
@@ -745,11 +747,12 @@ export function useCart(options: UseCartOptions = {}) {
 
   // Limpiar cupones al inicializar sesión (política no-persistencia)
   useEffect(() => {
+    if (skipSessionInit) return;
     if (isAuthenticated && user && !hasLoadedOnce) {
       console.log('🧹 Usuario autenticado por primera vez - limpiando cupones');
       clearCouponOnInit();
     }
-  }, [isAuthenticated, user, hasLoadedOnce, clearCouponOnInit]);
+  }, [isAuthenticated, user, hasLoadedOnce, clearCouponOnInit, skipSessionInit]);
 
   // Limpiar estado cuando el usuario se deslogea
   useEffect(() => {

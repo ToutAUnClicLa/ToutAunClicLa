@@ -313,24 +313,23 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      <section data-shop-reveal className="relative isolate overflow-hidden">
+      <section data-shop-reveal className="shop-hero relative isolate flex flex-col overflow-hidden">
         <Image
           src="/landing/hero/heroImg.webp"
           alt=""
           fill
           sizes="100vw"
-          className="object-cover"
+          className="object-cover object-[center_32%]"
           priority
         />
-        <div className="absolute inset-0 bg-[var(--shop-ink)]/75" aria-hidden />
-        <div className="container relative pb-16 pt-10 sm:pb-20 sm:pt-14 lg:pb-28 lg:pt-20">
+        <div className="container relative z-10 flex flex-1 flex-col items-center justify-center md:items-start py-8 sm:py-10 md:py-16">
           <motion.div
-            className="shop-hero-motion max-w-2xl text-left"
+            className="shop-hero-motion mx-auto flex w-full max-w-2xl flex-col justify-start items-start"
             initial={reduceMotion ? false : { opacity: 1, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }} 
             transition={reduceMotion ? { duration: 0 } : { duration: 0.4, ease: 'easeOut' }}
           >
-            <h1 className="max-w-[11ch] text-[2.5rem] font-semibold leading-[1.05] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-[4.5rem]">
+            <h1 className="max-w-[11ch] text-[4rem] font-semibold leading-[1.05] tracking-tight text-white sm:text-7xl md:text-8xl">
               Tout à un Clic Là
             </h1>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-white sm:text-lg">
@@ -339,7 +338,7 @@ export default function Home() {
             <div className="mt-8 w-full max-w-xl">
               <HomeSearchBar />
             </div>
-            <div className="mt-8 flex flex-wrap gap-2">
+            <div className="mt-8 flex flex-wrap  gap-2">
               {categories.map((cat) => {
                 const Icon = cat.icon;
                 return (

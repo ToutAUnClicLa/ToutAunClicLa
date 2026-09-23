@@ -191,13 +191,13 @@ export function Navbar() {
               <img
                 src="/logoaunclic.svg"
                 alt=""
-                className="h-[60px] w-[60px] shrink-0"
+                className="h-[75px] w-[75px] shrink-0"
                 width="60"
                 height="60"
               />
-              <span className={cn(shopChrome.wordmark, "shrink-0")}>
+              <span className={cn(shopChrome.wordmark, "shrink-0 -ml-[1em]")}>
                 <span className="text-sm font-medium text-[var(--shop-ink)] whitespace-nowrap sm:text-[15px]">Tout à un</span>
-                <span className="text-sm font-bold text-[var(--shop-purple)] whitespace-nowrap sm:text-[15px]">Clic Là</span>
+                <span className="text-sm font-extrabold text-[var(--shop-purple)] whitespace-nowrap sm:text-[15px]">Clic Là</span>
               </span>
             </Link>
 
