@@ -2766,6 +2766,7 @@ export default {
         title: "Un precio en dólares canadienses.",
         subtitle: "Sin sorpresas, sin USD. Cancela cuando quieras.",
         perMonth: "/mes",
+        launchDiscount: "Descuento de lanzamiento",
         badgeRecommended: "Recomendado",
         seeAll: "Ver todos los planes",
         free: {
@@ -2780,6 +2781,7 @@ export default {
         pro: {
           name: "Pro",
           price: "25 $",
+          previous: "35 $",
           tagline: "Tu tarjeta digital completa.",
           f1: "Tarjeta digital + Apple Wallet y AirDrop",
           f2: "Perfil público con URL única",
@@ -2790,6 +2792,7 @@ export default {
         max: {
           name: "Max",
           price: "45 $",
+          previous: "55 $",
           tagline: "Máxima visibilidad y herramientas.",
           f1: "Todo lo de Pro",
           f2: "Destacado en tu categoría",
@@ -3088,7 +3091,7 @@ export default {
       trialOnceNote: "La prueba gratis de 7 días es válida una sola vez por persona. Si ya la usaste, el cobro es inmediato.",
       monthly: "Mensual",
       yearly: "Anual",
-      yearlyNote: "· 2 meses gratis",
+      yearlyNote: "Ahorra 50$ al año",
       perMonth: "mes",
       perYear: "año",
       recommended: "Recomendado",

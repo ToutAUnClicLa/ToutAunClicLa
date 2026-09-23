@@ -155,19 +155,6 @@ export function CategoryDirectory({ category }: Props) {
                 </p>
               )}
             </div>
-
-            {heroImage ? (
-              <div className={cn(shopHeroFigure, 'mx-auto md:w-1/2 max-h-none aspect-[16/10] lg:mx-0 lg:justify-self-end lg:aspect-[5/4]')}>
-                <Image
-                  src={heroImage}
-                  alt=""
-                  fill
-                  className="object-cover object-top"
-                  sizes="(max-width: 1024px) 100vw, 40vw"
-                  priority
-                />
-              </div>
-            ) : null}
           </div>
         </div>
       </section>

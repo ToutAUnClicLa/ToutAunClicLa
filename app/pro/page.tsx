@@ -215,8 +215,10 @@ export default async function ProHomePage({ searchParams }: PageProps) {
               <PricingCard
                 name={t.pricing.pro.name}
                 price={t.pricing.pro.price}
+                previous={t.pricing.pro.previous}
                 tagline={t.pricing.pro.tagline}
                 perMonth={t.pricing.perMonth}
+                launchDiscount={t.pricing.launchDiscount}
                 features={[
                   t.pricing.pro.f1,
                   t.pricing.pro.f2,
@@ -228,8 +230,10 @@ export default async function ProHomePage({ searchParams }: PageProps) {
               <PricingCard
                 name={t.pricing.max.name}
                 price={t.pricing.max.price}
+                previous={t.pricing.max.previous}
                 tagline={t.pricing.max.tagline}
                 perMonth={t.pricing.perMonth}
+                launchDiscount={t.pricing.launchDiscount}
                 featured
                 badge={t.pricing.badgeRecommended}
                 features={[
@@ -427,16 +431,20 @@ function FeatureCard({
 function PricingCard({
   name,
   price,
+  previous,
   tagline,
   perMonth,
+  launchDiscount,
   features,
   featured,
   badge,
 }: {
   name: string;
   price: string;
+  previous?: string;
   tagline: string;
   perMonth: string;
+  launchDiscount?: string;
   features: string[];
   featured?: boolean;
   badge?: string;
@@ -446,7 +454,7 @@ function PricingCard({
       data-animate-item
       {...(featured ? { 'data-featured': '' } : {})}
       className={`pro-card pro-card-hover relative flex flex-col ${
-        featured ? 'border-primary shadow-[var(--shadow-sm)]' : ''
+        featured ? 'pro-card-max' : ''
       }`}
     >
       {badge && (
@@ -459,12 +467,25 @@ function PricingCard({
       )}
       <h3 className="text-lg font-semibold text-foreground">{name}</h3>
       <p className="mt-1 text-sm text-muted-foreground">{tagline}</p>
-      <div className="mt-4 flex items-baseline gap-1">
-        <span className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
-          {price}
-        </span>
-        {price !== '$0' && price !== '0 $' && (
-          <span className="text-sm text-muted-foreground">{perMonth}</span>
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-baseline gap-x-2">
+          <span className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
+            {price}
+          </span>
+          {previous && previous !== price && (
+            <s className="text-base text-muted-foreground line-through tabular-nums">
+              {previous.replace(/\s*\$\s*/g, '').trim()}
+            </s>
+          )}
+          {price !== '$0' && price !== '0 $' && (
+            <span className="text-sm text-muted-foreground">{perMonth}</span>
+          )}
+        </div>
+        {launchDiscount && previous && previous !== price && (
+          <span className="inline-flex shrink-0 flex-col text-right text-[10px] font-medium leading-tight text-primary">
+            <span>{launchDiscount.split(/\s+/).slice(0, -1).join(' ')}</span>
+            <span>{launchDiscount.split(/\s+/).at(-1)}</span>
+          </span>
         )}
       </div>
       <ul className="mt-6 flex-1 space-y-2.5">

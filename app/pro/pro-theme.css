@@ -251,6 +251,10 @@ html:has(.pro-theme) [data-sonner-toast] {
   box-shadow: var(--shadow-sm);
 }
 
+.pro-theme .pro-card.pro-card-max {
+  border: 2px solid hsl(var(--primary));
+}
+
 .pro-theme .pro-canvas {
   width: 100%;
   max-width: none;
@@ -480,6 +484,11 @@ html.pro-consent-open .pro-theme {
 .pro-theme .pro-card-hover:hover {
   border-color: hsl(var(--foreground) / 0.16);
   box-shadow: var(--shadow-sm);
+}
+
+.pro-theme .pro-card.pro-card-max:hover,
+.pro-theme .pro-card-hover.pro-card-max:hover {
+  border-color: hsl(var(--primary));
 }
 
 .pro-theme a,
