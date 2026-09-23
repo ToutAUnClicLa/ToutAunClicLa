@@ -187,19 +187,6 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <ProfilePageHeader
-        title={`${t('profile.general.welcome')} ${user.nombre.split(' ')[0]}`}
-        action={
-          <Button
-            className={cn('hidden sm:inline-flex', profileCtaClass())}
-            onClick={() => router.push(PROFILE.settings)}
-          >
-            <Edit className="mr-2 h-4 w-4" />
-            {t('profile.general.editProfile')}
-          </Button>
-        }
-      />
-
       <ProfileCard className="mb-6 p-5 sm:p-6">
         <div className="flex items-center gap-4">
           <Avatar className="h-14 w-14 sm:h-16 sm:w-16">
@@ -207,9 +194,9 @@ export default function ProfilePage() {
               {getUserInitials()}
             </AvatarFallback>
           </Avatar>
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 gap-2 flex flex-col">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="truncate font-semibold text-[var(--shop-ink)]">{user.nombre}</p>
+              <p className="truncate font-semibold text-[var(--shop-ink)]">Hola, {user.nombre}!</p>
               {user.verified ? (
                 <Badge className="border-0 bg-[var(--shop-purple-wash)] text-[var(--shop-purple)]">
                   <CheckCircle className="mr-1 h-3 w-3" />
@@ -222,12 +209,12 @@ export default function ProfilePage() {
                 </Badge>
               )}
             </div>
-            <div className="mt-1 flex flex-col gap-1 text-sm text-[var(--shop-muted)] sm:flex-row sm:gap-4">
-              <span className="inline-flex min-w-0 items-center gap-1.5 break-all">
+            <div className="mt-1 flex flex-col gap-2 text-xs md:text-sm text-[var(--shop-muted)] sm:flex-row sm:gap-4">
+              <span className="inline-flex min-w-0 items-center gap-1 break-all ">
                 <Mail className="h-3.5 w-3.5 shrink-0" />
                 {user.email}
               </span>
-              <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-1 ">
                 <Calendar className="h-3.5 w-3.5 shrink-0" />
                 {t('profile.general.memberSince')} {formatJoinDate(user.createdAt)}
               </span>
@@ -273,7 +260,7 @@ export default function ProfilePage() {
           className={cn('mt-4', profileOutlineClass())}
           onClick={() => {
             window.location.href =
-              'mailto:serviceclient@toutaunclicla.com?subject=Support&body=Hello, I need help with...';
+              'mailto:servicecli  ent@toutaunclicla.com?subject=Support&body=Hello, I need help with...';
           }}
         >
           {t('profile.general.contactSupport')}

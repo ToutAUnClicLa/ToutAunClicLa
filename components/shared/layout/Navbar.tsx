@@ -397,22 +397,21 @@ export function Navbar() {
             {/* Header del menú móvil — mismo alto y wordmark que el chrome */}
             <div className="relative h-[4.5rem] w-full shrink-0 border-b border-[var(--shop-hairline)] bg-white px-4">
               <div className="flex h-[4.5rem] items-center justify-between gap-2">
-                <Link
+                  <Link
                   href="/"
                   className={cn("flex min-h-11 shrink-0 items-center gap-0", shopChrome.focus)}
                   aria-label="Tout à un Clic Là"
-                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <img
                     src="/logoaunclic.svg"
                     alt=""
-                    className="h-[60px] w-[60px] shrink-0"
+                    className="h-[75px] w-[75px] shrink-0"
                     width="60"
                     height="60"
                   />
-                  <span className={cn(shopChrome.wordmark, "shrink-0")}>
+                  <span className={cn(shopChrome.wordmark, "shrink-0 -ml-[1em]")}>
                     <span className="text-sm font-medium text-[var(--shop-ink)] whitespace-nowrap sm:text-[15px]">Tout à un</span>
-                    <span className="text-sm font-bold text-[var(--shop-purple)] whitespace-nowrap sm:text-[15px]">Clic Là</span>
+                    <span className="text-sm font-extrabold text-[var(--shop-purple)] whitespace-nowrap sm:text-[15px]">Clic Là</span>
                   </span>
                 </Link>
                 <Button
