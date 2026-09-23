@@ -31,9 +31,9 @@ export const shopSection = {
 
 export type ShopSectionTone = keyof typeof shopSection;
 
-/** Food aisle banner — taller on mobile so overlay copy isn’t clipped. */
+/** Food aisle banner. Copy sits in the lower scrim; the cap keeps the plate visible. */
 export const shopBanner =
-  'relative overflow-hidden rounded-xl w-full min-h-[20rem] sm:min-h-0 sm:aspect-[16/7] sm:max-h-64 md:max-h-72 border border-[var(--shop-hairline)]';
+  'relative overflow-hidden rounded-xl w-full min-h-[22rem] sm:aspect-[16/7] sm:min-h-[18rem] sm:max-h-[22rem] md:max-h-[24rem] border border-[var(--shop-hairline)]';
 
 /** Souvenir tiles. */
 export const shopTile =

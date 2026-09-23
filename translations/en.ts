@@ -249,7 +249,7 @@ export default {
     hero: {
       title: "Discover Latin America",
       subtitle: "Authentic products and unique experiences",
-      description: "Connecting the Americas through authentic products and unique experiences. Delivery in Montreal and across the entire South Shore (Rive-Sud): Boucherville, Chambly, Saint-Bruno-de-Montarville and more.",
+      description: "Restaurants, professional services, and souvenirs in Montreal and the South Shore. Order food, find a professional, or pick a souvenir.",
       cta: "Register to enjoy all of the Americas"
     },
     workWithUs: {

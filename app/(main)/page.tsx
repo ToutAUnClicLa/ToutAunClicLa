@@ -10,7 +10,7 @@ import { loginPath } from '@/lib/shop-auth';
 import HomeSearchBar from '@/components/features/modules/search/HomeSearchBar';
 import WorkWithUsButton from '@/components/features/landing/WorkWithUsButton';
 import ServiceCard from '@/components/features/services/ServiceCard';
-import { shopBanner, shopChrome, shopCss, shopHeroFigure, shopSection, SHOP_HEADER_PX, type ShopSectionTone } from '@/lib/shop-theme';
+import { shopBanner, shopChrome, shopCss, shopSection, SHOP_HEADER_PX, type ShopSectionTone } from '@/lib/shop-theme';
 import { cn } from '@/lib/utils';
 
 interface SectionProps {
@@ -27,7 +27,7 @@ interface SectionProps {
 const Section = ({ title, description, icon: Icon, tone, children, id, kicker, cta }: SectionProps) => {
   const theme = shopSection[tone];
   return (
-    <section id={id} className={`scroll-mt-[5rem] border-t border-[var(--shop-hairline)] bg-white py-20 sm:py-24 lg:py-28 ${theme.wash}`}>
+    <section id={id} data-shop-reveal className={`scroll-mt-[5rem] border-t border-[var(--shop-hairline)] bg-white py-20 sm:py-24 lg:py-28 ${theme.wash}`}>
       <div className="container">
         <div className="mb-12 flex flex-col gap-6 md:mb-16 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
@@ -77,49 +77,24 @@ export default function Home() {
     }
   }, []);
 
-  // Función para formatear la descripción del hero con texto destacado
-  const formatHeroDescription = () => {
-    const description = t('landing.hero.description');
-
-    // Buscar y reemplazar los días de la semana en los diferentes idiomas
-    if (description.includes('sábado y domingo')) {
-      const parts = description.split('sábado y domingo');
-      return (
-        <>
-          {parts[0]}
-          <span className="font-semibold text-[var(--shop-purple)]">
-            sábado y domingo
-          </span>
-          {parts[1]}
-        </>
-      );
-    } else if (description.includes('Saturday and Sunday')) {
-      const parts = description.split('Saturday and Sunday');
-      return (
-        <>
-          {parts[0]}
-          <span className="font-semibold text-[var(--shop-purple)]">
-            Saturday and Sunday
-          </span>
-          {parts[1]}
-        </>
-      );
-    } else if (description.includes('samedi et dimanche')) {
-      const parts = description.split('samedi et dimanche');
-      return (
-        <>
-          {parts[0]}
-          <span className="font-semibold text-[var(--shop-purple)]">
-            samedi et dimanche
-          </span>
-          {parts[1]}
-        </>
-      );
-    }
-
-    // Si no encuentra los días, devolver el texto normal
-    return description;
-  };
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const nodes = document.querySelectorAll<HTMLElement>('[data-shop-reveal]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-in');
+        io.unobserve(entry.target);
+      });
+    }, { threshold: 0.12 });
+    nodes.forEach((node) => {
+      if (node.getBoundingClientRect().top >= window.innerHeight * 0.85) {
+        node.classList.add('shop-pending');
+      }
+      io.observe(node);
+    });
+    return () => io.disconnect();
+  }, []);
 
   // Función para scroll suave a las secciones considerando el navbar fijo
   const scrollToSection = (sectionId: string) => {
@@ -338,19 +313,28 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      <section className="relative overflow-hidden bg-white">
-        <div className="container relative grid items-center gap-12 pb-16 pt-10 sm:pb-20 sm:pt-14 lg:grid-cols-2 lg:gap-20 lg:pb-28 lg:pt-20">
+      <section data-shop-reveal className="relative isolate overflow-hidden">
+        <Image
+          src="/landing/hero/heroImg.webp"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-[var(--shop-ink)]/75" aria-hidden />
+        <div className="container relative pb-16 pt-10 sm:pb-20 sm:pt-14 lg:pb-28 lg:pt-20">
           <motion.div
-            className="shop-hero-motion min-w-0 text-left"
+            className="shop-hero-motion max-w-2xl text-left"
             initial={reduceMotion ? false : { opacity: 1, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={reduceMotion ? { duration: 0 } : { duration: 0.4, ease: 'easeOut' }}
           >
-            <h1 className="max-w-[11ch] text-[2.5rem] font-semibold leading-[1.05] tracking-tight text-[var(--shop-ink)] sm:text-5xl md:text-6xl lg:text-[4.5rem]">
+            <h1 className="max-w-[11ch] text-[2.5rem] font-semibold leading-[1.05] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-[4.5rem]">
               Tout à un Clic Là
             </h1>
-            <p className="mt-6 max-w-lg text-base leading-relaxed text-[var(--shop-muted)] sm:text-lg">
-              {formatHeroDescription()}
+            <p className="mt-6 max-w-lg text-base leading-relaxed text-white sm:text-lg">
+              {t('landing.hero.description')}
             </p>
             <div className="mt-8 w-full max-w-xl">
               <HomeSearchBar />
@@ -372,17 +356,6 @@ export default function Home() {
               })}
             </div>
           </motion.div>
-
-          <div className={`${shopHeroFigure} mx-auto lg:mx-0`}>
-            <Image
-              src="/imagenPrueba.jpeg"
-              alt=""
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
-              priority
-            />
-          </div>
         </div>
       </section>
 
@@ -480,27 +453,28 @@ export default function Home() {
           </Link>
         }
       >
-        <Link href="/comidas" className={cn('block', shopChrome.focus)}>
-          <div className={`${shopBanner} group`}>
+        <Link href="/comidas" className={cn('shop-press block rounded-xl', shopChrome.focus)}>
+          <div className={shopBanner}>
             <Image
-              src="/comidasPanamericanasDesktop.png"
-              alt={panamericanFood.name}
+              src="/landing/comidas/ComidasImg.webp"
+              alt=""
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 1200px"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-[var(--food-ink)]/45" />
-            <div className="absolute inset-0 flex flex-col justify-between p-5 sm:p-7">
-              <div>
-                <h3 className="text-xl font-semibold tracking-tight text-white sm:text-2xl md:text-3xl">
-                  {panamericanFood.name}
-                </h3>
-                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/95 sm:line-clamp-2 sm:text-base">
-                  {panamericanFood.description}
-                </p>
-              </div>
-              <span className={cn(shopChrome.cardGhostCta, 'mt-0')}>
+            <div
+              className="shop-food-scrim pointer-events-none absolute inset-0"
+              aria-hidden
+            />
+            <div className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-7">
+              <h3 className="text-xl font-semibold tracking-tight text-white sm:text-2xl md:text-3xl">
+                {panamericanFood.name}
+              </h3>
+              <p className="mt-2 max-w-2xl line-clamp-2 text-sm leading-relaxed text-white sm:text-base">
+                {panamericanFood.description}
+              </p>
+              <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-white">
                 {panamericanFood.viewText}
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </span>
@@ -529,19 +503,20 @@ export default function Home() {
       >
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-6">
           {services.map((service) => (
-            <ServiceCard
-              key={service.id}
-              icon={service.icon}
-              title={t(service.titleKey)}
-              description={t(service.descKey)}
-              subServices={service.subServices.map(key => t(key))}
-              comingSoonText={t('services.card.comingSoon')}
-              subServicesText={t('services.card.subservices')}
-              viewMoreText={t('services.card.viewMore')}
-              image={service.image}
-              variant="pro"
-              href={`/servicios/${service.id}`}
-            />
+            <div key={service.id} className="shop-press h-full">
+              <ServiceCard
+                icon={service.icon}
+                title={t(service.titleKey)}
+                description={t(service.descKey)}
+                subServices={service.subServices.map(key => t(key))}
+                comingSoonText={t('services.card.comingSoon')}
+                subServicesText={t('services.card.subservices')}
+                viewMoreText={t('services.card.viewMore')}
+                image={service.image}
+                variant="pro"
+                href={`/servicios/${service.id}`}
+              />
+            </div>
           ))}
         </div>
       </Section>
@@ -568,7 +543,7 @@ export default function Home() {
             <Link
               key={category.id}
               href={`/boutique?subcategoria=${category.subcategoria_id}`}
-              className={cn('group block h-full', shopChrome.focus)}
+              className={cn('shop-press group block h-full rounded-xl', shopChrome.focus)}
             >
               <article className="flex h-full flex-col overflow-hidden rounded-xl border border-[var(--shop-hairline)] bg-white">
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-[var(--shop-canvas-muted)]">

@@ -188,3 +188,49 @@ html {
     animation: none !important;
   }
 }
+
+/* Food banner: type sits in the lower third; the plate stays clear above ~60%. */
+.shop-food-scrim {
+  background: linear-gradient(
+    to top,
+    var(--shop-ink) 0%,
+    color-mix(in srgb, var(--shop-ink) 84%, transparent) 32%,
+    transparent 60%
+  );
+}
+
+@keyframes shop-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.shop-pending {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.shop-pending.is-in {
+  animation: shop-in 0.4s ease-out forwards;
+}
+
+.shop-press {
+  transition: transform 120ms ease-out;
+}
+
+.shop-press:active {
+  transform: scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-pending,
+  .shop-pending.is-in {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .shop-press,
+  .shop-press:active {
+    transition: none;
+    transform: none;
+  }
+}

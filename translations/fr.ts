@@ -249,7 +249,7 @@ export default {
     hero: {
       title: "Découvrez l'Amérique Latine",
       subtitle: "Produits authentiques et expériences uniques",
-      description: "Relier les Amériques grâce à des produits authentiques et des expériences uniques. Livraison à Montréal et dans toute la Rive-Sud : Boucherville, Chambly, Saint-Bruno-de-Montarville et plus.",
+      description: "Restaurants, services professionnels et souvenirs à Montréal et sur la Rive-Sud. Commandez à manger, trouvez un professionnel ou choisissez un souvenir.",
       cta: "Inscrivez-vous pour profiter de toutes les Amériques"
     },
     workWithUs: {
