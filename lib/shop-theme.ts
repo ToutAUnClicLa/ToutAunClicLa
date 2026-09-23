@@ -76,6 +76,8 @@ export const shopChrome = {
   /** Compact tags (search popular, directory langs) — not a 44px CTA. */
   filterChip:
     'inline-flex h-8 items-center rounded-full border border-[var(--shop-hairline)] bg-white px-3 text-[13px] font-medium leading-none text-[var(--shop-ink)] hover:border-[var(--shop-purple-muted)] hover:bg-[var(--shop-purple-wash)]',
+  filterChipFood: 
+    'inline-flex h-8 items-center rounded-full border border-[var(--shop-hairline)] bg-white px-3 text-[13px] font-medium leading-none text-[var(--shop-ink)] hover:border-[var(--food-accent)]',
   filterChipOn:
     'inline-flex h-8 items-center rounded-full border border-[var(--shop-purple)] bg-[var(--shop-purple)] px-3 text-[13px] font-medium leading-none text-white',
   aisleChipOnPurple:

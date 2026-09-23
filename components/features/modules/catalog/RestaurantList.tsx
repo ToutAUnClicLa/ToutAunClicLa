@@ -186,7 +186,7 @@ export function RestaurantList({ searchTerm = '' }: RestaurantListProps) {
                 'mt-5 w-full justify-center',
                 restaurant.disponible
                   ? cn(shopChrome.aisleCta, shopSection.food.cta)
-                  : cn(shopChrome.filterChip, 'h-11 min-h-11 text-[var(--shop-muted)]'),
+                  : cn(shopChrome.filterChipFood, 'h-11 min-h-11 text-[var(--shop-muted)]'),
                 shopSection.food.focus,
               )}
               onClick={(e) => {
