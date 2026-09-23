@@ -189,10 +189,11 @@ html {
   }
 }
 
-/* Home hero fills the viewport under the fixed 4.5rem header (main already pads that). */
+/* Home hero fills the viewport under the fixed 4.5rem header (main already pads that).
+   svh stays put when the mobile URL bar shows or hides; dvh rescales the cover photo. */
 .shop-hero {
   min-height: calc(100vh - 4.5rem);
-  min-height: calc(100dvh - 4.5rem);
+  min-height: calc(100svh - 4.5rem);
 }
 
 /* Warm apricot wash. Light enough to keep the photo; even so navy type still reads. */
