@@ -85,8 +85,8 @@ export function Footer() {
       <div className="container pt-16 pb-10 sm:pt-20">
         <div className="mb-12 flex items-center">
           <img
-                src="/logotoutaunclic.png"
-                alt=""
+                src="/icons/logo.png"
+                alt="logo toutaunclicla"
                 className="h-[60px] w-[60px] shrink- rounded-full"
                 width="60"
                 height="60"

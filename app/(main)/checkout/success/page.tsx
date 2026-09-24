@@ -68,10 +68,11 @@ export default function SuccessPage() {
       console.log('✅ Estado del pedido obtenido:', data)
       setOrderData(data)
       
-      // Limpiar carrito local si el pago fue exitoso
-      if (data.payment_status === 'paid') {
+      // El webhook vacía el carrito DESPUÉS de persistir el pedido.
+      // No borrar en DB aquí si aún no hay orden: Apple Pay gana esa carrera.
+      if (data.payment_status === 'paid' && data.order) {
         await clearCart()
-        console.log('🛒 Carrito limpiado tras pago exitoso')
+        console.log('🛒 Carrito limpiado tras pedido persistido')
       }
       
     } catch (err: any) {
