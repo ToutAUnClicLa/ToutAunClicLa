@@ -185,17 +185,17 @@ export function Navbar() {
           <div className="flex h-[4.5rem] min-w-0 flex-nowrap items-center gap-1.5 sm:gap-3">
             <Link
               href="/"
-              className={cn("flex min-h-11 shrink-0 items-center gap-0", shopChrome.focus)}
+              className={cn("flex min-h-11 shrink-0 items-center gap-2", shopChrome.focus)}
               aria-label="Tout à un Clic Là"
             >
               <img
-                src="/logoaunclic.svg"
+                src="/icons/logo.png"
                 alt=""
-                className="h-[75px] w-[75px] shrink-0"
+                className="h-[60px] w-[60px] shrink-0 object-contain"
                 width="60"
                 height="60"
               />
-              <span className={cn(shopChrome.wordmark, "shrink-0 -ml-[1em]")}>
+              <span className={cn(shopChrome.wordmark, "shrink-0")}>
                 <span className="text-sm font-medium text-[var(--shop-ink)] whitespace-nowrap sm:text-[15px]">Tout à un</span>
                 <span className="text-sm font-extrabold text-[var(--shop-purple)] whitespace-nowrap sm:text-[15px]">Clic Là</span>
               </span>
@@ -399,17 +399,17 @@ export function Navbar() {
               <div className="flex h-[4.5rem] items-center justify-between gap-2">
                   <Link
                   href="/"
-                  className={cn("flex min-h-11 shrink-0 items-center gap-0", shopChrome.focus)}
+                  className={cn("flex min-h-11 shrink-0 items-center gap-2", shopChrome.focus)}
                   aria-label="Tout à un Clic Là"
                 >
                   <img
-                    src="/logoaunclic.svg"
+                    src="/icons/logo.png"
                     alt=""
-                    className="h-[75px] w-[75px] shrink-0"
+                    className="h-[60px] w-[60px] shrink-0 object-contain"
                     width="60"
                     height="60"
                   />
-                  <span className={cn(shopChrome.wordmark, "shrink-0 -ml-[1em]")}>
+                  <span className={cn(shopChrome.wordmark, "shrink-0")}>
                     <span className="text-sm font-medium text-[var(--shop-ink)] whitespace-nowrap sm:text-[15px]">Tout à un</span>
                     <span className="text-sm font-extrabold text-[var(--shop-purple)] whitespace-nowrap sm:text-[15px]">Clic Là</span>
                   </span>

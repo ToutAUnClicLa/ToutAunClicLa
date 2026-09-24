@@ -51,7 +51,7 @@ export function ShopAuthShell({
       <div className="mx-auto w-full max-w-md px-4 py-10 sm:py-14">
         <div className="flex items-start gap-3 sm:gap-4">
           <img
-            src="/logoToutAUnClic.png"
+            src="/icons/logo.png"
             alt=""
             width={56}
             height={56}

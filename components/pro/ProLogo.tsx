@@ -5,7 +5,7 @@ export function ProLogo({ className }: { className?: string }) {
   return (
     <span className={cn('inline-flex items-center gap-2 font-semibold tracking-tight', className)}>
       <Image
-        src="/logoaunclic.svg"
+        src="/icons/logo.png"
         alt="Tout À Un Clic Là"
         width={32}
         height={32}
