@@ -15,9 +15,9 @@ const organizationData: SchemaType = {
   "url": "https://www.toutaunclicla.com",
   "logo": {
     "@type": "ImageObject",
-    "url": "https://www.toutaunclicla.com/logoaunclic.svg",
-    "width": 180,
-    "height": 60
+    "url": "https://www.toutaunclicla.com/icons/logo.png",
+    "width": 1080,
+    "height": 1080
   },
   "description": "Tienda online especializada en productos latinoamericanos auténticos en Montreal. Alimentos, artesanías, ropa y más con entrega a domicilio en Quebec y Canadá.",
   "sameAs": [

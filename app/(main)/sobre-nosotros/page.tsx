@@ -59,7 +59,7 @@ export default function SobreNosotrosPage() {
             <div className="mb-6 sm:mb-8">
               <div className="inline-flex p-3 sm:p-4 rounded-2xl bg-white backdrop-blur-md border border-white/20">
                 <Image 
-                  src="/logoaunclic.svg" 
+                  src="/icons/logo.png" 
                   alt="ToutAunClicLa Logo" 
                   width={80} 
                   height={80} 

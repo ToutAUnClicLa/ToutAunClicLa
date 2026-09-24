@@ -37,7 +37,7 @@ export function StructuredData({ type, product, products, categoryName }: Struct
           "name": "Tout à un Clic LA",
           "description": t('footer.about.description'),
           "url": "https://www.toutaunclicla.com",
-          "logo": "https://www.toutaunclicla.com/logo.png",
+          "logo": "https://www.toutaunclicla.com/icons/logo.png",
           "contactPoint": {
             "@type": "ContactPoint",
             "telephone": "+1-514-123-4567",
