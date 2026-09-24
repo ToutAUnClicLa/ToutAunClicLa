@@ -19,7 +19,7 @@ export default {
     },
     grid: {
       title: "Explorez Nos Services",
-      subtitle: "Une sélection curée de professionnels prêts à vous aider."
+      subtitle: "Une sélection de professionnels prêts à vous aider."
     },
     card: {
       comingSoon: "Bientôt",
@@ -249,7 +249,7 @@ export default {
     hero: {
       title: "Découvrez l'Amérique Latine",
       subtitle: "Produits authentiques et expériences uniques",
-      description: "Relier les Amériques grâce à des produits authentiques et des expériences uniques. Livraison à Montréal et dans toute la Rive-Sud : Boucherville, Chambly, Saint-Bruno-de-Montarville et plus.",
+      description: "Restaurants, services professionnels et souvenirs à Montréal et sur la Rive-Sud. Commandez à manger, trouvez un professionnel ou choisissez un souvenir.",
       cta: "Inscrivez-vous pour profiter de toutes les Amériques"
     },
     workWithUs: {
@@ -584,6 +584,13 @@ export default {
       description: "Ajoutez des produits pour commencer vos achats !",
       exploreProducts: "Explorer les produits"
     },
+    error: {
+      title: "Erreur du panier",
+      description: "Impossible de charger votre panier. Réessayez.",
+      retry: "Réessayer",
+      reload: "Recharger la page",
+      details: "Détails de l'erreur (développement)"
+    },
     categories: {
       productos: "Produits",
       comidas: "Cuisine",
@@ -677,6 +684,7 @@ export default {
       notesOptional: "optionnel",
       apply: "Appliquer les changements",
       applying: "Application...",
+      addressRequired: "Ajoutez une adresse pour confirmer la livraison.",
       estimatedTime: "Temps de livraison estimé: 30-45 minutes une fois la commande confirmée",
       success: "Options de livraison mises à jour",
       schedule: "Livraisons disponibles de 11h00 à 21h00 tous les jours",
@@ -690,7 +698,8 @@ export default {
     success: {
       quantityUpdated: "Quantité mise à jour",
       productRemoved: "Produit supprimé",
-      cartCleared: "Panier vidé"
+      cartCleared: "Panier vidé",
+      addressAdded: "Adresse ajoutée. Mise à jour du panier..."
     },
     promotions: {
       maisonPoulet: {
@@ -713,7 +722,12 @@ export default {
       emptyCart: "Votre panier est vide",
       deliveryMethodRequired: "Vous devez sélectionner une méthode de livraison",
       sessionExpired: "Session expirée. Veuillez vous reconnecter",
-      couponError: "Erreur avec le coupon appliqué. Veuillez appliquer le coupon à nouveau."
+      couponError: "Erreur avec le coupon appliqué. Veuillez appliquer le coupon à nouveau.",
+      notDeliverable: "Cette adresse n'est pas disponible pour le moment.",
+      addressNotReady: "L'adresse n'est pas encore prête. Réessayez dans quelques secondes.",
+      addressVerifyFailed: "Impossible de vérifier l'adresse. Réessayez.",
+      checkoutFailed: "Le paiement n'a pas pu être traité. Réessayez.",
+      couponWithMessage: "Erreur de coupon : {message}"
     },
     nonTaxable: "Non taxable",
     variationDetails: {
@@ -728,7 +742,10 @@ export default {
       savingsShipping: "Économies sur la livraison",
       unavailable: "Nous mettons notre système à jour. Le paiement est temporairement indisponible.",
       closedToday: "Nous ne recevons pas de commandes aujourd'hui ! Consulte nos horaires sur @toutaunclicla",
-      cutoff: "21 h est l'heure limite de commande (heure de Montréal, Canada). Consultez nos horaires sur Instagram @toutaunclicla"
+      cutoff: "21 h est l'heure limite de commande (heure de Montréal, Canada). Consultez nos horaires sur Instagram @toutaunclicla",
+      verifyingAddress: "Vérification de l'adresse...",
+      processingAddress: "Traitement de l'adresse...",
+      estimated: "estimé"
     },
     notifications: {
       networkError: "Pas de connexion internet. Vérifiez votre connexion.",
@@ -843,6 +860,8 @@ export default {
       add: "Ajouter",
       deliveryInfo: "Livraisons dans la région métropolitaine de Montréal",
       deliveryNote: "Nous validons que l'adresse se trouve dans la région métropolitaine de Montréal",
+      syncing: "Synchronisation...",
+      firstCreated: "Première adresse créée et sélectionnée. Vous pouvez payer.",
       montrealOnly: "Adresses de la région métropolitaine de Montréal seulement",
       validationNote: "Nous validons que la ville est Montréal et que le code postal est valide (H1A-H5B)"
     },
@@ -1010,7 +1029,52 @@ export default {
       invalidId: "ID de commande invalide",
       downloadInvoice: "Fonction de téléchargement bientôt disponible",
       cancelOrder: "Fonction d'annulation bientôt disponible",
-      trackOrder: "Fonction de suivi bientôt disponible"
+      trackOrder: "Fonction de suivi bientôt disponible",
+      loading: "Chargement des détails de la commande...",
+      loadError: "Impossible de charger cette commande",
+      notFound: "Commande introuvable",
+      notFoundDesc: "Cette commande n'existe pas ou vous n'y avez pas accès.",
+      backToOrders: "Retour aux commandes",
+      placedOn: "Passée le {date}",
+      products: "Articles ({count})",
+      quantity: "Qté",
+      unitPrice: "Prix",
+      shippingAddress: "Adresse de livraison",
+      phone: "Téléphone",
+      shippingStatus: "État de l'expédition",
+      progress: "Progression",
+      stages: {
+        orderPlaced: "Commande passée",
+        paymentConfirmed: "Paiement confirmé",
+        processing: "En cours",
+        shipped: "Expédiée",
+        delivered: "Livrée"
+      },
+      summary: "Récapitulatif",
+      subtotal: "Sous-total",
+      shipping: "Livraison",
+      discount: "Remise",
+      total: "Total",
+      paymentInfo: "Paiement",
+      paymentMethod: "Mode de paiement",
+      paymentDate: "Date de paiement",
+      refunded: "Remboursée",
+      actionsTitle: "Actions",
+      downloadInvoiceBtn: "Télécharger la facture",
+      contactSupport: "Contacter le support",
+      cancelOrderBtn: "Annuler la commande",
+      notes: "Notes de commande",
+      noteDelivery: "Livraison",
+      noteCoupon: "Coupon",
+      noteShippingInfo: "Expédition",
+      noteMethod: "Méthode",
+      noteCode: "Code",
+      noteType: "Type",
+      noteShippingSavings: "Économie sur la livraison",
+      noteShippingCost: "Frais de livraison",
+      noteDoor: "Porte",
+      noteFreeShipping: "Livraison gratuite",
+      noteFreeShippingCoupon: "Livraison gratuite appliquée avec le coupon"
     }
   },
 
@@ -1424,6 +1488,7 @@ export default {
     emailInvalid: "E-mail invalide",
     passwordRequired: "Le mot de passe est requis",
     passwordInvalid: "Le mot de passe doit contenir au moins 6 caractères, une lettre et un chiffre",
+    passwordMin8: "Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre",
     passwordsMismatch: "Les mots de passe ne correspondent pas",
     nameRequired: "Le nom est requis",
     emailAlreadyExists: "Cet e-mail est déjà enregistré. Essayez de vous connecter.",
@@ -1455,6 +1520,7 @@ export default {
     checkEmailForNewCode: "Vérifiez votre e-mail pour le nouveau code",
     resendCodeError: "Erreur lors du renvoi du code",
     emailNotFoundForVerification: "E-mail introuvable pour la vérification",
+    verifyEmailMissing: "Il manque l’e-mail pour vérifier le compte.",
     emailNotFoundForResend: "E-mail introuvable pour renvoyer le code",
     enterSixDigitCode: "Entrez le code à 6 chiffres",
     verificationSuccess: "E-mail vérifié !",
@@ -2662,6 +2728,7 @@ export default {
         title: "Un prix en dollars canadiens.",
         subtitle: "Pas de surprise, pas de USD. Annule quand tu veux.",
         perMonth: "/mois",
+        launchDiscount: "Rabais de lancement",
         badgeRecommended: "Recommandé",
         seeAll: "Voir tous les plans",
         free: {
@@ -2676,6 +2743,7 @@ export default {
         pro: {
           name: "Pro",
           price: "25 $",
+          previous: "35 $",
           tagline: "Ta carte digitale complète.",
           f1: "Carte digitale + Apple Wallet et AirDrop",
           f2: "Profil public avec URL unique",
@@ -2686,12 +2754,13 @@ export default {
         max: {
           name: "Max",
           price: "45 $",
+          previous: "55 $",
           tagline: "Visibilité et outils au maximum.",
           f1: "Tout ce qu'inclut Pro",
           f2: "En vedette dans ta catégorie",
-          f3: "Galerie de projets",
+          f3: "Galerie de projets (Bientôt disponible)",
           f4: "Réseaux sociaux illimités",
-          f5: "Statistiques avancées + carte NFC"
+          f5: "Statistiques avancées"
         }
       },
       testimonials: {
@@ -2984,7 +3053,7 @@ export default {
       trialOnceNote: "L'essai gratuit de 7 jours est valable une seule fois. Si tu l'as déjà utilisé, l'abonnement est facturé immédiatement.",
       monthly: "Mensuel",
       yearly: "Annuel",
-      yearlyNote: "· 2 mois gratuits",
+      yearlyNote: "Économise 50 $ par an",
       perMonth: "mois",
       perYear: "an",
       recommended: "Recommandé",
@@ -3020,10 +3089,9 @@ export default {
           f1: "Tout ce qu'inclut Pro",
           f2: "En vedette en premier dans ta catégorie",
           f3: "Bannière publicitaire",
-          f4: "Galerie de projets",
+          f4: "Galerie de projets (Bientôt disponible)",
           f5: "Réseaux sociaux illimités",
-          f6: "Statistiques avancées",
-          f7: "1 carte physique NFC incluse"
+          f6: "Statistiques avancées"
         }
       }
     },

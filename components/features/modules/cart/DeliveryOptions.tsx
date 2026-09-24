@@ -95,7 +95,7 @@ export default function DeliveryOptionsComponent({
   showAddressNote = false
 }: DeliveryOptionsComponentProps) {
   const { t } = useTranslation();
-  const { updateDeliveryOptions } = useCart();
+  const { updateDeliveryOptions } = useCart({ skipSessionInit: true });
 
   const [deliveryOptions, setDeliveryOptions] = useState<DeliveryOptions>({
     metodoEntrega: 'puerta',
@@ -239,38 +239,35 @@ export default function DeliveryOptionsComponent({
   }, [debounceTimer]);
 
   return (
-    <Card className={`w-full ${className || 'border-gray-200 shadow-sm'}`}>
+    <Card className={`w-full ${className || 'border-[var(--shop-hairline)] bg-white shadow-none'}`}>
       <CardHeader className="pb-3 sm:pb-4">
-        <CardTitle className="flex items-center gap-2 text-base sm:text-lg font-semibold text-gray-900">
-          <div className="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-            <Truck className="h-4 w-4 text-indigo-600" />
+        <CardTitle className="flex items-center gap-2 text-base font-semibold text-[var(--shop-ink)] sm:text-lg">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[var(--shop-purple-wash)]">
+            <Truck className="h-4 w-4 text-[var(--shop-purple)]" />
           </div>
           {t('cart.delivery.title')}
         </CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-4 sm:space-y-5">
-        {/* Aviso de dirección si es necesario */}
         {showAddressNote && (
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-700">
+          <div className="rounded-xl border border-[var(--shop-hairline)] bg-[var(--shop-canvas-muted)] p-3">
+            <p className="text-sm text-[var(--shop-ink)]">
               {t('cart.delivery.addressRequired')}
             </p>
           </div>
         )}
 
-        {/* Tiempo estimado de entrega */}
-        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm text-green-700 flex items-center gap-2">
-            <Clock className="h-4 w-4" />
+        <div className="rounded-xl border border-[var(--shop-hairline)] bg-white p-3">
+          <p className="flex items-center gap-2 text-sm text-[var(--shop-muted)]">
+            <Clock className="h-4 w-4 text-[var(--shop-purple)]" />
             {t('cart.delivery.estimatedTime')}
           </p>
         </div>
 
-        {/* Método de entrega */}
         <div className="space-y-2">
-          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-            <Truck className="h-4 w-4 text-gray-500" />
+          <Label className="flex items-center gap-2 text-sm font-medium text-[var(--shop-ink)]">
+            <Truck className="h-4 w-4 text-[var(--shop-muted)]" />
             {t('cart.delivery.methodLabel')}
           </Label>
 
@@ -281,23 +278,23 @@ export default function DeliveryOptionsComponent({
                 whileHover={{ scale: disabled ? 1 : 1.01 }}
                 whileTap={{ scale: disabled ? 1 : 0.98 }}
                 type="button"
-                className={`w-full p-3 sm:p-4 rounded-lg border-2 text-left transition-all ${
+                className={`w-full rounded-xl border p-3 text-left sm:p-4 ${
                   deliveryOptions.metodoEntrega === method.value
-                    ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-500 ring-opacity-20'
-                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    ? 'border-[var(--shop-purple)] bg-[var(--shop-purple-wash)]'
+                    : 'border-[var(--shop-hairline)] bg-white hover:bg-[var(--shop-canvas-muted)]'
+                } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                 onClick={() => !disabled && handleOptionChange('metodoEntrega', method.value)}
                 disabled={disabled}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-xl sm:text-2xl flex-shrink-0">{method.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
+                  <span className="flex-shrink-0 text-xl sm:text-2xl">{method.icon}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
                       <div>
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">{method.title}</h4>
+                        <h4 className="text-sm font-medium text-[var(--shop-ink)] sm:text-base">{method.title}</h4>
                       </div>
                       {deliveryOptions.metodoEntrega === method.value && (
-                        <div className="flex-shrink-0 w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center">
+                        <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[var(--shop-purple)]">
                           <Check className="h-3 w-3 text-white" />
                         </div>
                       )}
@@ -309,12 +306,11 @@ export default function DeliveryOptionsComponent({
           </div>
         </div>
 
-        {/* Notas de entrega */}
         <div className="space-y-2">
-          <Label htmlFor="delivery-notes" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-            <MessageSquare className="h-4 w-4 text-gray-500" />
+          <Label htmlFor="delivery-notes" className="flex items-center gap-2 text-sm font-medium text-[var(--shop-ink)]">
+            <MessageSquare className="h-4 w-4 text-[var(--shop-muted)]" />
             {t('cart.delivery.notesLabel')}
-            <span className="text-xs text-gray-500">({t('cart.delivery.notesOptional')})</span>
+            <span className="text-xs text-[var(--shop-muted)]">({t('cart.delivery.notesOptional')})</span>
           </Label>
 
           <div className="relative">
@@ -352,7 +348,7 @@ export default function DeliveryOptionsComponent({
             <Button
               onClick={handleApplyChanges}
               disabled={disabled || isLoading || Object.keys(errors).length > 0}
-              className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all"
+              className="inline-flex h-11 min-h-11 w-full items-center justify-center rounded-full bg-[var(--shop-purple)] px-5 py-2.5 text-sm font-medium text-white hover:bg-[var(--shop-purple-hover)]"
             >
               {isLoading ? t('cart.delivery.applying') : t('cart.delivery.apply')}
             </Button>

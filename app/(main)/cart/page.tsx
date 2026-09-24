@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { ShoppingCart, ShoppingBag, Trash2, Plus, Minus, Package, Utensils, Store, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
+import { ShoppingCart, ShoppingBag, Trash2, Plus, Minus, Package, Utensils, Store, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
 import { Badge } from '@/components/common/ui/badge';
 import { Card, CardContent } from '@/components/common/ui/card';
@@ -12,12 +12,15 @@ import { Separator } from '@/components/common/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { useAddresses } from '@/hooks/useAddresses';
-import AuthModal from '@/components/features/auth/AuthModal';
+import { loginPath } from '@/lib/shop-auth';
+import { shopChrome } from '@/lib/shop-theme';
+import { cn } from '@/lib/utils';
 import { AddressSelector } from '@/components/features/modules/cart/AddressSelector';
 import DeliveryOptions from '@/components/features/modules/cart/DeliveryOptions';
 import { CouponInput } from '@/components/features/modules/cart/CouponInput';
 import { ShippingStatus } from '@/components/features/modules/cart/ShippingStatus';
 import { CartErrorBoundary } from '@/components/features/modules/cart/CartErrorBoundary';
+import { CartPageSkeleton } from '@/components/features/modules/cart/CartPageSkeleton';
 import { toast } from 'sonner';
 import { CartItem } from '@/lib/services/cart';
 import type { DeliveryOptions as DeliveryOptionsType } from '@/lib/services/cart';
@@ -26,33 +29,9 @@ import { verifyAddressForCheckout } from '@/lib/services/addresses';
 
 // Mapeo de categorías con estilos modernos
 const getCategoryMap = (t: any) => ({
-  productos: {
-    name: t('cart.categories.productos'),
-    icon: Package,
-    color: 'text-indigo-600',
-    bgColor: 'bg-gradient-to-r from-indigo-50 to-indigo-100',
-    borderColor: 'border-indigo-200',
-    badgeColor: 'bg-indigo-100 text-indigo-700',
-    iconBg: 'bg-indigo-100'
-  },
-  comidas: {
-    name: t('cart.categories.comidas'),
-    icon: Utensils,
-    color: 'text-amber-600',
-    bgColor: 'bg-gradient-to-r from-amber-50 to-amber-100',
-    borderColor: 'border-amber-200',
-    badgeColor: 'bg-amber-100 text-amber-700',
-    iconBg: 'bg-amber-100'
-  },
-  boutique: {
-    name: t('cart.categories.boutique'),
-    icon: Store,
-    color: 'text-purple-600',
-    bgColor: 'bg-gradient-to-r from-purple-50 to-purple-100',
-    borderColor: 'border-purple-200',
-    badgeColor: 'bg-purple-100 text-purple-700',
-    iconBg: 'bg-purple-100'
-  }
+  productos: { name: t('cart.categories.productos'), icon: Package },
+  comidas: { name: t('cart.categories.comidas'), icon: Utensils },
+  boutique: { name: t('cart.categories.boutique'), icon: Store }
 });
 
 // Función para determinar la categoría de un item
@@ -90,12 +69,13 @@ export default function CartPage() {
     removeFromCart,
     clearCart,
     isEmpty,
-    refreshCart,
+    loadCart,
+    hasLoadedOnce,
     applyCoupon,
     removeCoupon,
     appliedCoupon,
     summary
-  } = useCart();
+  } = useCart({ skipSessionInit: true });
 
   const {
     selectedAddress,
@@ -107,7 +87,6 @@ export default function CartPage() {
     refreshAddresses
   } = useAddresses();
 
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [verifyingAddress, setVerifyingAddress] = useState(false);
@@ -133,7 +112,7 @@ export default function CartPage() {
         toast.error(t('auth.requiredForCart'));
         hasNotifiedAuth.current = true;
       }
-      router.push('/?auth=login');
+      router.push(loginPath('/cart'));
     } else if (isAuthenticated) {
       // Resetear el ref si el usuario se autentica
       hasNotifiedAuth.current = false;
@@ -265,19 +244,17 @@ export default function CartPage() {
   // 🚨 REMOVED: renderShippingDisplay - replaced with ShippingStatus component
   // This function is no longer needed as ShippingStatus component handles all shipping display logic
 
-  // Efecto para cargar el carrito inicial y cuando cambia la dirección principal
-  useEffect(() => {
-    if (isAuthenticated) {
-      console.log('🔄 Cargando carrito inicial:', {
-        isAuthenticated,
-        hasSelectedAddress: !!selectedAddress?.id,
-        hasCoupon: !!appliedCoupon
-      });
+  const startedCartLoad = useRef(false);
 
-      // Cargar carrito inicial o cuando cambia dirección válida
-      refreshCart();
+  useEffect(() => {
+    if (!isAuthenticated) {
+      startedCartLoad.current = false;
+      return;
     }
-  }, [isAuthenticated, selectedAddress?.id, refreshCart, appliedCoupon]);
+    if (startedCartLoad.current) return;
+    startedCartLoad.current = true;
+    void loadCart(false);
+  }, [isAuthenticated, loadCart]);
 
   // Efecto para reiniciar opciones de entrega cuando cambia la dirección
   useEffect(() => {
@@ -310,25 +287,8 @@ export default function CartPage() {
       timestamp: new Date().toISOString()
     });
 
-    // SIEMPRE actualizar el estado, incluso si parece igual (para forzar re-renders)
     setHasValidAddress(addressValid);
-
-    // 🚨 CRITICAL: Si se habilitó una dirección válida, refrescar carrito INMEDIATAMENTE
-    if (addressValid && (!hasValidAddress || hasValidAddress !== addressValid)) {
-      console.log('🚨 DIRECCIÓN VÁLIDA DETECTADA - REFRESCANDO CARRITO INMEDIATAMENTE');
-
-      // Múltiples intentos para asegurar éxito
-      setTimeout(async () => {
-        try {
-          console.log('🔄 REFRESCANDO carrito por dirección válida...');
-          await refreshCart();
-          console.log('✅ Carrito refrescado por dirección válida');
-        } catch (error) {
-          console.error('❌ Error refrescando carrito por dirección válida:', error);
-        }
-      }, 100);
-    }
-  }, [isAuthenticated, hasAddresses, addresses?.length, selectedAddress?.id, selectedAddress?.city, selectedAddress?.isPrimary, hasValidAddress, refreshCart]);
+  }, [isAuthenticated, hasAddresses, addresses?.length, selectedAddress?.id, selectedAddress?.city, selectedAddress?.isPrimary]);
 
   // 🚨 CRITICAL FIX: Listener sincronizado para cambios de direcciones
   useEffect(() => {
@@ -360,23 +320,10 @@ export default function CartPage() {
 
         // Para direcciones recién creadas, mostrar feedback al usuario
         if (action === 'created' || action === 'creada' || action === 'primera dirección creada') {
-          toast.success('Dirección agregada. Actualizando carrito...', {
+          toast.success(t('cart.success.addressAdded'), {
             duration: 2000,
           });
-
-          // 🚨 CRITICAL: Refresh both addresses and cart for complete sync
-          setTimeout(async () => {
-            console.log('🏠 PÁGINA CARRITO: Refrescando direcciones y carrito después de creación');
-            try {
-              // First refresh addresses to get the new selection
-              await refreshAddresses();
-              // Then refresh cart with the new address
-              await refreshCart();
-              console.log('✅ Direcciones y carrito refrescados exitosamente');
-            } catch (error) {
-              console.error('❌ Error refrescando:', error);
-            }
-          }, 100); // Reduced delay for immediate feedback
+          void refreshAddresses();
         }
       }
     };
@@ -392,14 +339,8 @@ export default function CartPage() {
         window.removeEventListener('addressChanged', handleAddressChange);
       }
     };
-  }, [appliedCoupon, applyCoupon, refreshCart, refreshAddresses]);
+  }, [refreshAddresses, t]);
 
-  // Mostrar modal de autenticación si no está autenticado
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      setShowAuthModal(true);
-    }
-  }, [isAuthenticated, isLoading]);
 
   // Agrupar items por categoría
   const groupedItems = useMemo(() => {
@@ -502,7 +443,7 @@ export default function CartPage() {
     }
 
     if (!isAuthenticated) {
-      setShowAuthModal(true);
+      router.push(loginPath('/cart'));
       return;
     }
 
@@ -516,7 +457,7 @@ export default function CartPage() {
 
     // Bloquear si la ubicación está fuera de la zona de cobertura
     if (notDeliverable) {
-      toast.error(shippingMessage || 'No disponible esta ubicación por el momento!');
+      toast.error(shippingMessage || t('cart.errors.notDeliverable'));
       console.log('❌ Checkout blocked: location not deliverable (out of postal zone)');
       return;
     }
@@ -550,7 +491,7 @@ export default function CartPage() {
     // ✅ SIMPLIFIED: Verificar que hay dirección seleccionada  
     if (!selectedAddress?.id) {
       console.log('⚠️ No hay dirección seleccionada para checkout');
-      toast.error('Por favor selecciona una dirección de envío');
+      toast.error(t('cart.errors.selectAddress'));
       return;
     }
 
@@ -572,7 +513,7 @@ export default function CartPage() {
 
       if (!isAddressReady) {
         console.error('❌ Dirección no verificada después de intentos, bloqueando checkout');
-        toast.error('La dirección no está lista aún. Por favor, intenta en unos segundos.');
+        toast.error(t('cart.errors.addressNotReady'));
         return;
       }
 
@@ -580,7 +521,7 @@ export default function CartPage() {
 
     } catch (verificationError) {
       console.error('❌ Error durante verificación de dirección:', verificationError);
-      toast.error('Error verificando la dirección. Por favor, intenta nuevamente.');
+      toast.error(t('cart.errors.addressVerifyFailed'));
       return;
 
     } finally {
@@ -621,7 +562,7 @@ export default function CartPage() {
       const token = localStorage.getItem('auth_token');
       if (!token) {
         toast.error(t('cart.errors.sessionExpired'));
-        setShowAuthModal(true);
+        router.push(loginPath('/cart'));
         return;
       }
 
@@ -744,9 +685,9 @@ export default function CartPage() {
         // Errores específicos de cupones
         if (data.message?.includes('coupon') || data.message?.includes('cupón')) {
           console.error('❌ Error relacionado con cupón:', data.message);
-          toast.error(`Error con el cupón: ${data.message}`);
+          toast.error(t('cart.errors.couponWithMessage', { message: data.message }));
         } else {
-          toast.error(data.message || data.error || 'Error creando sesión de checkout');
+          toast.error(data.message || data.error || t('cart.errors.checkoutFailed'));
         }
         return;
       }
@@ -786,7 +727,7 @@ export default function CartPage() {
 
     } catch (error: any) {
       console.error('❌ Error en checkout:', error);
-      toast.error(error.message || 'Error procesando el pago. Intenta nuevamente.');
+      toast.error(error.message || t('cart.errors.checkoutFailed'));
       setCheckoutLoading(false);
     }
   }, [
@@ -815,7 +756,7 @@ export default function CartPage() {
       badges.push(
         <Badge
           key="non-taxable"
-          className="bg-green-100 text-green-700 border-green-200 text-xs"
+          className="rounded-full border border-[var(--shop-hairline)] bg-white text-[var(--shop-ink)] text-xs"
         >
           {t('cart.nonTaxable')}
         </Badge>
@@ -827,7 +768,7 @@ export default function CartPage() {
       badges.push(
         <Badge
           key="tps"
-          className="bg-blue-100 text-blue-700 border-blue-200 text-xs"
+          className="rounded-full border border-[var(--shop-hairline)] bg-[var(--shop-purple-wash)] text-[var(--shop-purple)] text-xs"
         >
           +TPS: {item.productos.TPS}%
         </Badge>
@@ -839,7 +780,7 @@ export default function CartPage() {
       badges.push(
         <Badge
           key="tvq"
-          className="bg-purple-100 text-purple-700 border-purple-200 text-xs"
+          className="rounded-full border border-[var(--shop-hairline)] bg-[var(--shop-purple-wash)] text-[var(--shop-purple)] text-xs"
         >
           +TVQ: {item.productos.TVQ}%
         </Badge>
@@ -852,7 +793,7 @@ export default function CartPage() {
       badges.push(
         <Badge
           key="consigne"
-          className="bg-amber-100 text-amber-700 border-amber-200 text-xs"
+          className="rounded-full border border-[var(--shop-hairline)] bg-white text-[var(--shop-ink)] text-xs"
         >
           +Consigne: {formatPrice(consigneAmount)}
         </Badge>
@@ -888,11 +829,10 @@ export default function CartPage() {
         exit={{ opacity: 0, x: -100 }}
         transition={{ duration: 0.2 }}
       >
-        <Card className={`overflow-hidden transition-all duration-200 border-0 shadow-sm hover:shadow-md ${isItemLoading ? 'opacity-50' : ''}`}>
-          <CardContent className="p-3 sm:p-4 md:p-3">
-            <div className="flex gap-3 sm:gap-4 md:gap-6">
-              {/* Imagen del producto - responsive */}
-              <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg md:rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-sm">
+        <Card className={cn('overflow-hidden border border-[var(--shop-hairline)] bg-white shadow-none', isItemLoading && 'opacity-50')}>
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex gap-3 sm:gap-4">
+              <div className="relative h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 flex-shrink-0 overflow-hidden rounded-xl border border-[var(--shop-hairline)] bg-[var(--shop-canvas-muted)]">
                 <Image
                   src={item?.productos?.imagen_principal || '/placeholder-product.svg'}
                   alt={item?.productos?.nombre || 'Producto'}
@@ -906,40 +846,40 @@ export default function CartPage() {
                 />
               </div>
 
-              <div className="flex-1 min-w-0 space-y-2 sm:space-y-3">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1 pr-2 sm:pr-4">
-                    <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 mb-1 line-clamp-2">
+              <div className="min-w-0 flex-1 space-y-2 sm:space-y-3">
+                <div className="flex items-start justify-between">
+                  <div className="min-w-0 flex-1 pr-2 sm:pr-4">
+                    <h3 className="mb-1 line-clamp-2 text-sm font-semibold text-[var(--shop-ink)] sm:text-base md:text-lg">
                       {item?.productos?.nombre || 'Producto sin nombre'}
                     </h3>
 
 
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
+                    <p className="mb-1 text-xs text-[var(--shop-muted)] sm:mb-2 sm:text-sm">
                       {item?.productos?.categorias?.nombre || t('cart.noCategory')}
                     </p>
 
-                    <div className="flex items-center gap-2 sm:gap-4 mb-2">
-                      <div className="flex items-center gap-2">
+                    <div className="mb-2 flex flex-wrap items-center gap-2 sm:gap-4">
+                      <div className="flex flex-wrap items-center gap-2">
                         {hasDiscount && previousPrice > 0 && (
-                          <span className="text-xs text-gray-500 line-through">
+                          <span className="text-xs text-[var(--shop-muted)] line-through">
                             {formatPrice(previousPrice)}
                           </span>
                         )}
                         {hasDiscount && (
-                          <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">
+                          <Badge className="rounded-full border-0 bg-[var(--shop-purple-wash)] text-[10px] text-[var(--shop-purple)]">
                             -{discountPercentage}%
                           </Badge>
                         )}
-                        <span className="text-sm sm:text-base md:text-lg font-bold text-indigo-600">
+                        <span className="text-sm font-semibold text-[var(--shop-purple)] sm:text-base md:text-lg">
                           {formatPrice(finalUnitPrice)}
                         </span>
                         {item?.productos?.ecoprecio && (
-                          <span className="text-xs text-emerald-600 font-medium">
+                          <span className="text-xs font-medium text-[var(--shop-muted)]">
                             {t('cart.ecoFee')}
                           </span>
                         )}
                       </div>
-                      <span className="text-xs sm:text-sm text-gray-500">
+                      <span className="text-xs text-[var(--shop-muted)] sm:text-sm">
                         {t('cart.perUnit')}
                       </span>
                     </div>
@@ -956,26 +896,26 @@ export default function CartPage() {
                       size="sm"
                       onClick={() => handleRemoveItem(item.id)}
                       disabled={isItemLoading}
-                      className="h-6 w-6 sm:h-8 sm:w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                      className={cn('h-11 w-11 p-0 text-[var(--shop-muted)] hover:bg-[var(--shop-canvas-muted)] hover:text-[var(--shop-ink)]', shopChrome.focus)}
                     >
-                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="flex items-center border rounded-lg">
+                    <div className="flex items-center rounded-full border border-[var(--shop-hairline)] bg-white">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleQuantityChange(item.id, (item.cantidad ?? 1) - 1)}
                         disabled={isItemLoading || (item.cantidad ?? 1) <= 1}
-                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 rounded-r-none"
+                        className={cn('h-11 w-11 rounded-l-full p-0', shopChrome.focus)}
                       >
-                        <Minus className="h-3 w-3" />
+                        <Minus className="h-3.5 w-3.5" />
                       </Button>
-                      <span className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium min-w-[2rem] sm:min-w-[3rem] text-center">
+                      <span className="min-w-[2rem] px-2 text-center text-sm font-medium text-[var(--shop-ink)] sm:min-w-[3rem]">
                         {item.cantidad ?? 0}
                       </span>
                       <Button
@@ -983,18 +923,18 @@ export default function CartPage() {
                         size="sm"
                         onClick={() => handleQuantityChange(item.id, (item.cantidad ?? 0) + 1)}
                         disabled={isItemLoading || (item.cantidad ?? 0) >= (item?.productos?.stock ?? 0)}
-                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 rounded-l-none"
+                        className={cn('h-11 w-11 rounded-r-full p-0', shopChrome.focus)}
                       >
-                        <Plus className="h-3 w-3" />
+                        <Plus className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   </div>
 
                   <div className="text-right">
-                    <p className="text-sm sm:text-base md:text-lg font-bold text-gray-900">
+                    <p className="text-sm font-semibold text-[var(--shop-ink)] sm:text-base md:text-lg">
                       {formatPrice(itemTotal)}
                     </p>
-                    <p className="text-xs sm:text-sm text-gray-500 hidden sm:block">
+                    <p className="hidden text-xs text-[var(--shop-muted)] sm:block sm:text-sm">
                       {item.cantidad ?? 0} × {formatPrice(item.productos.precio ?? 0)}
                     </p>
                   </div>
@@ -1018,24 +958,22 @@ export default function CartPage() {
 
     return (
       <div key={category} className="space-y-3 sm:space-y-4">
-        <div className={`${categoryInfo.bgColor} ${categoryInfo.borderColor} border-2 rounded-xl sm:rounded-2xl p-3 sm:p-4`}>
-          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-            <div className={`${categoryInfo.iconBg} p-1.5 sm:p-2 rounded-lg`}>
-              <IconComponent className={`w-4 h-4 sm:w-5 sm:h-5 ${categoryInfo.color}`} />
+        <div className="rounded-xl border border-[var(--shop-hairline)] bg-white p-3 sm:p-4">
+          <div className="mb-3 flex items-center gap-2 sm:mb-4 sm:gap-3">
+            <div className="rounded-full bg-[var(--shop-purple-wash)] p-2">
+              <IconComponent className="h-4 w-4 text-[var(--shop-purple)] sm:h-5 sm:w-5" />
             </div>
-            <div className="flex-1">
-              <h2 className={`text-lg sm:text-xl font-bold ${categoryInfo.color}`}>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg font-semibold text-[var(--shop-ink)] sm:text-xl">
                 {categoryInfo.name}
               </h2>
-              <p className="text-xs sm:text-sm text-gray-600">
+              <p className="text-xs text-[var(--shop-muted)] sm:text-sm">
                 {items.length} {items.length === 1 ? t('cart.product') : t('cart.products')}
               </p>
             </div>
-            <div className="ml-auto">
-              <Badge className={`${categoryInfo.badgeColor} border-0 text-xs sm:text-sm`}>
-                {items.reduce((sum, item) => sum + (item?.cantidad ?? 0), 0)} {t('cart.products')}
-              </Badge>
-            </div>
+            <Badge className="rounded-full border border-[var(--shop-hairline)] bg-white text-xs font-medium text-[var(--shop-ink)] sm:text-sm">
+              {items.reduce((sum, item) => sum + (item?.cantidad ?? 0), 0)} {t('cart.products')}
+            </Badge>
           </div>
 
           <div className="space-y-2 sm:space-y-3">
@@ -1053,15 +991,8 @@ export default function CartPage() {
     return null;
   }
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="text-gray-600">{t('cart.loading')}</p>
-        </div>
-      </div>
-    );
+  if (!hasLoadedOnce) {
+    return <CartPageSkeleton />;
   }
 
   return (
@@ -1070,27 +1001,26 @@ export default function CartPage() {
         console.error('🚨 Cart page error:', { error, errorInfo });
       }}
     >
-      <div className="min-h-screen bg-gray-50 ">
-        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
-          <div className="max-w-6xl mx-auto">
-            {/* Header responsive */}
-            <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
-              <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <div className="flex items-center gap-2 sm:gap-3">
+      <div className="bg-[var(--shop-canvas-muted)] text-[var(--shop-ink)]">
+        <div className="container mx-auto px-4 py-6 sm:py-8 md:py-10">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-6 rounded-xl border border-[var(--shop-hairline)] bg-white p-4 sm:mb-8 sm:p-6">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2 sm:gap-3">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => router.back()}
-                    className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full"
+                    className={cn('h-11 w-11 rounded-full p-0 hover:bg-[var(--shop-canvas-muted)]', shopChrome.focus)}
                   >
-                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <ArrowLeft className="h-5 w-5" />
                   </Button>
-                  <div className="p-1.5 sm:p-2 bg-indigo-100 rounded-lg">
-                    <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-indigo-600" />
+                  <div className="rounded-full bg-[var(--shop-purple-wash)] p-2">
+                    <ShoppingCart className="h-5 w-5 text-[var(--shop-purple)]" />
                   </div>
-                  <div>
-                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">{t('cart.title')}</h1>
-                    <p className="text-sm sm:text-base text-gray-600">
+                  <div className="min-w-0">
+                    <h1 className="text-lg font-semibold tracking-tight text-[var(--shop-ink)] sm:text-xl md:text-2xl">{t('cart.title')}</h1>
+                    <p className="text-sm text-[var(--shop-muted)]">
                       {totalQuantity} {totalQuantity === 1 ? t('cart.product') : t('cart.products')}
                     </p>
                   </div>
@@ -1098,28 +1028,28 @@ export default function CartPage() {
 
                 {!isEmpty && (
                   <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="text-right hidden sm:block">
-                      <p className="text-xs sm:text-sm text-gray-600">{t('cart.estimatedTotal')}</p>
-                      <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">
+                    <div className="hidden text-right sm:block">
+                      <p className="text-xs text-[var(--shop-muted)] sm:text-sm">{t('cart.estimatedTotal')}</p>
+                      <p className="text-lg font-semibold text-[var(--shop-purple)] sm:text-xl md:text-2xl">
                         {formatPrice(displaySubtotal + displayTaxes + displayConsigne)}
                       </p>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-[var(--shop-muted)]">
                         {notDeliverable ? (
-                          <span className="text-red-600 font-medium">
-                            {shippingMessage || 'No disponible esta ubicación por el momento!'}
+                          <span className="font-medium text-red-600">
+                            {shippingMessage || t('cart.errors.notDeliverable')}
                           </span>
                         ) : needsAddress ? (
-                          <span className="text-amber-600 font-medium">
+                          <span className="font-medium text-[var(--shop-purple)]">
                             {t('cart.summary.addressRequired')}
                           </span>
                         ) : finalShippingCost === 0 ? (
-                          <span className={isFreeShippingApplied ? 'text-green-600 font-medium' : ''}>
+                          <span className={isFreeShippingApplied ? 'font-medium text-[var(--shop-purple)]' : ''}>
                             {t('cart.freeShipping')}
                             {isFreeShippingApplied && ' ✓'}
                           </span>
                         ) : shippingMessage ? (
-                          <span className="text-orange-600">
-                            + {formatPrice(finalShippingCost)} {t('cart.shipping')} (estimado)
+                          <span>
+                            + {formatPrice(finalShippingCost)} {t('cart.shipping')} ({t('cart.checkout.estimated')})
                           </span>
                         ) : `+ ${formatPrice(finalShippingCost)} ${t('cart.shipping')}`}
                       </div>
@@ -1128,7 +1058,7 @@ export default function CartPage() {
                       variant="ghost"
                       size="sm"
                       onClick={handleClearCart}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 sm:h-10 sm:w-10 p-0"
+                      className={cn('h-11 w-11 p-0 text-[var(--shop-muted)] hover:bg-[var(--shop-canvas-muted)] hover:text-[var(--shop-ink)]', shopChrome.focus)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -1139,18 +1069,18 @@ export default function CartPage() {
 
             {/* Contenido principal */}
             {isEmpty ? (
-              <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 text-center">
-                <div className="max-w-md mx-auto">
-                  <div className="p-3 sm:p-4 bg-gray-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4">
-                    <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
+              <div className="rounded-xl border border-[var(--shop-hairline)] bg-white p-6 text-center sm:p-8">
+                <div className="mx-auto max-w-md">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-[var(--shop-hairline)] bg-[var(--shop-canvas-muted)]">
+                    <ShoppingBag className="h-6 w-6 text-[var(--shop-muted)]" />
                   </div>
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">{t('cart.empty.title')}</h3>
-                  <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+                  <h3 className="mb-2 text-base font-semibold text-[var(--shop-ink)] sm:text-lg">{t('cart.empty.title')}</h3>
+                  <p className="mb-6 text-sm text-[var(--shop-muted)] sm:text-base">
                     {t('cart.empty.description')}
                   </p>
                   <Button
                     onClick={() => router.push('/productos')}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base px-4 sm:px-6"
+                    className={shopChrome.inkCta}
                   >
                     {t('cart.empty.exploreProducts')}
                   </Button>
@@ -1169,35 +1099,35 @@ export default function CartPage() {
 
                 {/* Resumen del carrito - responsive */}
                 <div className="lg:col-span-1">
-                  <div className="bg-white rounded-lg sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 sticky top-20 sm:top-24">
-                    <div className="flex items-center gap-2 mb-4 sm:mb-6">
-                      <div className="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                        <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                  <div className="sticky top-20 rounded-xl border border-[var(--shop-hairline)] bg-white p-4 sm:top-24 sm:p-6">
+                    <div className="mb-4 flex items-center gap-2 sm:mb-6">
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[var(--shop-purple-wash)]">
+                        <ShoppingBag className="h-4 w-4 text-[var(--shop-purple)]" />
                       </div>
-                      <h3 className="text-base sm:text-xl font-semibold text-gray-900">{t('cart.summary.title')}</h3>
+                      <h3 className="text-base font-semibold text-[var(--shop-ink)] sm:text-xl">{t('cart.summary.title')}</h3>
                     </div>
 
                     <div className="space-y-3 sm:space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.subtotal')}</span>
-                        <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displaySubtotal)}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-[var(--shop-muted)] sm:text-base">{t('cart.summary.subtotal')}</span>
+                        <span className="text-sm font-medium text-[var(--shop-ink)] sm:text-base">{formatPrice(displaySubtotal)}</span>
                       </div>
-                      <div className="flex justify-between items-start gap-8">
-                        <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.shipping')}</span>
-                        <div className="text-right text-sm ">
+                      <div className="flex items-start justify-between gap-8">
+                        <span className="text-sm text-[var(--shop-muted)] sm:text-base">{t('cart.summary.shipping')}</span>
+                        <div className="text-right text-sm">
                           <ShippingStatus summary={summary} variant="inline" />
                         </div>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.taxes')}</span>
-                        <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displayTaxes)}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-[var(--shop-muted)] sm:text-base">{t('cart.summary.taxes')}</span>
+                        <span className="text-sm font-medium text-[var(--shop-ink)] sm:text-base">{formatPrice(displayTaxes)}</span>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm sm:text-base text-gray-600">{t('cart.summary.consigne')}</span>
-                        <span className="text-sm sm:text-base font-medium text-gray-900">{formatPrice(displayConsigne)}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-[var(--shop-muted)] sm:text-base">{t('cart.summary.consigne')}</span>
+                        <span className="text-sm font-medium text-[var(--shop-ink)] sm:text-base">{formatPrice(displayConsigne)}</span>
                       </div>
                       {!isFreeShippingApplied && !summary?.isPromotionEligible && displaySubtotal < shippingThreshold && finalShippingCost > 0 && (
-                        <div className="text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 sm:p-3 rounded-lg">
+                        <div className="rounded-full border border-[var(--shop-hairline)] bg-[var(--shop-canvas-muted)] px-3 py-2 text-xs text-[var(--shop-ink)] sm:text-sm">
                           {t('cart.summary.shippingThreshold').replace('{amount}', formatPrice(shippingThreshold - displaySubtotal))}
                         </div>
                       )}
@@ -1217,27 +1147,26 @@ export default function CartPage() {
 
                       {/* Mostrar descuento/ahorros si hay cupón aplicado */}
                       {appliedCoupon && savingsAmount > 0 && (
-                        <div className="flex justify-between items-center text-green-600">
-                          <span className="text-sm sm:text-base font-medium">
+                        <div className="flex items-center justify-between text-[var(--shop-purple)]">
+                          <span className="text-sm font-medium sm:text-base">
                             {appliedCoupon.type === 'free_shipping'
                               ? t('cart.checkout.savingsShipping')
                               : t('cart.summary.coupon.discount')}
                           </span>
-                          <span className="text-sm sm:text-base font-medium">
+                          <span className="text-sm font-medium sm:text-base">
                             -{formatPrice(savingsAmount)}
                           </span>
                         </div>
                       )}
 
-                      <Separator />
-                      <div className="flex justify-between items-center">
-                        <span className="text-base sm:text-lg font-semibold text-gray-900">{t('cart.summary.total')}</span>
-                        <span className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">{formatPrice(finalTotal)}</span>
+                      <Separator className="bg-[var(--shop-hairline)]" />
+                      <div className="flex items-center justify-between">
+                        <span className="text-base font-semibold text-[var(--shop-ink)] sm:text-lg">{t('cart.summary.total')}</span>
+                        <span className="text-lg font-semibold text-[var(--shop-purple)] sm:text-xl md:text-2xl">{formatPrice(finalTotal)}</span>
                       </div>
                     </div>
 
-                    {/* Selector de direcciones */}
-                    <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
+                    <div className="mt-4 border-t border-[var(--shop-hairline)] pt-4 sm:mt-6 sm:pt-6">
                       <AddressSelector />
                     </div>
 
@@ -1252,11 +1181,10 @@ export default function CartPage() {
                       />
                     </div>
 
-                    <div className="space-y-2 sm:space-y-3 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
-                      {/* Temporarily forcing checkout button enabled; original disabled logic is commented in onClick */}
+                    <div className="mt-4 space-y-3 border-t border-[var(--shop-hairline)] pt-4 sm:mt-6 sm:pt-6">
                       <Button
                         size="lg"
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-sm sm:text-base h-10 sm:h-12"
+                        className={cn('w-full', shopChrome.inkCta)}
                         onClick={() => {
                           console.log('🚨 CHECKOUT BUTTON CLICKED - Debug completo:', {
                             timestamp: new Date().toISOString(),
@@ -1321,23 +1249,23 @@ export default function CartPage() {
                           </span>
                         ) : verifyingAddress ? (
                           <span className="flex items-center justify-center gap-2">
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            Verificando dirección...
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            {t('cart.checkout.verifyingAddress')}
                           </span>
                         ) : !isAuthenticated ? t('cart.summary.authRequired') :
                           isEmpty ? t('cart.checkout.emptyCart') :
                             !hasAddresses ? t('cart.summary.addressRequired') :
                               !selectedAddress?.id ? t('cart.errors.selectAddress') :
-                                notDeliverable ? (shippingMessage || 'No disponible esta ubicación por el momento!') :
-                                needsAddress ? 'Procesando dirección...' :
-                                  isSyncingWithBackend ? 'Procesando...' :
+                                notDeliverable ? (shippingMessage || t('cart.errors.notDeliverable')) :
+                                needsAddress ? t('cart.checkout.processingAddress') :
+                                  isSyncingWithBackend ? t('notifications.processing') :
                                     !deliveryOptions.isValid ? t('cart.delivery.error') :
                                       t('cart.summary.proceed')}
                       </Button>
                       <Button
                         variant="outline"
                         size="lg"
-                        className="w-full text-sm sm:text-base h-10 sm:h-12"
+                        className="inline-flex h-11 min-h-11 w-full items-center justify-center rounded-full border border-[var(--shop-hairline)] bg-white px-5 py-2.5 text-sm font-medium text-[var(--shop-ink)] hover:bg-[var(--shop-canvas-muted)]"
                         onClick={() => router.push('/comidas')}
                       >
                         {t('cart.summary.continue')}
@@ -1350,11 +1278,6 @@ export default function CartPage() {
           </div>
         </div>
 
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          redirectUrl="/cart"
-        />
       </div>
     </CartErrorBoundary>
   );

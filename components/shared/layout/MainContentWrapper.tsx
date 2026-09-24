@@ -12,7 +12,7 @@ export function MainContentWrapper({ children }: { children: React.ReactNode }) 
                            pathname?.startsWith('/factura');
 
   return (
-    <main className={`flex-1 w-full ${isDashboardRoute ? '' : 'pt-16'}`}>
+    <main className={`flex-1 w-full ${isDashboardRoute ? '' : 'pt-[4.5rem]'}`}>
       {children}
     </main>
   );

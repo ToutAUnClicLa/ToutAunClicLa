@@ -15,7 +15,28 @@ button:not(:disabled),
   cursor: pointer;
 }
 
+html {
+  scroll-padding-top: 5.5rem;
+}
+
 :root {
+  /* Shop landing — Stripe-like system (lib/shop-theme.ts). */
+  --shop-purple: #4f46e5;
+  --shop-purple-hover: #4338ca;
+  --shop-purple-wash: #eef2ff;
+  --shop-purple-muted: #a5b4fc;
+  --shop-ink: #0a2540;
+  --shop-muted: #425466;
+  --shop-hairline: #e6e9ee;
+  --shop-canvas-muted: #f6f9fc;
+  --shop-header-h: 4.5rem;
+  --food-accent: #d97706;
+  --food-wash: #fff7ed;
+  --food-ink: #b45309;
+  --svc-primary: #4f46e5;
+  --svc-wash: #eef2ff;
+  --svc-ink: #3730a3;
+
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
   --card: 0 0% 100%;
@@ -116,31 +137,31 @@ button:not(:disabled),
   z-index: -1;
 }
 
-/* MAX — dorado + esmeralda */
+/* MAX — amber + shop purple */
 .pro-glow-max::before {
-  background-image: linear-gradient(115deg, #f59e0b, #10b981, #fbbf24, #059669, #f59e0b);
+  background-image: linear-gradient(115deg, #f59e0b, #4f46e5, #fbbf24, #4338ca, #f59e0b);
   animation: pro-border-shimmer 9s ease-in-out infinite;
 }
 .pro-glow-max {
-  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0), 0 8px 24px -12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0), 0 8px 24px -12px rgba(79, 70, 229, 0.22);
 }
 .pro-glow-max:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 22px -6px rgba(245, 158, 11, 0.35), 0 12px 30px -14px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 22px -6px rgba(245, 158, 11, 0.35), 0 12px 30px -14px rgba(79, 70, 229, 0.35);
 }
 
-/* PRO — esmeralda (más sobrio) */
+/* PRO — shop purple (más sobrio) */
 .pro-glow-pro::before {
-  background-image: linear-gradient(115deg, #34d399, #059669, #6ee7b7, #10b981);
+  background-image: linear-gradient(115deg, #a5b4fc, #4f46e5, #c7d2fe, #4338ca);
   animation: pro-border-shimmer 11s ease-in-out infinite;
   opacity: 0.85;
 }
 .pro-glow-pro {
-  box-shadow: 0 6px 20px -14px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 6px 20px -14px rgba(79, 70, 229, 0.28);
 }
 .pro-glow-pro:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 18px -8px rgba(16, 185, 129, 0.4), 0 10px 26px -14px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 0 18px -8px rgba(79, 70, 229, 0.35), 0 10px 26px -14px rgba(79, 70, 229, 0.28);
 }
 
 @keyframes pro-border-shimmer {
@@ -154,6 +175,74 @@ button:not(:disabled),
     animation: none;
   }
   .pro-glow:hover {
+    transform: none;
+  }
+  header {
+    transition: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  .shop-hero-motion {
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+/* Home hero fills the viewport under the fixed 4.5rem header (main already pads that).
+   svh stays put when the mobile URL bar shows or hides; dvh rescales the cover photo. */
+.shop-hero {
+  min-height: calc(100vh - 4.5rem);
+  min-height: calc(100svh - 4.5rem);
+}
+
+/* Warm apricot wash. Light enough to keep the photo; even so navy type still reads. */
+.shop-hero-scrim {
+  background: rgb(255 206 140 / 0.68);
+}
+
+/* Food banner: type sits in the lower third; the plate stays clear above ~60%. */
+.shop-food-scrim {
+  background: linear-gradient(
+    to top,
+    var(--shop-ink) 0%,
+    color-mix(in srgb, var(--shop-ink) 84%, transparent) 32%,
+    transparent 60%
+  );
+}
+
+@keyframes shop-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.shop-pending {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.shop-pending.is-in {
+  animation: shop-in 0.4s ease-out forwards;
+}
+
+.shop-press {
+  transition: transform 120ms ease-out;
+}
+
+.shop-press:active {
+  transform: scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-pending,
+  .shop-pending.is-in {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .shop-press,
+  .shop-press:active {
+    transition: none;
     transform: none;
   }
 }

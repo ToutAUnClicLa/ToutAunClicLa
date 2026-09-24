@@ -1,26 +1,24 @@
 "use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { ShopAuthShell, ShopResetForm } from '@/components/features/auth/ShopAuthForms';
+import { useTranslation } from '@/hooks/useTranslation';
 
-/**
- * Esta página redirige al home con el modal de reset password abierto
- * El flujo completo ahora se maneja a través del AuthModal
- */
-export default function ResetPasswordPage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    // Redirigir al home donde se abrirá el AuthModal en modo resetPassword
-    router.push('/?auth=reset');
-  }, [router]);
-
+function ResetContent() {
+  const { t } = useTranslation();
+  const search = useSearchParams();
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto" />
-        <p className="mt-4 text-gray-600">Redirigiendo...</p>
-      </div>
-    </div>
+    <ShopAuthShell title={t('auth.resetPasswordTitle')} description={t('auth.enterResetCode')}>
+      <ShopResetForm email={search.get('email')} />
+    </ShopAuthShell>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[40vh] bg-white" />}>
+      <ResetContent />
+    </Suspense>
   );
 }

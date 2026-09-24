@@ -11,6 +11,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
+import { shopChrome } from '@/lib/shop-theme';
+import { cn } from '@/lib/utils';
 
 
 export function AddressSelector() {
@@ -67,9 +69,8 @@ export function AddressSelector() {
         // 🚨 OPTIMIZADO: Feedback inmediato sin delays
         if (result?.id && wasEmpty) {
           console.log('✅ Primera dirección creada y auto-seleccionada');
-          toast.success('✅ Primera dirección creada y seleccionada automáticamente', {
+          toast.success(t('addresses.selector.firstCreated'), {
             duration: 3000,
-            description: 'Ya puedes proceder con el pago'
           });
         } else if (result?.id) {
           toast.success(t('addresses.success.created'));
@@ -136,10 +137,10 @@ export function AddressSelector() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <div className="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-              <MapPin className="h-5 w-5 text-indigo-600" />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="flex items-center gap-2 text-base font-semibold text-[var(--shop-ink)] ">
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[var(--shop-purple-wash)]">
+              <MapPin className="h-4 w-4 text-[var(--shop-purple)]" />
             </div>
 
           {t('addresses.selector.title')}
@@ -148,28 +149,28 @@ export function AddressSelector() {
           variant="outline"
           size="sm"
           onClick={openCreateDialog}
-          className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+          className="inline-flex h-11 min-h-11 items-center rounded-full border border-[var(--shop-hairline)] bg-white px-5 py-2.5 text-sm font-medium text-[var(--shop-ink)] hover:bg-[var(--shop-canvas-muted)]"
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="mr-2 h-4 w-4" />
           {t('addresses.selector.add')}
         </Button>
       </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center p-8">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--shop-hairline)] border-t-[var(--shop-purple)]" />
         </div>
       ) : addresses.length === 0 ? (
-        <Card className="border-dashed border-2 border-gray-200">
+        <Card className="border-dashed border-[var(--shop-hairline)] bg-white shadow-none">
           <CardContent className="flex flex-col items-center justify-center p-8 text-center">
-            <div className="h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <MapPinIcon className="h-6 w-6 text-gray-400" />
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--shop-hairline)] bg-[var(--shop-canvas-muted)]">
+              <MapPinIcon className="h-6 w-6 text-[var(--shop-muted)]" />
             </div>
-            <h4 className="text-lg font-medium text-gray-900 mb-2">
+            <h4 className="mb-4 text-base font-medium text-[var(--shop-ink)]">
               {t('addresses.noAddresses')}
             </h4>
-            <Button onClick={openCreateDialog} className="bg-indigo-600 hover:bg-indigo-700">
-              <Plus className="h-4 w-4 mr-2" />
+            <Button onClick={openCreateDialog} className={shopChrome.inkCta}>
+              <Plus className="mr-2 h-4 w-4" />
               {t('addresses.addNew')}
             </Button>
           </CardContent>
@@ -186,39 +187,40 @@ export function AddressSelector() {
                 transition={{ duration: 0.2 }}
               >
                 <Card 
-                  className={`transition-all duration-200 cursor-pointer hover:shadow-md ${
-                    address.isPrimary || (selectedAddress?.id === address.id)
-                      ? 'ring-2 ring-indigo-500 bg-indigo-50' 
-                      : 'hover:bg-gray-50'
-                  }`}
+                  className={cn(
+                    'cursor-pointer border shadow-none',
+                    address.isPrimary || selectedAddress?.id === address.id
+                      ? 'border-[var(--shop-purple)] bg-[var(--shop-purple-wash)]'
+                      : 'border-[var(--shop-hairline)] bg-white hover:bg-[var(--shop-canvas-muted)]'
+                  )}
                   onClick={() => handleSelectAddress(address)}
                 >
                   <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-2 flex flex-wrap items-center gap-2">
                           {(address.isPrimary || selectedAddress?.id === address.id) && (
-                            <Check className="h-4 w-4 text-indigo-600" />
+                            <Check className="h-4 w-4 text-[var(--shop-purple)]" />
                           )}
-                          <h4 className="font-medium text-gray-900">
+                          <h4 className="font-medium text-[var(--shop-ink)]">
                             {address.street}
                           </h4>
                           {address.isPrimary && (
-                            <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full font-medium">
+                            <span className="rounded-full border border-[var(--shop-hairline)] bg-white px-2 py-0.5 text-xs font-medium text-[var(--shop-ink)]">
                               {t('addresses.actions.primary')}
                             </span>
                           )}
                           {(isSyncingWithBackend && selectedAddress?.id === address.id) && (
-                            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-medium flex items-center gap-1">
-                              <div className="w-3 h-3 border border-yellow-600 border-t-transparent rounded-full animate-spin"></div>
-                              Sincronizando...
+                            <span className="inline-flex items-center gap-1 rounded-full border border-[var(--shop-hairline)] bg-white px-2 py-0.5 text-xs font-medium text-[var(--shop-muted)]">
+                              <div className="h-3 w-3 animate-spin rounded-full border border-[var(--shop-purple)] border-t-transparent" />
+                              {t('addresses.selector.syncing')}
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-[var(--shop-muted)]">
                           {address.city}, {address.state} {address.zipCode}
                         </p>
-                        <p className="text-sm text-gray-600">{address.country}</p>
+                        <p className="text-sm text-[var(--shop-muted)]">{address.country}</p>
                       </div>
                       
                       <div className="flex items-center gap-1">
@@ -229,7 +231,7 @@ export function AddressSelector() {
                             e.stopPropagation();
                             openEditDialog(address);
                           }}
-                          className="text-gray-500 hover:text-gray-700"
+                          className={cn('h-11 w-11 p-0 text-[var(--shop-muted)] hover:text-[var(--shop-ink)]', shopChrome.focus)}
                           title={t('addresses.actions.edit')}
                         >
                           <Edit className="h-4 w-4" />
@@ -241,7 +243,7 @@ export function AddressSelector() {
                             e.stopPropagation();
                             handleDeleteAddress(address.id);
                           }}
-                          className="text-red-500 hover:text-red-700"
+                          className={cn('h-11 w-11 p-0 text-[var(--shop-muted)] hover:text-[var(--shop-ink)]', shopChrome.focus)}
                           title={t('addresses.actions.delete')}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -257,12 +259,12 @@ export function AddressSelector() {
       )}
 
       {/* Información adicional */}
-      <div className="bg-blue-50 p-3 rounded-lg">
-        <div className="flex items-center gap-2 text-blue-800">
-          <MapPin className="h-4 w-4" />
+      <div className="rounded-xl border border-[var(--shop-hairline)] bg-[var(--shop-canvas-muted)] p-3">
+        <div className="flex items-center gap-2 text-[var(--shop-ink)]">
+          <MapPin className="h-4 w-4 text-[var(--shop-purple)]" />
           <p className="text-sm font-medium">{t('addresses.selector.deliveryInfo')}</p>
         </div>
-        <p className="text-xs text-blue-600 mt-1">
+        <p className="mt-1 text-xs text-[var(--shop-muted)]">
           {t('addresses.selector.deliveryNote')}
         </p>
       </div>

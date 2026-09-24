@@ -9,7 +9,7 @@ export default function ProAuthLayout({ children }: { children: React.ReactNode 
   const t = getProT(lang).header;
 
   return (
-    <div className="pro-hero-bg relative flex min-h-[100dvh] flex-col items-center justify-center px-4 py-12 pb-36">
+    <div className="pro-hero-bg pro-auth-bg relative flex min-h-[100dvh] flex-col items-center justify-center px-4 py-12 pb-36">
       <div className="absolute left-4 top-6 sm:left-6">
         <BackButton href="/pro" label={t.backHome} />
       </div>

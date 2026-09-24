@@ -18,23 +18,25 @@ import { cn } from '@/lib/utils';
 type Periodo = 'mensual' | 'anual';
 type PlanId = 'free' | 'pro' | 'max';
 
-// Solo datos estructurales (id, precio, destacado). Todo el texto sale de translations.
+// Datos estructurales. El texto sale de translations. `antes` no se cobra.
 interface Plan {
   id: PlanId;
   precio: { mensual: number; anual: number };
+  // Lista anterior. Solo display; el cobro sigue siendo precio.
+  antes?: { mensual: number; anual: number };
   destacado?: boolean;
 }
 
 const PLANS: Plan[] = [
   { id: 'free', precio: { mensual: 0, anual: 0 } },
-  { id: 'pro', precio: { mensual: 25, anual: 250 } },
-  { id: 'max', precio: { mensual: 45, anual: 450 }, destacado: true },
+  { id: 'pro', precio: { mensual: 25, anual: 250 }, antes: { mensual: 35, anual: 350 } },
+  { id: 'max', precio: { mensual: 45, anual: 450 }, antes: { mensual: 55, anual: 550 }, destacado: true },
 ];
 
 const PLAN_FEATURE_KEYS: Record<PlanId, string[]> = {
   free: ['f1', 'f2'],
   pro: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6'],
-  max: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'],
+  max: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6'],
 };
 
 export function PricingPlans() {
@@ -111,7 +113,7 @@ export function PricingPlans() {
             >
               {p.label}
               {p.id === 'anual' && (
-                <span className="ml-1.5 text-xs opacity-90">{t('pro.pricingPage.yearlyNote')}</span>
+                <span className="ml-1.5 text-xs opacity-90">• {t('pro.pricingPage.yearlyNote')}</span>
               )}
             </button>
           ))}
@@ -122,6 +124,8 @@ export function PricingPlans() {
       <div className="grid gap-6 md:grid-cols-3">
         {PLANS.map((plan) => {
           const precio = plan.precio[periodo];
+          const antes = plan.antes?.[periodo];
+          const muestraAntes = antes != null && antes > precio;
           // Free "actual" = logueado sin suscripción de pago. Pro/Max "actual" =
           // coincide plan Y periodo con la suscripción activa.
           const esActual =
@@ -140,7 +144,7 @@ export function PricingPlans() {
               key={plan.id}
               className={cn(
                 'pro-card relative flex flex-col',
-                plan.destacado ? 'border-primary shadow-[var(--shadow-sm)]' : '',
+                plan.destacado && 'pro-card-max',
               )}
             >
               {plan.destacado && (
@@ -152,13 +156,26 @@ export function PricingPlans() {
               <h3 className="text-lg font-semibold text-foreground">{nombre}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{descripcion}</p>
 
-              <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-3xl font-semibold tracking-tight text-foreground">
-                  ${precio}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  {plan.id === 'free' ? '' : ` CAD /${unidad}`}
-                </span>
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                  <span className="text-3xl font-semibold tracking-tight text-foreground">
+                    ${precio}
+                  </span>
+                  {muestraAntes && (
+                    <s className="text-base text-muted-foreground line-through tabular-nums">
+                      {antes}
+                    </s>
+                  )}
+                  <span className="text-sm text-muted-foreground">
+                    {plan.id === 'free' ? '' : ` /${unidad}`}
+                  </span>
+                </div>
+                {muestraAntes && (
+                  <span className="inline-flex shrink-0 flex-col text-right text-[10px] font-medium leading-tight text-primary">
+                    <span>{t('pro.landing.pricing.launchDiscount').split(/\s+/).slice(0, -1).join(' ')}</span>
+                    <span>{t('pro.landing.pricing.launchDiscount').split(/\s+/).at(-1)}</span>
+                  </span>
+                )}
               </div>
 
               <ul className="mt-6 flex-1 space-y-2.5">

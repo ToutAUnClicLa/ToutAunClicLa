@@ -2,6 +2,7 @@
 
 import { Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { shopChrome } from '@/lib/shop-theme';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const LANGS = [
@@ -22,31 +23,32 @@ interface Props {
   active: boolean;
 }
 
+const field =
+  'h-11 w-full min-w-0 rounded-full border border-[var(--shop-hairline)] bg-white px-4 py-2.5 text-sm text-[var(--shop-ink)] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--shop-purple)] focus-visible:ring-offset-2';
+
 export function DirectoryFilters({ q, idioma, ciudad, onChange, onClear, active }: Props) {
   const { t } = useTranslation();
   return (
     <div className="space-y-6">
-      {/* Búsqueda */}
       <div>
-        <label htmlFor="dir-q" className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <label htmlFor="dir-q" className="mb-2 block text-xs font-medium uppercase tracking-wider text-[var(--shop-muted)]">
           {t('pro.directory.searchLabel')}
         </label>
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden />
+        <div className={shopChrome.searchField}>
+          <Search className="h-4 w-4 shrink-0 text-[var(--shop-muted)]" aria-hidden />
           <input
             id="dir-q"
             type="text"
             value={q}
             onChange={(e) => onChange({ q: e.target.value })}
             placeholder={t('pro.directory.searchPlaceholder')}
-            className="h-10 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 pl-9 pr-3 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+            className={shopChrome.searchInput}
           />
         </div>
       </div>
 
-      {/* Idiomas hablados */}
       <div>
-        <p className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <p className="mb-2 block text-xs font-medium uppercase tracking-wider text-[var(--shop-muted)]">
           {t('pro.directory.languageLabel')}
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -58,10 +60,8 @@ export function DirectoryFilters({ q, idioma, ciudad, onChange, onClear, active 
                 type="button"
                 onClick={() => onChange({ idioma: activeChip ? '' : l.code })}
                 className={cn(
-                  'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                  activeChip
-                    ? 'border-emerald-600 bg-emerald-600 text-white'
-                    : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-400',
+                  activeChip ? shopChrome.filterChipOn : shopChrome.filterChip,
+                  shopChrome.focus,
                 )}
               >
                 {l.label}
@@ -71,9 +71,8 @@ export function DirectoryFilters({ q, idioma, ciudad, onChange, onClear, active 
         </div>
       </div>
 
-      {/* Ciudad */}
       <div>
-        <label htmlFor="dir-ciudad" className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <label htmlFor="dir-ciudad" className="mb-2 block text-xs font-medium uppercase tracking-wider text-[var(--shop-muted)]">
           {t('pro.directory.cityLabel')}
         </label>
         <input
@@ -82,7 +81,7 @@ export function DirectoryFilters({ q, idioma, ciudad, onChange, onClear, active 
           value={ciudad}
           onChange={(e) => onChange({ ciudad: e.target.value })}
           placeholder={t('pro.directory.cityPlaceholder')}
-          className="h-10 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+          className={field}
         />
       </div>
 
@@ -90,9 +89,12 @@ export function DirectoryFilters({ q, idioma, ciudad, onChange, onClear, active 
         <button
           type="button"
           onClick={onClear}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-emerald-700 dark:text-slate-400 dark:hover:text-emerald-400"
+          className={cn(
+            'inline-flex items-center gap-1.5 text-sm font-medium text-[var(--shop-purple)]',
+            shopChrome.focus,
+          )}
         >
-          <X className="h-3 w-3" aria-hidden />
+          <X className="h-3.5 w-3.5" aria-hidden />
           {t('pro.directory.clearFilters')}
         </button>
       )}

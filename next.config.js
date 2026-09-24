@@ -1,10 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  i18n: {
-    locales: ['es', 'fr', 'en'],
-    defaultLocale: 'es',
-    localeDetection: false,
-  },
+  // App Router does not support `i18n` here. That block prefixed routes with
+  // the default locale and 404'd existing pages (and skipped en/fr entirely).
+  // Shop language stays on the preferred-language cookie + useTranslation.
   output: 'standalone',
   // Proxy para desarrollo - redirige /api/backend/* al backend real
   async rewrites() {

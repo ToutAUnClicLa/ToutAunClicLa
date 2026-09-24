@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { Star } from 'lucide-react';
 import { Button } from '@/components/common/ui/button';
 import { Textarea } from '@/components/common/ui/textarea';
 import { useAuth } from '@/hooks/useAuth';
 import { createReview } from '@/lib/services/reviews';
 import { toast } from 'sonner';
-import AuthModal from '@/components/features/auth/AuthModal';
+import { loginPath } from '@/lib/shop-auth';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface ReviewFormProps {
@@ -17,17 +18,20 @@ interface ReviewFormProps {
 export function ReviewForm({ productId }: ReviewFormProps) {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const router = useRouter();
+  const pathname = usePathname();
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const goLogin = () => router.push(loginPath(pathname));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!user) {
-      setShowAuthModal(true);
+      goLogin();
       return;
     }
 
@@ -58,18 +62,12 @@ export function ReviewForm({ productId }: ReviewFormProps) {
 
   if (!user) {
     return (
-      <>
-        <div className="text-center py-6">
-          <p className="text-gray-500 mb-4">{t('reviews.loginToReview')}</p>
-          <Button onClick={() => setShowAuthModal(true)}>
-            {t('nav.login')}
-          </Button>
-        </div>
-        <AuthModal 
-          isOpen={showAuthModal} 
-          onClose={() => setShowAuthModal(false)} 
-        />
-      </>
+      <div className="text-center py-6">
+        <p className="text-gray-500 mb-4">{t('reviews.loginToReview')}</p>
+        <Button onClick={goLogin}>
+          {t('nav.login')}
+        </Button>
+      </div>
     );
   }
 

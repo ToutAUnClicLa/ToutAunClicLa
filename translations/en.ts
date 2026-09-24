@@ -19,7 +19,7 @@ export default {
     },
     grid: {
       title: "Explore Our Services",
-      subtitle: "A curated selection of professionals ready to help you."
+      subtitle: "A selection of professionals ready to help you."
     },
     card: {
       comingSoon: "Coming Soon",
@@ -249,7 +249,7 @@ export default {
     hero: {
       title: "Discover Latin America",
       subtitle: "Authentic products and unique experiences",
-      description: "Connecting the Americas through authentic products and unique experiences. Delivery in Montreal and across the entire South Shore (Rive-Sud): Boucherville, Chambly, Saint-Bruno-de-Montarville and more.",
+      description: "Restaurants, professional services, and souvenirs in Montreal and the South Shore. Order food, find a professional, or pick a souvenir.",
       cta: "Register to enjoy all of the Americas"
     },
     workWithUs: {
@@ -584,6 +584,13 @@ export default {
       description: "Add some products to start shopping!",
       exploreProducts: "Explore products"
     },
+    error: {
+      title: "Cart error",
+      description: "We couldn’t load your cart. Please try again.",
+      retry: "Try again",
+      reload: "Reload page",
+      details: "Error details (development)"
+    },
     categories: {
       productos: "Products",
       comidas: "Foods",
@@ -673,6 +680,7 @@ export default {
       notesOptional: "optional",
       apply: "Apply changes",
       applying: "Applying...",
+      addressRequired: "Add an address to confirm delivery.",
       estimatedTime: "Estimated delivery time: 30-45 minutes once order is confirmed",
       success: "Delivery options updated",
       schedule: "Deliveries available from 11:00 AM to 9:00 PM daily",
@@ -686,7 +694,8 @@ export default {
     success: {
       quantityUpdated: "Quantity updated",
       productRemoved: "Product removed",
-      cartCleared: "Cart cleared"
+      cartCleared: "Cart cleared",
+      addressAdded: "Address added. Updating cart..."
     },
     promotions: {
       maisonPoulet: {
@@ -709,7 +718,12 @@ export default {
       emptyCart: "Your cart is empty",
       deliveryMethodRequired: "You must select a delivery method",
       sessionExpired: "Session expired. Please log in again",
-      couponError: "Error with applied coupon. Please apply the coupon again."
+      couponError: "Error with applied coupon. Please apply the coupon again.",
+      notDeliverable: "This location is not available right now.",
+      addressNotReady: "The address isn’t ready yet. Try again in a few seconds.",
+      addressVerifyFailed: "Could not verify the address. Please try again.",
+      checkoutFailed: "Payment could not be processed. Please try again.",
+      couponWithMessage: "Coupon error: {message}"
     },
     nonTaxable: "Non Taxable",
     variationDetails: {
@@ -724,7 +738,10 @@ export default {
       savingsShipping: "Shipping savings",
       unavailable: "We're updating our system right now. Checkout is temporarily unavailable.",
       closedToday: "We're not receiving orders today! Check our schedule at @toutaunclicla",
-      cutoff: "9:00 PM is the order cutoff (Montreal, Canada time). Please check our hours on Instagram @toutaunclicla"
+      cutoff: "9:00 PM is the order cutoff (Montreal, Canada time). Please check our hours on Instagram @toutaunclicla",
+      verifyingAddress: "Verifying address...",
+      processingAddress: "Processing address...",
+      estimated: "estimated"
     },
     notifications: {
       networkError: "No internet connection. Check your connection.",
@@ -839,6 +856,8 @@ export default {
       add: "Add",
       deliveryInfo: "The address is within Montreal metropolitan area",
       deliveryNote: "We validate that the address is within Montreal metropolitan area",
+      syncing: "Syncing...",
+      firstCreated: "First address created and selected. You can pay now.",
       montrealOnly: "Montreal metropolitan area addresses only",
       validationNote: "We validate that the city is Montreal and the postal code is valid (H1A-H5B)"
     },
@@ -1006,7 +1025,52 @@ export default {
       invalidId: "Invalid order ID",
       downloadInvoice: "Download function coming soon",
       cancelOrder: "Cancel function coming soon",
-      trackOrder: "Tracking function coming soon"
+      trackOrder: "Tracking function coming soon",
+      loading: "Loading order details...",
+      loadError: "Could not load this order",
+      notFound: "Order not found",
+      notFoundDesc: "This order does not exist or you do not have access to it.",
+      backToOrders: "Back to orders",
+      placedOn: "Placed on {date}",
+      products: "Items ({count})",
+      quantity: "Qty",
+      unitPrice: "Price",
+      shippingAddress: "Shipping address",
+      phone: "Phone",
+      shippingStatus: "Shipment status",
+      progress: "Progress",
+      stages: {
+        orderPlaced: "Order placed",
+        paymentConfirmed: "Payment confirmed",
+        processing: "Processing",
+        shipped: "Shipped",
+        delivered: "Delivered"
+      },
+      summary: "Order summary",
+      subtotal: "Subtotal",
+      shipping: "Shipping",
+      discount: "Discount",
+      total: "Total",
+      paymentInfo: "Payment",
+      paymentMethod: "Payment method",
+      paymentDate: "Payment date",
+      refunded: "Refunded",
+      actionsTitle: "Actions",
+      downloadInvoiceBtn: "Download invoice",
+      contactSupport: "Contact support",
+      cancelOrderBtn: "Cancel order",
+      notes: "Order notes",
+      noteDelivery: "Delivery",
+      noteCoupon: "Coupon",
+      noteShippingInfo: "Shipping",
+      noteMethod: "Method",
+      noteCode: "Code",
+      noteType: "Type",
+      noteShippingSavings: "Shipping savings",
+      noteShippingCost: "Shipping cost",
+      noteDoor: "Door",
+      noteFreeShipping: "Free shipping",
+      noteFreeShippingCoupon: "Free shipping applied with coupon"
     }
   },
 
@@ -1419,6 +1483,7 @@ export default {
     emailInvalid: "Invalid email",
     passwordRequired: "Password is required",
     passwordInvalid: "Password must have at least 6 characters, one letter and one number",
+    passwordMin8: "Password must have at least 8 characters, one letter and one number",
     passwordsMismatch: "Passwords don't match",
     nameRequired: "Name is required",
     emailAlreadyExists: "This email is already registered. Try signing in.",
@@ -1451,6 +1516,7 @@ export default {
     checkEmailForNewCode: "Check your email for the new code",
     resendCodeError: "Error resending code",
     emailNotFoundForVerification: "Email not found for verification",
+    verifyEmailMissing: "We need your email to verify the account.",
     emailNotFoundForResend: "Email not found to resend code",
     enterSixDigitCode: "Enter the 6-digit code",
     verificationSuccess: "Email verified!",
@@ -2668,6 +2734,7 @@ export default {
         title: "A price in Canadian dollars.",
         subtitle: "No surprises, no USD. Cancel whenever you want.",
         perMonth: "/mo",
+        launchDiscount: "Launch discount",
         badgeRecommended: "Recommended",
         seeAll: "See all plans",
         free: {
@@ -2682,6 +2749,7 @@ export default {
         pro: {
           name: "Pro",
           price: "$25",
+          previous: "$35",
           tagline: "Your complete digital card.",
           f1: "Digital card + Apple Wallet and AirDrop",
           f2: "Public profile with unique URL",
@@ -2692,12 +2760,13 @@ export default {
         max: {
           name: "Max",
           price: "$45",
+          previous: "$55",
           tagline: "Maximum visibility and tools.",
           f1: "Everything in Pro",
           f2: "Featured in your category",
-          f3: "Project gallery",
+          f3: "Project gallery (Coming soon)",
           f4: "Unlimited social networks",
-          f5: "Advanced statistics + NFC card"
+          f5: "Advanced statistics"
         }
       },
       testimonials: {
@@ -2990,7 +3059,7 @@ export default {
       trialOnceNote: "The 7-day free trial is valid once per person. If you've already used it, your subscription is charged immediately.",
       monthly: "Monthly",
       yearly: "Yearly",
-      yearlyNote: "· 2 months free",
+      yearlyNote: "Save $50 a year",
       perMonth: "mo",
       perYear: "yr",
       recommended: "Recommended",
@@ -3026,10 +3095,9 @@ export default {
           f1: "Everything in Pro",
           f2: "Featured first in your category",
           f3: "Advertising banner",
-          f4: "Project gallery",
+          f4: "Project gallery (Coming soon)",
           f5: "Unlimited social networks",
-          f6: "Advanced analytics",
-          f7: "1 physical NFC card included"
+          f6: "Advanced analytics"
         }
       }
     },

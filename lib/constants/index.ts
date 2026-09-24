@@ -39,10 +39,11 @@ export const NAVIGATION_ROUTES = {
   checkout: '/checkout',
   profile: '/profile',
   auth: {
-    login: '/auth/login',
-    register: '/auth/register',
-    verifyEmail: '/auth/verify-email',
+    login: '/login',
+    register: '/register',
+    forgotPassword: '/forgot-password',
     resetPassword: '/reset-password',
+    verifyEmail: '/verify-email',
   },
 } as const;
 

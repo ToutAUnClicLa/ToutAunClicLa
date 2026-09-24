@@ -3,7 +3,7 @@ import './pro-theme.css';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { Inter } from 'next/font/google';
-import { ProAuthProvider } from '@/contexts/ProAuthContext';
+import { ProAuthHydrate } from '@/contexts/ProAuthContext';
 import { ProConsentBanner } from '@/components/pro/ProConsentBanner';
 import { ProLangSync } from '@/components/pro/ProLangSync';
 import { getProT, validLang } from '@/lib/pro/i18n';
@@ -31,11 +31,10 @@ export default function ProLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={`${inter.variable} ${inter.className} pro-theme`}>
       <div className="pro-canvas min-h-screen text-foreground antialiased">
-        <ProAuthProvider>
-          <ProLangSync ssrLang={lang} />
-          {children}
-          <ProConsentBanner />
-        </ProAuthProvider>
+        <ProAuthHydrate />
+        <ProLangSync ssrLang={lang} />
+        {children}
+        <ProConsentBanner />
       </div>
     </div>
   );

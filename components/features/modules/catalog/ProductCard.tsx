@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Star, Heart, ShoppingBag, Minus, Plus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -11,7 +12,7 @@ import { useCart } from '@/hooks/useCart';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Product } from '@/lib/services/products';
-import AuthModal from '@/components/features/auth/AuthModal';
+import { loginPath } from '@/lib/shop-auth';
 import { Button } from '@/components/common/ui/button';
 import { Card, CardContent } from '@/components/common/ui/card';
 import { Badge } from '@/components/common/ui/badge';
@@ -52,6 +53,7 @@ export function ProductCard({
   restaurantStatus,
   restaurantLoading = false
 }: ProductCardProps) {
+  const router = useRouter();
   const { user } = useAuth();
   const { t } = useTranslation();
   const { addToCart, isInCart, getProductQuantity, isLoading: cartLoading } = useCart();
@@ -61,7 +63,6 @@ export function ProductCard({
     isLoading: favoritesLoading
   } = useFavorites();
 
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [quantityToAdd, setQuantityToAdd] = useState(1);
@@ -186,7 +187,7 @@ export function ProductCard({
     e.stopPropagation();
 
     if (!user) {
-      setIsAuthModalOpen(true);
+      router.push(loginPath(getProductUrl()));
       return;
     }
 
@@ -223,7 +224,7 @@ export function ProductCard({
     e.stopPropagation();
 
     if (!user) {
-      setIsAuthModalOpen(true);
+      router.push(loginPath(getProductUrl()));
       return;
     }
 
@@ -319,11 +320,6 @@ export function ProductCard({
           </Link>
         </motion.div>
 
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={() => setIsAuthModalOpen(false)}
-          redirectUrl={getProductUrl()}
-        />
       </>
     );
   }
@@ -568,11 +564,6 @@ export function ProductCard({
         </motion.div>
       </Link>
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        redirectUrl={getProductUrl()}
-      />
     </>
   );
 }

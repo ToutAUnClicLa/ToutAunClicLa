@@ -16,6 +16,10 @@ export function getImageUrl(imagePath?: string | null): string {
     return '/placeholder-product.svg';
   }
 
+  // Filas de catálogo (banderas de boutique) traen un CRLF final. encodeURI
+  // lo convierte en %0D%0A justo antes del query de optimización.
+  imagePath = imagePath.replace(/[\r\n]+/g, '');
+
   // Si ya es una URL completa, devolverla tal como está
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     // Es buena práctica asegurarse de que la URL no tenga espacios nulos/sin codificar

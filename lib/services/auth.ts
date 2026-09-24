@@ -309,6 +309,36 @@ export function logout(): void {
   TokenManager.clearToken();
 }
 
+export async function forgotPassword(email: string): Promise<{ message?: string }> {
+  const response = await fetch(`${AUTH_BASE_URL}/forgot-password`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ email }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || data.message || 'Error al enviar código');
+  }
+  return data;
+}
+
+export async function resetPassword(
+  email: string,
+  code: string,
+  newPassword: string
+): Promise<{ message?: string }> {
+  const response = await fetch(`${AUTH_BASE_URL}/reset-password`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ email, code, newPassword }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || data.message || 'Error al restablecer contraseña');
+  }
+  return data;
+}
+
 /**
  * Verificar si el usuario está autenticado
  */

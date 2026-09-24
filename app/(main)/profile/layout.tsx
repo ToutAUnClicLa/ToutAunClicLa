@@ -1,31 +1,21 @@
 import { Metadata } from 'next';
-import ProfileSidebar from '@/components/features/profile/ProfileSidebar';
+import { ProfileBackLink } from '@/components/features/profile/ProfileChrome';
 
-// TODO: Los metadatos podrían ser dinámicos en el futuro según el idioma
 export const metadata: Metadata = {
   title: {
-    template: '%s | Tout à un Clic LA',
-    default: 'Mi Perfil | Tout à un Clic LA'
+    template: '%s | Tout à un Clic Là',
+    default: 'Account | Tout à un Clic Là',
   },
-  description: 'Gestiona tu perfil, direcciones, favoritos y preferencias en Tout à un Clic LA',
-  keywords: 'perfil, cuenta, direcciones, favoritos, configuración, usuario',
+  description: 'Manage your Tout à un Clic Là account, addresses, favorites and orders.',
 };
 
-export default function ProfileLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ProfileLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="container py-8">
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Menú lateral - Solo visible en desktop */}
-        <ProfileSidebar />
-        
-        {/* Contenido principal */}
-        <main className="flex-1">
-          {children}
-        </main>
+    // min-h-screen is the account canvas only. The negative margin cancels main's header padding so this 100vh block ends on the fold and the shop footer sits under it.
+    <div className="-mt-[var(--shop-header-h)] min-h-screen bg-[var(--shop-canvas-muted)] pt-[var(--shop-header-h)] text-[var(--shop-ink)]">
+      <div className="container py-8 sm:py-10 lg:py-12">
+        <ProfileBackLink />
+        {children}
       </div>
     </div>
   );

@@ -7,10 +7,12 @@ import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ProLogo } from '@/components/pro/ProLogo';
 import { ProLangSwitcher } from '@/components/pro/ProLangSwitcher';
+import { ProHeaderUserSkeleton, useProHeaderAccountLoading } from '@/components/pro/ProHeaderUserSkeleton';
 import { Button } from '@/components/pro/ui/button';
 
 export function ProLandingHeader() {
-  const { proUser, loading } = useProAuth();
+  const { proUser } = useProAuth();
+  const accountLoading = useProHeaderAccountLoading();
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
 
@@ -29,13 +31,15 @@ export function ProLandingHeader() {
       }`}
     >
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-5">
-        <ProLogo />
+        <Link href="/pro" className="min-w-0" aria-label="Tout à un Clic Là Pro">
+          <ProLogo />
+        </Link>
 
         <div className="flex items-center gap-2 sm:gap-3">
           <ProLangSwitcher />
 
-          {loading ? (
-            <span className="h-8 w-24" />
+          {accountLoading ? (
+            <ProHeaderUserSkeleton />
           ) : proUser ? (
             <Link href="/pro/dashboard" className="flex items-center gap-3">
               <div className="hidden items-center gap-2 sm:flex">

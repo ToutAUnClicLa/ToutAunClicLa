@@ -1,10 +1,14 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Globe2, Mail, MapPin, Phone, ShoppingBag, Instagram, Twitter, Facebook, Youtube } from "lucide-react";
-import { Button } from "@/components/common/ui/button";
+import { Mail, MapPin, Instagram, Twitter, Facebook, Youtube } from "lucide-react";
 import { useTranslation } from '@/hooks/useTranslation';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { shopChrome } from '@/lib/shop-theme';
+import { cn } from '@/lib/utils';
+
+type Lang = 'es' | 'fr' | 'en';
 
 const socialLinks = [
   {
@@ -33,38 +37,14 @@ const socialLinks = [
   }
 ];
 
-// Enlaces para categorías principales
-const getMainCategories = (t: any) => [
+const getMainCategories = (t: (key: string) => string) => [
   { name: t('footer.explore.home'), url: "/" },
-  // Productos ocultado temporalmente (conservar para reactivar)
-  // { name: t('footer.explore.products'), url: "/productos" },
   { name: t('footer.explore.foods'), url: "/comidas" },
+  { name: t('nav.services'), url: "/servicios" },
   { name: t('footer.explore.boutique'), url: "/boutique" }
 ];
 
-// Enlaces para subcategorías de productos
-const getProductCategories = (t: any) => [
-  { name: t('footer.popularProducts.flourAndDough'), url: "/productos/harina-masa" },
-  { name: t('footer.popularProducts.saucesAndDressings'), url: "/productos/salsas-aderezos" },
-  { name: t('footer.popularProducts.snacks'), url: "/productos/paquetes-snacks" }
-];
-
-// Enlaces para regiones gastronómicas
-const getFoodRegions = (t: any) => [
-  { name: t('footer.gastronomy.northAmerica'), url: "/comidas/norte-america" },
-  { name: t('footer.gastronomy.centralAmerica'), url: "/comidas/centro-america" },
-  { name: t('footer.gastronomy.southAmerica'), url: "/comidas/sur-america" }
-];
-
-// Enlaces para categorías de boutique
-const getBoutiqueCategories = (t: any) => [
-  { name: t('footer.boutique.clothing'), url: "/boutique/ropa" },
-  { name: t('footer.boutique.accessories'), url: "/boutique/accesorios" },
-  { name: t('footer.boutique.souvenirs'), url: "/boutique/souvenirs" }
-];
-
-// Enlaces para información corporativa
-const getCompanyLinks = (t: any) => [
+const getCompanyLinks = (t: (key: string) => string) => [
   { name: t('footer.company.aboutUs'), url: "/sobre-nosotros" },
   { name: t('footer.company.blog'), url: "/blog" },
   { name: t('footer.company.terms'), url: "/terminos" },
@@ -72,19 +52,21 @@ const getCompanyLinks = (t: any) => [
   { name: t('footer.company.faq'), url: "/faq" }
 ];
 
+const FOOTER_LANGS: { code: Lang; key: string }[] = [
+  { code: 'es', key: 'footer.languages.spanish' },
+  { code: 'fr', key: 'footer.languages.french' },
+  { code: 'en', key: 'footer.languages.english' },
+];
+
 export function Footer() {
   const pathname = usePathname();
   const { t } = useTranslation();
+  const { currentLanguage, setLanguage } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   const mainCategories = getMainCategories(t);
-  const productCategories = getProductCategories(t);
-  const foodRegions = getFoodRegions(t);
-  const boutiqueCategories = getBoutiqueCategories(t);
   const companyLinks = getCompanyLinks(t);
 
-  // No renderizar Footer en rutas de administración, EXCEPTO en las páginas de login.
-  // Tampoco en /factura/* (la factura debe imprimirse sin footer).
   const isDashboardRoute = (pathname?.startsWith('/restaurante') && pathname !== '/restaurante/login') ||
     (pathname?.startsWith('/admin') && pathname !== '/admin/login') ||
     pathname?.startsWith('/factura');
@@ -93,25 +75,45 @@ export function Footer() {
     return null;
   }
 
+  const link = cn(
+    "text-white/75 hover:text-white text-sm inline-flex min-h-11 items-center",
+    shopChrome.focusOnPurple,
+  );
+
   return (
-    <footer className="bg-gray-900 text-white pt-12 pb-6" itemScope itemType="https://schema.org/WPFooter">
-      <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* About */}
-          <div>
-            <div className="flex items-center mb-4">
-              <Globe2 className="h-6 w-6 text-indigo-400 mr-2" />
-              <h2 className="text-xl font-bold">{t('footer.about.title')}</h2>
-            </div>
-            <p className="text-gray-400 text-sm md:text-base mb-4">
+    <footer className="bg-[var(--shop-purple)] text-white" itemScope itemType="https://schema.org/WPFooter">
+      <div className="container pt-16 pb-10 sm:pt-20">
+        <div className="mb-12 flex items-center">
+          <img
+                src="/logotoutaunclic.png"
+                alt=""
+                className="h-[60px] w-[60px] shrink- rounded-full"
+                width="60"
+                height="60"
+              /> 
+          <p className={shopChrome.wordmark}>
+            <span className="text-sm font-medium text-white whitespace-nowrap sm:text-[15px]">Tout à un</span>
+            <span className="text-sm font-bold text-white whitespace-nowrap sm:text-[15px]">Clic Là</span>
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-16 md:items-start">
+          <div className="min-w-0">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-white/60 mb-4">
+              {t('footer.about.title')}
+            </h3>
+            <p className="text-white/75 text-sm mb-5 leading-relaxed">
               {t('footer.about.description')}
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-1">
               {socialLinks.map((social, index) => (
                 <a
                   key={index}
                   href={social.url}
-                  className="bg-gray-800 hover:bg-indigo-600 p-2 rounded-full transition-colors duration-200"
+                  className={cn(
+                    "inline-flex items-center justify-center rounded-full text-white/80 hover:bg-white/10 hover:text-white",
+                    shopChrome.tap,
+                    shopChrome.focusOnPurple,
+                  )}
                   aria-label={social.ariaLabel}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -123,128 +125,107 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Categorías principales */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-indigo-300">
+          <div className="min-w-0">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-white/60 mb-4">
               {t('footer.explore.title')}
             </h3>
             <nav>
-              <ul className="space-y-2">
-                {mainCategories.map((link, index) => (
+              <ul className="space-y-0.5">
+                {mainCategories.map((item, index) => (
                   <li key={index}>
-                    <Link
-                      href={link.url}
-                      className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center"
-                    >
-                      <span className="mr-1">›</span> {link.name}
+                    <Link href={item.url} className={link}>
+                      {item.name}
                     </Link>
                   </li>
                 ))}
               </ul>
             </nav>
           </div>
-          {/* Productos Populares — ocultado temporalmente (conservar para reactivar) */}
-          {false && (
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-indigo-300">
-              {t('footer.popularProducts.title')}
-            </h3>
-            <nav>
-              <ul className="space-y-2">
-                {productCategories.map((cat, index) => (
-                  <li key={index}>
-                    <Link
-                      href={cat.url}
-                      className="text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center"
-                    >
-                      <span className="mr-1">›</span> {cat.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-          )}
 
-          {/* Contacto e Información */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-indigo-300">
+          <div className="min-w-0">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-white/60 mb-4">
               {t('footer.contact.title')}
             </h3>
             <address className="not-italic" itemScope itemType="https://schema.org/Organization">
               <meta itemProp="name" content="Tout à un Clic LA" />
-              <ul className="space-y-2">
-                <li className="flex items-start text-sm md:text-base">
-                  <MapPin className="h-5 w-5 text-indigo-400 mr-2 mt-0.5 flex-shrink-0" />                  <span className="text-gray-400" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
+              <ul className="space-y-3">
+                <li className="flex items-start text-sm">
+                  <MapPin className="h-4 w-4 text-white/70 mr-2 mt-0.5 flex-shrink-0" />
+                  <span className="text-white/75" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
                     {t('footer.contact.address')}
                   </span>
                 </li>
-                <li className="flex items-center text-sm md:text-base">
-                  <Mail className="h-5 w-5 text-indigo-400 mr-2 flex-shrink-0" />
-                  <a href="mailto:serviceclient@toutaunclicla.com" className="text-gray-400 hover:text-white transition-colors duration-200" itemProp="email">
+                <li className="flex min-w-0 items-center text-sm">
+                  <Mail className="h-4 w-4 text-white/70 mr-2 flex-shrink-0" />
+                  <a href="mailto:serviceclient@toutaunclicla.com" className={cn(link, 'block min-w-0 max-w-full break-all')} itemProp="email">
                     {t('footer.contact.email')}
                   </a>
                 </li>
-                <li className="mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-transparent border-indigo-500 text-indigo-300 hover:bg-indigo-500 hover:text-white"
+                <li className="mt-3">
+                  <button
+                    type="button"
+                    className={cn(
+                      "inline-flex h-11 min-h-11 items-center justify-center rounded-full bg-white px-5 text-sm font-medium text-[var(--shop-purple)] hover:bg-white/90",
+                      shopChrome.focusOnPurple,
+                    )}
                     onClick={() => window.open('https://wa.me/14384626255?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20sus%20productos%20y%20servicios.', '_blank')}
                   >
                     {t('footer.contact.contactNow')}
-                  </Button>
+                  </button>
                 </li>
               </ul>
             </address>
           </div>
         </div>
 
-        {/* Enlaces de Información */}
-        <div className="mt-8 pt-6 border-t border-gray-800">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-            {companyLinks.map((link, index) => (
-              <Link
-                key={index}
-                href={link.url}
-                className="text-gray-500 hover:text-indigo-300 text-sm transition-colors duration-200"
-              >
-                {link.name}
+        <div className="mt-12 pt-8 border-t border-white/20">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+            {companyLinks.map((item, index) => (
+              <Link key={index} href={item.url} className={link}>
+                {item.name}
               </Link>
             ))}
           </div>
-        </div>        {/* Cambiador de idioma y copyright */}
-        {/* Cambiador de idioma y copyright */}
-        <div className="border-t border-gray-800 mt-8 pt-6">
+        </div>
+        <div className="border-t border-white/20 mt-6 pt-6">
           <div className="flex flex-col xl:flex-row justify-between items-center gap-4">
             <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center">
-              <div className="flex space-x-4">
-                <Link href="/es" className="text-gray-500 hover:text-white transition-colors duration-200 text-sm">
-                  {t('footer.languages.spanish')}
-                </Link>
-                <span className="text-gray-700">|</span>
-                <Link href="/fr" className="text-gray-500 hover:text-white transition-colors duration-200 text-sm">
-                  {t('footer.languages.french')}
-                </Link>
-                <span className="text-gray-700">|</span>
-                <Link href="/en" className="text-gray-500 hover:text-white transition-colors duration-200 text-sm">
-                  {t('footer.languages.english')}
-                </Link>
+              <div className="flex items-center gap-1" role="group" aria-label="Language">
+                {FOOTER_LANGS.map((lang, i) => {
+                  const active = currentLanguage === lang.code;
+                  return (
+                    <span key={lang.code} className="flex items-center">
+                      {i > 0 && <span className="mx-1 text-white/30" aria-hidden>|</span>}
+                      <button
+                        type="button"
+                        onClick={() => setLanguage(lang.code)}
+                        aria-pressed={active}
+                        lang={lang.code}
+                        className={cn(
+                          "inline-flex min-h-11 items-center px-1 text-sm",
+                          shopChrome.focusOnPurple,
+                          active ? "font-semibold text-white" : "text-white/70 hover:text-white",
+                        )}
+                      >
+                        {t(lang.key)}
+                      </button>
+                    </span>
+                  );
+                })}
               </div>
-              
-              {/* Accesos de Administración */}
+
               <div className="flex space-x-4 items-center">
-                <Link href="/admin" className="text-gray-600 hover:text-indigo-400 transition-colors duration-200 text-xs flex items-center gap-1 opacity-70 hover:opacity-100">
+                <Link href="/admin" className={cn("text-white/70 hover:text-white text-xs inline-flex min-h-11 items-center gap-1", shopChrome.focusOnPurple)}>
                   <span>{t('portals.footer.admin')}</span>
                 </Link>
-                <span className="text-gray-800">|</span>
-                <Link href="/restaurante" className="text-gray-600 hover:text-indigo-400 transition-colors duration-200 text-xs flex items-center gap-1 opacity-70 hover:opacity-100">
+                <span className="text-white/30">|</span>
+                <Link href="/restaurante" className={cn("text-white/70 hover:text-white text-xs inline-flex min-h-11 items-center gap-1", shopChrome.focusOnPurple)}>
                   <span>{t('portals.footer.restaurantAdmin')}</span>
                 </Link>
               </div>
             </div>
 
-            <p className="text-gray-500 text-xs md:text-sm text-center">
+            <p className="text-white/70 text-xs md:text-sm text-center">
               {t('footer.copyright').replace('{year}', currentYear.toString())}
             </p>
           </div>

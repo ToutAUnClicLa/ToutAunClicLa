@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { ShoppingCart, Plus, Minus, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/common/ui/button';
@@ -8,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useTranslation } from '@/hooks/useTranslation';
-import AuthModal from '@/components/features/auth/AuthModal';
+import { loginPath } from '@/lib/shop-auth';
 
 interface AddToCartButtonProps {
   productId: number;
@@ -37,6 +38,8 @@ export function AddToCartButton({
   size = 'md',
   deliveryOptions
 }: AddToCartButtonProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const { user } = useAuth();
   const { t } = useTranslation();
   const { addToCart, isLoading: cartLoading } = useCart();
@@ -47,12 +50,11 @@ export function AddToCartButton({
   } = useFavorites();
 
   const [quantity, setQuantity] = useState(1);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const handleAddToCart = async () => {
     if (!user) {
-      setShowAuthModal(true);
+      router.push(loginPath(pathname));
       return;
     }
 
@@ -99,7 +101,7 @@ export function AddToCartButton({
 
   const handleToggleFavorite = async () => {
     if (!user) {
-      setShowAuthModal(true);
+      router.push(loginPath(pathname));
       return;
     }
 
@@ -210,10 +212,6 @@ export function AddToCartButton({
         )}
       </div>
 
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-      />
     </>
   );
 }

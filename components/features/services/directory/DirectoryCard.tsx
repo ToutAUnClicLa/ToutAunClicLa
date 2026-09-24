@@ -6,6 +6,8 @@ import { MapPin, Star, Sparkles, ArrowUpRight } from 'lucide-react';
 import type { DirectoryPro } from '@/lib/pro/endpoints';
 import { socialIcon } from '@/components/pro/socialBrand';
 import { useTranslation } from '@/hooks/useTranslation';
+import { shopChrome } from '@/lib/shop-theme';
+import { cn } from '@/lib/utils';
 
 function initials(pro: DirectoryPro) {
   return `${(pro.nombre || '')[0] || ''}${(pro.apellido || '')[0] || ''}`.toUpperCase() || '?';
@@ -20,7 +22,7 @@ function Socials({ redes }: { redes?: DirectoryPro['redes'] }) {
         return (
           <span
             key={r.plataforma + r.url}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[var(--shop-hairline)] text-[var(--shop-muted)]"
             title={r.plataforma}
           >
             <Icon className="h-3.5 w-3.5" aria-hidden />
@@ -28,7 +30,7 @@ function Socials({ redes }: { redes?: DirectoryPro['redes'] }) {
         );
       })}
       {redes.length > 4 && (
-        <span className="text-xs text-slate-400 dark:text-slate-500">+{redes.length - 4}</span>
+        <span className="text-xs text-[var(--shop-muted)]">+{redes.length - 4}</span>
       )}
     </div>
   );
@@ -37,13 +39,11 @@ function Socials({ redes }: { redes?: DirectoryPro['redes'] }) {
 type Variant = 'max' | 'pro' | 'free';
 
 const PILL: Record<Variant, string> = {
-  max: 'bg-amber-100 text-amber-800 ring-1 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/20',
-  pro: 'bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-500/20',
-  free: 'bg-slate-100 text-slate-500 ring-1 ring-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700',
+  max: 'border-[var(--shop-hairline)] bg-[var(--food-wash)] text-[var(--food-ink)]',
+  pro: 'border-[var(--shop-purple-muted)] bg-[var(--shop-purple-wash)] text-[var(--svc-ink)]',
+  free: 'border-[var(--shop-hairline)] bg-white text-[var(--shop-muted)]',
 };
 
-// Contenido compartido: foto 4:5 a la izquierda, info a la derecha. Idéntico en
-// los tres tiers para un grid simétrico; lo que cambia es el borde y el pill.
 function ProCardContent({
   pro,
   variant,
@@ -58,7 +58,7 @@ function ProCardContent({
   return (
     <>
       {pro.foto_url ? (
-        <div className="relative aspect-[4/5] w-24 shrink-0 overflow-hidden rounded-xl sm:w-28">
+        <div className="relative aspect-[4/5] w-24 shrink-0 overflow-hidden rounded-xl border border-[var(--shop-hairline)] sm:w-28">
           <Image
             src={pro.foto_url}
             alt=""
@@ -69,11 +69,12 @@ function ProCardContent({
         </div>
       ) : (
         <div
-          className={`flex aspect-[4/5] w-24 shrink-0 items-center justify-center rounded-xl text-2xl font-semibold sm:w-28 ${
+          className={cn(
+            'flex aspect-[4/5] w-24 shrink-0 items-center justify-center rounded-xl border border-[var(--shop-hairline)] text-2xl font-semibold sm:w-28',
             isMax
-              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300'
-              : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
-          }`}
+              ? 'bg-[var(--shop-purple-wash)] text-[var(--shop-purple)]'
+              : 'bg-[var(--shop-canvas-muted)] text-[var(--shop-muted)]',
+          )}
         >
           {initials(pro)}
         </div>
@@ -82,13 +83,16 @@ function ProCardContent({
       <div className="flex min-w-0 flex-1 flex-col py-0.5">
         <div className="flex items-center gap-2">
           <span
-            className={`inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${PILL[variant]}`}
+            className={cn(
+              'inline-flex w-fit items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider',
+              PILL[variant],
+            )}
           >
             {isMax && <Star className="h-3 w-3" aria-hidden />}
             {isMax ? 'Max' : variant === 'pro' ? 'Pro' : 'Free'}
           </span>
           {isMax && pro.destacado && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--food-ink)]">
               <Sparkles className="h-3 w-3" aria-hidden />
               {t('pro.directory.featured')}
             </span>
@@ -96,24 +100,25 @@ function ProCardContent({
         </div>
 
         <h3
-          className={`mt-1.5 line-clamp-1 text-base font-semibold text-slate-900 dark:text-slate-100 ${
-            clickable ? 'transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-400' : ''
-          }`}
+          className={cn(
+            'mt-1.5 line-clamp-1 text-base font-semibold text-[var(--shop-ink)]',
+            clickable && 'transition-colors group-hover:text-[var(--shop-purple)]',
+          )}
         >
           {pro.nombre} {pro.apellido}
         </h3>
         {pro.titulo && (
-          <p className="mt-0.5 line-clamp-1 text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-0.5 line-clamp-1 text-sm text-[var(--shop-muted)]">
             {pro.titulo}
             {pro.empresa && (
-              <span className="text-slate-400 dark:text-slate-500"> · {pro.empresa}</span>
+              <span className="text-gray-400"> · {pro.empresa}</span>
             )}
           </p>
         )}
 
         <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-2 pt-3">
           {pro.ciudad && (
-            <span className="inline-flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+            <span className="inline-flex items-center gap-1 text-xs text-[var(--shop-muted)]">
               <MapPin className="h-3.5 w-3.5" aria-hidden />
               {pro.ciudad}
             </span>
@@ -124,7 +129,7 @@ function ProCardContent({
 
       {clickable && (
         <ArrowUpRight
-          className="h-5 w-5 shrink-0 self-start text-slate-300 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-emerald-600 dark:text-slate-600"
+          className="h-5 w-5 shrink-0 self-start text-[var(--shop-hairline)] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[var(--shop-purple)]"
           aria-hidden
         />
       )}
@@ -132,36 +137,28 @@ function ProCardContent({
   );
 }
 
-// ─── MAX — borde dorado+esmeralda iluminado ──────────────────────────────────
+const paidCard =
+  'pro-glow group flex gap-4 rounded-xl bg-white p-3 sm:p-4';
+
 export function DirectoryCardMax({ pro }: { pro: DirectoryPro }) {
   return (
-    <Link
-      href={`/card/${pro.slug}`}
-      className="pro-glow pro-glow-max group flex gap-4 rounded-2xl bg-white p-3 dark:bg-slate-900 sm:p-4"
-    >
+    <Link href={`/card/${pro.slug}`} className={cn(paidCard, 'pro-glow-max', shopChrome.focus)}>
       <ProCardContent pro={pro} variant="max" clickable />
     </Link>
   );
 }
 
-// ─── PRO — borde esmeralda iluminado (más sobrio) ────────────────────────────
 export function DirectoryCardPro({ pro }: { pro: DirectoryPro }) {
   return (
-    <Link
-      href={`/card/${pro.slug}`}
-      className="pro-glow pro-glow-pro group flex gap-4 rounded-2xl bg-white p-3 dark:bg-slate-900 sm:p-4"
-    >
+    <Link href={`/card/${pro.slug}`} className={cn(paidCard, 'pro-glow-pro', shopChrome.focus)}>
       <ProCardContent pro={pro} variant="pro" clickable />
     </Link>
   );
 }
 
-// ─── FREE — misma tarjeta, borde neutro y SIN perfil público (no clicable) ───
-// El perfil /card/:slug es de pago; Free aparece completo en el directorio pero
-// no enlaza a ningún lado.
 export function DirectoryCardFree({ pro }: { pro: DirectoryPro }) {
   return (
-    <div className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 sm:p-4">
+    <div className="flex gap-4 rounded-xl border border-[var(--shop-hairline)] bg-white p-3 sm:p-4">
       <ProCardContent pro={pro} variant="free" clickable={false} />
     </div>
   );
