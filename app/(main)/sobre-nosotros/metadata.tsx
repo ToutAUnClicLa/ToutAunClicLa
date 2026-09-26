@@ -16,13 +16,6 @@ export const metadata: Metadata = {
     title: 'Sobre Nosotros - ToutAunClicLa',
     description: 'Conoce nuestra historia y misión de conectar las Américas con productos auténticos.',
   },
-  alternates: {
-    languages: {
-      'es-ES': '/sobre-nosotros',
-      'en-US': '/about-us',
-      'fr-CA': '/a-propos',
-    },
-  },
   robots: {
     index: true,
     follow: true,

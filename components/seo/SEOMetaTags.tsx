@@ -114,24 +114,6 @@ export function SEOMetaTags({ page, product, categoryName }: SEOMetaTagsProps) {
       canonicalLink.setAttribute('href', `https://www.toutaunclicla.com/${page}`);
     }
 
-    // Add hreflang tags for multilingual SEO
-    const languages = ['es', 'en', 'fr'];
-    languages.forEach(lang => {
-      let hrefLang = document.querySelector(`link[hreflang="${lang}"]`);
-      if (!hrefLang) {
-        hrefLang = document.createElement('link');
-        hrefLang.setAttribute('rel', 'alternate');
-        hrefLang.setAttribute('hreflang', lang);
-        document.head.appendChild(hrefLang);
-      }
-      
-      if (page === 'product' && product && categoryName) {
-        hrefLang.setAttribute('href', `https://www.toutaunclicla.com/${lang}/${categoryName}/${product.id}`);
-      } else {
-        hrefLang.setAttribute('href', `https://www.toutaunclicla.com/${lang}/${page}`);
-      }
-    });
-
     // Cleanup function
     return () => {
       const generatedTags = document.querySelectorAll('meta[data-seo-generated]');
