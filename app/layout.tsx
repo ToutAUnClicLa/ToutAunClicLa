@@ -44,11 +44,6 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.toutaunclicla.com'),
   alternates: {
     canonical: '/',
-    languages: {
-      'es': '/es',
-      'fr': '/fr',
-      'en': '/en',
-    },
   },
   robots: {
     index: true,
@@ -148,12 +143,6 @@ export default function RootLayout({
         <link rel="icon" href="/icons/FaviconFinal.png" type="image/png" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
-
-        {/* Etiquetas hreflang para SEO multilingüe */}
-        <link rel="alternate" hrefLang="es" href="https://www.toutaunclicla.com/es" />
-        <link rel="alternate" hrefLang="fr" href="https://www.toutaunclicla.com/fr" />
-        <link rel="alternate" hrefLang="en" href="https://www.toutaunclicla.com/en" />
-        <link rel="alternate" hrefLang="x-default" href="https://www.toutaunclicla.com" />
       </head>
       <body className={inter.className}>
         <Script
