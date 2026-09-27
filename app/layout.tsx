@@ -42,9 +42,6 @@ export const metadata: Metadata = {
   publisher: 'Tout à un Clic LA',
   authors: [{ name: 'Tout à un Clic LA Team', url: 'https://www.toutaunclicla.com' }],
   metadataBase: new URL('https://www.toutaunclicla.com'),
-  alternates: {
-    canonical: '/',
-  },
   robots: {
     index: true,
     follow: true,
