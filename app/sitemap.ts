@@ -4,7 +4,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.toutaunclicla.
 
 const staticRoutes: MetadataRoute.Sitemap = [
   { url: '/', lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
-  { url: '/productos', lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
+
   { url: '/comidas', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
   { url: '/boutique', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
   { url: '/servicios', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
