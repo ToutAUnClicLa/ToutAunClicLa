@@ -75,19 +75,34 @@ export const getSubscription = () => proFetch<SubscriptionState>('/me/subscripti
 export const syncSubscription = () =>
   proFetch<SubscriptionState>('/me/subscription/sync', { method: 'POST', body: {} });
 
+// Origen de esta pestaña. Stripe debe devolver aquí, no al dominio de prod.
+const billingOrigin = () => window.location.origin;
+
 export const createCheckout = (plan: 'pro' | 'max', periodo: 'mensual' | 'anual') =>
-  proFetch<{ url: string }>('/me/checkout', { method: 'POST', body: { plan, periodo } }).then(
-    (r) => r.url,
-  );
-
-export const openBillingPortal = () =>
-  proFetch<{ url: string }>('/me/billing-portal', { method: 'POST', body: {} }).then((r) => r.url);
-
-export const changeSubscription = (plan: 'free' | 'pro' | 'max', periodo?: 'mensual' | 'anual') =>
-  proFetch<SubscriptionState>('/me/subscription/change', {
+  proFetch<{ url: string }>('/me/checkout', {
     method: 'POST',
-    body: plan === 'free' ? { plan } : { plan, periodo },
-  });
+    body: {
+      plan,
+      periodo,
+      success_url: `${billingOrigin()}/pro/dashboard?checkout=success`,
+      cancel_url: `${billingOrigin()}/pro/pricing?checkout=cancel`,
+    },
+  }).then((r) => r.url);
+
+export const openBillingPortal = (change?: {
+  plan: 'free' | 'pro' | 'max';
+  periodo?: 'mensual' | 'anual';
+}) =>
+  proFetch<{ url: string }>('/me/billing-portal', {
+    method: 'POST',
+    body: {
+      return_url: `${billingOrigin()}/pro/dashboard?billing=updated`,
+      ...(change?.plan ? { plan: change.plan } : {}),
+      ...(change?.plan && change.plan !== 'free' && change.periodo
+        ? { periodo: change.periodo }
+        : {}),
+    },
+  }).then((r) => r.url);
 
 // --- Analytics ---------------------------------------------------------------
 

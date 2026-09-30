@@ -9,7 +9,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import {
   createCheckout,
   getSubscription,
-  changeSubscription,
+  openBillingPortal,
   type SubscriptionState,
 } from '@/lib/pro/endpoints';
 import { Button } from '@/components/pro/ui/button';
@@ -41,7 +41,7 @@ const PLAN_FEATURE_KEYS: Record<PlanId, string[]> = {
 
 export function PricingPlans() {
   const router = useRouter();
-  const { proUser, refresh } = useProAuth();
+  const { proUser } = useProAuth();
   const { t } = useTranslation();
   const [periodo, setPeriodo] = useState<Periodo>('mensual');
   const [loadingPlan, setLoadingPlan] = useState<PlanId | null>(null);
@@ -73,18 +73,16 @@ export function PricingPlans() {
     }
   };
 
-  // Misma suscripción Stripe (prorrateo). No pasa por el Customer Portal:
-  // "Continue" del portal no avanza hasta elegir otro producto a mano.
+  // Quien ya paga confirma el cambio en el Billing Portal. No se escribe el plan aquí.
   const onChangePlan = async (plan: PlanId) => {
     setLoadingPlan(plan);
     try {
-      const next = await changeSubscription(plan, plan === 'free' ? undefined : periodo);
-      setSub(next.subscription);
-      await refresh();
-      toast.success(t('pro.pricingPage.planUpdated'));
+      const url = await openBillingPortal(
+        plan === 'free' ? { plan } : { plan, periodo },
+      );
+      window.location.href = url;
     } catch {
       toast.error(t('pro.pricingPage.changeError'));
-    } finally {
       setLoadingPlan(null);
     }
   };
@@ -194,7 +192,6 @@ export function PricingPlans() {
                   </Button>
                 ) : plan.id === 'free' ? (
                   hasActiveSub ? (
-                    // Bajar a Free = cancelar al final del periodo (misma sub)
                     <Button
                       variant="secondary"
                       className="w-full"
@@ -213,7 +210,6 @@ export function PricingPlans() {
                     </Button>
                   )
                 ) : hasActiveSub ? (
-                  // Ya tiene suscripción: cambia el price in-app (misma sub)
                   <Button
                     variant={plan.destacado ? 'primary' : 'secondary'}
                     className="w-full"
