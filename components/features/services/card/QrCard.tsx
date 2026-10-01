@@ -7,11 +7,15 @@ import { useTranslation } from '@/hooks/useTranslation';
 interface Props {
   slug: string;
   dataUrl: string;
+  title?: string;
+  downloadLabel?: string;
 }
 
-export function QrCard({ slug, dataUrl }: Props) {
+export function QrCard({ slug, dataUrl, title, downloadLabel }: Props) {
   const { t } = useTranslation();
   const [downloading, setDownloading] = useState(false);
+  const qrTitle = title || t('pro.card.qrTitle');
+  const qrDownload = downloadLabel || t('pro.card.qrDownload');
 
   const onDownload = async () => {
     setDownloading(true);
@@ -32,12 +36,12 @@ export function QrCard({ slug, dataUrl }: Props) {
     <div className="flex flex-col items-center gap-4 rounded-lg border border-zinc-200 bg-white p-6">
       <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
         <QrCode className="h-4 w-4" aria-hidden />
-        {t('pro.card.qrTitle')}
+        {qrTitle}
       </div>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={dataUrl}
-        alt={t('pro.card.qrTitle')}
+        alt={qrTitle}
         width={200}
         height={200}
         className="h-48 w-48 rounded-lg"
@@ -49,7 +53,7 @@ export function QrCard({ slug, dataUrl }: Props) {
         className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors duration-[180ms] ease-out hover:border-indigo-300 hover:text-indigo-700 disabled:opacity-50"
       >
         <Download className="h-4 w-4" aria-hidden />
-        {t('pro.card.qrDownload')}
+        {qrDownload}
       </button>
     </div>
   );

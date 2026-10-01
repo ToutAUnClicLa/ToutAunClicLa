@@ -10,6 +10,11 @@ interface PublicCardBodyStrings {
   speaks: string;
   socialsSection: string;
   contactSection: string;
+  share?: string;
+  shareAria?: string;
+  copied?: string;
+  copyOk?: string;
+  copyFail?: string;
 }
 
 interface PublicCardBodyProps {
@@ -45,7 +50,22 @@ export function PublicCardBody({ pro, name, url, t, qr }: PublicCardBodyProps) {
           )}
 
           <div className="flex flex-wrap items-center gap-2">
-            <ShareButton title={name} text={pro.titulo || undefined} url={url} />
+            <ShareButton
+              title={name}
+              text={pro.titulo || undefined}
+              url={url}
+              labels={
+                t.share
+                  ? {
+                      share: t.share,
+                      shareAria: t.shareAria || t.share,
+                      copied: t.copied || t.share,
+                      copyOk: t.copyOk || t.share,
+                      copyFail: t.copyFail || t.share,
+                    }
+                  : undefined
+              }
+            />
             <a
               href={vcardUrl(pro.slug)}
               className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-colors duration-[180ms] ease-out hover:bg-indigo-700"
