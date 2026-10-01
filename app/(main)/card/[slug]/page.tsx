@@ -150,8 +150,20 @@ export default async function PublicProfilePage({ params, searchParams }: PagePr
             speaks: t.card.speaks,
             socialsSection: t.card.socialsSection,
             contactSection: t.card.contactSection,
+            share: t.card.share,
+            shareAria: t.card.shareAria,
+            copied: t.card.copied,
+            copyOk: t.card.copyOk,
+            copyFail: t.card.copyFail,
           }}
-          qr={qrDataUrl ? <QrCard slug={pro.slug} dataUrl={qrDataUrl} /> : undefined}
+          qr={qrDataUrl ? (
+            <QrCard
+              slug={pro.slug}
+              dataUrl={qrDataUrl}
+              title={t.card.qrTitle}
+              downloadLabel={t.card.qrDownload}
+            />
+          ) : undefined}
         />
 
         {pro.galeria && pro.galeria.length > 0 && (

@@ -9,11 +9,23 @@ interface Props {
   title: string;
   text?: string;
   url: string;
+  labels?: {
+    share: string;
+    shareAria: string;
+    copied: string;
+    copyOk: string;
+    copyFail: string;
+  };
 }
 
-export function ShareButton({ title, text, url }: Props) {
+export function ShareButton({ title, text, url, labels }: Props) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
+  const share = labels?.share || t('pro.card.share');
+  const shareAria = labels?.shareAria || t('pro.card.shareAria');
+  const copiedLabel = labels?.copied || t('pro.card.copied');
+  const copyOk = labels?.copyOk || t('pro.card.copyOk');
+  const copyFail = labels?.copyFail || t('pro.card.copyFail');
 
   const onShare = async () => {
     // Web Share API (móvil / navegadores compatibles)
@@ -29,10 +41,10 @@ export function ShareButton({ title, text, url }: Props) {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      toast.success(t('pro.card.copyOk'));
+      toast.success(copyOk);
       setTimeout(() => setCopied(false), 1800);
     } catch {
-      toast.error(t('pro.card.copyFail'));
+      toast.error(copyFail);
     }
   };
 
@@ -40,11 +52,11 @@ export function ShareButton({ title, text, url }: Props) {
     <button
       type="button"
       onClick={onShare}
-      aria-label={t('pro.card.shareAria')}
+      aria-label={shareAria}
       className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-zinc-200 bg-white px-5 py-2.5 text-sm font-medium text-zinc-700 transition-colors duration-[180ms] ease-out hover:border-indigo-300 hover:text-indigo-700"
     >
       {copied ? <Check className="h-4 w-4" aria-hidden /> : <Share2 className="h-4 w-4" aria-hidden />}
-      {copied ? t('pro.card.copied') : t('pro.card.share')}
+      {copied ? copiedLabel : share}
     </button>
   );
 }

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { LogOut } from 'lucide-react';
 import { useProAuth } from '@/contexts/ProAuthContext';
+import { useProAuthStore } from '@/lib/pro/authStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ProLogo } from '@/components/pro/ProLogo';
 import { ProLangSwitcher } from '@/components/pro/ProLangSwitcher';
@@ -15,14 +16,18 @@ import { Button } from '@/components/pro/ui/button';
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { proUser, loading, logout } = useProAuth();
+  const hydrated = useProAuthStore((s) => s.hydrated);
   const accountLoading = useProHeaderAccountLoading();
   const { t } = useTranslation();
 
+  // loading arranca en false. Sin esperar a hydrated, el primer effect
+  // trata la vuelta del portal como sesión cerrada y manda a /pro.
   useEffect(() => {
-    if (!loading && (!proUser || !proUser.verificado)) {
+    if (!hydrated || loading) return;
+    if (!proUser || !proUser.verificado) {
       router.replace('/pro');
     }
-  }, [loading, proUser, router]);
+  }, [hydrated, loading, proUser, router]);
 
   return (
     <div className="min-h-screen">
