@@ -3,33 +3,26 @@
  * Utilidades para validación de direcciones de Montreal
  */
 
-// FSAs válidos para Montreal y Rivera Sur (Forward Sortation Areas)
+// FSAs con tarifa. Mismo conjunto y orden alfabético que
+// SHIPPING_COSTS_BY_POSTAL_PREFIX en el backend.
 export const MONTREAL_FSA_CODES = [
-  // Montreal específicos (según README backend)
-  'H1N', 'H1M', 'H1P', 'H1H', 'H1R', 'H1S', 'H1T', 'H1V', 'H1W', 'H1X', 'H1K',
-  // Códigos H2* (todos los que comienzan con H2)
-  'H2A', 'H2B', 'H2C', 'H2E', 'H2G', 'H2H', 'H2J', 'H2K', 'H2L', 'H2M',
-  'H2N', 'H2P', 'H2R', 'H2S', 'H2T', 'H2V', 'H2W', 'H2X', 'H2Y', 'H2Z',
-  // Códigos H3* (todos los que comienzan con H3)
-  'H3A', 'H3B', 'H3C', 'H3E', 'H3G', 'H3H', 'H3J', 'H3K', 'H3L', 'H3M',
-  'H3N', 'H3P', 'H3R', 'H3S', 'H3T', 'H3V', 'H3W', 'H3X', 'H3Y', 'H3Z',
-  // Códigos H4* (todos los que comienzan con H4)
-  'H4A', 'H4B', 'H4C', 'H4E', 'H4G', 'H4H', 'H4J', 'H4K', 'H4L', 'H4M',
-  'H4N', 'H4P', 'H4R', 'H4S', 'H4T', 'H4V', 'H4W', 'H4X', 'H4Y', 'H4Z',
-  // Códigos adicionales Montreal
-  'H8Z', 'H8Y', 'H8T', 'H8S', 'H8R', 'H8N', 'H8P',
-  // Códigos H9
-  'H9R', 'H9S', 'H9G', 'H9A', 'H9B', 'H9P',
-  // Rivera Sur códigos
-  'J5R', 'J4B', 'J3Y', 'J4N', 'J4M', 'J4G', 'J4L', 'J4J', 'J4H', 'J4K',
-  'J4T', 'J4V', 'J4R', 'J4Z', 'J4S', 'J4W', 'J4X', 'J4Y', 'J3Z',
-  // Nuevas ciudades de domicilio
-  'J3V', // Saint-Bruno-de-Montarville
-  'J3X', // Varennes
-  'J3L', // Chambly
-  'J5C', // Saint-Catherine
-  'J3E', // Saint-Julie
-  'J3G'  // Beloeil
+  'H1A', 'H1B', 'H1C', 'H1D', 'H1E', 'H1F', 'H1G', 'H1H',
+  'H1J', 'H1K', 'H1L', 'H1M', 'H1P', 'H1R', 'H1S', 'H1T',
+  'H1V', 'H1W', 'H1X', 'H1Y', 'H1Z', 'H2A', 'H2B', 'H2C',
+  'H2E', 'H2G', 'H2H', 'H2J', 'H2K', 'H2L', 'H2M', 'H2P',
+  'H2R', 'H2S', 'H2T', 'H2V', 'H2W', 'H2X', 'H2Y', 'H2Z',
+  'H3A', 'H3B', 'H3C', 'H3D', 'H3E', 'H3F', 'H3G', 'H3H',
+  'H3J', 'H3K', 'H3L', 'H3M', 'H3N', 'H3P', 'H3R', 'H3S',
+  'H3T', 'H3V', 'H3W', 'H3Y', 'H3Z', 'H4A', 'H4B', 'H4E',
+  'H4G', 'H4H', 'H4N', 'H4P', 'H4V', 'H4W', 'H4X', 'H7A',
+  'H7B', 'H7C', 'H7D', 'H7E', 'H7F', 'H7G', 'H7H', 'H7K',
+  'H7L', 'H7M', 'H7P', 'H7R', 'H7V', 'H7W', 'H7X', 'H7Y',
+  'H8N', 'H8P', 'H8R', 'J0L', 'J2W', 'J2X', 'J2Y', 'J3A',
+  'J3B', 'J3E', 'J3G', 'J3L', 'J3V', 'J3X', 'J3Y', 'J3Z',
+  'J4B', 'J4G', 'J4H', 'J4J', 'J4K', 'J4L', 'J4M', 'J4N',
+  'J4P', 'J4R', 'J4S', 'J4T', 'J4V', 'J4W', 'J4X', 'J4Y',
+  'J4Z', 'J5A', 'J5B', 'J5C', 'J5R', 'J6A', 'J6V', 'J7A',
+  'J7B', 'J7E', 'J7G', 'J7H', 'J7P'
 ];
 
 /**
