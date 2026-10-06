@@ -4,6 +4,7 @@ Allow: /
 Allow: /sitemap.xml
 Allow: /productos
 Allow: /comidas
+Allow: /souvenirs
 Allow: /boutique
 Allow: /blog
 Allow: /sobre-nosotros
@@ -29,6 +30,7 @@ User-agent: Googlebot
 Allow: /
 Allow: /productos/
 Allow: /comidas/
+Allow: /souvenirs/
 Allow: /boutique/
 Allow: /blog/
 Disallow: /api/
@@ -39,6 +41,7 @@ User-agent: Bingbot
 Allow: /
 Allow: /productos/
 Allow: /comidas/
+Allow: /souvenirs/
 Allow: /boutique/
 Allow: /blog/
 Disallow: /api/
@@ -49,6 +52,7 @@ User-agent: DuckDuckBot
 Allow: /
 Allow: /productos/
 Allow: /comidas/
+Allow: /souvenirs/
 Allow: /boutique/
 Allow: /blog/
 Disallow: /api/

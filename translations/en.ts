@@ -1812,7 +1812,7 @@ export default {
       productsSubtitle: "Discover the best selection of Latin American products",
       comidasTitle: "Traditional Foods",
       comidasSubtitle: "Authentic flavors from all across Latin America - Traditional gastronomy in Montreal",
-      boutiqueTitle: "Boutique",
+      boutiqueTitle: "Souvenirs",
       boutiqueSubtitle: "Unique crafts and souvenirs - Latin American handmade products",
 
       // Filters
@@ -2164,7 +2164,7 @@ export default {
       keywords: "Latino food Montreal, Latin American food delivery, Latino restaurant Montreal, Mexican food, Colombian food, Peruvian food Quebec"
     },
     boutique: {
-      title: "Latin American Artisan Boutique | Souvenirs & Gifts | Montreal",
+      title: "Latin American Souvenirs | Crafts & Gifts | Montreal",
       description: "Exclusive boutique with crafts, traditional clothing and souvenirs from Latin America in Montreal. Unique and authentic products. Find the perfect gift!",
       keywords: "Latino boutique Montreal, Latin American crafts, Latin America souvenirs, traditional clothing, unique gifts, Latino store Quebec"
     }

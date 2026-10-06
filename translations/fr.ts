@@ -1801,7 +1801,7 @@ export default {
       productsSubtitle: "Découvrez la meilleure sélection de produits latino-américains",
       comidasTitle: "Cuisine Traditionnelle",
       comidasSubtitle: "Saveurs authentiques de toute l'Amérique Latine - Gastronomie traditionnelle à Montréal",
-      boutiqueTitle: "Boutique",
+      boutiqueTitle: "Souvenirs",
       boutiqueSubtitle: "Artisanat et souvenirs uniques - Produits artisanaux latino-américains",
 
       // Filtres
@@ -2159,7 +2159,7 @@ export default {
       keywords: "cuisine latino Montréal, livraison cuisine latino-américaine, restaurant latino Montréal, cuisine mexicaine, cuisine colombienne, cuisine péruvienne Québec"
     },
     boutique: {
-      title: "Boutique Artisanale Latino-Américaine | Souvenirs & Cadeaux | Montréal",
+      title: "Souvenirs Latino-Américains | Artisanat et Cadeaux | Montréal",
       description: "Boutique exclusive avec artisanat, vêtements traditionnels et souvenirs d'Amérique Latine à Montréal. Produits uniques et authentiques. Trouvez le cadeau parfait!",
       keywords: "boutique latino Montréal, artisanat latino-américain, souvenirs Amérique Latine, vêtements traditionnels, cadeaux uniques, magasin latino Québec"
     }

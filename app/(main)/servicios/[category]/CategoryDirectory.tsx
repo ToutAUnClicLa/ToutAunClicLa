@@ -39,6 +39,9 @@ const CATEGORY_IMAGE: Record<string, string> = {
   translation: '/services/translation.png',
   money: '/services/money.png',
   maintenance: '/services/maintenance.png',
+  employment: '/services/employment.png',
+  events: '/services/events.png',
+  marketing: '/services/marketing.png',
 };
 
 function useDebounced<T>(value: T, delay = 350): T {

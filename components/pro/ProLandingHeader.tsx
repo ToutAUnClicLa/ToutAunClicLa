@@ -35,7 +35,7 @@ export function ProLandingHeader() {
           <ProLogo compact />
         </Link>
 
-        <div className="flex shrink-0 items-center gap-1 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           <Link
             href="/"
             aria-label={t('pro.header.backToShop')}
@@ -67,7 +67,7 @@ export function ProLandingHeader() {
                   {`${proUser.nombre} ${proUser.apellido || ''}`.trim()}
                 </span>
               </div>
-              <Button size="sm">{t('pro.header.dashboard')}</Button>
+              <Button size="sm" className="h-11 px-2.5 py-0">{t('pro.header.dashboard')}</Button>
             </Link>
           ) : (
             <Link

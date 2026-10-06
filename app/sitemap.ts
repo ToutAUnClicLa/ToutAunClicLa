@@ -7,6 +7,9 @@ const staticRoutes: MetadataRoute.Sitemap = [
 
   { url: '/comidas', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
   { url: '/souvenirs', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
+  { url: '/souvenirs?subcategoria=accesorios', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+  { url: '/souvenirs?subcategoria=souvenirs', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+  { url: '/souvenirs?subcategoria=ropa', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
   { url: '/servicios', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
   { url: '/pro', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
   { url: '/pro/pricing', lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },

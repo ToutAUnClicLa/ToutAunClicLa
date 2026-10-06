@@ -970,7 +970,7 @@ export default {
       productsSubtitle: "Descubre la mejor selección de productos latinoamericanos",
       comidasTitle: "Comidas Tradicionales",
       comidasSubtitle: "Sabores auténticos de toda América Latina - Gastronomía tradicional en Montreal",
-      boutiqueTitle: "Boutique",
+      boutiqueTitle: "Souvenirs",
       boutiqueSubtitle: "Artesanías y souvenirs únicos - Productos artesanales latinoamericanos",
 
       // Filtros
@@ -2196,7 +2196,7 @@ export default {
       keywords: "comida latina Montreal, delivery comida latinoamericana, restaurante latino Montreal, comida mexicana, comida colombiana, comida peruana Quebec"
     },
     boutique: {
-      title: "Boutique Artesanal Latinoamericana | Souvenirs y Regalos | Montreal",
+      title: "Souvenirs Latinoamericanos | Artesanías y Regalos | Montreal",
       description: "Boutique exclusiva con artesanías, ropa tradicional y souvenirs de América Latina en Montreal. Productos únicos y auténticos. ¡Encuentra el regalo perfecto!",
       keywords: "boutique latina Montreal, artesanías latinoamericanas, souvenirs América Latina, ropa tradicional, regalos únicos, tienda latina Quebec"
     }

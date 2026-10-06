@@ -63,6 +63,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
             <Button
               variant="secondary"
               size="sm"
+              className="h-11 px-2.5 py-0"
               aria-label={t('pro.dashboard.logout')}
               disabled={!proUser}
               onClick={async () => {

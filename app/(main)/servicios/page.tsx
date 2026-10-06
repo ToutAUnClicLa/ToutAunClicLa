@@ -138,6 +138,7 @@ export default function ServicesPage() {
       titleKey: 'services.categories.employment.title',
       descKey: 'services.categories.employment.description',
       subServices: ['services.subservices.recruitment', 'services.subservices.placement', 'services.subservices.resumes'],
+      image: '/services/employment.png',
     },
     {
       id: 'events',
@@ -145,6 +146,7 @@ export default function ServicesPage() {
       titleKey: 'services.categories.events.title',
       descKey: 'services.categories.events.description',
       subServices: ['services.subservices.weddings', 'services.subservices.birthdays', 'services.subservices.catering'],
+      image: '/services/events.png',
     },
     {
       id: 'marketing',
@@ -152,6 +154,7 @@ export default function ServicesPage() {
       titleKey: 'services.categories.marketing.title',
       descKey: 'services.categories.marketing.description',
       subServices: ['services.subservices.social', 'services.subservices.ads', 'services.subservices.brand'],
+      image: '/services/marketing.png',
     },
   ];
 

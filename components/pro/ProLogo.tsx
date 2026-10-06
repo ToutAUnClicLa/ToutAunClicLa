@@ -6,26 +6,28 @@ export function ProLogo({
   compact = false,
 }: {
   className?: string;
-  /** Landing móvil: isotipo + Pro. El wordmark entra desde sm para no chocar con las acciones. */
+  /** Landing: "Tout À Un" sobre "Clic Là", con Pro al lado. */
   compact?: boolean;
 }) {
   return (
-    <span className={cn('inline-flex items-center gap-2 font-semibold tracking-tight', className)}>
+    <span className={cn('inline-flex items-center gap-1.5 font-semibold tracking-tight sm:gap-2', className)}>
       <Image
         src="/icons/logo.png"
-        alt="Tout À Un Clic Là"
+        alt=""
         width={32}
         height={32}
         className="h-8 w-8 shrink-0"
       />
-      <span
-        className={cn(
-          'whitespace-nowrap text-sm text-foreground sm:text-base',
-          compact && 'hidden sm:inline',
-        )}
-      >
-        Tout À Un Clic Là
-      </span>
+      {compact ? (
+        <span className="flex flex-col text-[11px] leading-[1.05] text-foreground sm:text-sm sm:leading-tight">
+          <span className="whitespace-nowrap">Tout À Un</span>
+          <span className="whitespace-nowrap">Clic Là</span>
+        </span>
+      ) : (
+        <span className="whitespace-nowrap text-sm text-foreground sm:text-base">
+          Tout À Un Clic Là
+        </span>
+      )}
       <span className="shrink-0 rounded-md bg-accent px-1.5 py-0.5 text-xs font-semibold text-accent-foreground">
         Pro
       </span>

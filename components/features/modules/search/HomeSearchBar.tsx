@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, memo, useMemo } from 'react';
 import { Search, X, Package, Store, Clock, ShoppingBag, Utensils } from 'lucide-react';
 import { getRestaurantUrlWithFallback } from '@/lib/utils/restaurant-routes';
+import { getImageUrl } from '@/lib/utils/images';
 import { useTranslation } from '@/hooks/useTranslation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -19,6 +20,7 @@ interface SearchResult {
   categoria_id: number;
   categoria_nombre: string;
   subcategoria?: string;
+  subcategoria_imagen?: string;
   stock: number;
 }
 
@@ -123,6 +125,7 @@ interface RestaurantHit {
   nombre: string;
   dishCount: number;
   strength: number;
+  imagen?: string;
 }
 
 // 3 = nombre exacto, 2 = el restaurante contiene la query, 1 = la query contiene el nombre.
@@ -142,8 +145,17 @@ function collectRestaurantMatches(results: SearchResult[], normalizedQuery: stri
     const strength = restaurantMatchStrength(result.subcategoria, normalizedQuery);
     if (!strength) continue;
     const existing = byName.get(result.subcategoria);
-    if (existing) existing.dishCount += 1;
-    else byName.set(result.subcategoria, { nombre: result.subcategoria, dishCount: 1, strength });
+    if (existing) {
+      existing.dishCount += 1;
+      if (!existing.imagen && result.subcategoria_imagen) existing.imagen = result.subcategoria_imagen;
+    } else {
+      byName.set(result.subcategoria, {
+        nombre: result.subcategoria,
+        dishCount: 1,
+        strength,
+        imagen: result.subcategoria_imagen,
+      });
+    }
   }
   return [...byName.values()].sort((a, b) => b.strength - a.strength || b.dishCount - a.dishCount);
 }
@@ -510,6 +522,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
           categoria_id: product.categoria_id,
           categoria_nombre: product.categorias?.nombre || (product.categoria_id === 2 ? 'Comidas' : 'Boutique'),
           subcategoria: product.subcategorias?.nombre,
+          subcategoria_imagen: product.subcategorias?.Imagen,
           stock: product.stock
         }));
       
@@ -821,8 +834,20 @@ const HomeSearchBar = memo(function HomeSearchBar() {
                         className="w-full p-2 flex items-center hover:bg-gray-50 rounded-lg transition-colors group"
                         whileHover={{ x: 2 }}
                       >
-                        <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 mr-3 rounded-lg overflow-hidden bg-orange-50 flex items-center justify-center">
-                          <Store className="h-6 w-6 text-orange-500" />
+                        <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 mr-3 rounded-lg overflow-hidden bg-orange-50">
+                          {restaurant.imagen ? (
+                            <Image
+                              src={getImageUrl(restaurant.imagen)}
+                              alt=""
+                              fill
+                              className="object-cover"
+                              sizes="56px"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center">
+                              <Store className="h-6 w-6 text-orange-500" />
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1 text-left min-w-0">
                           <div className="text-sm font-medium text-gray-900 group-hover:text-[var(--shop-purple)] truncate">
