@@ -33,8 +33,8 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen">
       <header className="sticky top-0 z-10 border-b border-border bg-card/90 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-4 sm:px-5">
-          <Link href="/pro/dashboard" className="min-w-0" aria-label="Tout à un Clic Là Pro">
-            <ProLogo />
+          <Link href="/pro/dashboard" className="shrink-0" aria-label="Tout à un Clic Là Pro">
+            <ProLogo compact />
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
             <ProLangSwitcher />

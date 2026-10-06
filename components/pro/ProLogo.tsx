@@ -19,7 +19,7 @@ export function ProLogo({
         className="h-8 w-8 shrink-0"
       />
       {compact ? (
-        <span className="flex flex-col text-[11px] leading-[1.05] text-foreground sm:text-sm sm:leading-tight">
+        <span className="flex flex-col text-sm leading-tight text-foreground ">
           <span className="whitespace-nowrap">Tout À Un</span>
           <span className="whitespace-nowrap">Clic Là</span>
         </span>
