@@ -529,7 +529,7 @@ export default function Home() {
         tone="souv"
         cta={
           <Link
-            href="/boutique"
+            href="/souvenirs"
             className={shopChrome.aisleCta}
             style={{ backgroundColor: shopCss.svcPrimary }}
           >
@@ -541,7 +541,7 @@ export default function Home() {
           {boutiqueCategories.map(category => (
             <Link
               key={category.id}
-              href={`/boutique?subcategoria=${category.subcategoria_id}`}
+              href={`/souvenirs?subcategoria=${category.subcategoria_id}`}
               className={cn('shop-press group block h-full rounded-xl', shopChrome.focus)}
             >
               <article className="flex h-full flex-col overflow-hidden rounded-xl border border-[var(--shop-hairline)] bg-white">

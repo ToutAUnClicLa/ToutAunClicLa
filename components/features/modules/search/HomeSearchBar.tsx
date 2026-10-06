@@ -119,6 +119,42 @@ const normalizeText = (text: string): string => {
   return normalized;
 };
 
+interface RestaurantHit {
+  nombre: string;
+  dishCount: number;
+  strength: number;
+}
+
+// 3 = nombre exacto, 2 = el restaurante contiene la query, 1 = la query contiene el nombre.
+function restaurantMatchStrength(restaurantName: string, normalizedQuery: string): number {
+  const normalizedRestaurant = normalizeText(restaurantName);
+  if (!normalizedRestaurant || normalizedQuery.length < 2) return 0;
+  if (normalizedRestaurant === normalizedQuery) return 3;
+  if (normalizedRestaurant.includes(normalizedQuery)) return 2;
+  if (normalizedQuery.includes(normalizedRestaurant)) return 1;
+  return 0;
+}
+
+function collectRestaurantMatches(results: SearchResult[], normalizedQuery: string): RestaurantHit[] {
+  const byName = new Map<string, RestaurantHit>();
+  for (const result of results) {
+    if (result.categoria_id !== 2 || !result.subcategoria) continue;
+    const strength = restaurantMatchStrength(result.subcategoria, normalizedQuery);
+    if (!strength) continue;
+    const existing = byName.get(result.subcategoria);
+    if (existing) existing.dishCount += 1;
+    else byName.set(result.subcategoria, { nombre: result.subcategoria, dishCount: 1, strength });
+  }
+  return [...byName.values()].sort((a, b) => b.strength - a.strength || b.dishCount - a.dishCount);
+}
+
+// Un solo restaurante, o uno claramente más fuerte que el resto (p. ej. "Pizza Palace" vs "Pizza").
+function clearRestaurantMatch(hits: RestaurantHit[]): RestaurantHit | null {
+  if (hits.length === 0) return null;
+  if (hits.length === 1 || hits[0].strength > hits[1].strength) return hits[0];
+  return null;
+}
+
 const HomeSearchBar = memo(function HomeSearchBar() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -351,26 +387,29 @@ const HomeSearchBar = memo(function HomeSearchBar() {
         // BÚSQUEDA POR PALABRA EXACTA con normalización
         const normalizedProductName = normalizeText(product.nombre || '');
         const normalizedDescription = normalizeText(product.descripcion || '');
+        const normalizedRestaurant = normalizeText(product.subcategorias?.nombre || '');
         const normalizedSearchQuery = normalizeText(query);
         
         // Dividir en palabras (filtrar palabras muy cortas)
         const searchWords = normalizedSearchQuery.split(' ').filter(word => word.length >= 2);
         const nameWords = normalizedProductName.split(' ');
         const descriptionWords = normalizedDescription.split(' ');
+        const restaurantWords = normalizedRestaurant.split(' ');
         
         // Verificar coincidencias exactas y parciales
         let totalMatches = 0;
         
         searchWords.forEach(searchWord => {
-          // 1. Buscar coincidencia exacta de palabra (prioridad alta)
-          if (nameWords.includes(searchWord) || descriptionWords.includes(searchWord)) {
+          // 1. Buscar coincidencia exacta de palabra (prioridad alta: plato o restaurante)
+          if (nameWords.includes(searchWord) || restaurantWords.includes(searchWord) || descriptionWords.includes(searchWord)) {
             totalMatches++;
           }
           // 2. Si no hay coincidencia exacta, buscar coincidencias parciales
           else {
             const partialNameMatch = nameWords.some(word => word.includes(searchWord));
+            const partialRestaurantMatch = restaurantWords.some(word => word.includes(searchWord));
             const partialDescMatch = descriptionWords.some(word => word.includes(searchWord));
-            if (partialNameMatch || partialDescMatch) {
+            if (partialNameMatch || partialRestaurantMatch || partialDescMatch) {
               totalMatches++;
             }
           }
@@ -386,11 +425,13 @@ const HomeSearchBar = memo(function HomeSearchBar() {
       const scoredProducts = filteredProducts.map(product => {
         const normalizedProductName = normalizeText(product.nombre || '');
         const normalizedDescription = normalizeText(product.descripcion || '');
+        const normalizedRestaurant = normalizeText(product.subcategorias?.nombre || '');
         const normalizedSearchQuery = normalizeText(query);
         
         const searchWords = normalizedSearchQuery.split(' ').filter(word => word.length >= 2);
         const nameWords = normalizedProductName.split(' ');
         const descriptionWords = normalizedDescription.split(' ');
+        const restaurantWords = normalizedRestaurant.split(' ');
         
         let score = 0;
         let exactNameMatches = 0;
@@ -398,17 +439,19 @@ const HomeSearchBar = memo(function HomeSearchBar() {
         let partialNameMatches = 0;
         let partialDescMatches = 0;
         
-        // Contar coincidencias exactas y parciales por ubicación
+        // Contar coincidencias exactas y parciales por ubicación.
+        // Restaurante cuenta igual que el nombre del plato (prioridad alta).
         searchWords.forEach(searchWord => {
           // 1. Verificar coincidencias exactas primero
-          if (nameWords.includes(searchWord)) {
+          if (nameWords.includes(searchWord) || restaurantWords.includes(searchWord)) {
             exactNameMatches++;
           } else if (descriptionWords.includes(searchWord)) {
             exactDescMatches++;
           }
           // 2. Si no hay exacta, verificar coincidencias parciales
           else {
-            const namePartialMatch = nameWords.some(word => word.includes(searchWord));
+            const namePartialMatch = nameWords.some(word => word.includes(searchWord))
+              || restaurantWords.some(word => word.includes(searchWord));
             if (namePartialMatch) {
               partialNameMatches++;
             } else {
@@ -550,8 +593,15 @@ const HomeSearchBar = memo(function HomeSearchBar() {
     // Smart navigation based on cached results analysis
     const cacheKey = normalizeText(currentQuery);
     const cachedResult = searchResultsCache.get(cacheKey);
-    
-    if (cachedResult && cachedResult.results.length > 0) {
+    const resultsForRestaurant = cachedResult?.results?.length
+      ? cachedResult.results
+      : searchResults;
+    const restaurantHit = clearRestaurantMatch(collectRestaurantMatches(resultsForRestaurant, cacheKey));
+
+    if (restaurantHit) {
+      console.log(`→ Navigating to restaurant menu: ${restaurantHit.nombre}`);
+      router.push(getRestaurantUrlWithFallback(restaurantHit.nombre));
+    } else if (cachedResult && cachedResult.results.length > 0) {
       // Use full cached results for navigation decision (more accurate than preview)
       const foodsCount = cachedResult.results.filter(r => r.categoria_id === 2).length;
       const boutiqueCount = cachedResult.results.filter(r => r.categoria_id === 3).length;
@@ -616,6 +666,23 @@ const HomeSearchBar = memo(function HomeSearchBar() {
     setSearchResults([]);
     setTotalResults(0);
   }, [saveRecentSearch, router]);
+
+  const handleRestaurantClick = useCallback((restaurantName: string) => {
+    saveRecentSearch(restaurantName);
+    router.push(getRestaurantUrlWithFallback(restaurantName));
+    setSearchQuery('');
+    setIsFocused(false);
+    setSearchResults([]);
+    setTotalResults(0);
+  }, [saveRecentSearch, router]);
+
+  const restaurantPreview = useMemo(() => {
+    const normalizedQuery = normalizeText(searchQuery);
+    if (normalizedQuery.length < 2) return [];
+    const cached = searchResultsCache.get(normalizedQuery);
+    if (!cached?.results.length) return [];
+    return collectRestaurantMatches(cached.results, normalizedQuery).slice(0, 2);
+  }, [searchQuery, searchResults]);
 
   // Manejar búsqueda rápida
   const handleQuickSearch = useCallback((term: string) => {
@@ -747,6 +814,23 @@ const HomeSearchBar = memo(function HomeSearchBar() {
                     </button>
                   </div>
                   <div className="space-y-1">
+                    {restaurantPreview.map(restaurant => (
+                      <motion.button
+                        key={`restaurant-${restaurant.nombre}`}
+                        onClick={() => handleRestaurantClick(restaurant.nombre)}
+                        className="w-full p-2 flex items-center hover:bg-gray-50 rounded-lg transition-colors group"
+                        whileHover={{ x: 2 }}
+                      >
+                        <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 mr-3 rounded-lg overflow-hidden bg-orange-50 flex items-center justify-center">
+                          <Store className="h-6 w-6 text-orange-500" />
+                        </div>
+                        <div className="flex-1 text-left min-w-0">
+                          <div className="text-sm font-medium text-gray-900 group-hover:text-[var(--shop-purple)] truncate">
+                            {restaurant.nombre}
+                          </div>
+                        </div>
+                      </motion.button>
+                    ))}
                     {searchResults.map(result => (
                       <motion.button
                         key={result.id}
@@ -785,7 +869,7 @@ const HomeSearchBar = memo(function HomeSearchBar() {
                               ) : (
                                 <Package className="h-3 w-3 mr-1 text-gray-400" />
                               )}
-                              {result.categoria_id === 2 ? t('landing.search.foods') :
+                              {result.categoria_id === 2 ? (result.subcategoria || t('landing.search.foods')) :
                                result.categoria_id === 3 ? t('landing.search.boutique') : 'Otro'}
                             </span>
                             {result.stock > 0 ? (

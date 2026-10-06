@@ -26,6 +26,7 @@ import { CartItem } from '@/lib/services/cart';
 import type { DeliveryOptions as DeliveryOptionsType } from '@/lib/services/cart';
 import { useTranslation } from '@/hooks/useTranslation';
 import { verifyAddressForCheckout } from '@/lib/services/addresses';
+import { catalogPath } from '@/lib/catalog-path';
 
 // Mapeo de categorías con estilos modernos
 const getCategoryMap = (t: any) => ({
@@ -47,7 +48,7 @@ const getItemCategory = (item: CartItem): string => {
   // Lógica para mapear categorías
   if (categoryName.includes('comida') || categoryName.includes('food') || categoryName.includes('snack')) {
     return 'comidas';
-  } else if (categoryName.includes('boutique') || categoryName.includes('ropa') || categoryName.includes('accesorio')) {
+  } else if (categoryName.includes('boutique') || categoryName.includes('souvenir') || categoryName.includes('ropa') || categoryName.includes('accesorio')) {
     return 'boutique';
   } else {
     return 'productos';
@@ -986,6 +987,14 @@ export default function CartPage() {
     );
   }, [t, renderCartItem]);
 
+  // Un solo catálogo si el carrito es homogéneo. Mezclado o vacío vuelve al inicio,
+  // no a /productos ni a /comidas, para no soltar al usuario en otro catálogo.
+  const backToCatalog = () => {
+    if (isEmpty) return '/';
+    const paths = new Set(items.map((item) => catalogPath(item.productos?.categorias?.nombre)));
+    return paths.size === 1 ? [...paths][0] : '/';
+  };
+
   // Estados de carga y protección de ruta
   if (!isAuthenticated && !isLoading) {
     return null;
@@ -1010,7 +1019,10 @@ export default function CartPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => router.back()}
+                    onClick={() => {
+                      if (window.history.length > 1) router.back();
+                      else router.push(backToCatalog());
+                    }}
                     className={cn('h-11 w-11 rounded-full p-0 hover:bg-[var(--shop-canvas-muted)]', shopChrome.focus)}
                   >
                     <ArrowLeft className="h-5 w-5" />
@@ -1079,7 +1091,7 @@ export default function CartPage() {
                     {t('cart.empty.description')}
                   </p>
                   <Button
-                    onClick={() => router.push('/productos')}
+                    onClick={() => router.push(backToCatalog())}
                     className={shopChrome.inkCta}
                   >
                     {t('cart.empty.exploreProducts')}
@@ -1266,7 +1278,7 @@ export default function CartPage() {
                         variant="outline"
                         size="lg"
                         className="inline-flex h-11 min-h-11 w-full items-center justify-center rounded-full border border-[var(--shop-hairline)] bg-white px-5 py-2.5 text-sm font-medium text-[var(--shop-ink)] hover:bg-[var(--shop-canvas-muted)]"
-                        onClick={() => router.push('/comidas')}
+                        onClick={() => router.push(backToCatalog())}
                       >
                         {t('cart.summary.continue')}
                       </Button>

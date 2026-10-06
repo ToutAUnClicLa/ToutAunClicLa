@@ -5,6 +5,12 @@ const nextConfig = {
   // Shop language stays on the preferred-language cookie + useTranslation.
   output: 'standalone',
   // Proxy para desarrollo - redirige /api/backend/* al backend real
+  async redirects() {
+    return [
+      { source: '/boutique', destination: '/souvenirs', permanent: true },
+      { source: '/boutique/:path*', destination: '/souvenirs/:path*', permanent: true },
+    ];
+  },
   async rewrites() {
     const isDev = process.env.NODE_ENV === 'development';
     const backendUrl = isDev

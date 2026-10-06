@@ -69,6 +69,18 @@ export default {
       maintenance: {
         title: "Entretien et Construction",
         description: "Electriciens, plombiers, peintres et plus de professionnels pour votre maison ou entreprise."
+      },
+      employment: {
+        title: "Agents d'emploi",
+        description: "Recrutement, placement, CV et plus de professionnels pour votre recherche d'emploi."
+      },
+      events: {
+        title: "Fêtes et événements",
+        description: "Mariages, anniversaires, traiteur et plus de professionnels pour vos fêtes et événements."
+      },
+      marketing: {
+        title: "Publicité et marketing",
+        description: "Réseaux, annonces, marque et plus de professionnels pour faire connaître votre entreprise."
       }
     },
     subservices: {
@@ -105,7 +117,16 @@ export default {
       plumbers: "Plombiers",
       painters: "Peintres",
       carpenters: "Charpentiers",
-      locksmiths: "Serruriers"
+      locksmiths: "Serruriers",
+      recruitment: "Recrutement",
+      placement: "Placement",
+      resumes: "CV",
+      weddings: "Mariages",
+      birthdays: "Anniversaires",
+      catering: "Traiteur",
+      social: "Réseaux",
+      ads: "Annonces",
+      brand: "Marque"
     },
     cta: {
       title: "Êtes-vous un professionnel ?",
@@ -2638,7 +2659,9 @@ export default {
       emptyFiltersHint: "Essayez d'effacer les filtres ou d'élargir votre recherche.",
       emptyCategoryHint: "Vous travaillez dans cette catégorie ? Soyez le premier à apparaître.",
       createProfile: "Créer mon profil professionnel",
-      featured: "En vedette"
+      featured: "En vedette",
+      areYouProTitle: "Êtes-vous un professionnel ?",
+      areYouProHint: "Créez votre profil et apparaissez dans cet annuaire."
     },
     card: {
       backGeneric: "Services",
@@ -2811,7 +2834,8 @@ export default {
       dashboard: "Tableau de bord",
       langMenuLabel: "Changer de langue",
       langCurrentLabel: "Langue actuelle : {lang}",
-      backHome: "Accueil"
+      backHome: "Accueil",
+      backToShop: "Boutique"
     },
     auth: {
       login: {

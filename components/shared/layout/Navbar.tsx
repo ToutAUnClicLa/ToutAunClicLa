@@ -26,7 +26,8 @@ import {
   Layers,
   Shield,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Briefcase
 } from "lucide-react";
 import { Button } from "@/components/common/ui/button";
 import { Input } from "@/components/common/ui/input";
@@ -86,6 +87,7 @@ export function Navbar() {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const isProActive = pathname === '/pro' || pathname.startsWith('/pro/');
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
 
@@ -575,6 +577,20 @@ export function Navbar() {
                       </Button>
                     );
                   })}
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      shopChrome.drawerRow,
+                      isProActive && "bg-[var(--shop-purple-wash)] text-[var(--shop-purple)]"
+                    )}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      router.push('/pro');
+                    }}
+                  >
+                    <Briefcase className={cn("mr-3 h-5 w-5", isProActive ? "text-[var(--shop-purple)]" : "text-gray-500")} />
+                    <span className="flex-1 text-left font-medium">Pro</span>
+                  </Button>
                 </div>
               </div>
 

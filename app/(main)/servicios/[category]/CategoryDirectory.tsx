@@ -210,6 +210,20 @@ export function CategoryDirectory({ category }: Props) {
                     </button>
                   </div>
                 )}
+
+                <div className="rounded-xl border border-[var(--shop-hairline)] bg-white px-6 py-10 text-center sm:px-10">
+                  <h2 className="text-xl font-semibold tracking-tight text-[var(--shop-ink)] sm:text-2xl">
+                    {t('pro.directory.areYouProTitle')}
+                  </h2>
+                  <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[var(--shop-muted)]">
+                    {t('pro.directory.areYouProHint')}
+                  </p>
+                  <div className="mt-6">
+                    <Link href="/pro" className={shopChrome.inkCta}>
+                      {t('pro.directory.createProfile')}
+                    </Link>
+                  </div>
+                </div>
               </div>
             )}
           </section>

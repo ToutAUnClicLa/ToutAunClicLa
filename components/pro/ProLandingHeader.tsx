@@ -30,12 +30,19 @@ export function ProLandingHeader() {
         scrolled ? 'border-border' : 'border-transparent'
       }`}
     >
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-5">
-        <Link href="/pro" className="min-w-0" aria-label="Tout à un Clic Là Pro">
-          <ProLogo />
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-2 px-2.5 sm:px-5">
+        <Link href="/pro" className="shrink-0" aria-label="Tout à un Clic Là Pro">
+          <ProLogo compact />
         </Link>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-3">
+          <Link
+            href="/"
+            aria-label={t('pro.header.backToShop')}
+            className="inline-flex min-h-11 items-center whitespace-nowrap text-[13px] font-medium text-foreground hover:text-primary sm:text-sm"
+          >
+            {t('pro.header.backToShop')}
+          </Link>
           <ProLangSwitcher />
 
           {accountLoading ? (
@@ -65,7 +72,7 @@ export function ProLandingHeader() {
           ) : (
             <Link
               href="/pro/login"
-              className="inline-flex min-h-11 items-center whitespace-nowrap text-sm font-medium text-foreground hover:text-primary"
+              className="inline-flex min-h-11 items-center whitespace-nowrap text-[13px] font-medium text-foreground hover:text-primary sm:text-sm"
             >
               {t('pro.header.signIn')}
             </Link>

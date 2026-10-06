@@ -6,7 +6,7 @@ const staticRoutes: MetadataRoute.Sitemap = [
   { url: '/', lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
 
   { url: '/comidas', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
-  { url: '/boutique', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
+  { url: '/souvenirs', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
   { url: '/servicios', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
   { url: '/pro', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
   { url: '/pro/pricing', lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },

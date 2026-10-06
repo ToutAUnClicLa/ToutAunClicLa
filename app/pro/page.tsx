@@ -39,7 +39,7 @@ export function generateMetadata({ searchParams }: PageProps): Metadata {
 
 export default async function ProHomePage({ searchParams }: PageProps) {
   const lang = resolveLang(searchParams?.lang);
-  const t = getProT(lang).landing;
+  const { landing: t, header } = getProT(lang);
   const q = lang === 'fr' ? '' : `?lang=${lang}`;
 
   // QR real que apunta a la página de registro (así quien escanee el hero cae de
@@ -363,6 +363,13 @@ export default async function ProHomePage({ searchParams }: PageProps) {
               </Link>
               <Link href="/servicios" className="inline-flex min-h-11 items-center rounded-md transition-colors duration-[180ms] ease-out hover:text-foreground">
                 {t.footer.directory}
+              </Link>
+              <Link
+                href="/"
+                aria-label={header.backToShop}
+                className="inline-flex min-h-11 items-center rounded-md transition-colors duration-[180ms] ease-out hover:text-foreground"
+              >
+                {header.backToShop}
               </Link>
             </nav>
           </div>

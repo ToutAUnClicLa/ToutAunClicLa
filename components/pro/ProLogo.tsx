@@ -1,7 +1,14 @@
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
-export function ProLogo({ className }: { className?: string }) {
+export function ProLogo({
+  className,
+  compact = false,
+}: {
+  className?: string;
+  /** Landing móvil: isotipo + Pro. El wordmark entra desde sm para no chocar con las acciones. */
+  compact?: boolean;
+}) {
   return (
     <span className={cn('inline-flex items-center gap-2 font-semibold tracking-tight', className)}>
       <Image
@@ -11,10 +18,15 @@ export function ProLogo({ className }: { className?: string }) {
         height={32}
         className="h-8 w-8 shrink-0"
       />
-      <span className="whitespace-nowrap text-sm text-foreground sm:text-base">
+      <span
+        className={cn(
+          'whitespace-nowrap text-sm text-foreground sm:text-base',
+          compact && 'hidden sm:inline',
+        )}
+      >
         Tout À Un Clic Là
       </span>
-      <span className="rounded-md bg-accent px-1.5 py-0.5 text-xs font-semibold text-accent-foreground">
+      <span className="shrink-0 rounded-md bg-accent px-1.5 py-0.5 text-xs font-semibold text-accent-foreground">
         Pro
       </span>
     </span>

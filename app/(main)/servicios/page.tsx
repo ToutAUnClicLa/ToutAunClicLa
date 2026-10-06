@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
@@ -17,7 +17,10 @@ import {
   BadgeDollarSign,
   CheckCircle2,
   X,
-  Wrench
+  Wrench,
+  Briefcase,
+  PartyPopper,
+  Megaphone
 } from 'lucide-react';
 import ServiceCard from '@/components/features/services/ServiceCard';
 import { shopChrome, shopHeroFigure } from '@/lib/shop-theme';
@@ -128,6 +131,27 @@ export default function ServicesPage() {
       descKey: 'services.categories.maintenance.description',
       subServices: ['services.subservices.electricians', 'services.subservices.plumbers', 'services.subservices.painters', 'services.subservices.carpenters', 'services.subservices.locksmiths'],
       image: '/services/maintenance.png',
+    },
+    {
+      id: 'employment',
+      icon: Briefcase,
+      titleKey: 'services.categories.employment.title',
+      descKey: 'services.categories.employment.description',
+      subServices: ['services.subservices.recruitment', 'services.subservices.placement', 'services.subservices.resumes'],
+    },
+    {
+      id: 'events',
+      icon: PartyPopper,
+      titleKey: 'services.categories.events.title',
+      descKey: 'services.categories.events.description',
+      subServices: ['services.subservices.weddings', 'services.subservices.birthdays', 'services.subservices.catering'],
+    },
+    {
+      id: 'marketing',
+      icon: Megaphone,
+      titleKey: 'services.categories.marketing.title',
+      descKey: 'services.categories.marketing.description',
+      subServices: ['services.subservices.social', 'services.subservices.ads', 'services.subservices.brand'],
     },
   ];
 
@@ -294,7 +318,7 @@ export default function ServicesPage() {
                   comingSoonText={t('services.card.comingSoon')}
                   subServicesText={t('services.card.subservices')}
                   viewMoreText={t('services.card.viewMore')}
-                  image={service.image}
+                  image={'image' in service ? service.image : undefined}
                   variant="pro"
                   showMeta
                   href={`/servicios/${service.id}`}

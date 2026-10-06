@@ -66,7 +66,8 @@ export function Breadcrumbs({
       const contextualLabels: Record<string, string> = {
         productos: "Detalle de Producto",
         comidas: "Detalle de Comida",
-        boutique: "Artículo de Boutique",
+        boutique: "Artículo de Souvenirs",
+        souvenirs: "Artículo de Souvenirs",
         blog: "Artículo de Blog",
       };
       return contextualLabels[prevSegment] || "Detalle";

@@ -20,6 +20,7 @@ import { loginPath } from '@/lib/shop-auth';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
 import { ProductPriceDisplay } from '@/components/features/modules/catalog/ProductPriceDisplay';
+import { catalogPath } from '@/lib/catalog-path';
 
 // Dynamically import heavy components
 const MotionImage = motion(Image);
@@ -38,6 +39,12 @@ const categoryColors = {
     button: 'bg-amber-600 hover:bg-amber-700'
   },
   boutique: {
+    bg: 'from-purple-50 to-pink-50',
+    text: 'text-purple-600',
+    border: 'border-purple-100',
+    button: 'bg-purple-600 hover:bg-purple-700'
+  },
+  souvenirs: {
     bg: 'from-purple-50 to-pink-50',
     text: 'text-purple-600',
     border: 'border-purple-100',
@@ -428,6 +435,7 @@ function ProductDetail({ product, colors, params, onReviewDeleted }: {
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const [product, setProduct] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
@@ -444,7 +452,12 @@ export default function ProductDetailPage() {
 
   // Ensure category is a string, not an array
   const category = Array.isArray(params.category) ? params.category[0] : params.category;
-  const colors = categoryColors[category as keyof typeof categoryColors];
+  const colors = categoryColors[category as keyof typeof categoryColors] || categoryColors.souvenirs;
+  const catalogLabel = catalogPath(category) === '/souvenirs'
+    ? t('nav.boutique')
+    : catalogPath(category) === '/comidas'
+      ? t('nav.foods')
+      : t('nav.products');
 
   useEffect(() => {
     async function loadProduct() {
@@ -462,7 +475,17 @@ export default function ProductDetailPage() {
     if (params.productId) {
       loadProduct();
     }
-  }, [params.productId, t]); // Incluir t en las dependencias
+  }, [params.productId, t]);
+
+  // La ficha vive en el catálogo real del producto. /boutique y /productos/id
+  // de un souvenir volverían al catálogo equivocado.
+  useEffect(() => {
+    if (!product || !category || !params.productId) return;
+    const expected = catalogPath(product.categorias?.nombre || category);
+    if (`/${category}` !== expected) {
+      router.replace(`${expected}/${params.productId}`);
+    }
+  }, [product, category, params.productId, router]);
 
   if (isLoading) {
     return <LoadingState />;
@@ -487,8 +510,8 @@ export default function ProductDetailPage() {
           <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6 overflow-x-auto whitespace-nowrap">
             <Link href="/" className="hover:text-gray-900">{t('catalog.productDetail.home')}</Link>
             <ChevronRight className="h-4 w-4 mx-1 sm:mx-2 flex-shrink-0" />
-            <Link href={`/${category}`} className="hover:text-gray-900 capitalize">
-              {category}
+            <Link href={catalogPath(category)} className="hover:text-gray-900">
+              {catalogLabel}
             </Link>
             <ChevronRight className="h-4 w-4 mx-1 sm:mx-2 flex-shrink-0" />
             <span className="text-gray-900 font-medium truncate">{product.nombre}</span>

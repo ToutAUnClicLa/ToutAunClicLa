@@ -7,7 +7,7 @@ import { StructuredData } from '@/components/seo/StructuredData';
 import { SEOMetaTags } from '@/components/seo/SEOMetaTags';
 import { getSubcategoryId } from '@/lib/constants/subcategories';
 
-function BoutiqueContent() {
+function SouvenirsContent() {
   const { t } = useTranslation();
   const [subcategoriaId, setSubcategoriaId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
@@ -21,11 +21,9 @@ function BoutiqueContent() {
     setSearchQuery(params.get('search'));
   }, []);
 
-  // Set SEO metadata
   useEffect(() => {
     document.title = t('seo.boutique.title');
-    
-    // Update meta description
+
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute('content', t('seo.boutique.description'));
@@ -36,7 +34,6 @@ function BoutiqueContent() {
       document.head.appendChild(meta);
     }
 
-    // Update meta keywords
     const metaKeywords = document.querySelector('meta[name="keywords"]');
     if (metaKeywords) {
       metaKeywords.setAttribute('content', t('seo.boutique.keywords'));
@@ -52,9 +49,9 @@ function BoutiqueContent() {
     <>
       <SEOMetaTags page="boutique" />
       <StructuredData type="organization" />
-      <ProductGrid 
-        categoryId={3} 
-        categoryName="boutique" 
+      <ProductGrid
+        categoryId={3}
+        categoryName="boutique"
         title={t('catalog.productList.boutiqueTitle')}
         initialSubcategory={subcategoriaId ? getSubcategoryId(subcategoriaId) : null}
         initialSearch={searchQuery || undefined}
@@ -63,6 +60,6 @@ function BoutiqueContent() {
   );
 }
 
-export default function BoutiquePage() {
-  return <BoutiqueContent />;
+export default function SouvenirsPage() {
+  return <SouvenirsContent />;
 }

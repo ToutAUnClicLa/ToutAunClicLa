@@ -115,6 +115,15 @@ function ProCardContent({
             )}
           </p>
         )}
+        {pro.telefono?.trim() ? (
+          <a
+            href={`tel:${pro.telefono.replace(/[^\d+]/g, '')}`}
+            onClick={(e) => e.stopPropagation()}
+            className="mt-0.5 text-sm text-[var(--shop-muted)]"
+          >
+            {pro.telefono}
+          </a>
+        ) : null}
 
         <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-2 pt-3">
           {pro.ciudad && (

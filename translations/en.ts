@@ -69,6 +69,18 @@ export default {
       maintenance: {
         title: "Maintenance & Construction",
         description: "Electricians, plumbers, painters and more professionals for your home or business."
+      },
+      employment: {
+        title: "Employment agents",
+        description: "Recruitment, placement, resumes and more professionals for your job search."
+      },
+      events: {
+        title: "Parties & events",
+        description: "Weddings, birthdays, catering and more professionals for your parties and events."
+      },
+      marketing: {
+        title: "Advertising & marketing",
+        description: "Social, ads, branding and more professionals to promote your business."
       }
     },
     subservices: {
@@ -105,7 +117,16 @@ export default {
       plumbers: "Plumbers",
       painters: "Painters",
       carpenters: "Carpenters",
-      locksmiths: "Locksmiths"
+      locksmiths: "Locksmiths",
+      recruitment: "Recruitment",
+      placement: "Placement",
+      resumes: "Resumes",
+      weddings: "Weddings",
+      birthdays: "Birthdays",
+      catering: "Catering",
+      social: "Social",
+      ads: "Ads",
+      brand: "Brand"
     },
     cta: {
       title: "Are you a professional?",
@@ -2644,7 +2665,9 @@ export default {
       emptyFiltersHint: "Try clearing filters or broadening your search.",
       emptyCategoryHint: "Do you work in this category? Be the first to appear.",
       createProfile: "Create my professional profile",
-      featured: "Featured"
+      featured: "Featured",
+      areYouProTitle: "Are you a professional?",
+      areYouProHint: "Create your profile and appear in this directory."
     },
     card: {
       backGeneric: "Services",
@@ -2817,7 +2840,8 @@ export default {
       dashboard: "Dashboard",
       langMenuLabel: "Change language",
       langCurrentLabel: "Current language: {lang}",
-      backHome: "Home"
+      backHome: "Home",
+      backToShop: "Shop"
     },
     auth: {
       login: {

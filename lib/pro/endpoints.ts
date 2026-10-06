@@ -158,6 +158,7 @@ export interface DirectoryPro {
   empresa?: string | null;
   foto_url?: string | null;
   titulo?: string | null;
+  telefono?: string | null;
   ciudad?: string | null;
   idiomas_hablados?: string[];
   redes?: DirectoryRed[];
