@@ -157,7 +157,7 @@ function collectRestaurantMatches(results: SearchResult[], normalizedQuery: stri
       });
     }
   }
-  return [...byName.values()].sort((a, b) => b.strength - a.strength || b.dishCount - a.dishCount);
+  return Array.from(byName.values()).sort((a, b) => b.strength - a.strength || b.dishCount - a.dishCount);
 }
 
 // Un solo restaurante, o uno claramente más fuerte que el resto (p. ej. "Pizza Palace" vs "Pizza").

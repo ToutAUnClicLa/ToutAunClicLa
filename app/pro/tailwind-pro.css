@@ -287,10 +287,6 @@
   height: 1.75rem
 }
 
-.pro-theme :is(.h-72) {
-  height: 18rem
-}
-
 .pro-theme :is(.h-8) {
   height: 2rem
 }
@@ -429,10 +425,6 @@
 
 .pro-theme :is(.max-w-3xl) {
   max-width: 48rem
-}
-
-.pro-theme :is(.max-w-4xl) {
-  max-width: 56rem
 }
 
 .pro-theme :is(.max-w-5xl) {
@@ -596,6 +588,11 @@
 
 .pro-theme :is(.gap-8) {
   gap: 2rem
+}
+
+.pro-theme :is(.gap-x-2) {
+  -moz-column-gap: 0.5rem;
+       column-gap: 0.5rem
 }
 
 .pro-theme :is(.gap-x-4) {
@@ -810,10 +807,6 @@
   border-color: rgb(255 255 255 / var(--tw-border-opacity))
 }
 
-.pro-theme :is(.border-white\/30) {
-  border-color: rgb(255 255 255 / 0.3)
-}
-
 .pro-theme :is(.border-zinc-100) {
   --tw-border-opacity: 1;
   border-color: rgb(244 244 245 / var(--tw-border-opacity))
@@ -826,6 +819,38 @@
 
 .pro-theme :is(.border-t-transparent) {
   border-top-color: transparent
+}
+
+.pro-theme :is(.bg-\[var\(--food-accent\)\]) {
+  background-color: var(--food-accent)
+}
+
+.pro-theme :is(.bg-\[var\(--food-canvas\)\]) {
+  background-color: var(--food-canvas)
+}
+
+.pro-theme :is(.bg-\[var\(--food-wash\)\]) {
+  background-color: var(--food-wash)
+}
+
+.pro-theme :is(.bg-\[var\(--shop-purple-wash\)\]) {
+  background-color: var(--shop-purple-wash)
+}
+
+.pro-theme :is(.bg-\[var\(--souv-canvas\)\]) {
+  background-color: var(--souv-canvas)
+}
+
+.pro-theme :is(.bg-\[var\(--svc-canvas\)\]) {
+  background-color: var(--svc-canvas)
+}
+
+.pro-theme :is(.bg-\[var\(--svc-primary\)\]) {
+  background-color: var(--svc-primary)
+}
+
+.pro-theme :is(.bg-\[var\(--svc-wash\)\]) {
+  background-color: var(--svc-wash)
 }
 
 .pro-theme :is(.bg-accent) {
@@ -881,10 +906,6 @@
 .pro-theme :is(.bg-slate-100) {
   --tw-bg-opacity: 1;
   background-color: rgb(241 245 249 / var(--tw-bg-opacity))
-}
-
-.pro-theme :is(.bg-transparent) {
-  background-color: transparent
 }
 
 .pro-theme :is(.bg-white) {
@@ -1086,6 +1107,10 @@
   text-align: center
 }
 
+.pro-theme :is(.text-right) {
+  text-align: right
+}
+
 .pro-theme :is(.text-2xl) {
   font-size: 1.5rem;
   line-height: 2rem
@@ -1186,6 +1211,22 @@
   letter-spacing: 0.05em
 }
 
+.pro-theme :is(.text-\[var\(--food-ink\)\]) {
+  color: var(--food-ink)
+}
+
+.pro-theme :is(.text-\[var\(--shop-ink\)\]) {
+  color: var(--shop-ink)
+}
+
+.pro-theme :is(.text-\[var\(--shop-purple\)\]) {
+  color: var(--shop-purple)
+}
+
+.pro-theme :is(.text-\[var\(--svc-ink\)\]) {
+  color: var(--svc-ink)
+}
+
 .pro-theme :is(.text-accent-foreground) {
   color: hsl(var(--accent-foreground))
 }
@@ -1275,9 +1316,8 @@
   color: rgb(24 24 27 / var(--tw-text-opacity))
 }
 
-.pro-theme :is(.text-zinc-950) {
-  --tw-text-opacity: 1;
-  color: rgb(9 9 11 / var(--tw-text-opacity))
+.pro-theme :is(.line-through) {
+  text-decoration-line: line-through
 }
 
 .pro-theme :is(.underline-offset-2) {
@@ -1411,15 +1451,6 @@
 
 .pro-theme :is(.hover\:bg-secondary:hover) {
   background-color: hsl(var(--secondary))
-}
-
-.pro-theme :is(.hover\:bg-white\/10:hover) {
-  background-color: rgb(255 255 255 / 0.1)
-}
-
-.pro-theme :is(.hover\:bg-zinc-100:hover) {
-  --tw-bg-opacity: 1;
-  background-color: rgb(244 244 245 / var(--tw-bg-opacity))
 }
 
 .pro-theme :is(.hover\:text-foreground:hover) {
