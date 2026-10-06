@@ -69,6 +69,18 @@ export default {
       maintenance: {
         title: "Mantenimiento y Construcción",
         description: "Electricistas, plomeros, pintores y más profesionales para tu hogar o negocio."
+      },
+      employment: {
+        title: "Agentes de empleo",
+        description: "Reclutamiento, colocación, currículums y más profesionales para tu búsqueda de empleo."
+      },
+      events: {
+        title: "Fiestas y eventos",
+        description: "Bodas, cumpleaños, catering y más profesionales para tus fiestas y eventos."
+      },
+      marketing: {
+        title: "Publicidad y marketing",
+        description: "Redes, anuncios, marca y más profesionales para dar a conocer tu negocio."
       }
     },
     subservices: {
@@ -105,7 +117,16 @@ export default {
       plumbers: "Plomeros",
       painters: "Pintores",
       carpenters: "Carpinteros",
-      locksmiths: "Cerrajeros"
+      locksmiths: "Cerrajeros",
+      recruitment: "Reclutamiento",
+      placement: "Colocación",
+      resumes: "Currículums",
+      weddings: "Bodas",
+      birthdays: "Cumpleaños",
+      catering: "Catering",
+      social: "Redes",
+      ads: "Anuncios",
+      brand: "Marca"
     },
     cta: {
       title: "¿Eres un profesional?",
@@ -949,7 +970,7 @@ export default {
       productsSubtitle: "Descubre la mejor selección de productos latinoamericanos",
       comidasTitle: "Comidas Tradicionales",
       comidasSubtitle: "Sabores auténticos de toda América Latina - Gastronomía tradicional en Montreal",
-      boutiqueTitle: "Boutique",
+      boutiqueTitle: "Souvenirs",
       boutiqueSubtitle: "Artesanías y souvenirs únicos - Productos artesanales latinoamericanos",
 
       // Filtros
@@ -2175,7 +2196,7 @@ export default {
       keywords: "comida latina Montreal, delivery comida latinoamericana, restaurante latino Montreal, comida mexicana, comida colombiana, comida peruana Quebec"
     },
     boutique: {
-      title: "Boutique Artesanal Latinoamericana | Souvenirs y Regalos | Montreal",
+      title: "Souvenirs Latinoamericanos | Artesanías y Regalos | Montreal",
       description: "Boutique exclusiva con artesanías, ropa tradicional y souvenirs de América Latina en Montreal. Productos únicos y auténticos. ¡Encuentra el regalo perfecto!",
       keywords: "boutique latina Montreal, artesanías latinoamericanas, souvenirs América Latina, ropa tradicional, regalos únicos, tienda latina Quebec"
     }
@@ -2676,7 +2697,9 @@ export default {
       emptyFiltersHint: "Prueba a limpiar los filtros o ampliar la búsqueda.",
       emptyCategoryHint: "¿Trabajas en esta categoría? Sé el primero en aparecer.",
       createProfile: "Crear mi perfil profesional",
-      featured: "Destacado"
+      featured: "Destacado",
+      areYouProTitle: "¿Eres un profesional?",
+      areYouProHint: "Crea tu perfil y aparece en este directorio."
     },
     card: {
       backGeneric: "Servicios",
@@ -2849,7 +2872,8 @@ export default {
       dashboard: "Panel",
       langMenuLabel: "Cambiar idioma",
       langCurrentLabel: "Idioma actual: {lang}",
-      backHome: "Inicio"
+      backHome: "Inicio",
+      backToShop: "Tienda"
     },
     auth: {
       login: {

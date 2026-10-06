@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, BadgeDollarSign, Calculator, Car, Gavel, Gift, GlassWater, Home as HomeIcon, Languages, Package, Scissors, Shirt, Sparkles, Stethoscope, Store, TrendingUp, Utensils, Wrench } from "lucide-react";
+import { ArrowRight, BadgeDollarSign, Briefcase, Calculator, Car, Gavel, Gift, GlassWater, Home as HomeIcon, Languages, Megaphone, Package, PartyPopper, Scissors, Shirt, Sparkles, Stethoscope, Store, TrendingUp, Utensils, Wrench } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -309,6 +309,30 @@ export default function Home() {
       subServices: ['services.subservices.electricians', 'services.subservices.plumbers', 'services.subservices.painters', 'services.subservices.carpenters', 'services.subservices.locksmiths'],
       image: '/services/maintenance.png',
     },
+    {
+      id: 'employment',
+      icon: Briefcase,
+      titleKey: 'services.categories.employment.title',
+      descKey: 'services.categories.employment.description',
+      subServices: ['services.subservices.recruitment', 'services.subservices.placement', 'services.subservices.resumes'],
+      image: '/services/employment.png',
+    },
+    {
+      id: 'events',
+      icon: PartyPopper,
+      titleKey: 'services.categories.events.title',
+      descKey: 'services.categories.events.description',
+      subServices: ['services.subservices.weddings', 'services.subservices.birthdays', 'services.subservices.catering'],
+      image: '/services/events.png',
+    },
+    {
+      id: 'marketing',
+      icon: Megaphone,
+      titleKey: 'services.categories.marketing.title',
+      descKey: 'services.categories.marketing.description',
+      subServices: ['services.subservices.social', 'services.subservices.ads', 'services.subservices.brand'],
+      image: '/services/marketing.png',
+    },
   ];
 
   return (
@@ -529,7 +553,7 @@ export default function Home() {
         tone="souv"
         cta={
           <Link
-            href="/boutique"
+            href="/souvenirs"
             className={shopChrome.aisleCta}
             style={{ backgroundColor: shopCss.svcPrimary }}
           >
@@ -541,7 +565,7 @@ export default function Home() {
           {boutiqueCategories.map(category => (
             <Link
               key={category.id}
-              href={`/boutique?subcategoria=${category.subcategoria_id}`}
+              href={`/souvenirs?subcategoria=${category.subcategoria_id}`}
               className={cn('shop-press group block h-full rounded-xl', shopChrome.focus)}
             >
               <article className="flex h-full flex-col overflow-hidden rounded-xl border border-[var(--shop-hairline)] bg-white">

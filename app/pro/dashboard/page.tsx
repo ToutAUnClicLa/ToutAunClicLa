@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowUpRight, BarChart2, Contact, IdCard, Settings, UserRound, Wallet } from 'lucide-react';
 import { useProAuth } from '@/contexts/ProAuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -26,6 +27,25 @@ export default function DashboardPage() {
         className="mt-0"
         title={t('pro.dashboard.greeting', { name: proUser?.nombre || '' })}
         subtitle={t('pro.dashboard.intro')}
+        leading={
+          proUser ? (
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent sm:hidden">
+              {proUser.foto_url ? (
+                <Image
+                  src={proUser.foto_url}
+                  alt=""
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 object-cover"
+                />
+              ) : (
+                <span className="text-sm font-semibold text-accent-foreground">
+                  {(proUser.nombre || '?').slice(0, 2).toUpperCase()}
+                </span>
+              )}
+            </span>
+          ) : null
+        }
       />
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

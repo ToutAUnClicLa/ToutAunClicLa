@@ -20,6 +20,7 @@ import { cn, getProductImageUrl, getBlurDataURL, formatPrice, isValidPrice, getD
 import { ProductPriceDisplay } from './ProductPriceDisplay';
 
 import { getRestaurantUrlWithFallback } from '@/lib/utils/restaurant-routes';
+import { catalogPath } from '@/lib/catalog-path';
 
 interface ProductCardProps {
   product: Product;
@@ -165,13 +166,7 @@ export function ProductCard({
       }
     }
 
-    // Para productos y boutique, usar la estructura estándar
-    if (categoryName === 'productos' || categoryName === 'boutique') {
-      return `/productos/${product.id}`;
-    }
-
-    // Para otras categorías, usar la estructura estándar: /categoria/productId
-    return `/${categoryName}/${product.id}`;
+    return `${catalogPath(categoryName)}/${product.id}`;
   };
 
   // Manejadores de eventos

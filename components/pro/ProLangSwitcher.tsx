@@ -18,7 +18,7 @@ const OPTIONS: { code: Lang; label: string }[] = [
 // Switcher compacto y accesible: botón con icono Globe + código del idioma actual,
 // despliega un menú propio (sin dependencias externas) con FR/EN/ES. Al elegir,
 // escribe cookie + localStorage (setLanguage) y refresca los server components.
-export function ProLangSwitcher() {
+export function ProLangSwitcher({ dense = false }: { dense?: boolean }) {
   const router = useRouter();
   const { currentLanguage, setLanguage } = useLanguage();
   const { t } = useTranslation();
@@ -88,7 +88,14 @@ export function ProLangSwitcher() {
         className="inline-flex h-11 min-h-11 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-sm text-foreground transition-colors duration-[180ms] ease-out hover:bg-secondary"
       >
         <Globe className="h-4 w-4 text-muted-foreground" aria-hidden />
-        <span className="text-xs font-semibold uppercase tabular-nums">{current}</span>
+        {dense ? (
+          <>
+            <span className="text-[10px] font-semibold uppercase tabular-nums sm:hidden">{current}</span>
+            <span className="hidden text-xs font-semibold uppercase tabular-nums sm:inline">{current}</span>
+          </>
+        ) : (
+          <span className="text-xs font-semibold uppercase tabular-nums">{current}</span>
+        )}
       </button>
 
       {open && (

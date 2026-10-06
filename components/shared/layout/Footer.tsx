@@ -41,7 +41,7 @@ const getMainCategories = (t: (key: string) => string) => [
   { name: t('footer.explore.home'), url: "/" },
   { name: t('footer.explore.foods'), url: "/comidas" },
   { name: t('nav.services'), url: "/servicios" },
-  { name: t('footer.explore.boutique'), url: "/boutique" }
+  { name: t('footer.explore.boutique'), url: "/souvenirs" }
 ];
 
 const getCompanyLinks = (t: (key: string) => string) => [

@@ -79,9 +79,9 @@ export function AnimatedSections({ sampleProducts, subcategories }: AnimatedSect
             
             <motion.div variants={itemVariants}>
               <CategoryCard 
-                title="Boutique"
+                title="Souvenirs"
                 description="Exclusive fashion and accessories"
-                href="/boutique"
+                href="/souvenirs"
                 icon={<Scissors className="h-10 w-10 text-purple-600" />}
                 color="bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/40 dark:hover:bg-purple-950/60"
                 textColor="text-purple-600 dark:text-purple-400"
@@ -96,7 +96,7 @@ export function AnimatedSections({ sampleProducts, subcategories }: AnimatedSect
         <div className="container">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold">Featured Products</h2>
-            <Link href="/products" className="text-primary flex items-center">
+            <Link href="/productos" className="text-primary flex items-center">
               View all <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
@@ -127,7 +127,7 @@ export function AnimatedSections({ sampleProducts, subcategories }: AnimatedSect
             <h2 className="text-3xl font-bold text-indigo-900 dark:text-indigo-100">
               Products
             </h2>
-            <Link href="/products" className="text-indigo-600 dark:text-indigo-400 flex items-center">
+            <Link href="/productos" className="text-indigo-600 dark:text-indigo-400 flex items-center">
               View all <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
@@ -141,7 +141,7 @@ export function AnimatedSections({ sampleProducts, subcategories }: AnimatedSect
           >
             {subcategories.products.map((subcategory) => (
               <motion.div key={subcategory.id} variants={itemVariants}>
-                <Link href={`/products?subcategory=${subcategory.id}`}>
+                <Link href={`/productos?subcategoria=${subcategory.id}`}>
                   <div className="relative rounded-xl overflow-hidden group h-60">
                     <Image
                       src={subcategory.image}
@@ -204,14 +204,14 @@ export function AnimatedSections({ sampleProducts, subcategories }: AnimatedSect
         </div>
       </section>
 
-      {/* Boutique subcategories section */}
+      {/* Souvenirs */}
       <section className="py-16 bg-gradient-to-r from-purple-50 to-pink-100 dark:from-purple-950/20 dark:to-pink-950/40">
         <div className="container">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-purple-900 dark:text-purple-100">
-              Boutique
+              Souvenirs
             </h2>
-            <Link href="/boutique" className="text-purple-600 dark:text-purple-400 flex items-center">
+            <Link href="/souvenirs" className="text-purple-600 dark:text-purple-400 flex items-center">
               View all <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
@@ -225,7 +225,7 @@ export function AnimatedSections({ sampleProducts, subcategories }: AnimatedSect
           >
             {subcategories.boutique.map((subcategory) => (
               <motion.div key={subcategory.id} variants={itemVariants}>
-                <Link href={`/boutique?subcategory=${subcategory.id}`}>
+                <Link href={`/souvenirs?subcategoria=${subcategory.id}`}>
                   <div className="relative rounded-xl overflow-hidden group h-60">
                     <Image
                       src={subcategory.image}

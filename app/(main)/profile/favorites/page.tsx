@@ -22,6 +22,7 @@ import {
   profileOutlineClass,
 } from '@/components/features/profile/ProfileChrome';
 import { cn } from '@/lib/utils';
+import { catalogPath } from '@/lib/catalog-path';
 
 const categoryMap = {
   productos: { name: 'productos', icon: Package },
@@ -272,7 +273,10 @@ export default function FavoritesPage() {
                               <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
                                 <Button
                                   variant="outline"
-                                  onClick={() => router.push(`/productos/${item.producto_id}`)}
+                                  onClick={() => {
+                                    const base = catalogPath(item.productos?.categorias?.nombre);
+                                    router.push(`${base}/${item.producto_id}`);
+                                  }}
                                   className={profileOutlineClass()}
                                 >
                                   {t('favorites.items.view')}

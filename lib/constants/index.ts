@@ -34,7 +34,7 @@ export const API_ROUTES = {
 export const NAVIGATION_ROUTES = {
   home: '/',
   products: '/productos',
-  boutique: '/boutique',
+  boutique: '/souvenirs',
   food: '/comidas',
   checkout: '/checkout',
   profile: '/profile',

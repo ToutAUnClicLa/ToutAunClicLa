@@ -242,7 +242,7 @@ export default function SuccessPage() {
           </Button>
           <Button 
             variant="outline"
-            onClick={() => router.push('/products')}
+            onClick={() => router.push('/')}
             className="w-full"
           >
             Continuar Comprando

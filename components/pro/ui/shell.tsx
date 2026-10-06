@@ -6,15 +6,20 @@ export function ProPageHeader({
   title,
   subtitle,
   className,
+  leading,
 }: {
   title: string;
   subtitle?: string;
   className?: string;
+  leading?: ReactNode;
 }) {
   return (
-    <div className={cn('mt-4', className)}>
-      <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
-      {subtitle ? <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">{subtitle}</p> : null}
+    <div className={cn('mt-4', leading && 'flex items-center gap-3', className)}>
+      {leading}
+      <div className={leading ? 'min-w-0' : undefined}>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
+        {subtitle ? <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">{subtitle}</p> : null}
+      </div>
     </div>
   );
 }

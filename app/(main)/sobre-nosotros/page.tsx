@@ -295,7 +295,7 @@ export default function SobreNosotrosPage() {
                 </motion.button>
               </Link>
               
-              <Link href="/boutique">
+              <Link href="/souvenirs">
                 <motion.button
                   className="w-full sm:w-auto inline-flex items-center justify-center bg-purple-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-600 transition-all shadow-lg"
                   whileHover={{ scale: 1.05 }}

@@ -75,7 +75,7 @@ export default function CancelPage() {
             {t('checkout.cancel.buttons.backToCart')}
           </Button>
           <Button 
-            onClick={() => router.push('/productos')}
+            onClick={() => router.push('/')}
             variant="outline"
             className="w-full flex items-center justify-center gap-2"
           >

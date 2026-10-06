@@ -167,7 +167,7 @@ const ecommerceSchema: SchemaType = {
       {
         "@type": "OfferCatalog",
         "name": "Ropa",
-        "url": "https://www.toutaunclicla.com/boutique/ropa"
+        "url": "https://www.toutaunclicla.com/souvenirs/ropa"
       }
     ]
   }
@@ -189,7 +189,7 @@ const getBreadcrumbSchema = (pathname: string): SchemaType => {
     // Personalizar algunos nombres comunes
     if (segment === 'productos') name = 'Productos';
     if (segment === 'comidas') name = 'Comidas';
-    if (segment === 'boutique') name = 'Boutique';
+    if (segment === 'souvenirs' || segment === 'boutique') name = 'Souvenirs';
     
     return {
       "@type": "ListItem",

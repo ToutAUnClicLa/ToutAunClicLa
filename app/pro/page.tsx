@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/pro/ui/button';
 import { ProLandingHeader } from '@/components/pro/ProLandingHeader';
+import { ProLandingPrimaryCta } from '@/components/pro/landing/ProLandingPrimaryCta';
 import { HeroCardMockup } from '@/components/pro/landing/HeroCardMockup';
 import { AirDropIcon } from '@/components/pro/landing/AirDropIcon';
 import { TestimonialsMarquee } from '@/components/pro/landing/TestimonialsMarquee';
@@ -39,7 +40,7 @@ export function generateMetadata({ searchParams }: PageProps): Metadata {
 
 export default async function ProHomePage({ searchParams }: PageProps) {
   const lang = resolveLang(searchParams?.lang);
-  const t = getProT(lang).landing;
+  const { landing: t, header } = getProT(lang);
   const q = lang === 'fr' ? '' : `?lang=${lang}`;
 
   // QR real que apunta a la página de registro (así quien escanee el hero cae de
@@ -80,11 +81,10 @@ export default async function ProHomePage({ searchParams }: PageProps) {
                 data-hero-item
                 className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start"
               >
-                <Link href="/pro/register">
-                  <Button size="lg" className="h-auto min-h-14 w-full px-8 py-3.5 text-base sm:w-auto">
-                    {t.hero.ctaPrimary}
-                  </Button>
-                </Link>
+                <ProLandingPrimaryCta
+                  guestLabel={t.hero.ctaPrimary}
+                  className="h-auto min-h-14 w-full px-8 py-3.5 text-base sm:w-auto"
+                />
                 <Link href="/pro/pricing">
                   <Button
                     size="lg"
@@ -317,11 +317,10 @@ export default async function ProHomePage({ searchParams }: PageProps) {
               {t.finalCta.subtitle}
             </p>
             <div data-cta-item className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Link href="/pro/register">
-                <Button size="lg" className="pro-btn-on-ink w-full sm:w-auto">
-                  {t.finalCta.ctaPrimary}
-                </Button>
-              </Link>
+              <ProLandingPrimaryCta
+                guestLabel={t.finalCta.ctaPrimary}
+                className="pro-btn-on-ink w-full sm:w-auto"
+              />
               <Link href="/pro/pricing">
                 <Button size="lg" variant="ghost" className="pro-btn-ghost-ink w-full sm:w-auto">
                   {t.finalCta.ctaSecondary}
@@ -363,6 +362,13 @@ export default async function ProHomePage({ searchParams }: PageProps) {
               </Link>
               <Link href="/servicios" className="inline-flex min-h-11 items-center rounded-md transition-colors duration-[180ms] ease-out hover:text-foreground">
                 {t.footer.directory}
+              </Link>
+              <Link
+                href="/"
+                aria-label={header.backToShop}
+                className="inline-flex min-h-11 items-center rounded-md transition-colors duration-[180ms] ease-out hover:text-foreground"
+              >
+                {header.backToShop}
               </Link>
             </nav>
           </div>
