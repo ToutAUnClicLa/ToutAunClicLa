@@ -991,8 +991,9 @@ export default function CartPage() {
   // no a /productos ni a /comidas, para no soltar al usuario en otro catálogo.
   const backToCatalog = () => {
     if (isEmpty) return '/';
-    const paths = new Set(items.map((item) => catalogPath(item.productos?.categorias?.nombre)));
-    return paths.size === 1 ? [...paths][0] : '/';
+    const first = catalogPath(items[0]?.productos?.categorias?.nombre);
+    const same = items.every((item) => catalogPath(item.productos?.categorias?.nombre) === first);
+    return same ? first : '/';
   };
 
   // Estados de carga y protección de ruta
