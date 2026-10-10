@@ -13,7 +13,7 @@ export const MONTREAL_FSA_CODES = [
   'H2R', 'H2S', 'H2T', 'H2V', 'H2W', 'H2X', 'H2Y', 'H2Z',
   'H3A', 'H3B', 'H3C', 'H3D', 'H3E', 'H3F', 'H3G', 'H3H',
   'H3J', 'H3K', 'H3L', 'H3M', 'H3N', 'H3P', 'H3R', 'H3S',
-  'H3T', 'H3V', 'H3W', 'H3Y', 'H3Z', 'H4A', 'H4B', 'H4E',
+  'H3T', 'H3V', 'H3W', 'H3X', 'H3Y', 'H3Z', 'H4A', 'H4B', 'H4E',
   'H4G', 'H4H', 'H4N', 'H4P', 'H4V', 'H4W', 'H4X', 'H7A',
   'H7B', 'H7C', 'H7D', 'H7E', 'H7F', 'H7G', 'H7H', 'H7K',
   'H7L', 'H7M', 'H7P', 'H7R', 'H7V', 'H7W', 'H7X', 'H7Y',
