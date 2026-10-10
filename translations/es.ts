@@ -59,7 +59,7 @@ export default {
         description: "Estilistas y profesionales de belleza para lucir increíble."
       },
       translation: {
-        title: "Traducción Oficial",
+        title: "Lenguas y traducciones",
         description: "Servicios de traducción certificada para tus documentos importantes."
       },
       money: {
